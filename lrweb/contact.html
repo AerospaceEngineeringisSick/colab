@@ -34,10 +34,10 @@
 <div class="mmenu" id="mmenu"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="services.html">What we do</a><a href="work.html">Work</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="referrals.html">Referrals</a><a href="contact.html" aria-current="page">Get in touch</a></nav><p class="mmenu__foot"><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a> · read by Luke or Ralph</p><div class="mmenu__sun" aria-hidden="true"></div></div>
 <main id="main">
 <section class="phero" data-night>
-  <div class="sky" aria-hidden="true"><canvas class="sky__stars" data-hz="0"></canvas><div class="sky__glow"></div><div class="sun-halo"></div><div class="sun"><i></i></div></div>
+  <canvas class="sky-gl" data-prog="0.86" data-hz="0.14" data-sunx="0.8" data-sunr="0.36" data-aurora="0.8" aria-hidden="true"></canvas>
   <div class="container">
     <p class="crumbs load-in"><a href="index.html">Home</a> / Contact</p>
-    <h1 class="load-in d1">Tell us what you need. We’ll reply like humans.</h1>
+    <h1 data-split data-now>Tell us what you need. We’ll reply like humans.</h1>
     <p class="lead load-in d2">Read by Luke and Ralph. No ticket numbers, no chatbots.</p>
     
   </div>
@@ -90,6 +90,10 @@
   </div>
   <div class="foot__mark" aria-hidden="true">LRWeb</div>
 </footer>
+<script src="assets/js/vendor/gsap.min.js" defer></script>
+<script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="assets/js/vendor/lenis.min.js" defer></script>
+<script src="assets/js/sky.js" defer></script>
 <script src="assets/js/site.js" defer></script>
 </body>
 </html>

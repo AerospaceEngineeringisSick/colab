@@ -34,10 +34,10 @@
 <div class="mmenu" id="mmenu"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="services.html">What we do</a><a href="work.html">Work</a><a href="pricing.html">Pricing</a><a href="about.html" aria-current="page">About</a><a href="referrals.html">Referrals</a><a href="contact.html">Get in touch</a></nav><p class="mmenu__foot"><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a> · read by Luke or Ralph</p><div class="mmenu__sun" aria-hidden="true"></div></div>
 <main id="main">
 <section class="phero" data-night>
-  <div class="sky" aria-hidden="true"><canvas class="sky__stars" data-hz="0"></canvas><div class="sky__glow"></div><div class="sun-halo"></div><div class="sun"><i></i></div></div>
+  <canvas class="sky-gl" data-prog="0.86" data-hz="0.14" data-sunx="0.8" data-sunr="0.36" data-aurora="0.8" aria-hidden="true"></canvas>
   <div class="container">
     <p class="crumbs load-in"><a href="index.html">Home</a> / About</p>
-    <h1 class="load-in d1">Small on purpose. Personal by design.</h1>
+    <h1 data-split data-now>Small on purpose. Personal by design.</h1>
     <p class="lead load-in d2">LRWeb is two people, a careful client list, and a strong opinion that websites should be looked after by humans you can name.</p>
     
   </div>
@@ -45,7 +45,7 @@
 
 <section class="sec">
   <div class="container split">
-    <div><p class="kicker" data-reveal>The short version</p><h2 data-reveal>Most small organisations get a rotten deal on websites.</h2></div>
+    <div><p class="kicker" data-reveal>The short version</p><h2 data-split>Most small organisations get a rotten deal on websites.</h2></div>
     <div data-reveal style="--d:1">
       <p class="lead" style="max-width:none">The cheap end sells you “space on a server” and disappears. The agency end charges five figures and assigns you an account manager. In between is a gap: people who want a good website, looked after properly, by someone who answers emails.</p>
       <p class="lead" style="max-width:none;margin-top:18px">That’s us. We build websites, then we take responsibility for them: hosting, updates, security, backups, edits, the lot. We deliberately keep the client list small so every site gets real attention from people who actually remember building it.</p>
@@ -55,7 +55,7 @@
 
 <section class="sec sec--white">
   <div class="container">
-    <div class="sec-head"><p class="kicker" data-reveal>The two of us</p><h2 data-reveal>Luke and Ralph.</h2></div>
+    <div class="sec-head"><p class="kicker" data-reveal>The two of us</p><h2 data-split>Luke and Ralph.</h2></div>
     <div class="people">
   <article class="person" data-reveal>
     <div class="person__mark person__mark--l" aria-hidden="true"><span>L</span></div>
@@ -71,7 +71,7 @@
 
 <section class="sec">
   <div class="container">
-    <div class="sec-head"><p class="kicker" data-reveal>How we work</p><h2 data-reveal>Three rules we don’t break.</h2></div>
+    <div class="sec-head"><p class="kicker" data-reveal>How we work</p><h2 data-split>Three rules we don’t break.</h2></div>
     <div class="rules">
   <div class="rule" data-reveal><span class="n">Rule 01</span><h3>Plain English, always</h3><p>If we can’t explain something without jargon, we don’t understand it well enough. You’ll never get an email from us you need to Google.</p></div>
   <div class="rule" data-reveal style="--d:1"><span class="n">Rule 02</span><h3>Few clients, done well</h3><p>We cap our client list deliberately. When we’re full, we say so and start a waiting list. Quality doesn’t survive a hundred clients.</p></div>
@@ -82,7 +82,7 @@
 
 <section class="sec sec--white">
   <div class="container">
-    <div class="sec-head"><p class="kicker" data-reveal>Transparency</p><h2 data-reveal>Where your website actually lives.</h2><p class="lead" data-reveal>Most hosts keep this vague. We’d rather you knew.</p></div>
+    <div class="sec-head"><p class="kicker" data-reveal>Transparency</p><h2 data-split>Where your website actually lives.</h2><p class="lead" data-reveal>Most hosts keep this vague. We’d rather you knew.</p></div>
     <div class="infra" data-reveal>
       <svg class="map" viewBox="0 0 520 380" aria-label="Diagram: your visitors in the UK reach your website on EU servers in Germany through Cloudflare, with backups stored separately">
         <defs><linearGradient id="routeGrad" x1="0" x2="1"><stop offset="0" stop-color="#3DB88D"/><stop offset=".55" stop-color="#0B86EA"/><stop offset="1" stop-color="#3F4DE6"/></linearGradient></defs>
@@ -113,9 +113,9 @@
   </div>
 </section>
 <section class="cta" data-night aria-labelledby="cta-h">
-  <div class="sky" aria-hidden="true"><canvas class="sky__stars" data-hz="0"></canvas><div class="sky__glow"></div><div class="sun-halo"></div><div class="sun"><i></i></div></div>
+  <canvas class="sky-gl" data-prog="0.8" data-hz="0.16" data-sunx="0.5" data-sunr="0.3" data-aurora="0.9" aria-hidden="true"></canvas>
   <div class="container cta__in">
-    <h2 id="cta-h" data-reveal>Like the sound of us?</h2>
+    <h2 id="cta-h" data-split>Like the sound of us?</h2>
     <p data-reveal style="--d:1">We like the sound of people who read About pages. Get in touch and tell us what you’re working on.</p>
     <a href="contact.html" class="btn btn-primary" data-reveal style="--d:2">Start a conversation <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     <ul class="trust">
@@ -143,6 +143,10 @@
   </div>
   <div class="foot__mark" aria-hidden="true">LRWeb</div>
 </footer>
+<script src="assets/js/vendor/gsap.min.js" defer></script>
+<script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="assets/js/vendor/lenis.min.js" defer></script>
+<script src="assets/js/sky.js" defer></script>
 <script src="assets/js/site.js" defer></script>
 </body>
 </html>

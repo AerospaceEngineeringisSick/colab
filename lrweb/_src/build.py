@@ -54,8 +54,19 @@ def J(term, key=None, label=None):
     return f'<button type="button" class="jg" data-tip="{tip}">{label or term}</button>'
 
 # ---------------------------------------------------------------- pricing constants (single place to change)
-LAUNCH = '£299'          # NEW entry build, needs Luke & Ralph's sign-off (see checklist)
-BUILD_FROM = LAUNCH      # headline "websites from" figure
+BUILD_FROM = '£299'      # headline "websites from" figure (new sites and redesigns)
+# website builds: one list drives the pricing page, the estimator and the services page
+# (name, price range, short line, who it's for, what's included, tag)
+BUILDS = [
+  ('Starter', '£299–£499', '1 to 3 pages', 'A smart, fast site to get you online properly, or a tidy redesign of the one you have. Perfect for sole traders, trades, tutors and clubs.',
+   ['Up to 3 pages, new or redesigned', 'Works beautifully on phones', 'Contact form &amp; map', 'Google Business setup help', 'Two revision rounds'], 'Best for getting started'),
+  ('Standard', '£599–£999', '4 to 8 pages', 'A fuller site for established businesses: more pages, more polish and room to grow.',
+   ['Up to 8 pages', '2 to 3 homepage design options', 'Copywriting included', 'Photo sourcing &amp; optimisation', 'Basic search visibility setup'], 'Most popular'),
+  ('Larger', '£1,199–£1,999', 'shops, bookings, 9+ pages', 'For online shops, booking systems and bigger rebuilds with more moving parts.',
+   ['Online shop or booking system', 'Card payments set up', 'Content moved from your old site', 'Up to 15 pages', 'Training session included'], ''),
+  ('Bespoke', 'From £2,000', 'quoted to fit', 'Membership areas, custom features and anything unusual. We scope it with you and fix the price in writing.',
+   ['Custom functionality', 'Integrations with your other tools', 'Phased delivery if it helps cash flow', 'Written scope and fixed price'], ''),
+]
 PER_DAY = {'29': '95p', '49': '£1.61', '89': '£2.93'}   # price × 12 ÷ 365
 
 # ---------------------------------------------------------------- work data
@@ -258,7 +269,7 @@ ESTIMATOR = f'''<div class="est" id="est" data-reveal>
     <h3>Rough idea in ten seconds</h3>
     <p>Honest ballparks, not a sales funnel. Your actual quote is always a fixed figure in writing.</p>
     <p class="est__q">How big is your site?</p>
-    <div class="seg" role="group" aria-label="Site size"><button aria-pressed="false" data-size="0">1 to 3 pages</button><button aria-pressed="true" data-size="1">3 to 5 pages</button><button aria-pressed="false" data-size="2">6 to 10 pages</button><button aria-pressed="false" data-size="3">Bigger</button></div>
+    <div class="seg" role="group" aria-label="Site size"><button aria-pressed="true" data-size="0">1 to 3 pages</button><button aria-pressed="false" data-size="1">4 to 8 pages</button><button aria-pressed="false" data-size="2">9 or more</button></div>
     <p class="est__q">Anything extra?</p>
     <label class="check"><input type="checkbox" id="estShop"> Online shop or booking system</label>
     <label class="check"><input type="checkbox" id="estRescue"> Rescuing an existing site</label>
@@ -266,8 +277,8 @@ ESTIMATOR = f'''<div class="est" id="est" data-reveal>
   <div class="est__r" aria-live="polite">
     <div class="corner-sun" aria-hidden="true"></div>
     <span>Likely range</span>
-    <div class="est__price" id="estPrice">£600 to £900</div>
-    <p class="est__plan" id="estPlan">Starter build · Essential care from £29/mo</p>
+    <div class="est__price" id="estPrice">£299 to £499</div>
+    <p class="est__plan" id="estPlan">Starter build · care from £29/mo</p>
     <div class="est__meter" aria-hidden="true"><i id="estMeter"></i></div>
     <a href="contact.html" class="btn btn-primary">Get an exact quote {ARROW}</a>
   </div>
@@ -334,7 +345,7 @@ def ticket(big=False):
       <dl class="ticket__meta"><div><dt>Paid by</dt><dd>Bank transfer</dd></div><div><dt>Limit</dt><dd>None at all</dd></div><div><dt>Paperwork</dt><dd>Just your name</dd></div></dl>
     </div>
     <div class="ticket__stub">
-      <span class="ticket__small">Paid within</span><b class="ticket__days">7</b><span class="ticket__small">days of them staying 30</span>
+      <span class="ticket__small">Paid within</span><b class="ticket__days">7</b><span class="ticket__small">days, once they’ve stayed 30</span>
       <div class="ticket__code" aria-hidden="true"></div>
       <span class="ticket__no">No. 000001</span>
     </div>
@@ -574,7 +585,7 @@ def home():
         <div class="uc"><span>UNDER CONSTRUCTION</span></div>
         <p class="foot98">Best viewed in Internet Explorer 6 · Last updated March 2014 · Visitors: <span class="counter">000042</span></p>
       </div>
-      <div class="ba__pane ba__new"><img src="assets/work/smith-and-sons-hero.jpg" alt="The rebuilt Smith &amp; Sons website, with a clear emergency number, prices and online booking" loading="lazy" width="1440" height="900"></div>
+      <div class="ba__pane ba__new"><picture><source media="(max-width:760px)" srcset="assets/work/smith-and-sons-mobile.jpg"><img src="assets/work/smith-and-sons-hero.jpg" alt="The rebuilt Smith &amp; Sons website, with a clear emergency number, prices and online booking" loading="lazy" decoding="async" width="1440" height="900"></picture></div>
       <div class="ba__handle" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
       <span class="ba__hint" aria-hidden="true">Drag me</span>
       <span class="ba__tag ba__tag--l">Before</span><span class="ba__tag ba__tag--r">After LRWeb</span>
@@ -626,8 +637,8 @@ def home():
     {EVERY_HTML}
     {PLANS}
     <div class="launch" data-reveal>
-      <div class="launch__badge"><span>New</span><b>{LAUNCH}</b></div>
-      <div><h3>Need a website first? Get online from {LAUNCH}.</h3><p>Our Launch site is a smart, fast website of up to three pages, built for you when you join any care plan. Bigger sites start at £600, all at a fixed price agreed in writing.</p></div>
+      <div class="launch__badge"><span>From</span><b>{BUILD_FROM}</b></div>
+      <div><h3>Need a website first? New sites and redesigns from {BUILD_FROM}.</h3><p>A smart, fast site of up to three pages, designed and built for you at a fixed price agreed in writing. Bigger sites, shops and bookings are priced up front too.</p></div>
       <a class="btn btn-primary" href="pricing.html#builds">See website prices {ARROW}</a>
     </div>
     <p class="price-note" data-reveal><small>All prices are the total you pay. We are not registered for VAT, so no VAT is added. If we ever must register, VAT is added on 30 days’ notice.</small></p>
@@ -683,8 +694,8 @@ def services():
     panels = ''.join(f'<div class="cp{" on" if i == 0 else ""}" role="tabpanel" id="cp{i}" aria-labelledby="ct{i}"{"" if i == 0 else " hidden"}><div class="cp__vis" aria-hidden="true">{vis[ic]}</div><div class="cp__txt"><p class="cp__k">In plain English</p><h3>{t}</h3><p>{p}</p></div></div>' for i, (ic, c, t, d, p) in enumerate(care))
     migrate = [('Full site migration', 'Files, database, email records and domain settings.'), ('Pre-switch testing', 'We check every page before anything goes live.'), (f'{J("DNS")} handled for you', 'No fiddling with registrar control panels.'), ('Old host cancellation help', 'We’ll even draft the goodbye email.')]
     mig_html = ''.join(f'<li>{CHECK}<div><b>{t}</b><br><span>{d}</span></div></li>' for t, d in migrate)
-    builds = [('browser', '', 'Brand new websites', 'For businesses starting from nothing or nearly nothing. Designed around what your customers actually need to find, built fast and tidy.', f'From {LAUNCH}'),
-              ('refresh', 'g', 'Redesigns &amp; rescues', 'Your current site exists but it isn’t doing you any favours. We rebuild it properly, keeping what works and quietly retiring what doesn’t.', 'From £600'),
+    builds = [('browser', '', 'Brand new websites', 'For businesses starting from nothing or nearly nothing. Designed around what your customers actually need to find, built fast and tidy.', f'From {BUILD_FROM}'),
+              ('refresh', 'g', 'Redesigns &amp; rescues', 'Your current site exists but it isn’t doing you any favours. We rebuild it properly, keeping what works and quietly retiring what doesn’t.', f'From {BUILD_FROM}'),
               ('speed', 'i', 'Speeding up old sites', 'Old site, new engine. We bring ageing websites up to date: phone-friendly, quick to load, secure, and easier to update.', 'Fixed quote')]
     b_html = ''.join(f'<div class="svc svc--build" data-reveal style="--d:{i}"><div class="svc__ic {c}">{IC[ic]}</div><h3>{t}</h3><p>{d}</p><span class="svc__price">{pr}</span></div>' for i, (ic, c, t, d, pr) in enumerate(builds))
     steps = [('The conversation', 'You tell us about your business, what you like, what you hate, and what the website needs to do. We listen more than we talk.'),
@@ -765,14 +776,18 @@ def services():
 
 # ================================================================= PRICING
 def pricing():
-    builds = [('Launch site', LAUNCH, 'with any care plan', 'A smart, fast website to get you online properly. Perfect for new businesses, sole traders and clubs.', ['Up to 3 pages', 'Works beautifully on phones', 'Contact form &amp; map', 'Built on a layout we’ve perfected, styled for you'], True),
-              ('Starter build', '£600–£900', 'fixed quote', 'A focused 3 to 5 page site. Perfect for trades, tutors, clubs and anyone who needs a solid online front door.', ['3 to 5 pages, designed &amp; written', 'Mobile-friendly &amp; fast', 'Contact form &amp; map', 'Google Business setup help'], False),
-              ('Standard build', '£1,200–£1,800', 'fixed quote', 'A fuller site for established businesses: more pages, more polish, and room to grow.', ['Up to 10 pages', '2 to 3 homepage design options', 'Copywriting included', 'Photo sourcing &amp; optimisation', 'Basic search visibility setup'], False),
-              ('Larger build', '£2,000–£3,500', 'fixed quote', 'For shops, booking systems, membership areas and bigger rebuilds with moving parts.', ['Online shop or booking system', 'Custom functionality', 'Content migration from old site', 'Training session included'], False)]
     TK = '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    b_html = ''.join(f'<article class="build{" build--launch on-dark" if hot else ""}" data-reveal style="--d:{i}">{"<span class=" + chr(34) + "build__tag" + chr(34) + ">New · best for getting started</span>" if hot else ""}<h3>{n}</h3><div class="range">{r}</div><p class="build__cond">{cond}</p><p>{d}</p><ul>{"".join(f"<li>{TK}{x}</li>" for x in l)}</ul></article>' for i, (n, r, cond, d, l, hot) in enumerate(builds))
-    incl = ['First year of hosting included on Starter builds and up (your quote states exactly what’s included)', '50% deposit, balance at launch', 'Two revision rounds included', 'You own everything', 'Hosted on 100% renewable energy']
+    b_html = ''.join(f'<article class="build{" build--launch on-dark" if i == 0 else ""}" data-reveal style="--d:{i}">{"<span class=" + chr(34) + "build__tag" + chr(34) + ">" + tag + "</span>" if tag else ""}<h3>{n}</h3><div class="range">{r}</div><p class="build__cond">{cond}</p><p>{d}</p><ul>{"".join(f"<li>{TK}{x}</li>" for x in l)}</ul></article>' for i, (n, r, cond, d, l, tag) in enumerate(BUILDS))
+    incl = ['New sites and redesigns priced the same way', '50% deposit, balance at launch', 'Two revision rounds included', 'You own everything', 'Hosted on 100% renewable energy', 'Your quote states any hosting period included']
     incl_html = ''.join(f'<li>{TICK}{x}</li>' for x in incl)
+    why = [('Two people, no overheads', 'No office, no sales team, no account managers. What you pay goes into your website, not into someone’s commission.'),
+           ('Proven foundations', 'Every site starts from building blocks we’ve already tested for speed, security and phones. You pay for what’s unique to your business, not for reinventing the basics.'),
+           ('We earn our keep over years', 'We’d rather look after your site for years than charge a fortune up front. Builds are priced low; care plans are how we make our living.'),
+           ('Fixed, written, all-in', 'No VAT to add, no setup fees, no surprise extras. The number in your quote is the number you pay.')]
+    why_html = ''.join(f'<div class="why__item" data-reveal style="--d:{i}"><span class="why__n">0{i + 1}</span><h3>{t}</h3><p>{d}</p></div>' for i, (t, d) in enumerate(why))
+    spend = [('Design options &amp; your feedback', 25, '#3DB88D'), ('Building &amp; testing on every device', 35, '#0B86EA'), ('Words, photos &amp; search setup', 20, '#3F4DE6'), ('Launch, handover &amp; training', 20, '#12018D')]
+    spend_bar = ''.join(f'<i style="--w:{p}%;--c:{c};--d:{k}"><span>{p}%</span></i>' for k, (t, p, c) in enumerate(spend))
+    spend_key = ''.join(f'<li><i style="background:{c}"></i><b>£{round(599 * p / 100)}</b><span>{t}</span></li>' for t, p, c in spend)
     return head('Pricing: Care Plans from £29/mo, Websites from ' + BUILD_FROM + ' | LRWeb',
                 'Clear prices, clear scope. Website care plans from £29 a month covering hosting, updates, backups and support, plus fixed-price websites from ' + BUILD_FROM + '.', 'pricing') + nav('pricing.html') + phero('Pricing', 'Clear prices. Clear scope. No surprises.', 'Two things to price: the monthly care plan that keeps your site healthy, and the one-off cost of building or rebuilding it. Everything is the total you pay, with nothing hidden.') + f'''
 <section class="sec">
@@ -812,12 +827,28 @@ def pricing():
     </div>
     <div class="builds builds--4">{b_html}</div>
     <ul class="incl" data-reveal>{incl_html}</ul>
-    <p class="price-note" data-reveal>Build prices are the total amount payable. We are not registered for VAT, so no VAT is added. If we must register, VAT is added on 30 days’ notice. Ranges are indicative; your written quote is a fixed price for a fixed scope. The Launch site price applies when you join a care plan. <a href="terms.html">Full terms</a>.</p>
+    <p class="price-note" data-reveal>Build prices are the total amount payable. We are not registered for VAT, so no VAT is added. If we must register, VAT is added on 30 days’ notice. Ranges are indicative; your written quote is a fixed price for a fixed scope. After launch, sites move onto a care plan from £29 a month. <a href="terms.html">Full terms</a>.</p>
     <div style="margin-top:56px">{ESTIMATOR}</div>
   </div>
 </section>
 
-<section class="sec sec--white">
+<section class="sec sec--white" id="why">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker" data-reveal>Why these prices</p>
+      <h2 data-split>Honest prices, and the reasons behind them.</h2>
+      <p class="lead" data-reveal>Cheap websites usually cut corners. Ours don’t. Here’s how we keep the price down anyway, and where your money actually goes.</p>
+    </div>
+    <div class="why">{why_html}</div>
+    <div class="spend" data-inview>
+      <div class="spend__head"><b>Where a £599 Standard build goes</b><span>Roughly, for a typical project</span></div>
+      <div class="spend__bar" aria-hidden="true">{spend_bar}</div>
+      <ul class="spend__key">{spend_key}</ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
   <div class="container">
     <div class="sec-head center">
       <p class="kicker" data-reveal>Questions</p>

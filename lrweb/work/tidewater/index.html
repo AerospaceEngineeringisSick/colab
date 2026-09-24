@@ -234,6 +234,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
 html,body{overflow-x:clip}
+/* mobile fit */
+.form fieldset{min-width:0}
+.form > *,.book__grid > *,.row2 > *{min-width:0}
+@media (max-width:640px){.hero__bot .sub{text-shadow:0 2px 14px rgba(4,11,18,.55)}}
 </style>
 <script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>
@@ -489,8 +493,8 @@ function drawSea(t) {
       for (let j = 0; j < 12; j++) { const yy = hor + 4 + j * j * .7, ww = (18 - j) * S * (.6 + .4 * Math.sin(t / 260 + j * 1.9)); ctx.fillStyle = `rgba(255,228,160,${lit * .22 * (1 - j / 12)})`; ctx.beginPath(); ctx.ellipse(lx + Math.sin(t / 400 + j) * 3, yy, ww, 1.3, 0, 0, 6.283); ctx.fill(); }
     }
     // fishing boat rides layer 2
-    if (i === 2) {
-      const bx = W * .3 + Math.sin(t / 9000) * W * .04, by = y0 + wave(bx, t, L), slope = (wave(bx + 6, t, L) - wave(bx - 6, t, L)) / 12;
+    if (i === (W < 700 ? 1 : 2)) {
+      const bx = W * (W < 700 ? .2 : .3) + Math.sin(t / 9000) * W * .04, by = y0 + wave(bx, t, L), slope = (wave(bx + 6, t, L) - wave(bx - 6, t, L)) / 12;
       ctx.save(); ctx.translate(bx, by); ctx.rotate(Math.atan(slope)); const s2 = Math.max(.75, W / 1400); ctx.scale(s2, s2);
       const hull = rgb(mix([28, 52, 66], [8, 16, 22], night));
       ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.ellipse(-30, 5, 16, 2, 0, 0, 6.283); ctx.fill();

@@ -384,16 +384,16 @@
   /* ---------- estimator ---------- */
   const est = $('#est');
   if (est) {
-    const ranges = [[299, 299], [600, 900], [1200, 1800], [2000, 3500]];
-    const plans = ['Launch site · with any care plan, from £29/mo', 'Starter build · Essential care from £29/mo', 'Standard build · Plus care from £49/mo', 'Larger build · Pro care from £89/mo'];
-    let size = 1;
+    const ranges = [[299, 499], [599, 999], [1199, 1999]];
+    const plans = ['Starter build · care from £29/mo after launch', 'Standard build · Plus care from £49/mo suits most', 'Larger build · Pro care from £89/mo for shops & bookings'];
+    let size = 0;
     const price = $('#estPrice'), plan = $('#estPlan'), shop = $('#estShop'), rescue = $('#estRescue'), meter = $('#estMeter');
     const f = n => '£' + n.toLocaleString('en-GB');
     const update = () => {
-      const i = Math.max(size, shop.checked ? 3 : 0);
+      const i = Math.max(size, shop.checked ? 2 : 0);
       price.textContent = ranges[i][0] === ranges[i][1] ? f(ranges[i][0]) : f(ranges[i][0]) + ' to ' + f(ranges[i][1]);
       plan.textContent = plans[i] + (rescue.checked ? ' · free migration included' : '');
-      if (meter) meter.style.transform = `scaleX(${(i + 1) / 4})`;
+      if (meter) meter.style.transform = `scaleX(${(i + 1) / 3})`;
       if (G && !reduce) G.fromTo(price, { y: 18, opacity: 0, filter: 'blur(6px)' }, { y: 0, opacity: 1, filter: 'blur(0px)', duration: .55, ease: 'power3.out' });
     };
     $$('.seg button', est).forEach(b => b.addEventListener('click', () => { $$('.seg button', est).forEach(x => x.setAttribute('aria-pressed', x === b)); size = +b.dataset.size; update(); }));

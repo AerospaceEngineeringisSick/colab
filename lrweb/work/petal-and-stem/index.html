@@ -227,6 +227,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
 html,body{overflow-x:clip}
+/* mobile fit */
+.seasons > *,.builder > *,.subs > *{min-width:0}
+.wheel{max-width:100%}
+@media (max-width:420px){.freq button{padding:10px 13px;font-size:13px}}
+@media (max-width:640px){.subs__deco{width:200px;height:200px;right:-80px;top:-80px;opacity:.3}}
 </style>
 <script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>

@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smith &amp; Sons — Plumbing &amp; Heating, West Berkshire</title>
+<meta name="description" content="Family-run plumbing and heating in Newbury, Hungerford and West Berkshire since 1987. Boilers, bathrooms, leaks and 24/7 emergency callouts. Fixed quotes, tidy work.">
+<meta name="theme-color" content="#0F2A3D">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F2A3D'/%3E%3Cpath d='M18 46V30a12 12 0 0 1 12-12h16' fill='none' stroke='%23C46A3A' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --navy:#0F2A3D; --navy-2:#153850; --navy-3:#1D4764; --copper:#C46A3A; --copper-l:#E39A6B; --copper-d:#9E4F26;
+  --paper:#F7F4EF; --paper-2:#EFEAE1; --white:#fff; --ink:#0F2A3D; --muted:#5B6B78; --water:#2F8FCE; --ok:#2FA36B;
+  --f:"Rubik",system-ui,sans-serif; --pad:clamp(16px,4vw,48px); --ease:cubic-bezier(.22,1,.36,1);
+  --line:rgba(15,42,61,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);font-size:17px;line-height:1.6;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--copper);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+h1,h2,h3{font-weight:700;letter-spacing:-.025em;line-height:1.05;text-wrap:balance}
+h2{font-size:clamp(34px,4.4vw,56px)}
+.label{font-size:14px;font-weight:600;color:var(--copper-d);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 24px;border-radius:12px;font-weight:600;font-size:16px;transition:transform .25s var(--ease),background .25s,box-shadow .25s;white-space:nowrap}
+.btn svg{width:18px;height:18px}
+.btn--copper{background:var(--copper);color:#fff;box-shadow:0 6px 0 var(--copper-d)}
+.btn--copper:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--copper-d)}
+.btn--copper:active{transform:translateY(3px);box-shadow:0 2px 0 var(--copper-d)}
+.btn--line{border:2px solid rgba(255,255,255,.3);color:#fff}
+.btn--line:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.btn--navy{background:var(--navy);color:#fff}
+.btn--navy:hover{background:var(--navy-3)}
+.js [data-r]{opacity:0;transform:translateY(30px);transition:opacity .8s var(--ease),transform .9s var(--ease);transition-delay:calc(var(--d,0) * 80ms)}
+.js [data-r].in{opacity:1;transform:none}
+
+/* emergency bar */
+.sos{background:var(--copper);color:#fff;font-size:15px;font-weight:500}
+.sos .wrap{display:flex;justify-content:center;align-items:center;gap:12px;height:44px;flex-wrap:wrap}
+.sos i{width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7);animation:ping 1.8s infinite}
+.sos a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
+@keyframes ping{70%{box-shadow:0 0 0 10px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+
+/* header */
+.top{position:sticky;top:0;z-index:50;background:var(--navy);color:#fff;transition:box-shadow .3s}
+.top.shadow{box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:78px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo svg{width:44px;height:44px}
+.logo b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.logo span{display:block;font-size:12px;color:var(--copper-l);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+.top nav{display:flex;gap:28px;font-weight:500;font-size:15px}
+.top nav a{color:rgba(255,255,255,.8);transition:color .2s}
+.top nav a:hover{color:#fff}
+.top__r{display:flex;align-items:center;gap:18px}
+.phone{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.phone small{display:block;font-size:12px;font-weight:500;color:rgba(255,255,255,.6)}
+.phone svg{width:34px;height:34px;padding:8px;border-radius:50%;background:var(--navy-3);color:var(--copper-l)}
+.top .btn{height:46px}
+
+/* hero */
+.hero{background:var(--navy);color:#fff;position:relative;overflow:hidden;padding:clamp(50px,7vw,90px) 0 clamp(70px,8vw,110px)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 80% 40%,rgba(47,143,206,.18),transparent 70%),radial-gradient(40% 50% at 10% 100%,rgba(196,106,58,.18),transparent 70%)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+.avail{display:inline-flex;align-items:center;gap:10px;background:rgba(47,163,107,.14);color:#7FDCAA;border:1px solid rgba(47,163,107,.35);padding:7px 14px;border-radius:99px;font-size:14px;font-weight:500}
+.avail i{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.hero h1{font-size:clamp(48px,6.6vw,88px);font-weight:800;margin:22px 0 22px;letter-spacing:-.035em}
+.hero h1 span{color:var(--copper-l)}
+.hero p.sub{font-size:clamp(18px,1.5vw,21px);color:rgba(255,255,255,.78);max-width:520px}
+.hero__ctas{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+.trust{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:36px;font-size:14px;color:rgba(255,255,255,.72)}
+.trust span{display:inline-flex;align-items:center;gap:8px}
+.trust svg{width:18px;height:18px;color:var(--copper-l)}
+.stars{color:#F5B83D;letter-spacing:2px}
+.hero__art{position:relative;margin-right:-6%}
+.hero__art svg{width:112%;max-width:none;height:auto;overflow:visible;margin-left:-6%}
+.pipe{fill:none;stroke:url(#copperG);stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--ease)}
+.pipe-hi{fill:none;stroke:rgba(255,255,255,.35);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--ease)}
+.flow{fill:none;stroke:#7CC6F2;stroke-width:3;stroke-linecap:round;stroke-dasharray:6 22;opacity:0;transition:opacity .6s 1.6s;animation:flow 1.2s linear infinite}
+.flow.hot{stroke:#FFB38A}
+@keyframes flow{to{stroke-dashoffset:-28}}
+.ready .pipe,.ready .pipe-hi{stroke-dashoffset:0}
+.ready .flow{opacity:.9}
+.joint{fill:var(--copper-d);opacity:0;transition:opacity .4s 1.4s}
+.ready .joint{opacity:1}
+.boiler{opacity:0;transform:translateY(20px);transition:opacity .8s .3s,transform 1s var(--ease) .3s}
+.ready .boiler{opacity:1;transform:none}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flicker .18s infinite alternate}
+@keyframes flicker{to{transform:scaleY(.86) scaleX(1.06)}}
+.needle{transform-box:view-box;transform-origin:476px 292px;transform:rotate(-120deg);transition:transform 2.2s cubic-bezier(.34,1.56,.64,1) 1.2s}
+.ready .needle{transform:rotate(-20deg)}
+.heat path{fill:none;stroke:#FFB38A;stroke-width:3;stroke-linecap:round;opacity:0;animation:heat 2.6s ease-in-out infinite}
+.heat path:nth-child(2){animation-delay:.8s}.heat path:nth-child(3){animation-delay:1.6s}
+@keyframes heat{0%{opacity:0;transform:translateY(10px)}40%{opacity:.8}100%{opacity:0;transform:translateY(-26px)}}
+.rad{opacity:0;transition:opacity .8s .6s}
+.ready .rad{opacity:1}
+.rad .fin{transition:fill 3s 2s}
+.ready .rad .fin{fill:#F3E6DC}
+.drip{animation:drip 2.4s cubic-bezier(.55,0,1,.45) infinite}
+@keyframes drip{0%,30%{transform:translateY(0);opacity:0}35%{opacity:1}90%{transform:translateY(46px);opacity:1}100%{transform:translateY(46px);opacity:0}}
+.art-chip{position:absolute;background:#fff;color:var(--ink);border-radius:14px;padding:12px 14px;box-shadow:0 20px 40px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;font-size:14px;font-weight:500;opacity:0;transform:translateY(12px);transition:opacity .6s,transform .8s var(--ease)}
+.art-chip b{display:block;font-size:15px}
+.art-chip small{color:var(--muted)}
+.art-chip svg{width:30px;height:30px;flex:none}
+.ready .art-chip{opacity:1;transform:none}
+.art-chip.c1{left:-4%;bottom:10%;transition-delay:2s}
+.art-chip.c2{right:0;top:-2%;transition-delay:2.3s}
+
+/* strip */
+.strip{background:var(--white);border-bottom:1px solid var(--line)}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.strip .wrap > div{padding:26px 20px;display:flex;gap:14px;align-items:center;border-left:1px solid var(--line)}
+.strip .wrap > div:first-child{border-left:0;padding-left:0}
+.strip svg{width:34px;height:34px;flex:none;color:var(--copper)}
+.strip b{display:block;font-size:17px}
+.strip span{font-size:14px;color:var(--muted)}
+
+.sec{padding:clamp(80px,9vw,120px) 0}
+.sec--white{background:var(--white)}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:46px}
+.head p{max-width:440px;color:var(--muted)}
+
+/* services */
+.svcs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.svc{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s,border-color .35s}
+.svc::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--copper);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.svc:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(15,42,61,.12);border-color:transparent}
+.svc:hover::after{transform:scaleX(1)}
+.svc__ic{width:54px;height:54px;border-radius:14px;background:var(--paper-2);display:grid;place-items:center;color:var(--copper)}
+.svc__ic svg{width:28px;height:28px;transition:transform .5s var(--ease)}
+.svc:hover .svc__ic svg{transform:rotate(-8deg) scale(1.1)}
+.svc h3{font-size:22px}
+.svc p{color:var(--muted);font-size:15px;flex:1}
+.svc .from{font-weight:600;font-size:15px}
+.svc .from b{color:var(--copper-d)}
+.svc--sos{background:var(--navy);color:#fff;border:0}
+.svc--sos p{color:rgba(255,255,255,.7)}
+.svc--sos .svc__ic{background:var(--navy-3);color:var(--copper-l)}
+.svc--sos .from b{color:var(--copper-l)}
+
+/* price guide */
+.guide{display:grid;grid-template-columns:1fr 1.1fr;gap:0;border-radius:24px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(15,42,61,.3);border:1px solid var(--line)}
+.guide__l{background:var(--white);padding:clamp(24px,3vw,40px)}
+.guide__l h3{font-size:26px;margin-bottom:6px}
+.guide__l > p{color:var(--muted);margin-bottom:20px}
+.jobs{display:grid;gap:8px}
+.jobs button{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:1.5px solid var(--line);text-align:left;font-weight:500;transition:border-color .2s,background .2s}
+.jobs button:hover{border-color:var(--copper-l)}
+.jobs button[aria-pressed="true"]{border-color:var(--copper);background:#FBF1EA}
+.jobs button span{color:var(--muted);font-size:14px}
+.guide__r{background:var(--navy);color:#fff;padding:clamp(24px,3vw,44px);display:flex;flex-direction:column;justify-content:center;gap:14px;position:relative;overflow:hidden}
+.guide__r::after{content:"";position:absolute;right:-70px;bottom:-70px;width:240px;height:240px;border-radius:50%;border:18px solid rgba(196,106,58,.25)}
+.guide__r small{color:rgba(255,255,255,.6);font-size:14px}
+.guide__price{font-size:clamp(44px,5vw,64px);font-weight:800;letter-spacing:-.035em;line-height:1}
+.guide__r ul{list-style:none;display:grid;gap:8px;color:rgba(255,255,255,.85);font-size:15px;position:relative;z-index:1}
+.guide__r li{display:flex;gap:10px}
+.guide__r li svg{width:18px;height:18px;color:var(--copper-l);flex:none;margin-top:2px}
+.guide__r .btn{align-self:flex-start;margin-top:10px;position:relative;z-index:1}
+.guide__note{font-size:13px;color:rgba(255,255,255,.55);position:relative;z-index:1}
+
+/* family */
+.family{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,70px);align-items:center}
+.family p{color:var(--muted);margin-top:16px}
+.gens{display:grid;gap:14px}
+.gen{display:grid;grid-template-columns:80px 1fr;gap:18px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:18px;padding:18px}
+.gen b{font-size:28px;font-weight:800;color:var(--copper);letter-spacing:-.03em}
+.gen h3{font-size:19px}
+.gen p{margin:2px 0 0;font-size:15px}
+
+/* area */
+.area{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(30px,5vw,70px);align-items:center}
+.map{background:var(--navy);border-radius:24px;overflow:hidden}
+.map svg{width:100%;height:auto}
+.map .town circle{fill:#fff}
+.map .town text{fill:rgba(255,255,255,.85);font-size:13px;font-family:var(--f);font-weight:500}
+.map .ring{fill:rgba(196,106,58,.1);stroke:var(--copper);stroke-width:2;stroke-dasharray:6 6;transform-origin:250px 190px;animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.map .van{offset-path:path('M70 250 C150 180 200 210 250 190 S380 120 440 160');animation:drive 8s ease-in-out infinite alternate}
+@keyframes drive{from{offset-distance:0%}to{offset-distance:100%}}
+.check{margin-top:26px;background:var(--white);border:1px solid var(--line);border-radius:18px;padding:22px}
+.check form{display:flex;gap:8px;margin-top:10px}
+.check input{flex:1;min-width:0;height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);padding:0 16px;font:inherit;font-weight:600;text-transform:uppercase;outline:none}
+.check input:focus{border-color:var(--copper)}
+.check .res{margin-top:12px;min-height:1.6em;font-weight:500}
+.check .res.ok{color:var(--ok)}
+.check .res.no{color:var(--copper-d)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:24px}
+.step b{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--copper);color:#fff;font-weight:700;margin-bottom:16px}
+.step h3{font-size:19px;margin-bottom:6px}
+.step p{color:var(--muted);font-size:15px}
+
+/* reviews */
+.revs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rev{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.rev p{font-size:17px;flex:1}
+.rev footer{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+.rev footer i{width:40px;height:40px;border-radius:50%;background:var(--paper-2);display:grid;place-items:center;font-style:normal;font-weight:700;color:var(--copper-d)}
+.rev footer b{color:var(--ink);display:block;font-size:15px}
+.score{display:flex;align-items:center;gap:16px;background:var(--navy);color:#fff;border-radius:18px;padding:18px 22px}
+.score b{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.score span{font-size:14px;color:rgba(255,255,255,.7)}
+
+/* book */
+.book{background:var(--navy);color:#fff}
+.book .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(30px,5vw,70px);align-items:start}
+.book h2 span{color:var(--copper-l)}
+.book p.lead{color:rgba(255,255,255,.75);margin-top:18px;max-width:440px}
+.book .call{margin-top:30px;display:flex;align-items:center;gap:16px;background:var(--navy-2);border-radius:18px;padding:18px 20px;border:1px solid rgba(255,255,255,.08)}
+.book .call svg{width:46px;height:46px;padding:11px;border-radius:50%;background:var(--copper);color:#fff;flex:none}
+.book .call b{font-size:24px;display:block}
+.book .call span{font-size:14px;color:rgba(255,255,255,.65)}
+.bform{background:#fff;color:var(--ink);border-radius:22px;padding:clamp(22px,3vw,36px);display:grid;gap:18px;position:relative;overflow:hidden}
+.bform .lbl{font-weight:600;font-size:14px;margin-bottom:8px;display:block}
+.bform select,.bform input{width:100%;height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);padding:0 14px;font:inherit;outline:none}
+.bform select:focus,.bform input:focus{border-color:var(--copper)}
+.days{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.days button{flex:none;width:64px;padding:10px 0;border-radius:12px;border:1.5px solid var(--line);text-align:center;font-size:13px;transition:all .2s}
+.days button b{display:block;font-size:20px}
+.days button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ampm{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ampm button{padding:12px;border-radius:12px;border:1.5px solid var(--line);font-weight:500;transition:all .2s}
+.ampm button[aria-pressed="true"]{border-color:var(--copper);background:#FBF1EA}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.done{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:30px;gap:10px;transform:translateY(100%);transition:transform .7s var(--ease)}
+.done.on{transform:none}
+.done svg{width:70px;height:70px}
+.done .tk{stroke-dasharray:40;stroke-dashoffset:40;transition:stroke-dashoffset .6s .5s}
+.done.on .tk{stroke-dashoffset:0}
+.done h3{font-size:28px}
+.done p{color:var(--muted);max-width:340px}
+
+/* footer */
+.foot{background:#0A1F2E;color:rgba(255,255,255,.7);padding:60px 0 30px;font-size:15px}
+.foot .wrap{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:30px}
+.foot h4{color:#fff;font-size:15px;margin-bottom:12px}
+.foot ul{list-style:none;display:grid;gap:6px}
+.foot .legal{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.1);padding-top:20px;margin-top:10px;font-size:13px;color:rgba(255,255,255,.5);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:1000px){
+  .top nav{display:none}
+  .hero .wrap,.guide,.family,.area,.book .wrap{grid-template-columns:1fr}
+  .svcs,.revs{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .strip .wrap{grid-template-columns:1fr 1fr}
+  .strip .wrap > div:nth-child(3){border-left:0;padding-left:0}
+  .foot .wrap{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  .phone{display:none}
+  .svcs,.revs,.steps{grid-template-columns:1fr}
+  .strip .wrap{grid-template-columns:1fr}
+  .strip .wrap > div{border-left:0;padding:16px 0;border-top:1px solid var(--line)}
+  .art-chip{display:none}
+  .row2{grid-template-columns:1fr}
+  .foot .wrap{grid-template-columns:1fr}
+  .sos .wrap{height:auto;padding-top:8px;padding-bottom:8px;font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important}}
+
+/* LRWeb example-site badge */
+.lr-badge{position:fixed;left:16px;bottom:16px;z-index:95;display:inline-flex;align-items:center;gap:10px;padding:9px 14px 9px 10px;border-radius:99px;background:#070824;color:#F5F8FA;font:500 13px/1 system-ui,sans-serif;box-shadow:0 10px 30px -8px rgba(7,8,36,.55);transition:transform .3s}
+.lr-badge:hover{transform:translateY(-3px)}
+.lr-badge img{height:17px;width:auto}
+.lr-badge span{opacity:.7}
+.lr-wipe{position:fixed;inset:0;z-index:999;background:#070824;pointer-events:none;animation:lrOut .8s cubic-bezier(.65,0,.35,1) .1s forwards;overflow:hidden}
+.lr-wipe::after{content:"";position:absolute;left:50%;bottom:0;width:60vmin;height:30vmin;transform:translateX(-50%);border-radius:60vmin 60vmin 0 0;background:linear-gradient(35deg,#3DB88D,#0B86EA 55%,#3F4DE6)}
+@keyframes lrOut{to{transform:translateY(-101%)}}
+.shot .lr-badge,.shot .lr-wipe{display:none}
+</style>
+</head>
+<body>
+<div class="lr-wipe" aria-hidden="true"></div>
+<a class="lr-badge" href="../../work.html"><img src="../../assets/img/logo-light.png" alt="LRWeb"><span>Example site</span></a>
+
+<div class="sos"><div class="wrap"><i></i>Burst pipe or no heating? We’re on call 24/7 · <a href="tel:01635000000">01635 000 000</a></div></div>
+<header class="top">
+  <div class="wrap">
+    <a href="#" class="logo" aria-label="Smith &amp; Sons home">
+      <svg viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="11" fill="#153850"/><path d="M13 33V21a8 8 0 0 1 8-8h11" fill="none" stroke="#C46A3A" stroke-width="6" stroke-linecap="round"/><path d="M13 33V21a8 8 0 0 1 8-8h11" fill="none" stroke="#E39A6B" stroke-width="1.6" stroke-linecap="round" transform="translate(-1.4 -1.4)"/><circle cx="32" cy="13" r="3.6" fill="#E39A6B"/></svg>
+      <div><b>Smith &amp; Sons</b><span>Plumbing &amp; Heating · Est. 1987</span></div>
+    </a>
+    <nav aria-label="Main"><a href="#services">Services</a><a href="#prices">Prices</a><a href="#area">Areas</a><a href="#reviews">Reviews</a></nav>
+    <div class="top__r">
+      <a class="phone" href="tel:01635000000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span>01635 000 000<small>Office 8am–6pm</small></span></a>
+      <a href="#book" class="btn btn--copper">Book a visit</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="avail" id="avail"><i></i>Taking bookings this week</span>
+      <h1>Plumbing done <span>properly.</span></h1>
+      <p class="sub">Family-run since 1987. Fixed quotes, tidy work, and a real person on the phone. Covering Newbury, Hungerford and the villages in between.</p>
+      <div class="hero__ctas"><a href="#book" class="btn btn--copper">Book a visit <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a><a href="#prices" class="btn btn--line">What will it cost?</a></div>
+      <div class="trust">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l8 4v5c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V7l8-4z"/></svg>Gas Safe registered</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6" stroke-linecap="round" stroke-linejoin="round"/></svg>12-month guarantee</span>
+        <span><span class="stars">★★★★★</span>4.9 from 186 local reviews</span>
+      </div>
+    </div>
+    <div class="hero__art" aria-hidden="true">
+      <svg viewBox="0 0 560 440">
+        <defs>
+          <linearGradient id="copperG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E39A6B"/><stop offset=".5" stop-color="#C46A3A"/><stop offset="1" stop-color="#9E4F26"/></linearGradient>
+        </defs>
+        <!-- pipes -->
+        <path class="pipe" pathLength="1" d="M20 380 H140 Q170 380 170 350 V220 Q170 190 200 190 H330"/>
+        <path class="pipe-hi" pathLength="1" d="M20 376 H140 Q166 376 166 350 V220 Q166 186 200 186 H330"/>
+        <path class="flow" d="M20 380 H140 Q170 380 170 350 V220 Q170 190 200 190 H330"/>
+        <path class="pipe" pathLength="1" d="M440 330 V400 H250 Q220 400 220 370 V330" style="transition-delay:.3s"/>
+        <path class="flow hot" d="M440 330 V400 H250 Q220 400 220 370 V330"/>
+        <path class="pipe" pathLength="1" d="M520 170 H500 Q470 170 470 140 V100" style="transition-delay:.5s"/>
+        <path class="flow hot" d="M520 170 H500 Q470 170 470 140 V100"/>
+        <g><circle class="joint" cx="170" cy="290" r="10"/><circle class="joint" cx="280" cy="190" r="10"/><circle class="joint" cx="340" cy="400" r="10"/></g>
+        <!-- radiator -->
+        <g class="rad" transform="translate(30 250)">
+          <rect x="0" y="0" width="120" height="90" rx="8" fill="#E7EDF2" stroke="#9FB2C1" stroke-width="2"/>
+          <g fill="#DCE4EA" class="finwrap">
+            <rect class="fin" x="10" y="8" width="12" height="74" rx="6"/><rect class="fin" x="30" y="8" width="12" height="74" rx="6"/><rect class="fin" x="50" y="8" width="12" height="74" rx="6"/><rect class="fin" x="70" y="8" width="12" height="74" rx="6"/><rect class="fin" x="90" y="8" width="12" height="74" rx="6"/>
+          </g>
+          <g class="heat"><path d="M30 -8c-6-8 6-12 0-20"/><path d="M60 -8c-6-8 6-12 0-20"/><path d="M90 -8c-6-8 6-12 0-20"/></g>
+        </g>
+        <!-- boiler -->
+        <g class="boiler">
+          <rect x="330" y="120" width="180" height="210" rx="16" fill="#FFFFFF"/>
+          <rect x="330" y="120" width="180" height="210" rx="16" fill="none" stroke="#D6DEE5" stroke-width="2"/>
+          <rect x="352" y="146" width="136" height="54" rx="8" fill="#0F2A3D"/>
+          <text x="366" y="180" font-family="Rubik, sans-serif" font-weight="700" font-size="22" fill="#7FDCAA">55°C</text>
+          <g transform="translate(446 160)"><path class="flame" d="M10 26c-8 0-12-6-10-12 2-5 6-6 6-12 5 4 10 9 10 15 0 5-3 9-6 9z" fill="#FF8A4C"/><path class="flame" d="M10 26c-4 0-6-3-5-6 1-2 3-3 3-6 3 2 5 5 5 8 0 2-1 4-3 4z" fill="#FFD27A"/></g>
+          <circle cx="476" cy="292" r="26" fill="#F2F5F8" stroke="#C8D3DC" stroke-width="2"/>
+          <path d="M456 300 A22 22 0 1 1 496 300" fill="none" stroke="#2FA36B" stroke-width="4" stroke-linecap="round"/>
+          <line class="needle" x1="476" y1="292" x2="476" y2="274" stroke="#0F2A3D" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="476" cy="292" r="4" fill="#0F2A3D"/>
+          <text x="352" y="240" font-family="Rubik, sans-serif" font-size="12" fill="#5B6B78">Pressure</text>
+          <text x="352" y="258" font-family="Rubik, sans-serif" font-weight="700" font-size="18" fill="#0F2A3D">1.5 bar</text>
+          <rect x="352" y="276" width="70" height="8" rx="4" fill="#E7EDF2"/><rect x="352" y="292" width="50" height="8" rx="4" fill="#E7EDF2"/>
+        </g>
+        <!-- tap + drip -->
+        <g transform="translate(470 60)"><rect x="-8" y="30" width="16" height="12" rx="3" fill="url(#copperG)"/><path d="M-20 30 h40" stroke="url(#copperG)" stroke-width="8" stroke-linecap="round"/><circle class="drip" cx="0" cy="48" r="5" fill="#7CC6F2"/></g>
+      </svg>
+      <div class="art-chip c1"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#E6F6EE"/><path d="M9 15.5l4 4 8-9" fill="none" stroke="#2FA36B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Boiler serviced</b><small>Thatcham · this morning</small></div></div>
+      <div class="art-chip c2"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#FBF1EA"/><path d="M15 8v8l5 3" fill="none" stroke="#C46A3A" stroke-width="2.6" stroke-linecap="round"/></svg><div><b>Emergency? Usually there in 90 min</b><small>Across West Berkshire</small></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <div data-r><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2"><circle cx="17" cy="17" r="14"/><path d="M17 9v8l5 4" stroke-linecap="round"/></svg><div><b>On time, or we call</b><span>Two-hour arrival windows</span></div></div>
+    <div data-r style="--d:1"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 26h18M10 26V12l7-5 7 5v14"/><path d="M14 26v-7h6v7"/></svg><div><b>Tidy, always</b><span>Dust sheets &amp; shoe covers</span></div></div>
+    <div data-r style="--d:2"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="7" y="6" width="20" height="24" rx="3"/><path d="M12 13h10M12 18h10M12 23h6" stroke-linecap="round"/></svg><div><b>Fixed quotes</b><span>The price we say is the price</span></div></div>
+    <div data-r style="--d:3"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M17 4l11 5v7c0 6-4.5 11-11 13-6.5-2-11-7-11-13V9l11-5z"/><path d="M12 17l4 4 7-8" stroke-linecap="round"/></svg><div><b>12-month guarantee</b><span>On all parts and labour</span></div></div>
+  </div>
+</div>
+
+<section class="sec" id="services">
+  <div class="wrap">
+    <div class="head"><div><span class="label">What we do</span><h2 data-r>Boilers, bathrooms, and everything that drips.</h2></div><p data-r style="--d:1">Most of our work comes from people who’ve used us before, or their neighbours. We’d like to keep it that way.</p></div>
+    <div class="svcs">
+      <article class="svc" data-r><div class="svc__ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="6" y="3" width="16" height="22" rx="3"/><path d="M10 8h8"/><path d="M14 20c-2 0-3-1.5-2.5-3 .5-1.2 1.5-1.5 1.5-3 1.3 1 2.5 2.2 2.5 3.8 0 1.2-.7 2.2-1.5 2.2z"/></svg></div><h3>Boilers</h3><p>New combi installs, repairs and annual services. Most boiler swaps done in a single day.</p><span class="from">Service from <b>£85</b></span></article>
+      <article class="svc" data-r style="--d:1"><div class="svc__ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="20" height="14" rx="3"/><path d="M8 8v14M12 8v14M16 8v14M20 8v14"/></svg></div><h3>Heating &amp; radiators</h3><p>Cold spots, noisy pipes, new radiators, power flushes and smart thermostats.</p><span class="from">Radiators from <b>£180</b></span></article>
+      <article class="svc" data-r style="--d:2"><div class="svc__ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 14h20v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-4z"/><path d="M7 14V7a3 3 0 0 1 6 0"/></svg></div><h3>Bathrooms</h3><p>Full refits from design to the last bead of silicone, managed by one team start to finish.</p><span class="from">Refits from <b>£4,500</b></span></article>
+      <article class="svc" data-r><div class="svc__ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M14 4c4 5 7 8.5 7 12a7 7 0 0 1-14 0c0-3.5 3-7 7-12z"/></svg></div><h3>Leaks &amp; repairs</h3><p>Dripping taps, leaking pipes, running toilets and the mystery damp patch on the ceiling.</p><span class="from">Repairs from <b>£90</b></span></article>
+      <article class="svc" data-r style="--d:1"><div class="svc__ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="4" width="18" height="21" rx="3"/><path d="M9 10h10M9 14h10M9 18h6"/></svg></div><h3>Landlord certificates</h3><p>Gas safety certificates (CP12) with reminders every year, so you never miss one.</p><span class="from">Certificates from <b>£70</b></span></article>
+      <article class="svc svc--sos" data-r style="--d:2"><div class="svc__ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="14" cy="14" r="10"/><path d="M14 8v7l4 2"/></svg></div><h3>Emergency callouts</h3><p>Burst pipes, no heating in January, water where water shouldn’t be. 24/7, 365 days a year.</p><span class="from">Callout <b>£95</b> + parts</span></article>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--white" id="prices">
+  <div class="wrap">
+    <div class="head"><div><span class="label">Price guide</span><h2 data-r>What will it cost? Here’s the honest answer.</h2></div><p data-r style="--d:1">Typical prices for jobs we do every week. You always get a fixed written quote before we start. No surprises on the bill.</p></div>
+    <div class="guide" data-r>
+      <div class="guide__l"><h3>Pick a job</h3><p>Prices include VAT, parts and labour unless stated.</p><div class="jobs" id="jobs"></div></div>
+      <div class="guide__r" aria-live="polite"><small id="gJob">Boiler service</small><div class="guide__price" id="gPrice">£85</div><ul id="gIncl"></ul><a href="#book" class="btn btn--copper">Book this job</a><p class="guide__note">Guide prices for West Berkshire, 2026. Your quote is fixed after a free visit.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap family">
+    <div><span class="label">Three generations</span><h2 data-r>Three generations. One phone number.</h2><p data-r style="--d:1">John Smith started the business from his garage in Hungerford in 1987. His son Dave joined in 1998, and grandson Sam finished his apprenticeship in 2021. We’re still small enough that you’ll talk to one of us, and big enough that someone’s always on call.</p></div>
+    <div class="gens">
+      <div class="gen" data-r><b>1987</b><div><h3>John</h3><p>Founder. Still does the odd boiler service “to keep his hand in”.</p></div></div>
+      <div class="gen" data-r style="--d:1"><b>1998</b><div><h3>Dave</h3><p>Runs the business. Heating specialist and chief quote-writer.</p></div></div>
+      <div class="gen" data-r style="--d:2"><b>2021</b><div><h3>Sam</h3><p>Gas Safe engineer. Bathrooms, smart heating and all things new.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--white" id="area">
+  <div class="wrap area">
+    <div class="map" data-r>
+      <svg viewBox="0 0 500 380" aria-label="Map of the West Berkshire area we cover">
+        <rect width="500" height="380" fill="#0F2A3D"/>
+        <g stroke="#1D4764" stroke-width="10" fill="none" stroke-linecap="round"><path d="M-10 250 C120 230 200 210 250 190 S420 150 520 150"/><path d="M250 -10 C240 80 260 140 250 190 S230 300 240 390"/></g>
+        <path d="M-10 280 C100 270 180 260 260 250 S420 220 520 230" stroke="#2F8FCE" stroke-width="4" fill="none" opacity=".6"/>
+        <text x="330" y="244" fill="#2F8FCE" font-size="11" font-family="Rubik" opacity=".8">River Kennet</text>
+        <circle class="ring" cx="250" cy="190" r="150"/>
+        <g class="town"><circle cx="70" cy="250" r="6"/><text x="84" y="255">Hungerford</text></g>
+        <g class="town"><circle cx="150" cy="232" r="5"/><text x="116" y="220">Kintbury</text></g>
+        <g class="town"><circle cx="250" cy="190" r="8" style="fill:#C46A3A"/><text x="262" y="182" style="font-weight:700">Newbury</text></g>
+        <g class="town"><circle cx="330" cy="176" r="5"/><text x="342" y="170">Thatcham</text></g>
+        <g class="town"><circle cx="230" cy="70" r="5"/><text x="244" y="74">Chieveley</text></g>
+        <g class="town"><circle cx="300" cy="310" r="5"/><text x="312" y="314">Kingsclere</text></g>
+        <g class="town"><circle cx="160" cy="120" r="5"/><text x="120" y="108">Lambourn</text></g>
+        <g class="van"><rect x="-14" y="-9" width="28" height="18" rx="4" fill="#C46A3A"/><rect x="6" y="-6" width="6" height="7" rx="1.5" fill="#FBE3D3"/></g>
+      </svg>
+    </div>
+    <div>
+      <span class="label">Where we work</span>
+      <h2 data-r>Newbury, Hungerford &amp; the villages.</h2>
+      <p data-r style="--d:1;color:var(--muted);margin-top:16px">We cover most of West Berkshire and the edge of Wiltshire. If you’re within about 20 minutes of Newbury, we’re local.</p>
+      <div class="check" data-r style="--d:2"><b>Do you cover my postcode?</b><form id="pcForm"><input id="pc" placeholder="RG17 0AB" maxlength="8" autocomplete="postal-code" aria-label="Postcode"><button class="btn btn--navy" style="height:52px">Check</button></form><p class="res" id="pcRes" aria-live="polite"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="head"><div><span class="label">How it works</span><h2 data-r>No call centre. No mystery. No mess.</h2></div></div>
+    <div class="steps">
+      <div class="step" data-r><b>1</b><h3>You call, we answer</h3><p>You’ll speak to Dave, Sam or Karen in the office. Never a call centre.</p></div>
+      <div class="step" data-r style="--d:1"><b>2</b><h3>Free visit &amp; quote</h3><p>We take a look, explain the options in plain English and give you a fixed price.</p></div>
+      <div class="step" data-r style="--d:2"><b>3</b><h3>Tidy work</h3><p>Dust sheets down, shoe covers on, and we leave it cleaner than we found it.</p></div>
+      <div class="step" data-r style="--d:3"><b>4</b><h3>Guaranteed</h3><p>Every job comes with a 12-month guarantee on parts and labour.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--white" id="reviews">
+  <div class="wrap">
+    <div class="head"><div><span class="label">Reviews</span><h2 data-r>What the neighbours say.</h2></div><div class="score" data-r style="--d:1"><b>4.9</b><div><span class="stars">★★★★★</span><br><span>186 reviews on Google</span></div></div></div>
+    <div class="revs">
+      <figure class="rev" data-r><span class="stars">★★★★★</span><p>“Boiler died on a Sunday in November. Sam was here within the hour and had us warm by teatime. Fair price, lovely lad.”</p><footer><i>HP</i><div><b>Helen P.</b>Kintbury</div></footer></figure>
+      <figure class="rev" data-r style="--d:1"><span class="stars">★★★★★</span><p>“Third time we’ve used Smith &amp; Sons. The quote was exactly what we paid, and they hoovered up after themselves. Rare!”</p><footer><i>MR</i><div><b>Mark R.</b>Newbury</div></footer></figure>
+      <figure class="rev" data-r style="--d:2"><span class="stars">★★★★★</span><p>“New bathroom finished a day early. Dave talked us out of the expensive option we didn’t need. Honest people.”</p><footer><i>AK</i><div><b>Aisha K.</b>Thatcham</div></footer></figure>
+    </div>
+  </div>
+</section>
+
+<section class="sec book" id="book">
+  <div class="wrap">
+    <div>
+      <span class="label" style="color:var(--copper-l)">Book a visit</span>
+      <h2 data-r>Pick a day. <span>We’ll call to confirm.</span></h2>
+      <p class="lead" data-r style="--d:1">Tell us roughly what’s wrong and when suits. We’ll ring you back within two working hours to confirm a two-hour arrival window.</p>
+      <a class="call" href="tel:01635000000" data-r style="--d:2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><div><span>Emergency? Don’t fill in a form.</span><b>01635 000 000</b></div></a>
+    </div>
+    <form class="bform" id="bform" data-r style="--d:1" novalidate>
+      <label><span class="lbl">What do you need?</span><select id="bJob"></select></label>
+      <div><span class="lbl">Preferred day</span><div class="days" id="bDays"></div></div>
+      <div><span class="lbl">Morning or afternoon?</span><div class="ampm" id="bAmpm"><button type="button" aria-pressed="true">Morning · 8–12</button><button type="button" aria-pressed="false">Afternoon · 12–5</button></div></div>
+      <div class="row2"><label><span class="lbl">Your name</span><input id="bName" autocomplete="name" required></label><label><span class="lbl">Phone number</span><input id="bTel" type="tel" autocomplete="tel" required></label></div>
+      <button class="btn btn--copper" type="submit">Request my visit</button>
+      <div class="done" id="bDone" aria-live="polite"><svg viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#E6F6EE"/><path class="tk" d="M22 36l9 9 17-19" fill="none" stroke="#2FA36B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><h3 id="bDoneT">Thanks!</h3><p id="bDoneP"></p><button type="button" class="btn btn--navy" id="bAgain" style="margin-top:10px">Book another job</button></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div><div class="logo" style="color:#fff"><svg viewBox="0 0 44 44" aria-hidden="true" style="width:40px;height:40px"><rect width="44" height="44" rx="11" fill="#153850"/><path d="M13 33V21a8 8 0 0 1 8-8h11" fill="none" stroke="#C46A3A" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="13" r="3.6" fill="#E39A6B"/></svg><div><b>Smith &amp; Sons</b><span>Plumbing &amp; Heating · Est. 1987</span></div></div><p style="margin-top:16px;max-width:320px">Family-run plumbing and heating for Newbury, Hungerford and West Berkshire.</p></div>
+    <div><h4>Get in touch</h4><ul><li><a href="tel:01635000000">01635 000 000</a></li><li>office@smithandsons.co.uk</li><li>Kennet Workshops, Hungerford RG17</li></ul></div>
+    <div><h4>Hours</h4><ul><li>Office: Mon–Fri 8am–6pm</li><li>Saturday 9am–1pm</li><li>Emergencies: 24/7</li></ul></div>
+    <div class="legal"><span>© 2026 J. Smith &amp; Sons Plumbing Ltd · Gas Safe reg. no. 000000</span><span>Fully insured · Prices include VAT</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (/shot/.test(location.search)) document.documentElement.classList.add('shot');
+setTimeout(() => document.documentElement.classList.add('ready'), reduce ? 0 : 300);
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+$$('[data-r]').forEach(el => io.observe(el));
+const top = $('.top'); addEventListener('scroll', () => top.classList.toggle('shadow', scrollY > 50), { passive: true });
+
+/* live availability pill (UK time) */
+(() => {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', weekday: 'short', hour12: false }).formatToParts(new Date()).map(x => [x.type, x.value]));
+  const h = +p.hour % 24, wk = !['Sat', 'Sun'].includes(p.weekday);
+  $('#avail').lastChild.textContent = (wk && h >= 8 && h < 18) ? 'Office open now · engineers out today' : 'Office closed · emergency line open';
+})();
+
+/* price guide */
+const JOBS = [
+  ['Boiler service', '£85', 'Annual safety check & clean', ['Full service to manufacturer spec', 'Flue gas analysis', 'Service record for your warranty', 'Reminder next year']],
+  ['New combi boiler', '£2,150–£2,900', 'Supplied & fitted, usually in one day', ['A-rated combi from a major brand', 'Up to 10-year manufacturer warranty', 'System flush & magnetic filter', 'Old boiler removed & recycled']],
+  ['Radiator replacement', '£180–£260', 'Per radiator, like-for-like', ['New radiator & valves', 'Drain down & refill', 'Bleed & balance the system']],
+  ['Leak repair', 'from £90', 'First hour, most leaks fixed in one visit', ['Find the source, fix the leak', 'Common parts carried on the van', 'Advice on any damage']],
+  ['Gas safety certificate', '£70', 'Landlord CP12, up to 3 appliances', ['Certificate emailed same day', 'Reminder every year', '£15 per extra appliance']],
+  ['Power flush', '£350–£450', 'For sludgy, noisy or cold-spot systems', ['Full chemical flush', 'Inhibitor added', 'Before & after readings']],
+  ['Bathroom refit', '£4,500–£8,000', 'Typical family bathroom, fully managed', ['Design visit & 3D plan', 'Plumbing, tiling & electrics', 'One team, start to finish']],
+  ['Emergency callout', '£95 + parts', 'First hour, 24/7, 365 days', ['Usually with you within 90 minutes', 'Make it safe, then fix it', 'No extra charge for evenings']]
+];
+const tick = '<svg viewBox="0 0 18 18" fill="none"><path d="M4 9.5l3 3 7-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+$('#jobs').innerHTML = JOBS.map((j, i) => `<button type="button" aria-pressed="${i === 0}" data-i="${i}">${j[0]}<span>${j[1]}</span></button>`).join('');
+const showJob = i => {
+  const j = JOBS[i];
+  $('#gJob').textContent = `${j[0]} · ${j[2]}`; $('#gPrice').textContent = j[1];
+  $('#gIncl').innerHTML = j[3].map(x => `<li>${tick}${x}</li>`).join('');
+  if (!reduce) $('#gPrice').animate([{ transform: 'translateY(12px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 400, easing: 'cubic-bezier(.22,1,.36,1)' });
+  $('#bJob').value = j[0];
+};
+$('#jobs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $$('#jobs button').forEach(x => x.setAttribute('aria-pressed', x === b)); showJob(+b.dataset.i); });
+
+/* booking */
+$('#bJob').innerHTML = JOBS.map(j => `<option>${j[0]}</option>`).join('') + '<option>Something else</option>';
+const today = new Date();
+const days = []; for (let i = 1; days.length < 7; i++) { const d = new Date(today); d.setDate(d.getDate() + i); if (d.getDay() !== 0) days.push(d); }
+$('#bDays').innerHTML = days.map((d, i) => `<button type="button" aria-pressed="${i === 0}" data-i="${i}">${d.toLocaleDateString('en-GB', { weekday: 'short' })}<b>${d.getDate()}</b></button>`).join('');
+const pick = wrap => wrap.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $$('button', wrap).forEach(x => x.setAttribute('aria-pressed', x === b)); });
+pick($('#bDays')); pick($('#bAmpm'));
+showJob(0);
+$('#bform').addEventListener('submit', e => {
+  e.preventDefault();
+  const n = $('#bName'), t = $('#bTel');
+  if (!n.value.trim()) return n.focus(); if (t.value.replace(/\D/g, '').length < 10) return t.focus();
+  const d = days[+$('#bDays [aria-pressed="true"]').dataset.i];
+  $('#bDoneT').textContent = `Thanks, ${n.value.trim().split(' ')[0]}!`;
+  $('#bDoneP').textContent = `${$('#bJob').value} on ${d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}, ${$('#bAmpm [aria-pressed="true"]').textContent.split(' ·')[0].toLowerCase()}. We’ll call ${t.value} within two working hours to confirm. (This is a demo, so nothing has been booked.)`;
+  $('#bDone').classList.add('on');
+});
+$('#bAgain').addEventListener('click', () => { $('#bDone').classList.remove('on'); $('#bform').reset(); });
+
+/* postcode check */
+$('#pcForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#pc').value.toUpperCase().replace(/\s+/g, ''), r = $('#pcRes');
+  const out = v.length >= 5 ? v.slice(0, -3) : v;
+  if (!/^[A-Z]{1,2}\d/.test(out)) { r.className = 'res no'; r.textContent = 'That doesn’t look like a postcode. Try something like RG14 5AB.'; return; }
+  const local = /^(RG1[4-9]|RG20|RG7|SN8)$/.test(out);
+  r.className = 'res ' + (local ? 'ok' : 'no');
+  r.textContent = local ? `Yes, ${out} is on our patch. Emergencies usually within 90 minutes.` : `${out} is a bit outside our usual area, but give us a ring and we’ll see what we can do.`;
+});
+})();
+</script>
+</body>
+</html>

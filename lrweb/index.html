@@ -2,1481 +2,333 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRWeb — Hand-built websites for UK businesses</title>
-<meta name="description" content="LRWeb is an independent UK web studio designing and hand-coding fast, original websites for small businesses. No templates, no page builders, no fluff.">
-<meta name="theme-color" content="#0C0C0B">
-<meta property="og:title" content="LRWeb — Hand-built websites for UK businesses">
-<meta property="og:description" content="Fast, original, hand-coded websites for small businesses that refuse to blend in.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://lrweb.uk/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Managed Websites &amp; Hosting for Small UK Businesses | LRWeb</title>
+<meta name="description" content="LRWeb builds websites for small UK businesses, then hosts, updates, backs up and looks after them. Care plans from £29 a month. Two named humans, no jargon.">
 <link rel="canonical" href="https://lrweb.uk/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230C0C0B'/%3E%3Ctext x='8' y='44' font-family='Arial Black,Arial' font-weight='900' font-size='30' fill='%23EFEBE3'%3ELR%3C/text%3E%3Ccircle cx='52' cy='40' r='5' fill='%23FF4F1A'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LRWeb">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Managed Websites &amp; Hosting for Small UK Businesses | LRWeb">
+<meta property="og:description" content="LRWeb builds websites for small UK businesses, then hosts, updates, backs up and looks after them. Care plans from £29 a month. Two named humans, no jargon.">
+<meta property="og:image" content="https://lrweb.uk/assets/img/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070824">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/font-03.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/font-15.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/site.css">
 <script>document.documentElement.classList.add('js')</script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"ProfessionalService","name":"LRWeb","url":"https://lrweb.uk/","description":"Independent UK web studio designing and hand-coding fast, original websites for small businesses.","areaServed":"GB","email":"hello@lrweb.uk","priceRange":"££"}
-</script>
-<style>
-/* =========================================================
-   LRWeb — design tokens
-   ========================================================= */
-:root{
-  --ink:#0C0C0B; --ink-2:#151513; --ink-3:#1F1E1B;
-  --paper:#EFEBE3; --paper-2:#E4DED2; --paper-3:#D6CFC1;
-  --mute:#8C877D; --mute-d:#6C675E;
-  --accent:#FF4F1A; --accent-deep:#D93A0B;
-  --line-d:rgba(239,235,227,.14); --line-l:rgba(12,12,11,.14);
-  --f-sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-serif:"Instrument Serif",Georgia,"Times New Roman",serif;
-  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --pad:clamp(16px,4.2vw,64px);
-  --max:1480px;
-  --ease:cubic-bezier(.22,1,.36,1);
-  --ease-io:cubic-bezier(.65,0,.35,1);
-  --r:28px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
-body{background:var(--ink);color:var(--paper);font-family:var(--f-sans);font-size:17px;line-height:1.55;
-  font-variation-settings:"wdth" 100;-webkit-font-smoothing:antialiased;overflow-x:hidden;text-rendering:optimizeLegibility}
-img,svg,canvas{display:block;max-width:100%}
-a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-em{font-family:var(--f-serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
-::selection{background:var(--accent);color:var(--ink)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
-.wrap{width:100%;max-width:var(--max);margin-inline:auto;padding-inline:var(--pad)}
-.label{display:inline-flex;align-items:center;gap:.6em;color:var(--mute)}
-.label::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
-.skip{position:fixed;left:12px;top:-60px;z-index:200;background:var(--accent);color:var(--ink);padding:10px 16px;border-radius:99px;font-weight:600}
-.skip:focus{top:12px}
-
-/* grain overlay — keeps flat colour from feeling digital */
-.grain{position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.07;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grain 1.2s steps(6) infinite}
-@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-4%)}60%{transform:translate(-4%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
-
-/* =========================================================
-   Preloader
-   ========================================================= */
-.loader{display:none}
-.js .loader{display:flex;position:fixed;inset:0;z-index:150;background:var(--ink);color:var(--paper);
-  flex-direction:column;justify-content:space-between;padding:var(--pad);
-  clip-path:inset(0 0 0 0);transition:clip-path 1.1s var(--ease-io)}
-.loader.is-done{clip-path:inset(0 0 100% 0)}
-.loader__top{display:flex;justify-content:space-between;color:var(--mute)}
-.loader__mid{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
-.loader__word{font-size:clamp(44px,8vw,120px);font-weight:800;letter-spacing:-.04em;line-height:.9;overflow:hidden}
-.loader__word span{display:inline-block;transform:translateY(105%);animation:rise .9s var(--ease) forwards}
-.loader__word em{color:var(--accent)}
-.loader__count{font-size:clamp(80px,20vw,300px);font-weight:300;line-height:.8;letter-spacing:-.05em;
-  font-variation-settings:"wdth" 62;font-variant-numeric:tabular-nums}
-.loader__bar{height:2px;background:var(--line-d);position:relative;overflow:hidden}
-.loader__bar i{position:absolute;inset:0;background:var(--accent);transform-origin:left;transform:scaleX(0)}
-@keyframes rise{to{transform:none}}
-
-/* page wipe for internal navigation */
-.wipe{position:fixed;inset:0;z-index:160;background:var(--accent);pointer-events:none;transform:translateY(101%);
-  transition:transform .75s var(--ease-io);display:grid;place-items:center}
-.wipe span{font-size:clamp(28px,5vw,64px);font-weight:800;color:var(--ink);letter-spacing:-.03em;opacity:0;transition:opacity .3s .35s}
-.wipe.is-on{transform:none;pointer-events:auto}
-.wipe.is-on span{opacity:1}
-
-/* =========================================================
-   Cursor
-   ========================================================= */
-.cursor,.cursor-dot{position:fixed;left:0;top:0;z-index:140;pointer-events:none;border-radius:50%;display:none}
-.has-cursor .cursor,.has-cursor .cursor-dot{display:block;opacity:0;transition:opacity .3s}
-.has-cursor.cursor-on .cursor,.has-cursor.cursor-on .cursor-dot{opacity:1}
-.cursor-dot{width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--accent)}
-.cursor{width:38px;height:38px;margin:-19px 0 0 -19px;border:1px solid rgba(239,235,227,.5);
-  display:grid;place-items:center;transition:width .45s var(--ease),height .45s var(--ease),margin .45s var(--ease),background .3s,border-color .3s}
-.cursor span{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink);opacity:0;transition:opacity .2s;white-space:nowrap}
-.cursor.is-link{width:64px;height:64px;margin:-32px 0 0 -32px;border-color:var(--accent);background:rgba(255,79,26,.08)}
-.cursor.is-label{width:96px;height:96px;margin:-48px 0 0 -48px;background:var(--accent);border-color:var(--accent)}
-.cursor.is-label span{opacity:1}
-.has-cursor.cursor-light .cursor{border-color:rgba(12,12,11,.45)}
-
-/* =========================================================
-   Nav
-   ========================================================= */
-.nav{position:fixed;inset:0 0 auto;z-index:100;padding:18px var(--pad);display:flex;align-items:center;justify-content:space-between;gap:20px;
-  transition:transform .6s var(--ease),color .4s}
-.nav.is-hidden{transform:translateY(-110%)}
-.nav[data-theme="light"]{color:var(--ink)}
-.nav[data-theme="accent"]{color:var(--ink)}
-.logo{font-weight:800;font-size:22px;letter-spacing:-.04em;display:inline-flex;align-items:baseline;gap:1px;position:relative;z-index:2}
-.logo em{font-weight:400;font-size:1.12em;letter-spacing:0}
-.logo b{width:.32em;height:.32em;border-radius:50%;background:var(--accent);display:inline-block;margin-left:2px;transition:transform .5s var(--ease)}
-.logo:hover b{transform:translateY(-.5em) scale(1.2)}
-.nav[data-theme="accent"] .logo b{background:var(--ink)}
-.nav__links{display:flex;gap:4px;padding:5px;border-radius:99px;background:rgba(21,21,19,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line-d)}
-.nav[data-theme="light"] .nav__links,.nav[data-theme="accent"] .nav__links{background:rgba(239,235,227,.6);border-color:var(--line-l)}
-.nav__links a{padding:8px 16px;border-radius:99px;font-size:14px;font-weight:500;position:relative;overflow:hidden;display:block}
-.nav__links a span{display:block;transition:transform .45s var(--ease)}
-.nav__links a span::after{content:attr(data-t);position:absolute;left:0;right:0;top:100%;text-align:center}
-.nav__links a:hover span{transform:translateY(-100%)}
-.nav__links a.is-active{background:var(--paper);color:var(--ink)}
-.nav[data-theme="light"] .nav__links a.is-active,.nav[data-theme="accent"] .nav__links a.is-active{background:var(--ink);color:var(--paper)}
-.nav__right{display:flex;align-items:center;gap:10px;position:relative;z-index:2}
-.nav__menu{display:none;width:46px;height:46px;border-radius:50%;background:var(--paper);color:var(--ink);position:relative}
-.nav__menu i{position:absolute;left:14px;right:14px;height:1.5px;background:currentColor;transition:transform .5s var(--ease)}
-.nav__menu i:first-child{top:19px}.nav__menu i:last-child{top:26px}
-.menu-open .nav__menu i:first-child{transform:translateY(3.5px) rotate(45deg)}
-.menu-open .nav__menu i:last-child{transform:translateY(-3.5px) rotate(-45deg)}
-.progress{position:fixed;left:0;top:0;height:2px;width:100%;z-index:101;background:var(--accent);transform-origin:left;transform:scaleX(0)}
-
-/* full-screen mobile menu */
-.menu{position:fixed;inset:0;z-index:99;background:var(--accent);color:var(--ink);padding:110px var(--pad) 32px;display:flex;flex-direction:column;justify-content:space-between;
-  clip-path:circle(0% at calc(100% - var(--pad) - 23px) 41px);transition:clip-path .9s var(--ease-io);visibility:hidden}
-.menu-open .menu{clip-path:circle(150% at calc(100% - var(--pad) - 23px) 41px);visibility:visible}
-.menu ol{list-style:none}
-.menu li{overflow:hidden;border-bottom:1px solid rgba(12,12,11,.18)}
-.menu a{display:flex;align-items:baseline;justify-content:space-between;font-size:clamp(40px,11vw,84px);font-weight:700;letter-spacing:-.04em;line-height:1.1;padding:6px 0;
-  transform:translateY(100%);transition:transform .8s var(--ease)}
-.menu a small{font-family:var(--f-mono);font-size:12px;font-weight:400;letter-spacing:.04em}
-.menu-open .menu a{transform:none}
-.menu-open .menu li:nth-child(2) a{transition-delay:.05s}.menu-open .menu li:nth-child(3) a{transition-delay:.1s}
-.menu-open .menu li:nth-child(4) a{transition-delay:.15s}.menu-open .menu li:nth-child(5) a{transition-delay:.2s}.menu-open .menu li:nth-child(6) a{transition-delay:.25s}
-.menu__foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-
-/* =========================================================
-   Buttons
-   ========================================================= */
-.btn{--bg:var(--paper);--fg:var(--ink);position:relative;display:inline-flex;align-items:center;gap:12px;height:56px;padding:0 10px 0 26px;border-radius:99px;
-  background:var(--bg);color:var(--fg);font-weight:600;font-size:15px;overflow:hidden;isolation:isolate;white-space:nowrap}
-.btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ink);border-radius:inherit;transform:translateY(101%);transition:transform .6s var(--ease)}
-.btn:hover::before{transform:none}
-.btn:hover{color:var(--paper)}
-.btn__ic{width:38px;height:38px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;transition:transform .6s var(--ease),background .3s,color .3s;overflow:hidden}
-.btn__ic svg{width:16px;height:16px}
-.btn:hover .btn__ic{transform:rotate(-45deg);background:var(--accent);color:var(--ink)}
-.btn--accent{--bg:var(--accent);--fg:var(--ink)}
-.btn--accent::before{background:var(--paper)}
-.btn--accent:hover{color:var(--ink)}
-.btn--ghost{--bg:transparent;--fg:var(--paper);border:1px solid var(--line-d);padding:0 26px}
-.btn--ghost::before{background:var(--paper)}
-.btn--ghost:hover{color:var(--ink)}
-.btn--ink{--bg:var(--ink);--fg:var(--paper)}
-.btn--ink::before{background:var(--accent)}
-.btn--ink:hover{color:var(--ink)}
-.btn--sm{height:46px;font-size:14px;padding:0 8px 0 20px}
-.btn--sm .btn__ic{width:32px;height:32px}
-.magnetic{will-change:transform}
-
-/* =========================================================
-   Hero
-   ========================================================= */
-.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;overflow:hidden;background:var(--ink)}
-.hero__gl{position:absolute;inset:0;width:100%;height:100%}
-.hero__gl.is-fallback{background:radial-gradient(60% 50% at 70% 40%,rgba(255,79,26,.28),transparent 70%),radial-gradient(50% 60% at 20% 80%,rgba(120,60,30,.35),transparent 70%),var(--ink)}
-.hero__shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,12,11,.78) 0%,rgba(12,12,11,.35) 55%,rgba(12,12,11,.1) 100%),linear-gradient(0deg,rgba(12,12,11,.9) 0%,transparent 40%);pointer-events:none}
-.hero__inner{position:relative;flex:1;display:flex;flex-direction:column;justify-content:space-between;padding-top:120px;padding-bottom:36px;gap:40px}
-.hero__meta{display:flex;flex-wrap:wrap;gap:10px 28px;color:var(--mute)}
-.hero__meta time{color:var(--paper)}
-.status{display:inline-flex;align-items:center;gap:8px;color:var(--paper)}
-.status i{width:8px;height:8px;border-radius:50%;background:#5BE38B;box-shadow:0 0 0 0 rgba(91,227,139,.6);animation:ping 2s infinite}
-@keyframes ping{70%{box-shadow:0 0 0 10px rgba(91,227,139,0)}100%{box-shadow:0 0 0 0 rgba(91,227,139,0)}}
-.hero__title{font-size:clamp(46px,9.4vw,168px);line-height:.9;font-weight:600;letter-spacing:-.045em;font-variation-settings:"wdth" 88,"wght" 600}
-.hero__title .line{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em;white-space:nowrap}
-.hero__title .line__in{display:inline-block;transform:translateY(110%) rotate(4deg);transform-origin:left bottom;transition:transform 1.3s var(--ease)}
-.hero__title .line:nth-child(2) .line__in{transition-delay:.08s}
-.hero__title .line:nth-child(3) .line__in{transition-delay:.16s}
-.is-loaded .hero__title .line__in{transform:none}
-.hero__title em{color:var(--accent);font-size:1.08em;letter-spacing:-.03em;padding-right:.05em}
-.ch{display:inline-block;font-variation-settings:"wdth" 88,"wght" 600}
-.hero__foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:32px}
-.hero__lede{max-width:520px;font-size:clamp(17px,1.35vw,20px);line-height:1.5;color:rgba(239,235,227,.82)}
-.hero__lede strong{color:var(--paper);font-weight:600}
-.hero__ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
-.fade-up{opacity:0;transform:translateY(24px);transition:opacity 1s var(--ease),transform 1.2s var(--ease)}
-.is-loaded .fade-up{opacity:1;transform:none}
-.is-loaded .fade-up.d1{transition-delay:.45s}.is-loaded .fade-up.d2{transition-delay:.6s}.is-loaded .fade-up.d3{transition-delay:.75s}
-.badge{position:relative;width:136px;height:136px;display:grid;place-items:center;flex:none}
-.badge svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 18s linear infinite}
-.badge text{font-family:var(--f-mono);font-size:10.4px;letter-spacing:.2em;fill:var(--paper);text-transform:uppercase}
-.badge__arrow{width:48px;height:48px;border-radius:50%;background:var(--paper);color:var(--ink);display:grid;place-items:center;transition:transform .5s var(--ease),background .3s}
-.badge:hover .badge__arrow{transform:scale(1.15);background:var(--accent)}
-.badge__arrow svg{position:static;width:18px;height:18px;animation:bob 2.2s var(--ease-io) infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes bob{50%{transform:translateY(4px)}}
-
-/* =========================================================
-   Marquee
-   ========================================================= */
-.marquee{background:var(--accent);color:var(--ink);padding:18px 0;overflow:hidden;position:relative;z-index:2}
-.marquee--tilt{transform:rotate(-2deg) scale(1.04);margin:-24px 0 -8px}
-.marquee__row{display:flex;white-space:nowrap;will-change:transform}
-.marquee__row + .marquee__row{margin-top:4px}
-.marquee__item{display:inline-flex;align-items:center;gap:.5em;padding-right:.5em;font-size:clamp(34px,5.2vw,78px);font-weight:700;letter-spacing:-.035em;line-height:1.05;font-variation-settings:"wdth" 80}
-.marquee__item em{font-weight:400;letter-spacing:-.01em}
-.marquee__item svg{width:.55em;height:.55em;flex:none;animation:spin 8s linear infinite}
-.marquee__row--2 .marquee__item{-webkit-text-stroke:1.5px var(--ink);color:transparent}
-.marquee__row--2 .marquee__item em{-webkit-text-stroke:0;color:var(--ink)}
-
-/* =========================================================
-   Sections — common
-   ========================================================= */
-.section{position:relative;padding:clamp(96px,14vw,200px) 0}
-.light{background:var(--paper);color:var(--ink)}
-.light .label{color:var(--mute-d)}
-.h2{font-size:clamp(40px,6.4vw,112px);line-height:.95;font-weight:600;letter-spacing:-.045em;font-variation-settings:"wdth" 84}
-.h2 em{letter-spacing:-.02em}
-.sec-head{display:grid;grid-template-columns:1fr 2fr;gap:24px 40px;align-items:start;margin-bottom:clamp(48px,7vw,110px)}
-.sec-head .h2{grid-column:2}
-.sec-head p.note{grid-column:2;max-width:560px;color:var(--mute);font-size:18px}
-.light .sec-head p.note{color:var(--mute-d)}
-
-/* reveal system */
-.js [data-reveal]{opacity:0;transform:translateY(48px);transition:opacity 1s var(--ease),transform 1.2s var(--ease);transition-delay:calc(var(--d,0) * 90ms)}
-.js [data-reveal].is-in{opacity:1;transform:none}
-.js [data-reveal="clip"]{opacity:1;transform:none;clip-path:inset(0 0 100% 0);transition:clip-path 1.2s var(--ease)}
-.js [data-reveal="clip"].is-in{clip-path:inset(0 0 0 0)}
-.split-line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
-.split-line > span{display:inline-block;transform:translateY(105%);transition:transform 1.1s var(--ease);transition-delay:calc(var(--i,0) * 80ms)}
-.is-in .split-line > span,.no-split .split-line > span{transform:none}
-
-/* =========================================================
-   Intro statement
-   ========================================================= */
-.intro .sec-head{margin-bottom:0}
-.statement{grid-column:2;font-size:clamp(28px,3.6vw,58px);line-height:1.12;font-weight:500;letter-spacing:-.03em;font-variation-settings:"wdth" 90}
-.statement .w{opacity:.14;transition:opacity .25s linear}
-.statement .w.hot{color:var(--accent-deep)}
-.strike{position:relative;display:inline-block}
-.strike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:.09em;background:var(--accent);transform:scaleX(var(--s,0));transform-origin:left;border-radius:2px}
-.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:clamp(64px,8vw,120px);border-top:1px solid var(--line-l)}
-.pillar{padding:32px 32px 8px 0;display:grid;gap:14px;align-content:start}
-.pillar + .pillar{padding-left:32px;border-left:1px solid var(--line-l)}
-.pillar h3{font-size:24px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:12px}
-.pillar p{color:var(--mute-d);max-width:360px}
-.pillar__ic{width:44px;height:44px;border-radius:12px;background:var(--ink);color:var(--accent);display:grid;place-items:center;flex:none}
-.pillar__ic svg{width:22px;height:22px}
-
-/* =========================================================
-   Work — stacked cards
-   ========================================================= */
-.work{background:var(--ink)}
-.work .sec-head p.note{margin-top:8px}
-.stack{padding:0 var(--pad);max-width:calc(var(--max) + 40px);margin:0 auto;display:grid;gap:40px;padding-bottom:10vh}
-.card{position:sticky;top:calc(96px + var(--i) * 14px);height:min(78vh,760px);min-height:520px;border-radius:var(--r);overflow:hidden;
-  background:var(--c-bg);color:var(--c-ink);transform-origin:50% 0;will-change:transform}
-.card__link{display:grid;grid-template-columns:minmax(300px,.8fr) 1.4fr;height:100%;position:relative}
-.card__info{padding:clamp(28px,3.4vw,52px);display:flex;flex-direction:column;justify-content:space-between;gap:24px;position:relative;z-index:1}
-.card__top{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
-.card__title{font-size:clamp(40px,4.6vw,78px);line-height:.92;letter-spacing:-.04em;font-weight:700;font-variation-settings:"wdth" 82;transition:font-variation-settings .8s var(--ease)}
-.card:hover .card__title{font-variation-settings:"wdth" 110}
-.card__title em{font-weight:400}
-.card__desc{max-width:380px;opacity:.78;font-size:16px;margin-top:14px}
-.card__tags{display:flex;flex-wrap:wrap;gap:8px;list-style:none}
-.card__tags li{font-size:13px;padding:6px 12px;border-radius:99px;border:1px solid currentColor;opacity:.75}
-.card__cta{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
-.card__cta i{width:40px;height:40px;border-radius:50%;background:var(--c-acc);color:var(--c-bg);display:grid;place-items:center;transition:transform .6s var(--ease)}
-.card__cta i svg{width:16px;height:16px}
-.card:hover .card__cta i{transform:rotate(-45deg) scale(1.1)}
-.card__shot{position:relative;padding:clamp(20px,3vw,44px) clamp(20px,3vw,44px) 0 0;display:flex;align-items:flex-end}
-.browser{width:100%;height:92%;border-radius:14px 14px 0 0;overflow:hidden;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.08);display:flex;flex-direction:column;
-  transform:translateY(24px) rotate(1.2deg);transform-origin:100% 100%;transition:transform 1s var(--ease)}
-.card:hover .browser{transform:translateY(0) rotate(0)}
-.browser__bar{height:34px;flex:none;background:#EDEAE4;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid rgba(0,0,0,.06)}
-.browser__bar i{width:10px;height:10px;border-radius:50%;background:#D7D2C8}
-.browser__bar i:first-child{background:#FF5F57}.browser__bar i:nth-child(2){background:#FEBC2E}.browser__bar i:nth-child(3){background:#28C840}
-.browser__bar span{margin-left:12px;flex:1;max-width:280px;height:22px;border-radius:6px;background:#fff;font-family:var(--f-mono);font-size:11px;color:#6b675f;display:flex;align-items:center;padding:0 10px}
-.browser__view{flex:1;overflow:hidden;position:relative;background:var(--c-bg)}
-.browser__view img{width:100%;height:auto;position:absolute;top:0;left:0;transform:translateY(0);transition:transform 7s cubic-bezier(.45,0,.2,1)}
-.card:hover .browser__view img{transform:translateY(calc(-100% + var(--vh-img,420px)))}
-.card__num{position:absolute;right:clamp(20px,3vw,44px);top:18px;font-size:clamp(90px,11vw,180px);font-weight:800;line-height:.8;letter-spacing:-.06em;opacity:.08;pointer-events:none}
-
-/* =========================================================
-   Services accordion
-   ========================================================= */
-.svc{list-style:none;border-top:1px solid var(--line-l)}
-.svc__item{border-bottom:1px solid var(--line-l);position:relative}
-.svc__head{width:100%;display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:20px;padding:clamp(22px,2.6vw,36px) 0;text-align:left;position:relative;isolation:isolate}
-.svc__head::before{content:"";position:absolute;inset:0 calc(var(--pad) * -1);background:var(--ink);z-index:-1;transform:scaleY(0);transform-origin:bottom;transition:transform .6s var(--ease)}
-.svc__item:hover .svc__head::before,.svc__item.is-open .svc__head::before{transform:scaleY(1)}
-.svc__item:hover .svc__head,.svc__item.is-open .svc__head{color:var(--paper)}
-.svc__num{font-family:var(--f-mono);font-size:13px;color:var(--mute-d);transition:color .3s}
-.svc__item:hover .svc__num,.svc__item.is-open .svc__num{color:var(--accent)}
-.svc__name{font-size:clamp(32px,4.8vw,80px);font-weight:600;letter-spacing:-.04em;line-height:1;font-variation-settings:"wdth" 80;transition:font-variation-settings .7s var(--ease),transform .7s var(--ease)}
-.svc__item:hover .svc__name{font-variation-settings:"wdth" 112;transform:translateX(12px)}
-.svc__name em{font-size:1.04em}
-.svc__plus{width:56px;height:56px;border-radius:50%;border:1px solid currentColor;position:relative;transition:transform .6s var(--ease),background .3s,border-color .3s;flex:none}
-.svc__plus::before,.svc__plus::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:1.5px;background:currentColor;transform:translate(-50%,-50%)}
-.svc__plus::after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .6s var(--ease)}
-.svc__item.is-open .svc__plus{transform:rotate(180deg);background:var(--accent);border-color:var(--accent);color:var(--ink)}
-.svc__item.is-open .svc__plus::after{transform:translate(-50%,-50%) rotate(0)}
-.svc__body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .7s var(--ease);background:var(--ink);color:var(--paper);margin:0 calc(var(--pad) * -1);padding:0 var(--pad)}
-.svc__item.is-open .svc__body{grid-template-rows:1fr}
-.svc__body > div{overflow:hidden}
-.svc__inner{display:grid;grid-template-columns:90px 1.2fr 1fr 220px;gap:20px 40px;padding:0 0 44px;align-items:start}
-.svc__inner p{grid-column:2;font-size:19px;line-height:1.5;color:rgba(239,235,227,.85);max-width:560px}
-.chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px;align-content:start}
-.chips li{font-size:13px;padding:7px 13px;border-radius:99px;border:1px solid var(--line-d);color:rgba(239,235,227,.85)}
-.svc__art{width:200px;height:140px;color:var(--accent);justify-self:end}
-
-/* =========================================================
-   Process — horizontal pinned
-   ========================================================= */
-.process{height:420vh;background:var(--ink);position:relative}
-.process__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:clamp(28px,5vh,64px)}
-.process__head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
-.process__head .h2{max-width:900px}
-.process__count{font-family:var(--f-mono);font-size:13px;color:var(--mute);white-space:nowrap}
-.process__count b{color:var(--paper);font-weight:500}
-.process__track{display:flex;gap:24px;padding-left:var(--pad);will-change:transform}
-.step{flex:none;width:min(62vw,860px);min-height:min(52vh,460px);border:1px solid var(--line-d);border-radius:var(--r);padding:clamp(24px,3vw,44px);
-  display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;gap:18px 32px;position:relative;overflow:hidden;background:var(--ink-2);
-  transition:border-color .5s,background .5s}
-.step.is-active{border-color:rgba(255,79,26,.5);background:linear-gradient(160deg,#1b1714,var(--ink-2) 60%)}
-.step__num{font-size:clamp(80px,10vw,160px);font-weight:800;line-height:.8;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px rgba(239,235,227,.3);font-variation-settings:"wdth" 70;transition:color .6s,-webkit-text-stroke-color .6s}
-.step.is-active .step__num{color:var(--accent);-webkit-text-stroke-color:var(--accent)}
-.step__time{font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);align-self:start;justify-self:end;padding:8px 12px;border:1px solid var(--line-d);border-radius:99px}
-.step__body{grid-column:1/-1;align-self:end;display:grid;grid-template-columns:1fr 200px;gap:24px;align-items:end}
-.step h3{font-size:clamp(34px,3.6vw,56px);font-weight:600;letter-spacing:-.04em;line-height:1;margin-bottom:14px;font-variation-settings:"wdth" 90}
-.step p{color:rgba(239,235,227,.75);max-width:460px}
-.step ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.step li{font-size:13px;padding:6px 12px;border-radius:99px;background:rgba(239,235,227,.06);color:rgba(239,235,227,.8)}
-.step__art{width:200px;height:160px;color:var(--accent)}
-.process__bar{height:2px;background:var(--line-d);margin-top:8px;position:relative}
-.process__bar i{position:absolute;inset:0;background:var(--accent);transform-origin:left;transform:scaleX(0)}
-
-/* animated line art */
-.draw path,.draw circle,.draw rect,.draw line,.draw polyline{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.radar__sweep{transform-origin:100px 80px;animation:spin 3.2s linear infinite}
-.dash-loop{stroke-dasharray:260;stroke-dashoffset:260;animation:dash 4s var(--ease-io) infinite}
-.dash-loop.d2{animation-delay:.4s}.dash-loop.d3{animation-delay:.8s}.dash-loop.d4{animation-delay:1.2s}
-@keyframes dash{40%,70%{stroke-dashoffset:0}100%{stroke-dashoffset:-260}}
-.blink{animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.typeline{transform-origin:left;animation:typeline 3.6s var(--ease-io) infinite}
-.typeline.t2{animation-delay:.3s}.typeline.t3{animation-delay:.6s}
-@keyframes typeline{0%{transform:scaleX(0)}40%,80%{transform:scaleX(1)}100%{transform:scaleX(0)}}
-.pulse-dot{transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
-@keyframes pulse{0%{transform:scale(1);opacity:1}100%{transform:scale(3.4);opacity:0}}
-
-/* =========================================================
-   Numbers
-   ========================================================= */
-.numbers{background:var(--ink);padding:clamp(80px,10vw,140px) 0;border-top:1px solid var(--line-d)}
-.numbers__grid{display:grid;grid-template-columns:repeat(4,1fr);border-left:1px solid var(--line-d)}
-.num{padding:8px 28px 12px;border-right:1px solid var(--line-d);display:grid;gap:14px}
-.num__v{font-size:clamp(64px,7.4vw,128px);font-weight:300;line-height:.9;letter-spacing:-.05em;font-variation-settings:"wdth" 70;font-variant-numeric:tabular-nums;display:flex;align-items:baseline}
-.num__v small{font-size:.42em;font-weight:500;color:var(--accent);margin-left:4px;letter-spacing:-.02em}
-.num__k{font-weight:600;font-size:16px}
-.num p{color:var(--mute);font-size:15px}
-
-/* =========================================================
-   Pricing
-   ========================================================= */
-.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.plan{--mx:50%;--my:0%;position:relative;border-radius:var(--r);padding:36px 32px 32px;background:var(--paper-2);display:flex;flex-direction:column;gap:22px;overflow:hidden;isolation:isolate;
-  transition:transform .6s var(--ease)}
-.plan::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(420px circle at var(--mx) var(--my),rgba(255,79,26,.16),transparent 60%);opacity:0;transition:opacity .4s}
-.plan:hover::before{opacity:1}
-.plan:hover{transform:translateY(-6px)}
-.plan--hot{background:var(--ink);color:var(--paper)}
-.plan--hot::before{background:radial-gradient(420px circle at var(--mx) var(--my),rgba(255,79,26,.3),transparent 60%)}
-.plan__tag{position:absolute;top:22px;right:22px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;background:var(--accent);color:var(--ink);padding:6px 10px;border-radius:99px}
-.plan__name{font-size:28px;font-weight:600;letter-spacing:-.03em}
-.plan__for{color:var(--mute-d);font-size:15px;margin-top:-14px}
-.plan--hot .plan__for{color:var(--mute)}
-.plan__price{display:flex;align-items:baseline;gap:8px;padding:18px 0;border-block:1px solid var(--line-l)}
-.plan--hot .plan__price{border-color:var(--line-d)}
-.plan__price small{font-size:14px;color:var(--mute-d)}
-.plan--hot .plan__price small{color:var(--mute)}
-.plan__price b{font-size:clamp(52px,5vw,76px);font-weight:300;letter-spacing:-.05em;line-height:.9;font-variation-settings:"wdth" 72}
-.plan ul{list-style:none;display:grid;gap:10px;font-size:15px;flex:1}
-.plan li{display:flex;gap:10px;align-items:flex-start}
-.plan li svg{width:18px;height:18px;flex:none;margin-top:3px;color:var(--accent-deep)}
-.plan--hot li svg{color:var(--accent)}
-.plan .btn{align-self:flex-start}
-.care{margin-top:16px;border-radius:var(--r);border:1px dashed var(--paper-3);padding:26px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
-.care h3{font-size:22px;font-weight:600;letter-spacing:-.02em}
-.care p{color:var(--mute-d);max-width:640px}
-.care b{font-size:32px;font-weight:400;letter-spacing:-.04em}
-.fineprint{margin-top:18px;color:var(--mute-d);font-size:14px}
-
-/* =========================================================
-   FAQ
-   ========================================================= */
-.faq__grid{display:grid;grid-template-columns:1fr 2fr;gap:40px}
-.faq__side{position:sticky;top:120px;align-self:start;display:grid;gap:24px}
-.faq__side p{color:var(--mute-d);max-width:340px}
-.acc{list-style:none;border-top:1px solid var(--line-l)}
-.acc li{border-bottom:1px solid var(--line-l)}
-.acc button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:26px 0;text-align:left;font-size:clamp(20px,1.8vw,26px);font-weight:500;letter-spacing:-.02em}
-.acc button i{width:36px;height:36px;border-radius:50%;background:var(--paper-2);position:relative;flex:none;transition:background .3s,transform .6s var(--ease)}
-.acc button i::before,.acc button i::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;background:currentColor;transform:translate(-50%,-50%)}
-.acc button i::after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .6s var(--ease)}
-.acc button:hover i{background:var(--accent)}
-.acc .is-open button i{background:var(--ink);color:var(--paper);transform:rotate(180deg)}
-.acc .is-open button i::after{transform:translate(-50%,-50%) rotate(0)}
-.acc__body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
-.acc .is-open .acc__body{grid-template-rows:1fr}
-.acc__body > div{overflow:hidden}
-.acc__body p{padding:0 60px 28px 0;color:#48453f;font-size:17px;max-width:720px}
-
-/* =========================================================
-   Contact
-   ========================================================= */
-.contact{background:var(--accent);color:var(--ink);overflow:hidden}
-.contact .label{color:var(--ink)}
-.contact .label::before{background:var(--ink)}
-.contact__title{font-size:clamp(52px,9vw,168px);line-height:.88;letter-spacing:-.05em;font-weight:700;font-variation-settings:"wdth" 80;margin:28px 0 clamp(48px,6vw,90px)}
-.contact__title em{font-weight:400;display:block}
-.contact__grid{display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(40px,6vw,100px);align-items:start}
-.rotor{width:190px;height:190px;position:relative;display:grid;place-items:center}
-.rotor svg.ring{position:absolute;inset:0;width:100%;height:100%;animation:spin 14s linear infinite}
-.rotor:hover svg.ring{animation-duration:4s}
-.rotor text{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.22em;fill:var(--ink);text-transform:uppercase}
-.rotor__core{width:92px;height:92px;border-radius:50%;background:var(--ink);color:var(--accent);display:grid;place-items:center;transition:transform .6s var(--ease)}
-.rotor:hover .rotor__core{transform:scale(1.12) rotate(-45deg)}
-.rotor__core svg{width:26px;height:26px}
-.contact__details{display:grid;gap:18px;margin-top:40px}
-.contact__details a,.contact__details div{display:flex;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:1px solid rgba(12,12,11,.25);font-size:clamp(18px,1.6vw,22px);font-weight:500;letter-spacing:-.01em}
-.contact__details span{font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.7;align-self:center}
-.contact__details a:hover{border-color:var(--ink)}
-.form{background:var(--ink);color:var(--paper);border-radius:var(--r);padding:clamp(24px,3vw,44px);display:grid;gap:26px}
-.form h3{font-size:26px;font-weight:600;letter-spacing:-.03em}
-.form__row{display:grid;grid-template-columns:1fr 1fr;gap:26px}
-.field{position:relative}
-.field input,.field textarea{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line-d);color:var(--paper);font:inherit;font-size:18px;padding:22px 0 10px;outline:none;transition:border-color .3s;border-radius:0}
-.field textarea{resize:vertical;min-height:110px}
-.field label{position:absolute;left:0;top:22px;color:var(--mute);pointer-events:none;transition:transform .4s var(--ease),color .3s,font-size .4s var(--ease);transform-origin:left}
-.field input:focus,.field textarea:focus{border-color:var(--accent)}
-.field input:focus + label,.field input:not(:placeholder-shown) + label,.field textarea:focus + label,.field textarea:not(:placeholder-shown) + label{transform:translateY(-22px) scale(.72);color:var(--accent)}
-.field::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease)}
-.field:focus-within::after{transform:scaleX(1)}
-.budget legend{color:var(--mute);margin-bottom:12px;font-size:15px}
-.budget{border:0}
-.budget__opts{display:flex;flex-wrap:wrap;gap:8px}
-.budget input{position:absolute;opacity:0;pointer-events:none}
-.budget label{padding:10px 16px;border-radius:99px;border:1px solid var(--line-d);font-size:14px;cursor:pointer;transition:background .3s,color .3s,border-color .3s}
-.budget label:hover{border-color:var(--paper)}
-.budget input:checked + label{background:var(--accent);border-color:var(--accent);color:var(--ink)}
-.budget input:focus-visible + label{outline:2px solid var(--accent);outline-offset:3px}
-.form__foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.form__foot small{color:var(--mute);font-size:13px;max-width:260px}
-.form__ok{display:none;padding:14px 16px;border-radius:14px;background:rgba(91,227,139,.12);color:#9BF0B8;font-size:15px}
-.form.is-sent .form__ok{display:block}
-
-/* =========================================================
-   Footer
-   ========================================================= */
-.footer{background:var(--ink);padding:clamp(72px,9vw,120px) 0 28px;overflow:hidden}
-.footer__top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;padding-bottom:clamp(48px,6vw,90px)}
-.footer__top h4{font-family:var(--f-mono);font-weight:400;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-bottom:16px}
-.footer__top ul{list-style:none;display:grid;gap:8px}
-.footer__top a{position:relative}
-.footer__top a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
-.footer__top a:hover::after{transform:scaleX(1);transform-origin:left}
-.footer__lead{font-size:clamp(24px,2.4vw,36px);line-height:1.15;letter-spacing:-.03em;font-weight:500;max-width:520px}
-.footer__lead em{color:var(--accent)}
-.wordmark{font-size:clamp(90px,27.5vw,460px);font-weight:800;line-height:.78;letter-spacing:-.06em;white-space:nowrap;display:flex;justify-content:center;user-select:none;padding-top:.04em;overflow:hidden}
-.wordmark .ch{font-variation-settings:"wdth" 80,"wght" 800;transform:translateY(100%);transition:transform 1.2s var(--ease);transition-delay:calc(var(--i) * 60ms)}
-.wordmark.is-in .ch{transform:none}
-.wordmark .dot{color:var(--accent)}
-.footer__bar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-top:24px;border-top:1px solid var(--line-d);color:var(--mute);font-size:14px;margin-top:20px}
-.totop{display:inline-flex;align-items:center;gap:10px;color:var(--paper)}
-.totop i{width:40px;height:40px;border-radius:50%;border:1px solid var(--line-d);display:grid;place-items:center;transition:background .3s,transform .5s var(--ease)}
-.totop:hover i{background:var(--accent);color:var(--ink);transform:translateY(-4px)}
-.totop svg{width:16px;height:16px}
-
-/* =========================================================
-   Responsive
-   ========================================================= */
-@media (max-width:1100px){
-  .nav__links{display:none}
-  .nav__menu{display:block}
-  .nav .btn--sm{display:none}
-  .card__link{grid-template-columns:1fr}
-  .card{height:auto;min-height:0;top:calc(84px + var(--i) * 10px)}
-  .card__info{gap:18px}
-  .card__shot{padding:0 20px;height:340px}
-  .browser{height:100%}
-  .svc__inner{grid-template-columns:90px 1fr}
-  .svc__inner .chips{grid-column:2}
-  .svc__art{display:none}
-  .footer__top{grid-template-columns:1fr 1fr}
-  .footer__top > div:first-child{grid-column:1/-1}
-}
-@media (max-width:860px){
-  body{font-size:16px}
-  .sec-head{grid-template-columns:1fr}
-  .sec-head .h2,.sec-head p.note,.statement{grid-column:1}
-  .hero__foot{grid-template-columns:1fr}
-  .badge{display:none}
-  .pillars{grid-template-columns:1fr}
-  .pillar,.pillar + .pillar{padding:28px 0;border-left:0;border-bottom:1px solid var(--line-l)}
-  .process{height:auto}
-  .process__pin{position:relative;height:auto;padding:clamp(96px,14vw,200px) 0}
-  .process__head{flex-direction:column;align-items:flex-start}
-  .process__track{flex-direction:column;padding:0 var(--pad);transform:none !important}
-  .step{width:100%;min-height:0}
-  .step__body{grid-template-columns:1fr}
-  .step__art{width:150px;height:120px}
-  .process__bar{display:none}
-  .numbers__grid{grid-template-columns:1fr 1fr;border-left:0}
-  .num{border-right:0;border-top:1px solid var(--line-d);padding:24px 0}
-  .num:nth-child(odd){padding-right:16px}
-  .plans{grid-template-columns:1fr}
-  .faq__grid{grid-template-columns:1fr}
-  .faq__side{position:static}
-  .acc__body p{padding-right:0}
-  .contact__grid{grid-template-columns:1fr}
-  .form__row{grid-template-columns:1fr}
-  .svc__head{grid-template-columns:44px 1fr auto;gap:12px}
-  .svc__plus{width:44px;height:44px}
-  .svc__inner{grid-template-columns:1fr}
-  .svc__inner p,.svc__inner .chips{grid-column:1}
-  .card__shot{height:260px}
-  .card__num{font-size:90px}
-}
-@media (max-width:520px){
-  .hero__title{font-size:12.6vw}
-  .hero__ctas .btn{flex:1;justify-content:space-between}
-  .hero__ctas .btn--ghost{justify-content:center}
-  .numbers__grid{grid-template-columns:1fr}
-  .num:nth-child(odd){padding-right:0}
-  .footer__top{grid-template-columns:1fr}
-}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
-  .grain{display:none}
-}
-</style>
-</head>
+{"@context":"https://schema.org","@type":["ProfessionalService","Organization"],"@id":"https://lrweb.uk/#organization","name":"LRWeb","legalName":"LRWeb Ltd","url":"https://lrweb.uk/","slogan":"Your website, handled.",
+"description":"LRWeb builds websites for small UK businesses and local organisations, then hosts, maintains, secures and supports them on a monthly care plan.",
+"email":"hello@lrweb.uk","telephone":"07485585802","identifier":"17458216","logo":"https://lrweb.uk/assets/img/logo-light.png",
+"address":{"@type":"PostalAddress","streetAddress":"1 Pillarbox Cottages Winding Wood, Kintbury","addressLocality":"Hungerford","postalCode":"RG17 9RN","addressRegion":"Berkshire","addressCountry":"GB"},
+"founder":[{"@type":"Person","name":"Luke Harris-Platt","jobTitle":"Co-founder"},{"@type":"Person","name":"Ralph Ogilvy","jobTitle":"Co-founder"}],
+"areaServed":{"@type":"Country","name":"United Kingdom"},"priceRange":"££"}
+</script></head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="grain" aria-hidden="true"></div>
-<div class="progress" aria-hidden="true"></div>
-<div class="cursor" aria-hidden="true"><span></span></div>
-<div class="cursor-dot" aria-hidden="true"></div>
-<div class="wipe" aria-hidden="true"><span>LRWeb.</span></div>
-
-<!-- Preloader -->
-<div class="loader" aria-hidden="true">
-  <div class="loader__top mono"><span>Independent web studio</span><span>Est. in the UK</span></div>
-  <div class="loader__mid">
-    <div class="loader__word"><span>LR<em>web</em>.</span></div>
-    <div class="loader__count"><span id="loadNum">000</span></div>
-  </div>
-  <div class="loader__bar"><i></i></div>
-</div>
-
-<!-- Navigation -->
-<nav class="nav" data-theme="dark" aria-label="Main">
-  <a href="#top" class="logo" aria-label="LRWeb home">LR<em>web</em><b></b></a>
-  <div class="nav__links">
-    <a href="#work"><span data-t="Work">Work</span></a>
-    <a href="#services"><span data-t="Services">Services</span></a>
-    <a href="#process"><span data-t="Process">Process</span></a>
-    <a href="#pricing"><span data-t="Pricing">Pricing</span></a>
-    <a href="#faq"><span data-t="FAQ">FAQ</span></a>
-  </div>
-  <div class="nav__right">
-    <a href="#contact" class="btn btn--accent btn--sm magnetic">Start a project <span class="btn__ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
-    <button class="nav__menu" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
-  </div>
-</nav>
-<div class="menu" id="menu">
-  <ol>
-    <li><a href="#work">Work <small>01</small></a></li>
-    <li><a href="#services">Services <small>02</small></a></li>
-    <li><a href="#process">Process <small>03</small></a></li>
-    <li><a href="#pricing">Pricing <small>04</small></a></li>
-    <li><a href="#faq">FAQ <small>05</small></a></li>
-    <li><a href="#contact">Contact <small>06</small></a></li>
-  </ol>
-  <div class="menu__foot mono"><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a><span>Hand-built in the UK</span></div>
-</div>
-
-<main id="main">
-<!-- ======================= HERO ======================= -->
-<header class="hero" id="top" data-theme="dark">
-  <canvas class="hero__gl" aria-hidden="true"></canvas>
-  <div class="hero__shade"></div>
-  <div class="wrap hero__inner">
-    <div class="hero__meta mono fade-up d1">
-      <span>(Independent web studio)</span>
-      <span>UK — <time id="clock">--:--</time></span>
-      <span class="status"><i></i>Booking new projects</span>
-    </div>
-    <h1 class="hero__title" aria-label="Websites built by hand, made to be remembered.">
-      <span class="line" aria-hidden="true"><span class="line__in" data-chars>Websites built</span></span>
-      <span class="line" aria-hidden="true"><span class="line__in" data-chars>by hand, made</span></span>
-      <span class="line" aria-hidden="true"><span class="line__in"><span data-chars>to be </span><em>remembered.</em></span></span>
-    </h1>
-    <div class="hero__foot">
-      <div>
-        <p class="hero__lede fade-up d2"><strong>LRWeb</strong> is an independent UK web studio. We design and hand-code fast, fiercely original websites for small businesses — no templates, no page builders, no fluff. Just a site that looks like <em>you</em> and works like a salesperson that never sleeps.</p>
-        <div class="hero__ctas fade-up d3">
-          <a href="#contact" class="btn btn--accent magnetic">Start a project <span class="btn__ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
-          <a href="#work" class="btn btn--ghost magnetic">See the work</a>
-        </div>
-      </div>
-      <a href="#intro" class="badge fade-up d3" aria-label="Scroll to learn more">
-        <svg viewBox="0 0 136 136" aria-hidden="true"><defs><path id="bc" d="M68 68 m-52 0 a52 52 0 1 1 104 0 a52 52 0 1 1 -104 0"/></defs><text><textPath href="#bc">Scroll to explore ✺ Scroll to explore ✺ </textPath></text></svg>
-        <span class="badge__arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v12M3 9l5 5 5-5"/></svg></span>
-      </a>
-    </div>
+<header class="nav">
+  <div class="nav__in">
+    <a href="index.html" class="nav__logo" aria-label="LRWeb home"><img class="for-dark" src="assets/img/logo-light.png" alt="LRWeb" width="300" height="69"><img class="for-light" src="assets/img/logo-dark.png" alt="" width="300" height="69"></a>
+    <nav class="nav__links" aria-label="Main"><a href="services.html">What we do</a><a href="work.html">Work</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="referrals.html">Referrals</a><a href="contact.html" class="btn btn-primary">Get in touch</a></nav>
+    <button class="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mmenu"><span></span></button>
   </div>
 </header>
+<div class="mmenu" id="mmenu"><nav aria-label="Mobile"><a href="index.html" aria-current="page">Home</a><a href="services.html">What we do</a><a href="work.html">Work</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="referrals.html">Referrals</a><a href="contact.html">Get in touch</a></nav><p class="mmenu__foot"><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a> · read by Luke or Ralph</p><div class="mmenu__sun" aria-hidden="true"></div></div>
+<main id="main">
 
-<!-- ======================= MARQUEE ======================= -->
-<div class="marquee marquee--tilt" aria-hidden="true">
-  <div class="marquee__row" data-speed="1">
-    <div class="marquee__track">
-      <span class="marquee__item">Web design <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0l2.6 8.4L24 12l-9.4 3.6L12 24l-2.6-8.4L0 12l9.4-3.6z"/></svg></span>
-      <span class="marquee__item"><em>Development</em> <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0l2.6 8.4L24 12l-9.4 3.6L12 24l-2.6-8.4L0 12l9.4-3.6z"/></svg></span>
-      <span class="marquee__item">E-commerce <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0l2.6 8.4L24 12l-9.4 3.6L12 24l-2.6-8.4L0 12l9.4-3.6z"/></svg></span>
-      <span class="marquee__item"><em>Local SEO</em> <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0l2.6 8.4L24 12l-9.4 3.6L12 24l-2.6-8.4L0 12l9.4-3.6z"/></svg></span>
-      <span class="marquee__item">Hosting &amp; care <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0l2.6 8.4L24 12l-9.4 3.6L12 24l-2.6-8.4L0 12l9.4-3.6z"/></svg></span>
-      <span class="marquee__item"><em>Branding</em> <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0l2.6 8.4L24 12l-9.4 3.6L12 24l-2.6-8.4L0 12l9.4-3.6z"/></svg></span>
+<!-- ============ HERO: one night of care, fast-forwarded ============ -->
+<section class="hero-night on-dark" data-night aria-label="Your website, handled">
+  <div class="hero-night__stage">
+    <div class="sky" aria-hidden="true">
+      <canvas class="sky__stars" data-hz="0.17"></canvas>
+      <div class="sky__glow"></div>
+      <div class="sun-halo"></div>
+      <div class="sun"><i></i></div>
+      <div class="ground"></div>
+      <div class="horizon"></div>
     </div>
-  </div>
-  <div class="marquee__row marquee__row--2" data-speed="-1">
-    <div class="marquee__track">
-      <span class="marquee__item">No templates <em>—</em></span>
-      <span class="marquee__item">No page builders <em>—</em></span>
-      <span class="marquee__item">No lock-in <em>—</em></span>
-      <span class="marquee__item">No jargon <em>—</em></span>
-      <span class="marquee__item">No fluff <em>—</em></span>
-    </div>
-  </div>
-</div>
-
-<!-- ======================= INTRO ======================= -->
-<section class="section light intro" id="intro" data-theme="light">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="label mono">(01) — Why LRWeb</p>
-      <p class="statement" data-words>Most small-business websites are <span class="strike" data-strike>forgettable.</span> Same template, same stock photos, same “Welcome to our website”. Yours shouldn’t be. We design around what makes your business <span class="hot">different</span>, then hand-code every line so it loads in a blink, ranks on Google and turns visitors into <span class="hot">customers.</span></p>
-    </div>
-    <div class="pillars">
-      <div class="pillar" data-reveal style="--d:0">
-        <h3><span class="pillar__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6M14 3l-4 18"/></svg></span>Hand-coded</h3>
-        <p>Every line written for your site and nobody else’s. No bloated builder, no 40 plugins waiting to break.</p>
-      </div>
-      <div class="pillar" data-reveal style="--d:1">
-        <h3><span class="pillar__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span>Seriously fast</h3>
-        <p>Pages built to load in under a second on a phone — which Google rewards and customers notice.</p>
-      </div>
-      <div class="pillar" data-reveal style="--d:2">
-        <h3><span class="pillar__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>One person, start to finish</h3>
-        <p>You talk to the person designing and building your site. No account managers, no hand-offs, no chasing.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= WORK ======================= -->
-<section class="section work" id="work" data-theme="dark">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="label mono">(02) — Selected work</p>
-      <h2 class="h2" data-split>Six businesses. <em>Six personalities.</em></h2>
-      <p class="note" data-reveal>Concept builds designed and coded from scratch to show the range — from sourdough to steel-frame architecture. Every one is a live, working site. Click through and have a play.</p>
-    </div>
-  </div>
-  <div class="stack">
-    <article class="card" style="--i:0;--c-bg:#F3EADB;--c-ink:#2A1A10;--c-acc:#C4572D">
-      <a class="card__link" href="work/crumb-and-kiln/index.html" data-cursor="Visit" data-wipe="Crumb &amp; Kiln">
-        <div class="card__info">
-          <div class="card__top"><span>01 / Bakery</span><span>Bristol</span></div>
-          <div>
-            <h3 class="card__title">Crumb <em>&amp;</em> Kiln</h3>
-            <p class="card__desc">A neighbourhood sourdough bakery with a live “out of the oven” board, click-and-collect ordering and hand-drawn illustration.</p>
-          </div>
-          <ul class="card__tags"><li>Online ordering</li><li>Live bake board</li><li>Illustration</li></ul>
-          <span class="card__cta"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></i>Visit the site</span>
-        </div>
-        <figure class="card__shot"><div class="browser"><div class="browser__bar"><i></i><i></i><i></i><span>crumbandkiln.co.uk</span></div><div class="browser__view"><img src="assets/work/crumb-and-kiln.jpg" alt="Crumb &amp; Kiln bakery website homepage" loading="lazy" width="1200" height="2250"></div></div></figure>
-        <span class="card__num" aria-hidden="true">01</span>
-      </a>
-    </article>
-    <article class="card" style="--i:1;--c-bg:#141312;--c-ink:#EDE4D3;--c-acc:#C9A24A">
-      <a class="card__link" href="work/northside-barber/index.html" data-cursor="Visit" data-wipe="Northside Barber Co.">
-        <div class="card__info">
-          <div class="card__top"><span>02 / Barbershop</span><span>Manchester</span></div>
-          <div>
-            <h3 class="card__title">Northside <em>Barber Co.</em></h3>
-            <p class="card__desc">Old-school craft, new-school booking. Pick your barber, pick your slot, done — plus a price board that reads like the real thing.</p>
-          </div>
-          <ul class="card__tags"><li>Booking flow</li><li>Brand identity</li><li>Motion</li></ul>
-          <span class="card__cta"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></i>Visit the site</span>
-        </div>
-        <figure class="card__shot"><div class="browser"><div class="browser__bar"><i></i><i></i><i></i><span>northsidebarber.co.uk</span></div><div class="browser__view"><img src="assets/work/northside-barber.jpg" alt="Northside Barber Co. website homepage" loading="lazy" width="1200" height="2250"></div></div></figure>
-        <span class="card__num" aria-hidden="true">02</span>
-      </a>
-    </article>
-    <article class="card" style="--i:2;--c-bg:#DFFF3F;--c-ink:#0A0A0A;--c-acc:#0A0A0A">
-      <a class="card__link" href="work/volt-strength/index.html" data-cursor="Visit" data-wipe="VOLT Strength Club">
-        <div class="card__info">
-          <div class="card__top"><span>03 / Gym</span><span>Leeds</span></div>
-          <div>
-            <h3 class="card__title">VOLT <em>Strength Club</em></h3>
-            <p class="card__desc">High-voltage energy for an independent gym: a live class timetable, a plan-finder quiz and memberships you can join in two taps.</p>
-          </div>
-          <ul class="card__tags"><li>Class timetable</li><li>Membership sign-up</li><li>Kinetic type</li></ul>
-          <span class="card__cta"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></i>Visit the site</span>
-        </div>
-        <figure class="card__shot"><div class="browser"><div class="browser__bar"><i></i><i></i><i></i><span>voltstrength.club</span></div><div class="browser__view"><img src="assets/work/volt-strength.jpg" alt="VOLT Strength Club website homepage" loading="lazy" width="1200" height="2250"></div></div></figure>
-        <span class="card__num" aria-hidden="true">03</span>
-      </a>
-    </article>
-    <article class="card" style="--i:3;--c-bg:#0E2A36;--c-ink:#EAF1EE;--c-acc:#E8715A">
-      <a class="card__link" href="work/tidewater/index.html" data-cursor="Visit" data-wipe="Tidewater">
-        <div class="card__info">
-          <div class="card__top"><span>04 / Restaurant</span><span>St Ives, Cornwall</span></div>
-          <div>
-            <h3 class="card__title">Tide<em>water</em></h3>
-            <p class="card__desc">A harbourside seafood restaurant. The sky sets as you scroll, the menu changes with the catch, and booking a table takes seconds.</p>
-          </div>
-          <ul class="card__tags"><li>Reservations</li><li>Daily menus</li><li>Generative art</li></ul>
-          <span class="card__cta"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></i>Visit the site</span>
-        </div>
-        <figure class="card__shot"><div class="browser"><div class="browser__bar"><i></i><i></i><i></i><span>tidewaterstives.co.uk</span></div><div class="browser__view"><img src="assets/work/tidewater.jpg" alt="Tidewater restaurant website homepage" loading="lazy" width="1200" height="2250"></div></div></figure>
-        <span class="card__num" aria-hidden="true">04</span>
-      </a>
-    </article>
-    <article class="card" style="--i:4;--c-bg:#E9E7E1;--c-ink:#111;--c-acc:#1F3FD1">
-      <a class="card__link" href="work/form-and-field/index.html" data-cursor="Visit" data-wipe="Form &amp; Field">
-        <div class="card__info">
-          <div class="card__top"><span>05 / Architecture</span><span>Edinburgh</span></div>
-          <div>
-            <h3 class="card__title">Form <em>&amp;</em> Field</h3>
-            <p class="card__desc">A quiet, precise portfolio for an architecture practice. Blueprints draw themselves, buildings assemble as you scroll.</p>
-          </div>
-          <ul class="card__tags"><li>Portfolio</li><li>Scroll storytelling</li><li>SVG animation</li></ul>
-          <span class="card__cta"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></i>Visit the site</span>
-        </div>
-        <figure class="card__shot"><div class="browser"><div class="browser__bar"><i></i><i></i><i></i><span>formandfield.studio</span></div><div class="browser__view"><img src="assets/work/form-and-field.jpg" alt="Form &amp; Field architects website homepage" loading="lazy" width="1200" height="2250"></div></div></figure>
-        <span class="card__num" aria-hidden="true">05</span>
-      </a>
-    </article>
-    <article class="card" style="--i:5;--c-bg:#F2D8CF;--c-ink:#1E3A2B;--c-acc:#1E3A2B">
-      <a class="card__link" href="work/petal-and-stem/index.html" data-cursor="Visit" data-wipe="Petal &amp; Stem">
-        <div class="card__info">
-          <div class="card__top"><span>06 / Florist</span><span>Hackney, London</span></div>
-          <div>
-            <h3 class="card__title">Petal <em>&amp;</em> Stem</h3>
-            <p class="card__desc">A florist’s shop that blooms as you browse — with a build-your-own bouquet tool that prices it live and a flower subscription.</p>
-          </div>
-          <ul class="card__tags"><li>E-commerce</li><li>Bouquet builder</li><li>Generative flowers</li></ul>
-          <span class="card__cta"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></i>Visit the site</span>
-        </div>
-        <figure class="card__shot"><div class="browser"><div class="browser__bar"><i></i><i></i><i></i><span>petalandstem.london</span></div><div class="browser__view"><img src="assets/work/petal-and-stem.jpg" alt="Petal &amp; Stem florist website homepage" loading="lazy" width="1200" height="2250"></div></div></figure>
-        <span class="card__num" aria-hidden="true">06</span>
-      </a>
-    </article>
-  </div>
-</section>
-
-<!-- ======================= SERVICES ======================= -->
-<section class="section light services" id="services" data-theme="light">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="label mono">(03) — Services</p>
-      <h2 class="h2" data-split>Everything your site needs. <em>Nothing it doesn’t.</em></h2>
-    </div>
-    <ol class="svc">
-      <li class="svc__item is-open">
-        <button class="svc__head" aria-expanded="true"><span class="svc__num">01</span><span class="svc__name">Web <em>design</em></span><span class="svc__plus" aria-hidden="true"></span></button>
-        <div class="svc__body"><div><div class="svc__inner">
-          <p>Design that starts with your customers, not a template. We map out what people need to see, then craft a look that’s unmistakably yours — typography, colour, motion and all.</p>
-          <ul class="chips"><li>UX &amp; site structure</li><li>Visual design</li><li>Mobile-first layouts</li><li>Interactive prototypes</li></ul>
-          <svg class="svc__art draw" viewBox="0 0 200 140" aria-hidden="true"><rect class="dash-loop" x="10" y="10" width="180" height="120" rx="8"/><line class="dash-loop d2" x1="10" y1="34" x2="190" y2="34"/><rect class="dash-loop d3" x="24" y="48" width="70" height="66" rx="4"/><line class="dash-loop d4" x1="108" y1="56" x2="176" y2="56"/><line class="dash-loop d4" x1="108" y1="72" x2="160" y2="72"/><line class="dash-loop d4" x1="108" y1="88" x2="170" y2="88"/></svg>
-        </div></div></div>
-      </li>
-      <li class="svc__item">
-        <button class="svc__head" aria-expanded="false"><span class="svc__num">02</span><span class="svc__name">Development</span><span class="svc__plus" aria-hidden="true"></span></button>
-        <div class="svc__body"><div><div class="svc__inner">
-          <p>Clean, hand-written code that’s quick, accessible and built to last. No page builders means no bloat, fewer security headaches and a site that stays fast for years.</p>
-          <ul class="chips"><li>Hand-coded HTML/CSS/JS</li><li>Accessibility (WCAG)</li><li>Animations &amp; interactions</li><li>CMS when you need one</li></ul>
-          <svg class="svc__art draw" viewBox="0 0 200 140" aria-hidden="true"><polyline points="60,40 30,70 60,100"/><polyline points="140,40 170,70 140,100"/><line class="dash-loop" x1="112" y1="30" x2="88" y2="110"/></svg>
-        </div></div></div>
-      </li>
-      <li class="svc__item">
-        <button class="svc__head" aria-expanded="false"><span class="svc__num">03</span><span class="svc__name">E-<em>commerce</em></span><span class="svc__plus" aria-hidden="true"></span></button>
-        <div class="svc__body"><div><div class="svc__inner">
-          <p>Sell online without the headache. From a handful of products to click-and-collect and bookings, we set up checkout that’s smooth for customers and simple for you.</p>
-          <ul class="chips"><li>Online shops</li><li>Stripe &amp; card payments</li><li>Bookings &amp; collections</li><li>Stock &amp; order emails</li></ul>
-          <svg class="svc__art draw" viewBox="0 0 200 140" aria-hidden="true"><polyline class="dash-loop" points="30,30 50,30 66,96 160,96 172,50 58,50"/><circle cx="76" cy="114" r="8"/><circle cx="148" cy="114" r="8"/></svg>
-        </div></div></div>
-      </li>
-      <li class="svc__item">
-        <button class="svc__head" aria-expanded="false"><span class="svc__num">04</span><span class="svc__name">SEO &amp; <em>speed</em></span><span class="svc__plus" aria-hidden="true"></span></button>
-        <div class="svc__body"><div><div class="svc__inner">
-          <p>Being found matters as much as looking good. Every site ships with solid technical SEO, Google Business Profile tips and the kind of speed scores search engines love.</p>
-          <ul class="chips"><li>Technical &amp; local SEO</li><li>Core Web Vitals</li><li>Schema markup</li><li>Google Business Profile</li></ul>
-          <svg class="svc__art draw" viewBox="0 0 200 140" aria-hidden="true"><polyline class="dash-loop" points="20,120 60,92 92,104 130,60 180,30"/><circle class="pulse-dot" cx="180" cy="30" r="4" fill="currentColor"/><circle cx="180" cy="30" r="4" fill="currentColor"/></svg>
-        </div></div></div>
-      </li>
-      <li class="svc__item">
-        <button class="svc__head" aria-expanded="false"><span class="svc__num">05</span><span class="svc__name">Hosting &amp; <em>care</em></span><span class="svc__plus" aria-hidden="true"></span></button>
-        <div class="svc__body"><div><div class="svc__inner">
-          <p>Fast, secure hosting, SSL, backups and small updates whenever you need them — so your website keeps working while you get on with running your business.</p>
-          <ul class="chips"><li>Managed hosting</li><li>SSL &amp; security</li><li>Daily backups</li><li>Monthly content edits</li></ul>
-          <svg class="svc__art draw" viewBox="0 0 200 140" aria-hidden="true"><path class="dash-loop" d="M100 16 L160 38 V74 C160 104 132 122 100 130 C68 122 40 104 40 74 V38 Z"/><polyline class="dash-loop d2" points="76,74 94,92 128,58"/></svg>
-        </div></div></div>
-      </li>
-      <li class="svc__item">
-        <button class="svc__head" aria-expanded="false"><span class="svc__num">06</span><span class="svc__name">Brand <em>identity</em></span><span class="svc__plus" aria-hidden="true"></span></button>
-        <div class="svc__body"><div><div class="svc__inner">
-          <p>Starting from scratch or overdue a refresh? We create logos, colour palettes and type systems that look right on your van, your menu and your website.</p>
-          <ul class="chips"><li>Logo design</li><li>Colour &amp; type</li><li>Brand guidelines</li><li>Social templates</li></ul>
-          <svg class="svc__art draw" viewBox="0 0 200 140" aria-hidden="true"><circle class="dash-loop" cx="78" cy="70" r="40"/><circle class="dash-loop d2" cx="122" cy="70" r="40"/></svg>
-        </div></div></div>
-      </li>
-    </ol>
-  </div>
-</section>
-
-<!-- ======================= PROCESS ======================= -->
-<section class="process" id="process" data-theme="dark">
-  <div class="process__pin">
-    <div class="wrap process__head">
+    <div class="container">
       <div>
-        <p class="label mono">(04) — Process</p>
-        <h2 class="h2" style="margin-top:20px">From first chat to <em>launch day.</em></h2>
+        <p class="kicker load-in">Managed websites for small UK businesses</p>
+        <h1 class="load-in d1">Your website,<br><span class="swap"><span>handled.</span><span aria-hidden="true">monitored.</span><span aria-hidden="true">backed up.</span><span aria-hidden="true">updated.</span><span aria-hidden="true">secured.</span><span aria-hidden="true">hosted.</span></span></h1>
+        <p class="hero__sub load-in d2">We build it, host it, update it, back it up, and answer when something looks odd. You get on with running your business. That’s the whole arrangement.</p>
+        <div class="hero__ctas load-in d3"><a href="contact.html" class="btn btn-primary">Start a conversation <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="pricing.html" class="btn btn-ghost">See plans</a></div>
+        <div class="ticks load-in d4"><span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>No long contracts</span><span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Two named humans</span><span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Replies within a day</span><span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>100% renewable energy</span></div>
       </div>
-      <div class="process__count mono">Step <b id="stepNow">01</b> / 04</div>
+      <div class="console load-in d3" role="img" aria-label="An example care log: overnight backups, updates and security checks completed while you sleep">
+        <div class="console__bar"><i></i><i></i><i></i><span><svg viewBox="0 0 10 12" fill="none" aria-hidden="true"><rect x="1" y="5" width="8" height="6" rx="1.5" stroke="#3DB88D" stroke-width="1.4"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5" stroke="#3DB88D" stroke-width="1.4"/></svg>yourbusiness.co.uk · looked after by LRWeb</span></div>
+        <div class="console__top"><div class="clock" id="clock">23:00<small>Tonight, while you sleep</small></div><span class="state"><i></i>All good</span></div>
+        <ol class="log" id="log"></ol>
+        <div class="uptime"><div class="uptime__bars" id="uptime"></div><div class="uptime__meta"><span>23:00</span><span>checked every minute</span><span>08:00</span></div></div>
+      </div>
     </div>
-    <div class="process__track">
-      <article class="step is-active">
-        <span class="step__num">01</span><span class="step__time">Week 1</span>
-        <div class="step__body">
-          <div><h3>Discover</h3><p>A proper chat about your business, your customers and what a win looks like. You get a clear plan, a fixed quote and a timeline — no surprises later.</p>
-          <ul><li>Free discovery call</li><li>Fixed-price quote</li><li>Sitemap</li></ul></div>
-          <svg class="step__art draw" viewBox="0 0 200 160" aria-hidden="true"><circle cx="100" cy="80" r="66"/><circle cx="100" cy="80" r="44" opacity=".6"/><circle cx="100" cy="80" r="22" opacity=".4"/><g class="radar__sweep"><line x1="100" y1="80" x2="100" y2="14"/></g><circle class="pulse-dot" cx="132" cy="56" r="3" fill="currentColor"/><circle cx="132" cy="56" r="3" fill="currentColor"/></svg>
-        </div>
-      </article>
-      <article class="step">
-        <span class="step__num">02</span><span class="step__time">Weeks 2–3</span>
-        <div class="step__body">
-          <div><h3>Design</h3><p>We design your homepage first so you can see (and feel) the direction early, then roll it out across every page. Two rounds of changes are baked in.</p>
-          <ul><li>Homepage concept</li><li>Full page designs</li><li>2 revision rounds</li></ul></div>
-          <svg class="step__art draw" viewBox="0 0 200 160" aria-hidden="true"><rect class="dash-loop" x="14" y="14" width="172" height="132" rx="8"/><line class="dash-loop d2" x1="14" y1="38" x2="186" y2="38"/><rect class="dash-loop d3" x="30" y="54" width="64" height="76" rx="4"/><line class="dash-loop d4" x1="108" y1="62" x2="170" y2="62"/><line class="dash-loop d4" x1="108" y1="80" x2="156" y2="80"/><rect class="dash-loop d4" x="108" y="100" width="54" height="22" rx="11"/></svg>
-        </div>
-      </article>
-      <article class="step">
-        <span class="step__num">03</span><span class="step__time">Weeks 3–5</span>
-        <div class="step__body">
-          <div><h3>Build</h3><p>Your design becomes a real, hand-coded site. You get a private preview link to click around on your own phone while we polish every detail.</p>
-          <ul><li>Hand-coded build</li><li>Live preview link</li><li>Speed &amp; SEO setup</li></ul></div>
-          <svg class="step__art draw" viewBox="0 0 200 160" aria-hidden="true"><rect x="14" y="14" width="172" height="132" rx="8"/><polyline points="40,56 28,68 40,80" /><line class="typeline" x1="52" y1="68" x2="130" y2="68"/><line class="typeline t2" x1="40" y1="94" x2="150" y2="94"/><line class="typeline t3" x1="40" y1="116" x2="104" y2="116"/><rect class="blink" x="110" y="108" width="7" height="14" fill="currentColor" stroke="none"/></svg>
-        </div>
-      </article>
-      <article class="step">
-        <span class="step__num">04</span><span class="step__time">Launch &amp; beyond</span>
-        <div class="step__body">
-          <div><h3>Launch <em>&amp;</em> grow</h3><p>We handle the domain, hosting and go-live, then show you around. After that we’re a message away for updates, tweaks and fresh ideas.</p>
-          <ul><li>Go-live &amp; hosting</li><li>Handover walkthrough</li><li>Ongoing care</li></ul></div>
-          <svg class="step__art draw" viewBox="0 0 200 160" aria-hidden="true"><line x1="20" y1="140" x2="186" y2="140" opacity=".4"/><polyline class="dash-loop" points="22,128 60,104 92,114 128,70 176,32"/><circle class="pulse-dot" cx="176" cy="32" r="4" fill="currentColor"/><circle cx="176" cy="32" r="4" fill="currentColor"/></svg>
-        </div>
-      </article>
-    </div>
-    <div class="wrap"><div class="process__bar"><i></i></div></div>
+    <p class="hero__cue" aria-hidden="true"><i></i>Scroll to fast-forward the night</p>
   </div>
 </section>
 
-<!-- ======================= NUMBERS ======================= -->
-<section class="numbers" data-theme="dark" aria-label="What you get">
-  <div class="wrap">
-    <div class="numbers__grid">
-      <div class="num" data-reveal style="--d:0"><div class="num__v"><span data-count="100">0</span></div><div class="num__k">Speed score target</div><p>Every build is tuned for a top Lighthouse performance score.</p></div>
-      <div class="num" data-reveal style="--d:1"><div class="num__v">&lt;<span data-count="1">0</span><small>sec</small></div><div class="num__k">Typical load time</div><p>Lean, hand-written code means pages appear almost instantly.</p></div>
-      <div class="num" data-reveal style="--d:2"><div class="num__v"><span data-count="0">0</span></div><div class="num__k">Page builders used</div><p>No Wix, no bloated themes. Your site is yours — code and all.</p></div>
-      <div class="num" data-reveal style="--d:3"><div class="num__v"><span data-count="24">0</span><small>hrs</small></div><div class="num__k">Reply time</div><p>Messages answered within a working day. Usually much quicker.</p></div>
-    </div>
-  </div>
-</section>
+<div class="who" aria-label="Who we work with"><div class="who__row"><span>plumbers</span><span>electricians</span><span>tutors</span><span>churches</span><span>cafés</span><span>charities</span><span>sports clubs</span><span>salons</span><span>builders</span><span>accountants</span><span>florists</span><span>dog groomers</span><span>plumbers</span><span>electricians</span><span>tutors</span><span>churches</span><span>cafés</span><span>charities</span><span>sports clubs</span><span>salons</span><span>builders</span><span>accountants</span><span>florists</span><span>dog groomers</span></div></div>
 
-<!-- ======================= PRICING ======================= -->
-<!-- NOTE: prices below are placeholders — replace with LRWeb's real packages -->
-<section class="section light" id="pricing" data-theme="light">
-  <div class="wrap">
+<!-- ============ TWO JOBS ============ -->
+<section class="sec" id="what">
+  <div class="container">
     <div class="sec-head">
-      <p class="label mono">(05) — Pricing</p>
-      <h2 class="h2" data-split>Honest prices. <em>No surprises.</em></h2>
-      <p class="note" data-reveal>Every project gets a fixed quote after a free chat. These starting points give you a feel for where things land.</p>
+      <p class="kicker" data-reveal>What we do</p>
+      <h2 data-reveal>Two jobs: build it well, then look after it.</h2>
+      <p class="lead" data-reveal>Everything we offer fits into one of those two. No bolt-on marketing packages, no mystery line items.</p>
+    </div>
+    <div class="jobs">
+      <article class="job job--build" data-reveal>
+        <div class="mock" aria-hidden="true"><div class="mock__bar"></div><div class="mock__row"><div class="mock__hero"></div><div class="mock__col"><i></i><i></i><i></i><b></b></div></div></div>
+        <span class="job__tag">The project bit</span>
+        <h3>Design &amp; build</h3>
+        <p>One-off projects with a clear price, a clear scope, and a finish line.</p>
+        <ul class="job__list">
+          <li><span class="n">01</span><b>New websites</b><span>Designed around what your customers actually need to find.</span></li>
+          <li><span class="n">02</span><b>Redesigns &amp; rebuilds</b><span>Keeping what works, quietly retiring what doesn’t.</span></li>
+          <li><span class="n">03</span><b>Modernisation &amp; speed</b><span>Old site, new engine: mobile-friendly, quick and secure.</span></li>
+        </ul>
+        <div class="job__foot"><span class="from">Builds from <b>£600</b></span><a class="link" href="services.html#build">How a build runs <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      </article>
+      <article class="job job--care on-dark" data-reveal style="--d:1">
+        <div class="corner-sun" aria-hidden="true"></div>
+        <div class="cmock" aria-hidden="true">
+          <div class="cmock__top"><span>yourbusiness.co.uk · this month</span><b>99.98%</b></div>
+          <svg viewBox="0 0 300 46" preserveAspectRatio="none"><defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3DB88D" stop-opacity=".35"/><stop offset="1" stop-color="#3DB88D" stop-opacity="0"/></linearGradient></defs><path class="area" d="M0 30 L20 26 L40 28 L60 20 L80 24 L100 18 L120 22 L140 14 L160 18 L180 12 L200 16 L220 10 L240 14 L260 8 L280 12 L300 6 L300 46 L0 46Z"/><path class="spark" pathLength="1" d="M0 30 L20 26 L40 28 L60 20 L80 24 L100 18 L120 22 L140 14 L160 18 L180 12 L200 16 L220 10 L240 14 L260 8 L280 12 L300 6"/></svg>
+          <div class="cmock__chips"><span>Backed up</span><span>Updated</span><span>SSL valid</span><span>Pages in 0.8s</span></div>
+        </div>
+        <span class="job__tag">The ongoing bit</span>
+        <h3>Managed hosting &amp; care</h3>
+        <p>This is the heart of LRWeb. Your website becomes our responsibility, permanently, for a flat monthly fee.</p>
+        <ul class="care-list"><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Managed hosting on renewable energy</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Software updates, tested</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily off-site backups</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Security monitoring</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Uptime monitoring</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>SSL certificates renewed</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Performance care</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Small content edits</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Real support from us</li></ul>
+        <div class="job__foot"><span class="from">Care plans from <b>£29</b>/month</span><a class="link" href="pricing.html">See plans <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ A MONTH OF CARE ============ -->
+<section class="sec sec--white">
+  <div class="container month">
+    <div class="cal" data-inview>
+      <div class="cal__head"><b id="calMonth">This month</b><span>yourbusiness.co.uk · care log</span></div>
+      <div class="cal__grid" id="cal"></div>
+      <div class="legend"><span><i style="background:#3DB88D"></i>Nightly backup</span><span><i style="background:#0B86EA"></i>Updates applied</span><span><i style="background:#3F4DE6"></i>Deep security scan</span><span><i style="background:#F2B94B"></i>Edit you asked for</span></div>
+    </div>
+    <div>
+      <p class="kicker" data-reveal>What care actually looks like</p>
+      <h2 data-reveal>A month of looking after your site.</h2>
+      <p class="lead" data-reveal style="margin:20px 0 26px">A website isn’t a thing you buy once. It’s software that needs feeding. Most of this happens at unsociable hours, so it never gets in your way.</p>
+      <ul class="tally" data-reveal>
+        <li><b id="tBackups" data-count="0">0</b><span>nightly backups so far this month</span></li>
+        <li><b id="tChecks" data-count="0">0</b><span>uptime checks, one every minute</span></li>
+        <li><b id="tUpdates" data-count="0">0</b><span>rounds of tested updates</span></li>
+        <li><b>0</b><span>things you had to do</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEFORE / AFTER ============ -->
+<section class="sec">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker" data-reveal>The difference</p>
+      <h2 data-reveal>Drag the handle. This is the job we do.</h2>
+      <p class="lead" data-reveal>Every town has websites stuck in the past, and behind each one is a business that deserves better. Slide to see what a rescue looks like.</p>
+    </div>
+    <div class="ba" data-inview data-reveal>
+      <div class="ba__pane ba__old" aria-hidden="true">
+        <div class="marq"><span>!!! WELCOME TO OUR WEB SITE !!! BEST PRICES IN TOWN !!! CALL NOW !!!</span></div>
+        <h4>J. Smith &amp; Sons Plumbing Est. 1987</h4>
+        <p class="nav98">Home | About_Us | Services | Gallery (broken) | Contact!!</p>
+        <p>Welcome to the offical home page of J Smith and Sons. We are a family run busines serving the local area. Please bare with us while the site is under construction.</p>
+        <p>Click here to download our price list (Word 97 document, 14MB)</p>
+        <div class="uc"><span>UNDER CONSTRUCTION</span></div>
+        <p class="foot98">Best viewed in Internet Explorer 6 · Last updated March 2014 · Visitors: <span class="counter">000042</span></p>
+      </div>
+      <div class="ba__pane ba__new"><img src="assets/work/smith-and-sons-hero.jpg" alt="The rebuilt Smith &amp; Sons website: plumbing done properly" loading="lazy" width="1440" height="900"></div>
+      <div class="ba__handle" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
+      <span class="ba__tag ba__tag--l">Before</span><span class="ba__tag ba__tag--r">After LRWeb</span>
+      <input class="ba__range" type="range" min="0" max="100" value="50" aria-label="Compare the old and new website">
+    </div>
+    <div class="ba-foot"><span>Same family business. Same phone number. A website they’re proud to share.</span><a class="link" href="work/smith-and-sons/index.html">Open the finished site <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+  </div>
+</section>
+
+<!-- ============ THE GAP ============ -->
+<section class="sec sec--white">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker" data-reveal>Honestly, though</p>
+      <h2 data-reveal>There’s a gap between £3 hosting and £10k agencies. We live in it.</h2>
+      <p class="lead" data-reveal>Small businesses usually get offered two bad options. Here’s how the middle one compares.</p>
+    </div>
+    <div class="spectrum" data-reveal aria-hidden="true">
+      <div class="spectrum__pin"><b>LRWeb</b><i></i></div>
+      <div class="spectrum__line"></div>
+      <div class="spectrum__ticks"><span>£3/mo</span><span>£29/mo</span><span>from £600 builds</span><span>£5k</span><span>£10k+</span></div>
+    </div>
+    <div class="gap-grid">
+      <div class="gap" data-reveal><span class="who-label">Bargain hosting</span><h3>£3 a month, and silence.</h3><ul><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="#5A6478" opacity=".12"/><path d="M6.2 6.2l5.6 5.6M11.8 6.2l-5.6 5.6" stroke="#5A6478" stroke-width="1.8" stroke-linecap="round"/></svg>A control panel you’ll never want to log into</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="#5A6478" opacity=".12"/><path d="M6.2 6.2l5.6 5.6M11.8 6.2l-5.6 5.6" stroke="#5A6478" stroke-width="1.8" stroke-linecap="round"/></svg>Support chat staffed by a bot named something friendly</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="#5A6478" opacity=".12"/><path d="M6.2 6.2l5.6 5.6M11.8 6.2l-5.6 5.6" stroke="#5A6478" stroke-width="1.8" stroke-linecap="round"/></svg>Updates, backups and security are your problem</li></ul><p class="verdict">Fine, until it isn’t.</p></div>
+      <div class="gap gap--us" data-reveal style="--d:1"><span class="who-label">LRWeb</span><h3>One price. Two humans. Zero drama.</h3><ul style="color:#3DB88D"><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="color:rgba(245,248,250,.86)">Built, hosted and cared for by the same people</span></li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="color:rgba(245,248,250,.86)">Email answered by someone who knows your site by name</span></li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="color:rgba(245,248,250,.86)">Updates, backups and monitoring just quietly happen</span></li></ul><p class="verdict">From £29/month. <a href="pricing.html" style="color:#6FE0B4;font-weight:600">See plans →</a></p></div>
+      <div class="gap" data-reveal style="--d:2"><span class="who-label">Big agency</span><h3>Lovely work, eye-watering invoices.</h3><ul><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="#5A6478" opacity=".12"/><path d="M6.2 6.2l5.6 5.6M11.8 6.2l-5.6 5.6" stroke="#5A6478" stroke-width="1.8" stroke-linecap="round"/></svg>Five figures before anything exists</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="#5A6478" opacity=".12"/><path d="M6.2 6.2l5.6 5.6M11.8 6.2l-5.6 5.6" stroke="#5A6478" stroke-width="1.8" stroke-linecap="round"/></svg>An account manager between you and anyone technical</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="#5A6478" opacity=".12"/><path d="M6.2 6.2l5.6 5.6M11.8 6.2l-5.6 5.6" stroke="#5A6478" stroke-width="1.8" stroke-linecap="round"/></svg>You’ll always be their smallest client</li></ul><p class="verdict">Great for PLCs, overkill for you.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXAMPLE SITES ============ -->
+<section class="sec sec--night on-dark" data-night>
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker" data-reveal>Example sites</p>
+      <h2 data-reveal>The kind of site your business could have.</h2>
+      <p class="lead" data-reveal>We designed these example sites for the sorts of businesses we look after: trades, cafés, salons, shops and clubs. Every one of them works, so click through and have a go.</p>
+    </div>
+    <div class="work-grid"><a class="wcard" href="work/smith-and-sons/index.html" data-reveal><div class="wcard__frame"><div class="wcard__bar"><i></i><i></i><i></i><span>smithandsons.co.uk</span></div><div class="wcard__view"><img src="assets/work/smith-and-sons.jpg" alt="Smith &amp; Sons example website" loading="lazy" width="1200" height="2250"></div></div><div><div class="wcard__meta"><div><h3>Smith &amp; Sons</h3><p>Plumbing &amp; heating · West Berkshire</p></div><span class="wcard__type">Example site</span></div><ul class="tags"><li>Trades</li><li>Booking</li><li>Price guide</li></ul></div></a><a class="wcard" href="work/crumb-and-kiln/index.html" data-reveal><div class="wcard__frame"><div class="wcard__bar"><i></i><i></i><i></i><span>crumbandkiln.co.uk</span></div><div class="wcard__view"><img src="assets/work/crumb-and-kiln.jpg" alt="Crumb &amp; Kiln example website" loading="lazy" width="1200" height="2250"></div></div><div><div class="wcard__meta"><div><h3>Crumb &amp; Kiln</h3><p>Bakery &amp; café · Bristol</p></div><span class="wcard__type">Example site</span></div><ul class="tags"><li>Café</li><li>Online orders</li><li>Opening hours</li></ul></div></a><a class="wcard" href="work/northside-barber/index.html" data-reveal><div class="wcard__frame"><div class="wcard__bar"><i></i><i></i><i></i><span>northsidebarber.co.uk</span></div><div class="wcard__view"><img src="assets/work/northside-barber.jpg" alt="Northside Barber Co. example website" loading="lazy" width="1200" height="2250"></div></div><div><div class="wcard__meta"><div><h3>Northside Barber Co.</h3><p>Barbershop · Manchester</p></div><span class="wcard__type">Example site</span></div><ul class="tags"><li>Salon</li><li>Bookings</li><li>Price list</li></ul></div></a></div>
+    <p style="margin-top:40px" data-reveal><a class="link" href="work.html">See all seven example sites <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="sec sec--white">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker" data-reveal>How it works</p>
+      <h2 data-reveal>Three steps. None of them involve you learning WordPress.</h2>
+    </div>
+    <div class="steps" data-inview>
+      <div class="step" data-reveal><div class="step__icon"><svg class="typing" viewBox="0 0 30 30" fill="none"><path d="M4 7h22v14H11l-5 5V7z" stroke="#0B86EA" stroke-width="2" stroke-linejoin="round"/><i></i><circle cx="10" cy="14" r="1.6" fill="#0B86EA" style="animation:typing 1.4s infinite"/><circle cx="15" cy="14" r="1.6" fill="#0B86EA" style="animation:typing 1.4s .2s infinite"/><circle cx="20" cy="14" r="1.6" fill="#0B86EA" style="animation:typing 1.4s .4s infinite"/></svg></div><span class="n">01</span><h3>We talk</h3><p>You tell us about your business and what the website needs to do. Plain conversation, no discovery workshops, no buzzwords.</p></div>
+      <div class="step" data-reveal style="--d:1"><div class="step__icon"><svg class="build-anim" viewBox="0 0 30 30" fill="none"><rect x="4" y="5" width="22" height="20" rx="3" stroke="#3F4DE6" stroke-width="2"/><path d="M4 10h22" stroke="#3F4DE6" stroke-width="2"/><rect class="b" x="8" y="14" width="14" height="2.4" rx="1.2" fill="#3F4DE6"/><rect class="b b2" x="8" y="18" width="10" height="2.4" rx="1.2" fill="#3F4DE6"/><rect class="b b3" x="8" y="22" width="6" height="1" rx=".5" fill="#3F4DE6"/></svg></div><span class="n">02</span><h3>We build</h3><p>You see design options early, choose a direction, and give feedback in normal English. We handle everything technical.</p></div>
+      <div class="step" data-reveal style="--d:2"><div class="step__icon"><svg viewBox="0 0 30 30" fill="none"><circle class="pulse-ring" cx="15" cy="15" r="11" stroke="#3DB88D" stroke-width="1.5"/><path d="M15 4l9 4v6c0 5-3.6 8.8-9 10-5.4-1.2-9-5-9-10V8l9-4z" fill="#fff" stroke="#3DB88D" stroke-width="2" stroke-linejoin="round"/><path d="M11 15l3 3 5-6" stroke="#3DB88D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="n">03</span><h3>We look after it</h3><p>Your site moves onto a care plan. Hosting, updates, backups, support, handled monthly and indefinitely by people who know your site.</p></div>
+    </div>
+    <div class="facts">
+      <div class="fact" data-reveal><b><span data-count="99.9">0</span>%</b><span>uptime target, checked every minute by independent monitoring</span></div>
+      <div class="fact" data-reveal style="--d:1"><b>24/7</b><span>monitoring with alerts straight to our phones, not a dashboard nobody reads</span></div>
+      <div class="fact" data-reveal style="--d:2"><b>02:00</b><span>nightly backups, encrypted and stored away from the server</span></div>
+      <div class="fact" data-reveal style="--d:3"><b data-count="20">0</b><span>client cap. A deliberately small list so every site gets real attention</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="sec" id="pricing">
+  <div class="container">
+    <div class="sec-head center">
+      <p class="kicker" data-reveal>Pricing</p>
+      <h2 data-reveal>Simple plans. No surprises on the invoice.</h2>
+      <p class="lead" data-reveal>Every plan includes hosting, updates, backups, monitoring and a real person at hello@lrweb.uk. Monthly rolling, no long contracts.</p>
     </div>
     <div class="plans">
-      <article class="plan" data-reveal style="--d:0">
-        <h3 class="plan__name">Launch</h3>
-        <p class="plan__for">A standout one-pager to get you online</p>
-        <div class="plan__price"><small>from</small><b>£495</b></div>
-        <ul>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>One-page custom design</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Mobile-first &amp; lightning fast</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Contact form &amp; Google Maps</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Basic SEO setup</li>
-        </ul>
-        <a href="#contact" class="btn btn--ink btn--sm magnetic" data-plan="Launch">Choose Launch <span class="btn__ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
-      </article>
-      <article class="plan plan--hot" data-reveal style="--d:1">
-        <span class="plan__tag">Most popular</span>
-        <h3 class="plan__name">Business</h3>
-        <p class="plan__for">The full website most businesses need</p>
-        <div class="plan__price"><small>from</small><b>£1,250</b></div>
-        <ul>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Up to 6 custom-designed pages</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Custom animations &amp; interactions</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Local SEO &amp; Google Business setup</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Bookings or enquiries built in</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>3 months’ care included</li>
-        </ul>
-        <a href="#contact" class="btn btn--accent btn--sm magnetic" data-plan="Business">Choose Business <span class="btn__ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
-      </article>
-      <article class="plan" data-reveal style="--d:2">
-        <h3 class="plan__name">Bespoke</h3>
-        <p class="plan__for">Shops, bookings and anything ambitious</p>
-        <div class="plan__price"><small>from</small><b>£2,500</b></div>
-        <ul>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Unlimited pages &amp; custom features</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>E-commerce &amp; online payments</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Brand identity options</li>
-          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5l4 4 8-9"/></svg>Priority support</li>
-        </ul>
-        <a href="#contact" class="btn btn--ink btn--sm magnetic" data-plan="Bespoke">Choose Bespoke <span class="btn__ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
-      </article>
-    </div>
-    <div class="care" data-reveal>
-      <div><h3>Care plan</h3><p>Hosting, SSL, backups, security updates and up to an hour of edits every month. Cancel any time.</p></div>
-      <div><b>£35</b><span class="mono" style="color:var(--mute-d)"> / month</span></div>
-    </div>
+  <article class="plan" data-reveal>
+    <h3>Essential</h3><p class="for">For brochure sites that need to just work</p>
+    <div class="price">£29<small>/month</small></div>
+    <ul><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Managed UK-focused hosting</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Core, theme &amp; plugin updates</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily off-site backups</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Uptime &amp; security monitoring</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>SSL certificate included</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Email support</li></ul>
+    <a href="contact.html?plan=essential" class="btn btn-outline">Choose Essential</a>
+  </article>
+  <article class="plan plan--hot" data-reveal style="--d:1">
+    <span class="plan__tag">Most popular</span>
+    <h3>Plus</h3><p class="for">For businesses whose website earns its keep</p>
+    <div class="price">£49<small>/month</small></div>
+    <ul><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Essential</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Monthly content edits included</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Performance optimisation</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Quarterly site health review</li></ul>
+    <a href="contact.html?plan=plus" class="btn btn-primary">Choose Plus</a>
+  </article>
+  <article class="plan" data-reveal style="--d:2">
+    <h3>Pro</h3><p class="for">For shops, bookings and busier sites</p>
+    <div class="price">£89<small>/month</small></div>
+    <ul><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Plus</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>E-commerce &amp; booking support</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>More included edit time</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Same-day response target</li><li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor" opacity=".16"/><path d="M5.5 9.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Monthly performance report</li></ul>
+    <a href="contact.html?plan=pro" class="btn btn-outline">Choose Pro</a>
+  </article>
+</div>
+    <p class="price-note" data-reveal>Need a new website first? Builds start from £600 with hosting included as stated in your package. <a href="pricing.html">See full pricing</a>.<br><small>All prices are the total payable. We are not registered for VAT, so no VAT is added. If we must register, VAT is added on 30 days notice.</small></p>
+    <div style="margin-top:56px"><div class="est" id="est" data-reveal>
+  <div class="est__l">
+    <h3>Rough idea in ten seconds</h3>
+    <p>Honest ballparks, not a sales funnel. Your actual quote is always a fixed figure in writing.</p>
+    <div class="seg" role="group" aria-label="Site size"><button aria-pressed="true" data-size="0">3–5 pages</button><button aria-pressed="false" data-size="1">6–10 pages</button><button aria-pressed="false" data-size="2">Bigger / complex</button></div>
+    <label class="check"><input type="checkbox" id="estShop"> Online shop or booking system</label>
+    <label class="check"><input type="checkbox" id="estRescue"> Rescuing an existing site</label>
+  </div>
+  <div class="est__r" aria-live="polite">
+    <div class="corner-sun" aria-hidden="true"></div>
+    <span>Likely range</span>
+    <div class="est__price" id="estPrice">£600–£900</div>
+    <p class="est__plan" id="estPlan">Starter build · Essential care from £29/mo</p>
+    <a href="contact.html" class="btn btn-primary">Get an exact quote <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</div></div>
   </div>
 </section>
 
-<!-- ======================= FAQ ======================= -->
-<section class="section light faq" id="faq" data-theme="light" style="padding-top:0">
-  <div class="wrap faq__grid">
-    <div class="faq__side">
-      <p class="label mono">(06) — FAQ</p>
-      <h2 class="h2" data-split>Good <em>questions.</em></h2>
-      <p>Can’t see yours? Send it over — you’ll get a straight answer from a real person.</p>
-      <a href="#contact" class="btn btn--ink btn--sm magnetic" style="justify-self:start">Ask a question <span class="btn__ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
+<!-- ============ PEOPLE ============ -->
+<section class="sec sec--white">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker" data-reveal>Who you’ll be dealing with</p>
+      <h2 data-reveal>Two named humans. No ticket system.</h2>
+      <p class="lead" data-reveal>LRWeb is two people, a careful client list, and a strong opinion that websites should be looked after by humans you can name.</p>
     </div>
-    <ul class="acc">
-      <li class="is-open"><button aria-expanded="true">How long does a website take?<i aria-hidden="true"></i></button><div class="acc__body"><div><p>Most sites go live in three to five weeks from our first chat. One-page sites can be quicker; shops and custom features take a little longer. You’ll get a clear timeline before anything starts.</p></div></div></li>
-      <li><button aria-expanded="false">Do I own my website?<i aria-hidden="true"></i></button><div class="acc__body"><div><p>Yes — completely. Your domain, your content and your code. If you ever want to move on, we’ll hand everything over. No lock-in, no hostage fees.</p></div></div></li>
-      <li><button aria-expanded="false">Can I update it myself?<i aria-hidden="true"></i></button><div class="acc__body"><div><p>If you’d like to, yes. We can add a simple editor for things like menus, prices, blog posts and opening times. Or leave it to us on a care plan — whatever suits you.</p></div></div></li>
-      <li><button aria-expanded="false">Will it work on phones?<i aria-hidden="true"></i></button><div class="acc__body"><div><p>It’s designed for phones first. Most of your visitors will be on a mobile, so every layout, button and animation is tested on real devices before launch.</p></div></div></li>
-      <li><button aria-expanded="false">What do you need from me?<i aria-hidden="true"></i></button><div class="acc__body"><div><p>Mostly your knowledge of your business. We’ll guide you on photos and words — and if writing isn’t your thing, we can help with copywriting too.</p></div></div></li>
-      <li><button aria-expanded="false">Do you work with businesses outside my area?<i aria-hidden="true"></i></button><div class="acc__body"><div><p>We work with businesses right across the UK. Everything happens over video calls, email and a shared preview link, so distance is never a problem.</p></div></div></li>
-    </ul>
+    <div class="people">
+  <article class="person" data-reveal>
+    <div class="person__mark person__mark--l" aria-hidden="true"><span>L</span></div>
+    <div><h3>Luke</h3><p class="role">Co-founder · builds &amp; looks after the sites</p><p>Handles the design, development and day-to-day care. Believes a website should load fast, read clearly, and never make its owner feel stupid. Allergic to jargon.</p></div>
+  </article>
+  <article class="person person--r" data-reveal style="--d:1">
+    <div class="person__mark person__mark--r" aria-hidden="true"><span>R</span></div>
+    <div><h3>Ralph</h3><p class="role">Co-founder · keeps everything running</p><p>Handles the operations side, making sure the hosting hums, the backups happen, and clients always know where things stand. The reason invoices arrive on time.</p></div>
+  </article>
+</div>
+    <div class="rules">
+  <div class="rule" data-reveal><span class="n">Rule 01</span><h3>Plain English, always</h3><p>If we can’t explain something without jargon, we don’t understand it well enough. You’ll never get an email from us you need to Google.</p></div>
+  <div class="rule" data-reveal style="--d:1"><span class="n">Rule 02</span><h3>Few clients, done well</h3><p>We cap our client list deliberately. When we’re full, we say so and start a waiting list. Quality doesn’t survive a hundred clients.</p></div>
+  <div class="rule" data-reveal style="--d:2"><span class="n">Rule 03</span><h3>No upsells, no nonsense</h3><p>If you don’t need something, we’ll tell you. The plan you’re on should be the cheapest one that genuinely does the job.</p></div>
+</div>
+    <p style="margin-top:36px" data-reveal><a class="link" href="about.html">More about us <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
   </div>
 </section>
 
-<!-- ======================= CONTACT ======================= -->
-<section class="section contact" id="contact" data-theme="accent">
-  <div class="wrap">
-    <p class="label mono">(07) — Let’s talk</p>
-    <h2 class="contact__title" data-split>Got a project? <em>Let’s make it unforgettable.</em></h2>
-    <div class="contact__grid">
-      <div>
-        <a href="mailto:hello@lrweb.uk" class="rotor" aria-label="Email LRWeb" data-cursor="Email">
-          <svg class="ring" viewBox="0 0 190 190" aria-hidden="true"><defs><path id="rc" d="M95 95 m-78 0 a78 78 0 1 1 156 0 a78 78 0 1 1 -156 0"/></defs><text><textPath href="#rc">Start a project ✺ Start a project ✺ Start a project ✺ </textPath></text></svg>
-          <span class="rotor__core"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span>
-        </a>
-        <div class="contact__details">
-          <a href="mailto:hello@lrweb.uk">hello@lrweb.uk <span>Email</span></a>
-          <div>Within 24 hours <span>Reply time</span></div>
-          <div>UK-wide, remote-first <span>Where</span></div>
-        </div>
-      </div>
-      <form class="form" novalidate>
-        <h3>Tell us about your project</h3>
-        <div class="form__row">
-          <div class="field"><input id="f-name" name="name" placeholder=" " required autocomplete="name"><label for="f-name">Your name</label></div>
-          <div class="field"><input id="f-email" name="email" type="email" placeholder=" " required autocomplete="email"><label for="f-email">Email address</label></div>
-        </div>
-        <div class="field"><input id="f-biz" name="business" placeholder=" " autocomplete="organization"><label for="f-biz">Business name or current website</label></div>
-        <fieldset class="budget">
-          <legend>Rough budget</legend>
-          <div class="budget__opts">
-            <input type="radio" name="budget" id="b1" value="Under £750"><label for="b1">Under £750</label>
-            <input type="radio" name="budget" id="b2" value="£750 – £1,500"><label for="b2">£750 – £1.5k</label>
-            <input type="radio" name="budget" id="b3" value="£1,500 – £3,000"><label for="b3">£1.5k – £3k</label>
-            <input type="radio" name="budget" id="b4" value="£3,000+"><label for="b4">£3k+</label>
-            <input type="radio" name="budget" id="b5" value="Not sure yet"><label for="b5">Not sure yet</label>
-          </div>
-        </fieldset>
-        <div class="field"><textarea id="f-msg" name="message" placeholder=" " rows="4" required></textarea><label for="f-msg">What are you hoping to build?</label></div>
-        <div class="form__foot">
-          <small>Sends via your email app. No mailing lists, ever.</small>
-          <button type="submit" class="btn btn--accent magnetic">Send enquiry <span class="btn__ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></button>
-        </div>
-        <p class="form__ok" role="status">Your email app should now be open with everything filled in. If it didn’t open, email us directly at hello@lrweb.uk.</p>
-      </form>
-    </div>
+<section class="sec">
+  <div class="container"><div class="ref" data-reveal>
+  <div><h3>Know someone whose website needs rescuing?</h3><p>Send them our way. Once they’ve signed up and stayed for 30 days, we’ll send you a thank-you. Simple as that.</p><p style="margin-top:14px"><a class="link" href="referrals.html">How referrals work <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p></div>
+  <div class="ref__amounts"><div class="ref__amount"><b data-count="20" data-prefix="£">£0</b><span>hosting referral</span></div><div class="ref__amount"><b data-count="50" data-prefix="£">£0</b><span>design + hosting</span></div></div>
+</div></div>
+</section>
+
+<section class="cta" data-night aria-labelledby="cta-h">
+  <div class="sky" aria-hidden="true"><canvas class="sky__stars" data-hz="0"></canvas><div class="sky__glow"></div><div class="sun-halo"></div><div class="sun"><i></i></div></div>
+  <div class="container cta__in">
+    <h2 id="cta-h" data-reveal>Stop worrying about your website. Start ignoring it.</h2>
+    <p data-reveal style="--d:1">Tell us what you need: a new site, a rescue job, or just someone reliable to take over the hosting. We’ll reply like humans, with a straight answer and a clear price.</p>
+    <a href="contact.html" class="btn btn-primary" data-reveal style="--d:2">Start a conversation <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <ul class="trust">
+  <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Registered in England &amp; Wales · 17458216</li><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Public liability insured</li><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Not VAT registered, no hidden tax</li><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>30 days’ notice, no lock-in</li><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Two named humans, no ticket system</li>
+</ul>
+    <p class="mail"><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a> · read by Luke or Ralph, not a ticket system</p>
   </div>
 </section>
 </main>
-
-<!-- ======================= FOOTER ======================= -->
-<footer class="footer" data-theme="dark">
-  <div class="wrap">
-    <div class="footer__top">
-      <div><p class="footer__lead">Websites for businesses that would rather be <em>remembered</em> than scrolled past.</p></div>
-      <div><h4>Explore</h4><ul><li><a href="#work">Work</a></li><li><a href="#services">Services</a></li><li><a href="#process">Process</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
-      <div><h4>Concepts</h4><ul><li><a href="work/crumb-and-kiln/index.html" data-wipe="Crumb &amp; Kiln">Crumb &amp; Kiln</a></li><li><a href="work/northside-barber/index.html" data-wipe="Northside">Northside Barber Co.</a></li><li><a href="work/volt-strength/index.html" data-wipe="VOLT">VOLT Strength</a></li><li><a href="work/tidewater/index.html" data-wipe="Tidewater">Tidewater</a></li><li><a href="work/form-and-field/index.html" data-wipe="Form &amp; Field">Form &amp; Field</a></li><li><a href="work/petal-and-stem/index.html" data-wipe="Petal &amp; Stem">Petal &amp; Stem</a></li></ul></div>
-      <div><h4>Say hello</h4><ul><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="#contact">Start a project</a></li></ul></div>
+<footer class="foot" data-night>
+  <div class="container">
+    <div class="foot__grid">
+      <div class="foot__brand">
+        <img src="assets/img/logo-light.png" alt="LRWeb" width="300" height="69" loading="lazy">
+        <p>A small UK web studio that builds websites and then looks after them properly.</p>
+        <span class="status"><i></i>All client sites monitored 24/7</span>
+      </div>
+      <div><h4>LRWeb</h4><ul><li><a href="services.html">What we do</a></li><li><a href="work.html">Example sites</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="about.html">About</a></li><li><a href="referrals.html">Referrals</a></li></ul></div>
+      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="https://lrweb.uk/privacy">Privacy policy</a></li><li><a href="https://lrweb.uk/terms">Terms of service</a></li></ul></div>
     </div>
-    <div class="wordmark" aria-hidden="true" data-wordmark><span data-chars>LRWeb</span><span class="ch dot" style="--i:5">.</span></div>
-    <div class="footer__bar">
-      <span>© <span id="year">2026</span> LRWeb. Hand-built in the UK — no templates were harmed.</span>
-      <a href="#top" class="totop">Back to top <i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 14V2M3 7l5-5 5 5"/></svg></i></a>
+    <div class="foot__legal">
+      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="https://lrweb.uk/terms#business-information">business information</a>, <a href="https://lrweb.uk/terms">terms of service</a> and <a href="https://lrweb.uk/privacy">privacy policy</a>.</p>
+      <div class="foot__bottom"><span>© <span data-year>2026</span> LRWeb · lrweb.uk</span><span>Type “panic” anywhere. Go on.</span></div>
     </div>
   </div>
+  <div class="foot__mark" aria-hidden="true">LRWeb</div>
 </footer>
-
-<script>
-(() => {
-'use strict';
-const $ = (s, c = document) => c.querySelector(s);
-const $$ = (s, c = document) => [...c.querySelectorAll(s)];
-const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const lerp = (a, b, t) => a + (b - a) * t;
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
-const root = document.documentElement;
-let vw = innerWidth, vh = innerHeight;
-const mouse = { x: vw / 2, y: vh / 2, active: false };
-addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; if (!mouse.active && e.pointerType === 'mouse') root.classList.add('cursor-on'); mouse.active = true; }, { passive: true });
-
-/* ---------- split helpers ---------- */
-function splitChars(el, startIndex = 0) {
-  const text = el.textContent; el.textContent = '';
-  let i = startIndex;
-  for (const c of text) {
-    if (c === ' ') { el.append(' '); continue; }
-    const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; s.style.setProperty('--i', i++); el.append(s);
-  }
-  return i;
-}
-$$('[data-chars]').forEach(el => splitChars(el));
-
-// line-split headings: wraps each rendered line so it can slide up from a mask
-function splitLines(el) {
-  const html = el.innerHTML;
-  const tokens = [];
-  el.childNodes.forEach(n => {
-    if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach(t => t && tokens.push(t));
-    else tokens.push(n.outerHTML);
-  });
-  el.innerHTML = tokens.map(t => /^\s+$/.test(t) ? t : `<span class="tk" style="display:inline-block">${t}</span>`).join('');
-  const lines = []; let top = null;
-  $$('.tk', el).forEach(tk => { const t = tk.offsetTop; if (t !== top) { lines.push([]); top = t; } lines[lines.length - 1].push(tk.innerHTML); });
-  if (!lines.length) { el.innerHTML = html; return; }
-  el.innerHTML = lines.map((l, i) => `<span class="split-line"><span style="--i:${i}">${l.join(' ')}</span></span>`).join('');
-}
-function runSplits() { $$('[data-split]').forEach(el => { if (!el.dataset.src) el.dataset.src = el.innerHTML; else el.innerHTML = el.dataset.src; splitLines(el); }); }
-
-// statement: word-by-word scroll reveal
-const statement = $('[data-words]');
-const words = [];
-if (statement) {
-  const walk = (node, parentHot) => {
-    [...node.childNodes].forEach(n => {
-      if (n.nodeType === 3) {
-        const frag = document.createDocumentFragment();
-        n.textContent.split(/(\s+)/).forEach(t => {
-          if (!t) return;
-          if (/^\s+$/.test(t)) { frag.append(t); return; }
-          const s = document.createElement('span'); s.className = 'w'; s.textContent = t; words.push(s); frag.append(s);
-        });
-        n.replaceWith(frag);
-      } else walk(n);
-    });
-  };
-  walk(statement);
-}
-const strike = $('[data-strike]');
-
-/* ---------- preloader ---------- */
-const loader = $('.loader');
-const loadNum = $('#loadNum');
-const loadBar = $('.loader__bar i');
-let seen = false;
-try { seen = sessionStorage.getItem('lr-seen') === '1'; sessionStorage.setItem('lr-seen', '1'); } catch (e) {}
-function finishLoad() {
-  loader && loader.classList.add('is-done');
-  root.classList.add('is-loaded');
-  setTimeout(() => { loader && loader.remove(); }, 1300);
-  runSplits();
-  initReveal();
-}
-if (reduce || seen || !loader) { if (loader) loader.style.transition = 'none'; finishLoad(); }
-else {
-  const start = performance.now(), dur = 1500;
-  const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
-  let fontsDone = false; fontsReady.then(() => fontsDone = true);
-  const tick = now => {
-    let t = clamp((now - start) / dur, 0, 1);
-    if (!fontsDone && t > .85) t = .85 + (t - .85) * .1;
-    const e = 1 - Math.pow(1 - t, 3);
-    loadNum.textContent = String(Math.round(e * 100)).padStart(3, '0');
-    loadBar.style.transform = `scaleX(${e})`;
-    if (t < 1 || !fontsDone) { if (now - start < 4000) return requestAnimationFrame(tick); }
-    loadNum.textContent = '100'; loadBar.style.transform = 'scaleX(1)';
-    setTimeout(finishLoad, 180);
-  };
-  requestAnimationFrame(tick);
-}
-
-/* ---------- reveal on scroll ---------- */
-function initReveal() {
-  const io = new IntersectionObserver(entries => entries.forEach(en => {
-    if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
-  }), { rootMargin: '0px 0px -12% 0px' });
-  $$('[data-reveal],[data-split],[data-wordmark]').forEach(el => io.observe(el));
-}
-
-/* ---------- clock ---------- */
-const clock = $('#clock');
-const setClock = () => { clock.textContent = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' }).format(new Date()); };
-setClock(); setInterval(setClock, 15000);
-$('#year').textContent = new Date().getFullYear();
-
-/* ---------- WebGL hero: living topographic ink ---------- */
-const gl = (() => {
-  const canvas = $('.hero__gl');
-  const ctx = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'high-performance' });
-  if (!ctx) { canvas.classList.add('is-fallback'); return null; }
-  const vs = `#version 300 es
-in vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }`;
-  const fs = `#version 300 es
-precision highp float;
-uniform vec2 R; uniform float T; uniform vec2 M; uniform float H;
-out vec4 o;
-float h(vec2 p){ p = fract(p*vec2(123.34,456.21)); p += dot(p,p+45.32); return fract(p.x*p.y); }
-float n(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
-  return mix(mix(h(i),h(i+vec2(1,0)),u.x), mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x), u.y); }
-float fbm(vec2 p){ float v=0., a=.5; mat2 m=mat2(1.6,1.2,-1.2,1.6); for(int i=0;i<5;i++){ v+=a*n(p); p=m*p; a*=.5; } return v; }
-void main(){
-  vec2 uv = gl_FragCoord.xy/R;
-  vec2 p = (gl_FragCoord.xy - .5*R)/R.y;
-  vec2 m = (M - .5*R)/R.y;
-  float t = T*.035;
-  vec2 q = vec2(fbm(p*1.2 + vec2(0., t)), fbm(p*1.2 + vec2(5.2,1.3) - t));
-  float f = fbm(p*1.1 + 1.7*q + vec2(t*.6, -t*.4));
-  float md = dot(p-m, p-m);
-  f += .22*exp(-md*7.)*H;
-  float band = f*18.;
-  float line = abs(fract(band)-.5)/fwidth(band);
-  float l = 1. - smoothstep(0., 1.3, line);
-  float major = 1. - step(.5, mod(floor(band+.5), 5.));
-  vec3 ink = vec3(.047,.047,.043);
-  vec3 base = mix(ink, vec3(.11,.065,.045), smoothstep(.35,.85,f));
-  float heat = smoothstep(.5,.8,f) + .9*exp(-md*4.)*H;
-  vec3 lc = mix(vec3(.42,.40,.37), vec3(1.,.31,.10), clamp(heat,0.,1.));
-  vec3 col = mix(base, lc, l*mix(.28,.95,major));
-  col += vec3(1.,.31,.1)*.10*exp(-md*2.5)*H;
-  col *= 1. - .55*pow(length(uv-vec2(.62,.45)), 2.);
-  col += (h(gl_FragCoord.xy + fract(T)*100.) - .5)*.035;
-  o = vec4(col, 1.);
-}`;
-  const sh = (type, src) => { const s = ctx.createShader(type); ctx.shaderSource(s, src); ctx.compileShader(s); if (!ctx.getShaderParameter(s, ctx.COMPILE_STATUS)) throw ctx.getShaderInfoLog(s); return s; };
-  let prog;
-  try {
-    prog = ctx.createProgram();
-    ctx.attachShader(prog, sh(ctx.VERTEX_SHADER, vs)); ctx.attachShader(prog, sh(ctx.FRAGMENT_SHADER, fs));
-    ctx.linkProgram(prog); ctx.useProgram(prog);
-  } catch (err) { console.warn(err); canvas.classList.add('is-fallback'); return null; }
-  const buf = ctx.createBuffer(); ctx.bindBuffer(ctx.ARRAY_BUFFER, buf);
-  ctx.bufferData(ctx.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), ctx.STATIC_DRAW);
-  const loc = ctx.getAttribLocation(prog, 'p'); ctx.enableVertexAttribArray(loc); ctx.vertexAttribPointer(loc, 2, ctx.FLOAT, false, 0, 0);
-  const U = { R: ctx.getUniformLocation(prog, 'R'), T: ctx.getUniformLocation(prog, 'T'), M: ctx.getUniformLocation(prog, 'M'), H: ctx.getUniformLocation(prog, 'H') };
-  let scale = 1, visible = true, mx = vw * .7, my = vh * .45, hover = 0;
-  const resize = () => {
-    scale = Math.min(devicePixelRatio || 1, 2) * (vw < 700 ? .85 : .75);
-    canvas.width = Math.round(canvas.clientWidth * scale); canvas.height = Math.round(canvas.clientHeight * scale);
-    ctx.viewport(0, 0, canvas.width, canvas.height);
-  };
-  new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(canvas);
-  const t0 = performance.now();
-  return {
-    resize,
-    frame(now) {
-      if (!visible) return;
-      const r = canvas.getBoundingClientRect();
-      const tx = mouse.active ? mouse.x - r.left : r.width * (.65 + .12 * Math.sin(now / 4000));
-      const ty = mouse.active ? mouse.y - r.top : r.height * (.45 + .1 * Math.cos(now / 5000));
-      mx = lerp(mx, tx, .06); my = lerp(my, ty, .06);
-      hover = lerp(hover, 1, .02);
-      ctx.uniform2f(U.R, canvas.width, canvas.height);
-      ctx.uniform1f(U.T, reduce ? 20 : (now - t0) / 1000);
-      ctx.uniform2f(U.M, mx * scale, (r.height - my) * scale);
-      ctx.uniform1f(U.H, hover);
-      ctx.drawArrays(ctx.TRIANGLES, 0, 3);
-    }
-  };
-})();
-
-/* ---------- variable-width type that reacts to the cursor ---------- */
-function proximityGroup(container, opts) {
-  const chars = $$('.ch', container).filter(c => !c.classList.contains('dot'));
-  const state = chars.map(() => ({ w: opts.w0, g: opts.g0, cx: 0, cy: 0 }));
-  const measure = () => chars.forEach((c, i) => { const r = c.getBoundingClientRect(); state[i].cx = r.left + r.width / 2; state[i].cy = r.top + r.height / 2 + scrollY; });
-  return {
-    measure,
-    frame(now) {
-      const r = container.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) return;
-      chars.forEach((c, i) => {
-        const s = state[i];
-        let t;
-        if (finePointer && mouse.active) {
-          const d = Math.hypot(mouse.x - s.cx, mouse.y - (s.cy - scrollY));
-          t = clamp(1 - d / opts.radius, 0, 1); t = t * t * (3 - 2 * t);
-        } else t = (Math.sin(now / 900 - i * .45) + 1) / 2 * .55;
-        const w = lerp(s.w, opts.w0 + (opts.w1 - opts.w0) * t, .12);
-        const g = lerp(s.g, opts.g0 + (opts.g1 - opts.g0) * t, .12);
-        if (Math.abs(w - s.w) > .05 || Math.abs(g - s.g) > .5) { s.w = w; s.g = g; c.style.fontVariationSettings = `"wdth" ${w.toFixed(1)},"wght" ${g.toFixed(0)}`; }
-      });
-    }
-  };
-}
-const heroType = reduce ? null : proximityGroup($('.hero__title'), { w0: 88, w1: 122, g0: 600, g1: 860, radius: 260 });
-const markType = reduce ? null : proximityGroup($('.wordmark'), { w0: 80, w1: 125, g0: 800, g1: 900, radius: 380 });
-
-/* ---------- cursor ---------- */
-const cursor = $('.cursor'), dot = $('.cursor-dot'), cursorLabel = $('.cursor span');
-const cur = { x: vw / 2, y: vh / 2 };
-if (finePointer && !reduce) {
-  root.classList.add('has-cursor');
-  document.addEventListener('pointerover', e => {
-    const lab = e.target.closest('[data-cursor]');
-    const link = e.target.closest('a,button,label,input,textarea');
-    cursor.classList.toggle('is-label', !!lab);
-    cursor.classList.toggle('is-link', !lab && !!link);
-    cursorLabel.textContent = lab ? lab.dataset.cursor : '';
-  });
-  document.documentElement.addEventListener('pointerleave', () => root.classList.remove('cursor-on'));
-  document.documentElement.addEventListener('pointerenter', () => root.classList.add('cursor-on'));
-}
-
-/* ---------- magnetic buttons ---------- */
-const magnets = finePointer && !reduce ? $$('.magnetic').map(el => ({ el, x: 0, y: 0 })) : [];
-function magnetFrame() {
-  magnets.forEach(m => {
-    const r = m.el.getBoundingClientRect();
-    const cx = r.left + r.width / 2 - m.x, cy = r.top + r.height / 2 - m.y;
-    const dx = mouse.x - cx, dy = mouse.y - cy;
-    const inside = Math.abs(dx) < r.width / 2 + 30 && Math.abs(dy) < r.height / 2 + 30;
-    m.x = lerp(m.x, inside ? dx * .28 : 0, .18); m.y = lerp(m.y, inside ? dy * .38 : 0, .18);
-    if (Math.abs(m.x) > .05 || Math.abs(m.y) > .05) m.el.style.transform = `translate(${m.x.toFixed(2)}px,${m.y.toFixed(2)}px)`;
-    else if (m.el.style.transform) m.el.style.transform = '';
-  });
-}
-
-/* ---------- nav: theme swap, hide on scroll, active link ---------- */
-const nav = $('.nav'), progress = $('.progress');
-const themed = $$('[data-theme]').filter(el => el !== nav);
-const navLinks = $$('.nav__links a');
-let lastY = scrollY;
-function navFrame(y) {
-  const probe = 36;
-  let theme = 'dark';
-  for (const s of themed) { const r = s.getBoundingClientRect(); if (r.top <= probe && r.bottom > probe) { theme = s.dataset.theme; break; } }
-  if (nav.dataset.theme !== theme) { nav.dataset.theme = theme; root.classList.toggle('cursor-light', theme !== 'dark'); }
-  if (!root.classList.contains('menu-open')) {
-    if (y > lastY + 4 && y > 300) nav.classList.add('is-hidden');
-    else if (y < lastY - 4) nav.classList.remove('is-hidden');
-  }
-  lastY = y;
-  const max = document.documentElement.scrollHeight - vh;
-  progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-  let active = null;
-  navLinks.forEach(a => { const s = $(a.getAttribute('href')); if (s) { const r = s.getBoundingClientRect(); if (r.top < vh * .5 && r.bottom > vh * .5) active = a; } });
-  navLinks.forEach(a => a.classList.toggle('is-active', a === active));
-}
-const menuBtn = $('.nav__menu');
-menuBtn.addEventListener('click', () => {
-  const open = root.classList.toggle('menu-open');
-  menuBtn.setAttribute('aria-expanded', open); menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-  nav.classList.remove('is-hidden');
-});
-$$('.menu a').forEach(a => a.addEventListener('click', () => { root.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded', 'false'); }));
-
-/* ---------- smooth anchor scrolling ---------- */
-document.addEventListener('click', e => {
-  const a = e.target.closest('a[href^="#"]');
-  if (!a) return;
-  const id = a.getAttribute('href'); const t = id === '#top' ? document.body : $(id);
-  if (!t) return;
-  e.preventDefault();
-  const plan = a.dataset.plan;
-  if (plan) { const msg = $('#f-msg'); if (msg && !msg.value) msg.value = `I'm interested in the ${plan} package. `; }
-  const y = id === '#top' ? 0 : t.getBoundingClientRect().top + scrollY - (id === '#contact' ? 0 : 20);
-  scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
-  history.replaceState(null, '', id);
-});
-
-/* ---------- page wipe into concept sites ---------- */
-const wipe = $('.wipe');
-document.addEventListener('click', e => {
-  const a = e.target.closest('a[data-wipe]');
-  if (!a || e.metaKey || e.ctrlKey || e.shiftKey || reduce) return;
-  e.preventDefault();
-  $('span', wipe).textContent = a.dataset.wipe;
-  wipe.classList.add('is-on');
-  setTimeout(() => { location.href = a.href; }, 800);
-});
-addEventListener('pageshow', () => wipe.classList.remove('is-on'));
-
-/* ---------- marquee with scroll velocity ---------- */
-const marqueeRows = $$('.marquee__row').map(row => {
-  const track = $('.marquee__track', row);
-  for (let i = 0; i < 3; i++) row.append(track.cloneNode(true));
-  return { row, track, x: 0, dir: +row.dataset.speed, w: 0 };
-});
-const measureMarquee = () => marqueeRows.forEach(m => m.w = m.track.offsetWidth);
-let velocity = 0;
-
-/* ---------- stacked work cards ---------- */
-const cards = $$('.card');
-let cardTops = [];
-const measureCards = () => { cardTops = cards.map(c => parseFloat(getComputedStyle(c).top) || 0); };
-function cardsFrame() {
-  if (vw <= 860 && reduce) return;
-  const rects = cards.map(c => c.getBoundingClientRect());
-  cards.forEach((c, i) => {
-    let depth = 0;
-    for (let j = i + 1; j < cards.length; j++) {
-      depth += clamp((vh - rects[j].top) / (vh - cardTops[j]), 0, 1);
-    }
-    const s = 1 - depth * .045;
-    c.style.transform = depth > 0 ? `scale(${s.toFixed(4)})` : '';
-    c.style.filter = depth > 0 ? `brightness(${(1 - depth * .12).toFixed(3)})` : '';
-  });
-}
-// the page preview scrolls to its bottom on hover — tell CSS how tall the viewport is
-function measureShots() { $$('.browser__view').forEach(v => { const img = $('img', v); img.style.setProperty('--vh-img', v.clientHeight + 'px'); }); }
-
-/* ---------- process: horizontal pinned scroll ---------- */
-const proc = $('.process'), track = $('.process__track'), steps = $$('.step'), bar = $('.process__bar i'), stepNow = $('#stepNow');
-let procTop = 0, procH = 0, trackW = 0, trackPad = 0;
-function measureProcess() { procTop = proc.offsetTop; procH = proc.offsetHeight; trackW = track.scrollWidth; trackPad = parseFloat(getComputedStyle(track).paddingLeft) || 0; }
-function processFrame(y) {
-  if (vw <= 860) { steps.forEach(s => s.classList.add('is-active')); return; }
-  const p = clamp((y - procTop) / (procH - vh), 0, 1);
-  track.style.transform = `translate3d(${(-p * Math.max(0, trackW - vw + trackPad)).toFixed(1)}px,0,0)`;
-  bar.style.transform = `scaleX(${p})`;
-  const idx = Math.min(steps.length - 1, Math.floor(p * steps.length * .999));
-  steps.forEach((s, i) => s.classList.toggle('is-active', i === idx));
-  stepNow.textContent = String(idx + 1).padStart(2, '0');
-}
-
-/* ---------- statement words ---------- */
-function statementFrame() {
-  if (!statement) return;
-  const r = statement.getBoundingClientRect();
-  const p = clamp((vh * .85 - r.top) / (r.height + vh * .35), 0, 1);
-  const n = words.length;
-  words.forEach((w, i) => {
-    const o = clamp(p * n * 1.25 - i, 0, 1);
-    const v = (.14 + o * .86).toFixed(2);
-    if (w._o !== v) { w._o = v; w.style.opacity = v; }
-  });
-  if (strike) strike.style.setProperty('--s', clamp((p - .12) * 5, 0, 1));
-}
-
-/* ---------- counters ---------- */
-const counterIO = new IntersectionObserver(entries => entries.forEach(en => {
-  if (!en.isIntersecting) return;
-  const el = en.target, to = +el.dataset.count, t0 = performance.now(), dur = 1600;
-  counterIO.unobserve(el);
-  if (to === 0) { el.textContent = '0'; return; }
-  const step = now => { const t = clamp((now - t0) / dur, 0, 1); el.textContent = Math.round(to * (1 - Math.pow(1 - t, 4))); if (t < 1) requestAnimationFrame(step); };
-  reduce ? el.textContent = to : requestAnimationFrame(step);
-}), { threshold: .6 });
-$$('[data-count]').forEach(el => counterIO.observe(el));
-
-/* ---------- accordions ---------- */
-$$('.svc__head').forEach(btn => btn.addEventListener('click', () => {
-  const item = btn.parentElement, open = !item.classList.contains('is-open');
-  $$('.svc__item').forEach(i => { i.classList.remove('is-open'); $('.svc__head', i).setAttribute('aria-expanded', 'false'); });
-  if (open) { item.classList.add('is-open'); btn.setAttribute('aria-expanded', 'true'); }
-  setTimeout(measureAll, 750);
-}));
-$$('.acc button').forEach(btn => btn.addEventListener('click', () => {
-  const li = btn.parentElement, open = li.classList.toggle('is-open');
-  btn.setAttribute('aria-expanded', open);
-  setTimeout(measureAll, 650);
-}));
-
-/* ---------- pricing spotlight ---------- */
-$$('.plan').forEach(p => p.addEventListener('pointermove', e => {
-  const r = p.getBoundingClientRect();
-  p.style.setProperty('--mx', (e.clientX - r.left) + 'px'); p.style.setProperty('--my', (e.clientY - r.top) + 'px');
-}));
-
-/* ---------- contact form → email app ---------- */
-const form = $('.form');
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const d = new FormData(form);
-  const bad = ['name', 'email', 'message'].filter(k => !String(d.get(k) || '').trim() || (k === 'email' && !/^\S+@\S+\.\S+$/.test(d.get(k))));
-  $$('.field', form).forEach(f => f.style.setProperty('--bad', 0));
-  if (bad.length) { const el = form.elements[bad[0]]; el.focus(); el.closest('.field').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'translateX(0)' }], { duration: 320 }); return; }
-  const body = `Name: ${d.get('name')}\nEmail: ${d.get('email')}\nBusiness: ${d.get('business') || '—'}\nBudget: ${d.get('budget') || '—'}\n\n${d.get('message')}`;
-  location.href = `mailto:hello@lrweb.uk?subject=${encodeURIComponent('New project enquiry — ' + d.get('name'))}&body=${encodeURIComponent(body)}`;
-  form.classList.add('is-sent');
-});
-
-/* ---------- measure + main loop ---------- */
-function measureAll() {
-  vw = innerWidth; vh = innerHeight;
-  gl && gl.resize();
-  heroType && heroType.measure(); markType && markType.measure();
-  measureMarquee(); measureProcess(); measureShots(); measureCards();
-}
-let rT; addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { measureAll(); runSplits(); $$('[data-split]').forEach(el => el.classList.add('is-in')); }, 150); });
-addEventListener('load', measureAll);
-document.fonts && document.fonts.ready.then(measureAll);
-measureAll();
-
-let prevY = scrollY, last = performance.now();
-function loop(now) {
-  const dt = Math.min(64, now - last) / 16.67; last = now;
-  const y = scrollY;
-  velocity = lerp(velocity, (y - prevY), .12); prevY = y;
-
-  if (!reduce) {
-    marqueeRows.forEach(m => {
-      if (!m.w) return;
-      m.x -= (1.1 + Math.abs(velocity) * .25) * m.dir * dt * (velocity < -0.5 ? -1 : 1);
-      if (m.x <= -m.w) m.x += m.w; if (m.x > 0) m.x -= m.w;
-      m.row.style.transform = `translate3d(${m.x.toFixed(1)}px,0,0) skewX(${clamp(-velocity * .3, -8, 8).toFixed(2)}deg)`;
-    });
-  }
-  if (finePointer && !reduce) {
-    cur.x = lerp(cur.x, mouse.x, .16); cur.y = lerp(cur.y, mouse.y, .16);
-    cursor.style.transform = `translate3d(${cur.x}px,${cur.y}px,0)`;
-    dot.style.transform = `translate3d(${mouse.x}px,${mouse.y}px,0)`;
-    magnetFrame();
-  }
-  gl && gl.frame(now);
-  heroType && heroType.frame(now);
-  markType && markType.frame(now);
-  navFrame(y);
-  statementFrame();
-  cardsFrame();
-  processFrame(y);
-  requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
-})();
-</script>
+<script src="assets/js/site.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact LRWeb: Tell Us What You Need</title>
+<meta name="description" content="Tell us about your website. New project? hello@lrweb.uk. Existing client? support@lrweb.uk. Read by Luke and Ralph, no ticket numbers, no chatbots.">
+<link rel="canonical" href="https://lrweb.uk/contact">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LRWeb">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Contact LRWeb: Tell Us What You Need">
+<meta property="og:description" content="Tell us about your website. New project? hello@lrweb.uk. Existing client? support@lrweb.uk. Read by Luke and Ralph, no ticket numbers, no chatbots.">
+<meta property="og:image" content="https://lrweb.uk/assets/img/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070824">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/font-03.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/font-15.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/site.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="nav__in">
+    <a href="index.html" class="nav__logo" aria-label="LRWeb home"><img class="for-dark" src="assets/img/logo-light.png" alt="LRWeb" width="300" height="69"><img class="for-light" src="assets/img/logo-dark.png" alt="" width="300" height="69"></a>
+    <nav class="nav__links" aria-label="Main"><a href="services.html">What we do</a><a href="work.html">Work</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="referrals.html">Referrals</a><a href="contact.html" class="btn btn-primary">Get in touch</a></nav>
+    <button class="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mmenu"><span></span></button>
+  </div>
+</header>
+<div class="mmenu" id="mmenu"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="services.html">What we do</a><a href="work.html">Work</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="referrals.html">Referrals</a><a href="contact.html" aria-current="page">Get in touch</a></nav><p class="mmenu__foot"><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a> · read by Luke or Ralph</p><div class="mmenu__sun" aria-hidden="true"></div></div>
+<main id="main">
+<section class="phero" data-night>
+  <div class="sky" aria-hidden="true"><canvas class="sky__stars" data-hz="0"></canvas><div class="sky__glow"></div><div class="sun-halo"></div><div class="sun"><i></i></div></div>
+  <div class="container">
+    <p class="crumbs load-in"><a href="index.html">Home</a> / Contact</p>
+    <h1 class="load-in d1">Tell us what you need. We’ll reply like humans.</h1>
+    <p class="lead load-in d2">Read by Luke and Ralph. No ticket numbers, no chatbots.</p>
+    
+  </div>
+</section>
+
+<section class="sec">
+  <div class="container contact">
+    <div>
+      <p class="kicker" data-reveal>What happens next</p>
+      <ol class="next"><li data-reveal style="--d:0"><span class="n">01</span><div><h3>We read it properly</h3><p>Your enquiry goes to our inbox, not a CRM black hole. We aim to reply within one working day.</p></div></li><li data-reveal style="--d:1"><span class="n">02</span><div><h3>A real conversation</h3><p>We ask a few sensible questions by email or a quick call, whichever you prefer.</p></div></li><li data-reveal style="--d:2"><span class="n">03</span><div><h3>A written quote</h3><p>Fixed price, clear scope, no pressure. Take your time deciding.</p></div></li><li data-reveal style="--d:3"><span class="n">04</span><div><h3>Work begins</h3><p>For builds: 50% deposit secures your slot. For hosting: we start the migration straight away.</p></div></li></ol>
+      <div class="mails" data-reveal>
+        <a href="mailto:hello@lrweb.uk">hello@lrweb.uk <span>New projects</span></a>
+        <a href="mailto:support@lrweb.uk">support@lrweb.uk <span>Existing clients</span></a>
+      </div>
+    </div>
+    <div>
+      <form class="form" id="contactForm" data-endpoint="/api/contact" novalidate data-reveal>
+        <div class="tabs" role="tablist" aria-label="Enquiry type"><button type="button" role="tab" aria-selected="true" data-tab="project">New website / redesign</button><button type="button" role="tab" aria-selected="false" data-tab="hosting">Hosting &amp; care</button></div>
+        <div class="fields">
+          <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required><span class="err">Please add your name.</span></div>
+          <div class="field"><label for="f-biz">Business / organisation</label><input id="f-biz" name="organisation" autocomplete="organization"></div>
+          <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required><span class="err">Please add a valid email address.</span></div>
+          <div class="field"><label for="f-url">Current website (if you have one)</label><input id="f-url" name="website" inputmode="url" placeholder="yourbusiness.co.uk"></div>
+          <div class="field full" id="f-tier-wrap" hidden><label for="f-tier">Which plan looks right?</label><select id="f-tier" name="plan"><option>Not sure yet</option><option>Essential — £29/mo</option><option>Plus — £49/mo</option><option>Pro — £89/mo</option></select></div>
+          <div class="field full"><label for="f-msg" id="f-msg-label">Tell us about the project</label><textarea id="f-msg" name="message" required placeholder="What does the website need to do? Any sites you like the look of? Rough timeline?"></textarea><span class="err">Please add a few words about what you need.</span></div>
+          <input class="hp" id="f-hp" name="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        </div>
+        <div class="form__foot"><small>We use what you send us only to reply to your enquiry and discuss the work. No mailing lists, and we don’t pass your details to anyone else. See our <a href="https://lrweb.uk/privacy" style="text-decoration:underline">privacy policy</a>.</small><button type="submit" class="btn btn-primary">Send enquiry <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      </form>
+      <div class="form form-ok" id="formOk" hidden><div class="tick"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 tabindex="-1">Thanks, your enquiry is on its way.</h3><p>We read every message ourselves and aim to reply within one working day. In the meantime, support@lrweb.uk is there for existing clients.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="foot" data-night>
+  <div class="container">
+    <div class="foot__grid">
+      <div class="foot__brand">
+        <img src="assets/img/logo-light.png" alt="LRWeb" width="300" height="69" loading="lazy">
+        <p>A small UK web studio that builds websites and then looks after them properly.</p>
+        <span class="status"><i></i>All client sites monitored 24/7</span>
+      </div>
+      <div><h4>LRWeb</h4><ul><li><a href="services.html">What we do</a></li><li><a href="work.html">Example sites</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="about.html">About</a></li><li><a href="referrals.html">Referrals</a></li></ul></div>
+      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="https://lrweb.uk/privacy">Privacy policy</a></li><li><a href="https://lrweb.uk/terms">Terms of service</a></li></ul></div>
+    </div>
+    <div class="foot__legal">
+      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="https://lrweb.uk/terms#business-information">business information</a>, <a href="https://lrweb.uk/terms">terms of service</a> and <a href="https://lrweb.uk/privacy">privacy policy</a>.</p>
+      <div class="foot__bottom"><span>© <span data-year>2026</span> LRWeb · lrweb.uk</span><span>Type “panic” anywhere. Go on.</span></div>
+    </div>
+  </div>
+  <div class="foot__mark" aria-hidden="true">LRWeb</div>
+</footer>
+<script src="assets/js/site.js" defer></script>
+</body>
+</html>

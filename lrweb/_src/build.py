@@ -86,7 +86,7 @@ WORK = [
 def wcard(w, wide=False, dark=False):
     slug, name, typ, place, url, desc, tags = w
     tags_html = ''.join(f'<li>{t}</li>' for t in tags)
-    frame = f'''<div class="wcard__frame"><div class="wcard__bar"><i></i><i></i><i></i><span>{url}</span></div><div class="wcard__view"><img src="assets/work/{slug}.jpg" alt="{name} example website" loading="lazy" width="1200" height="2250"></div></div>'''
+    frame = f'''<div class="wcard__frame"><div class="wcard__bar"><i></i><i></i><i></i><span>{url}</span></div><div class="wcard__view"><img src="assets/work/thumb/{slug}.jpg" srcset="assets/work/thumb/{slug}.jpg 800w, assets/work/{slug}.jpg 1200w" sizes="(max-width:760px) 92vw, 560px" alt="{name} example website" loading="lazy" decoding="async" width="1200" height="2250"></div></div>'''
     info = f'''<div><div class="wcard__meta"><div><h3>{name}</h3><p>{typ} · {place}</p></div><span class="wcard__type">Example site</span></div>{'<p style="margin-top:14px">' + desc + '</p>' if wide else ''}<ul class="tags">{tags_html}</ul>{'<p style="margin-top:22px"><span class="link">Open the site ' + ARROW + '</span></p>' if wide else ''}</div>'''
     cls = 'wcard wcard--wide' if wide else 'wcard'
     return f'<a class="{cls}" href="work/{slug}/index.html" data-reveal>{frame}{info}</a>'
@@ -115,6 +115,7 @@ def head(title, desc, canonical):
 <meta name="theme-color" content="#070824">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
 <link rel="preload" href="assets/fonts/font-03.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/font-15.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fonts.css">
@@ -399,7 +400,7 @@ def home():
     steps_html = ''.join(f'<article class="sstep{" is-on" if i == 0 else ""}" data-step="{i}"><span class="n">{n} / 04</span><h2>{t}</h2><p>{d}</p><ul>{"".join(f"<li>{c}</li>" for c in chips)}</ul></article>' for i, (n, t, d, chips) in enumerate(steps))
     KEYROWS = [[1]*14, [1]*13 + [1.6], [1.6] + [1]*13, [1.9] + [1]*11 + [1.9], [2.4] + [1]*10 + [2.4], [1, 1, 1, 1.3, 5.6, 1.3, 1, 1, 1, 1]]
     keys = ''.join('<span>' + ''.join(f'<i style="flex:{w}"></i>' if w != 1 else '<i></i>' for w in r) + '</span>' for r in KEYROWS)
-    carousel = ''.join(f'<a class="ccard" href="work/{w[0]}/index.html" draggable="false" aria-label="{w[1]}, {w[2]} example site"><div class="ccard__frame"><div class="ccard__bar"><i></i><i></i><i></i><span>{w[4]}</span></div><div class="ccard__view"><img src="assets/work/{w[0]}.jpg" alt="" loading="lazy" draggable="false" width="1200" height="2250"></div></div><div class="ccard__meta"><b>{w[1]}</b><span>{w[2]} · {w[3]}</span></div></a>' for w in WORK)
+    carousel = ''.join(f'<a class="ccard" href="work/{w[0]}/index.html" draggable="false" aria-label="{w[1]}, {w[2]} example site"><div class="ccard__frame"><div class="ccard__bar"><i></i><i></i><i></i><span>{w[4]}</span></div><div class="ccard__view"><img src="assets/work/thumb/{w[0]}.jpg" alt="" loading="lazy" decoding="async" draggable="false" width="800" height="1500"></div></div><div class="ccard__meta"><b>{w[1]}</b><span>{w[2]} · {w[3]}</span></div></a>' for w in WORK)
     dots = ''.join('<i></i>' for _ in WORK)
     return head('Managed Websites &amp; Hosting for Small UK Businesses | LRWeb',
                 'LRWeb builds websites for small UK businesses, then hosts, updates, backs up and looks after them. Care plans from £29 a month. Two named humans, no jargon.', '') + SCHEMA + nav('index.html') + f"""
@@ -452,7 +453,7 @@ def home():
             <div class="lap__face"><i class="lap__cam"></i><span class="lap__brand">LRWeb</span><div class="lap__display">
               <div class="lap__boot"><img src="assets/img/favicon.svg" alt=""></div>
               <div class="wire"><div class="wire__nav"><i style="width:22%"></i><i style="width:40%"></i></div><div class="wire__hero"><div class="lines"><i class="big"></i><i class="big" style="width:70%"></i><i style="width:90%"></i><i style="width:60%"></i><b></b></div><div class="wire__img"></div></div><div class="wire__cards"><i></i><i></i><i></i></div></div>
-              <div class="lap__site"><img src="assets/work/smith-and-sons-hero.jpg" alt="" width="1440" height="900"></div>
+              <div class="lap__site"><img src="assets/work/smith-and-sons-hero.jpg" alt="" width="1440" height="900" loading="lazy" decoding="async"></div>
               <div class="lap__toasts"><div>{OKI}Backup complete<time>02:11</time></div><div>{OKI}Updates applied<time>02:04</time></div><div>{OKI}Security scan: all clear<time>03:30</time></div></div>
               <span class="lap__glass"></span>
             </div></div>
@@ -986,6 +987,14 @@ def contact():
 </section>
 ''' + FOOT
 
+
+# ================================================================= 404 (served at any path, so every link is made absolute)
+def notfound():
+    import re
+    page = head('Page not found | LRWeb', 'That page has drifted off. Head back to LRWeb.', '404') + nav('') + phero('404', 'This page has sailed off into the night.', 'The link may be old, or the page may have moved. Everything else is right where you left it.', f'<p class="load-in d3" style="margin-top:30px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn-primary" href="index.html">Back to the homepage {ARROW}</a><a class="btn btn-ghost" href="contact.html">Tell us what you were after</a></p>') + FOOT
+    page = page.replace('<link rel="canonical" href="https://lrweb.uk/404">', '<meta name="robots" content="noindex">')
+    return re.sub(r'(href|src)="(?!https?:|mailto:|tel:|#|/|data:)', r'\1="/', page)
+
 # ================================================================= LEGAL (ported word for word from lrweb.uk, em dashes swapped for plain punctuation)
 import re as _re
 LEGAL_SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'legal')
@@ -998,7 +1007,7 @@ def _undash(h):
     return h.replace(' — ', ': ').replace('—', ',')
 def legal(slug, title, crumb, lead):
     body = open(os.path.join(LEGAL_SRC, slug + '.html')).read()
-    body = _undash(body)
+    body = _undash(body).replace('href="/privacy"', 'href="privacy.html"').replace('href="/terms"', 'href="terms.html"')
     body = body.replace(' class="reveal"', '').replace(' reveal"', '"')
     body = _re.sub(r'<button type="button" onclick="window.print\(\)"[^>]*>Print</button>', '<button type="button" class="legal__print" data-print>Print or save as PDF</button>', body)
     body = _re.sub(r'<span style="display:inline-block;margin-left:8px;[^"]*">', '<span class="legal__pill">', body)
@@ -1021,7 +1030,7 @@ def legal(slug, title, crumb, lead):
 </section>
 ''' + FOOT
 
-PAGES = {'index.html': home, 'services.html': services, 'pricing.html': pricing, 'about.html': about, 'work.html': work, 'referrals.html': referrals, 'contact.html': contact,
+PAGES = {'404.html': notfound, 'index.html': home, 'services.html': services, 'pricing.html': pricing, 'about.html': about, 'work.html': work, 'referrals.html': referrals, 'contact.html': contact,
          'privacy.html': lambda: legal('privacy', 'Privacy policy', 'Privacy', 'The plain-English version of how we handle your data. Short, because we don’t collect much.'),
          'terms.html': lambda: legal('terms', 'Terms of service', 'Terms', 'The ground rules for working with us, without the legalese fog.')}
 for name, fn in PAGES.items():

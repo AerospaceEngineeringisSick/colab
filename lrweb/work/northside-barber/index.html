@@ -157,7 +157,7 @@ body::after{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;opa
 
 /* scissors scene */
 .cut{height:260vh;position:relative;background:var(--bone);color:var(--black)}
-.cut__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px}
+.cut__pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px}
 .cut__lead{font-family:var(--f-d);font-weight:800;text-transform:uppercase;letter-spacing:.2em;font-size:clamp(16px,1.6vw,22px);color:var(--ox)}
 .cut__line{position:relative;white-space:nowrap;font-family:var(--f-d);font-weight:900;text-transform:uppercase;font-size:clamp(64px,11vw,200px);line-height:1;letter-spacing:-.01em;display:flex}
 .cut__line .L{position:relative;display:inline-block}
@@ -308,7 +308,7 @@ body::after{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;opa
 @keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 @media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
-html{overflow-x:clip}
+html,body{overflow-x:clip}
 </style>
 <script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>

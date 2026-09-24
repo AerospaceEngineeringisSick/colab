@@ -165,7 +165,7 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
 
 /* ---------- process (pinned) ---------- */
 .proc{height:280vh;position:relative;background:var(--flour-2)}
-.proc__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px}
+.proc__pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px}
 .proc__text{position:relative;display:grid}
 .proc__step{grid-area:1/1;opacity:0;transform:translateY(30px);transition:opacity .6s,transform .8s var(--ease);pointer-events:none}
 .proc__step.on{opacity:1;transform:none;pointer-events:auto}
@@ -298,7 +298,7 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
 @keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 @media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
-html{overflow-x:clip}
+html,body{overflow-x:clip}
 </style>
 <script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>

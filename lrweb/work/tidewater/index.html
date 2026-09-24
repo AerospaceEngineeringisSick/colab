@@ -58,7 +58,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* hero */
 .hero{height:230vh;position:relative;background:var(--abyss)}
-.hero__stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.hero__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 #sea{position:absolute;inset:0;width:100%;height:100%}
 .hero__txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;color:var(--foam);padding:15vh var(--pad) 15vh;will-change:opacity,transform}
 .hero__top{display:flex;flex-direction:column;align-items:center;color:var(--sea)}
@@ -137,7 +137,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* boat to plate */
 .journey{height:240vh;position:relative;background:var(--sand-2)}
-.journey__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.journey__pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
 .journey h2{font-size:clamp(46px,6vw,96px);max-width:900px}
 .route{width:100%;height:auto;margin-top:30px;overflow:visible}
 .route .path{fill:none;stroke:var(--sea);stroke-width:2;stroke-dasharray:3 10;stroke-linecap:round}
@@ -233,7 +233,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 @media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
-html{overflow-x:clip}
+html,body{overflow-x:clip}
 </style>
 <script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>

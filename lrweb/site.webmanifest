@@ -1,0 +1,25 @@
+{
+  "name": "LRWeb",
+  "short_name": "LRWeb",
+  "description": "Managed websites, hosting and care plans for small UK businesses.",
+  "lang": "en-GB",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#070824",
+  "theme_color": "#070824",
+  "icons": [
+    {
+      "src": "/assets/img/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/img/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    }
+  ]
+}

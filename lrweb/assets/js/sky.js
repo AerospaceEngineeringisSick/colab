@@ -5,7 +5,11 @@
 (() => {
   const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const FRAG = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
+#else
+precision mediump float;
+#endif
 uniform vec2 uRes; uniform float uTime, uProg, uHz, uSunX, uSunR, uAur, uQ; uniform vec2 uMouse;
 const vec3 GREEN = vec3(.239,.722,.553);
 const vec3 BLUE = vec3(.043,.525,.918);

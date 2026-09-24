@@ -13,13 +13,15 @@ lrweb/
 ├── contact.html      Enquiry form (posts to /api/contact, falls back to email)
 ├── privacy.html      Privacy policy (same wording as lrweb.uk)
 ├── terms.html        Terms of service (same wording as lrweb.uk)
+├── 404.html          Not-found page (absolute links, so it works at any path)
+├── robots.txt, sitemap.xml, site.webmanifest
 ├── _src/             build.py (generates the pages above) + legal/ source text
 ├── assets/
 │   ├── css/fonts.css, css/site.css
 │   ├── js/site.js, js/sky.js (WebGL sky), js/vendor/ (GSAP, ScrollTrigger, Lenis)
 │   ├── fonts/        brand fonts (same files as the live site)
 │   ├── img/          logos, favicon, OG image (from the live site)
-│   └── work/         screenshots of the example sites
+│   └── work/         screenshots of the example sites (thumb/ = lighter 800px versions)
 └── work/             the example sites
     ├── smith-and-sons/     plumbing & heating, West Berkshire (the "after" of the rescue slider)
     ├── crumb-and-kiln/     bakery & café

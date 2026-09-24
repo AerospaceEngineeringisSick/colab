@@ -1,4 +1,4 @@
-/* LRWeb — site behaviour (GSAP + ScrollTrigger + Lenis, same stack as lrweb.uk) */
+/* LRWeb · site behaviour (GSAP + ScrollTrigger + Lenis, same stack as lrweb.uk) */
 (() => {
   'use strict';
   const $ = (s, c = document) => c.querySelector(s);
@@ -10,10 +10,30 @@
   const G = window.gsap && window.ScrollTrigger ? window.gsap : null;
   if (G) G.registerPlugin(ScrollTrigger);
 
+  /* ---------- every page starts at the top (unless a #link says otherwise) ---------- */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (!location.hash) scrollTo(0, 0);
+
+  /* ---------- page transition: the four brand-colour curtain from lrweb.uk ---------- */
+  const curtain = $('.curtain');
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a || !curtain || reduce || a.target === '_blank' || a.hasAttribute('download') || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.defaultPrevented) return;
+    const href = a.getAttribute('href');
+    if (!href || /^(https?:|mailto:|tel:|#|javascript:)/.test(href)) return;
+    const url = new URL(href, location.href);
+    if (url.pathname === location.pathname && url.search === location.search) return;
+    e.preventDefault();
+    try { sessionStorage.setItem('lr-pt', '1'); } catch (_) {}
+    root.classList.remove('pt-in'); root.classList.add('pt-go');
+    setTimeout(() => { location.href = url.href; }, 640);
+  });
+  addEventListener('pageshow', e => { if (e.persisted) root.classList.remove('pt-go', 'pt-in'); });
+
   /* ---------- smooth scroll ---------- */
   let lenis = null;
   if (G && window.Lenis && !reduce) {
-    lenis = new Lenis({ lerp: .1, smoothWheel: true });
+    lenis = new Lenis({ lerp: .13, wheelMultiplier: 1.12, smoothWheel: true });
     lenis.on('scroll', ScrollTrigger.update);
     G.ticker.add(t => lenis.raf(t * 1000));
     G.ticker.lagSmoothing(0);
@@ -138,14 +158,14 @@
       todo: '<svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.2" stroke="rgba(245,248,250,.4)" stroke-width="1.4" stroke-dasharray="2.5 2.5"/></svg>'
     };
     const EV = [
-      [1380, 'Uptime check · site up in 0.4s', 'Uptime check', 'monitored.'],
-      [1560, 'Nightly backup started', 'Nightly backup', 'backed up.'],
-      [1564, 'Plugin updates applied (4)', 'Plugin updates scheduled', 'updated.'],
-      [1571, 'Daily backup complete · 312 MB', 'Daily backup due', 'backed up.'],
-      [1650, 'Malware scan · all clear', 'Malware scan', 'secured.'],
-      [1815, 'SSL certificate renewed', 'SSL certificate renewal', 'secured.'],
-      [1862, 'Cache warmed · pages in 0.8s', 'Cache warm-up', 'hosted.'],
-      [1920, 'Uptime check · all good', 'Uptime check', 'monitored.']
+      [1380, 'Checked your site is up · 0.4s', 'Is the site up?', 'monitored.'],
+      [1560, 'Saving tonight’s backup…', 'Nightly backup', 'backed up.'],
+      [1564, 'Updated 4 add-ons, tested first', 'Software updates', 'updated.'],
+      [1571, 'Backup saved safely off-site', 'Backup check', 'backed up.'],
+      [1650, 'Security scan · all clear', 'Security scan', 'secured.'],
+      [1815, 'Padlock certificate renewed', 'Padlock (SSL) renewal', 'secured.'],
+      [1862, 'Pages sped up · load in 0.8s', 'Speed boost', 'hosted.'],
+      [1920, 'Checked your site is up · all good', 'Morning check', 'monitored.']
     ];
     const pad = n => String(n).padStart(2, '0');
     const tm = m => `${pad(Math.floor(m % 1440 / 60))}:${pad(m % 60)}`;
@@ -186,7 +206,7 @@
     render(reduce ? 1 : 0);
     if (G && !reduce) {
       const st = { p: 0 };
-      G.to(st, { p: 1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom bottom', scrub: .7 }, onUpdate: () => render(st.p) });
+      G.to(st, { p: 1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom bottom', scrub: .45 }, onUpdate: () => render(st.p) });
       const tl = G.timeline({ delay: .05 });
       tl.to(veil, { opacity: 0, duration: 1.8, ease: 'power2.inOut' })
         .from($$('h1 .w > span', hero), { yPercent: 115, rotate: 5, duration: 1.2, stagger: .09, ease: 'power4.out' }, .25)
@@ -211,7 +231,7 @@
 
   /* ---------- who-we-work-with marquee leans with scroll speed ---------- */
   const who = $('.who__row');
-  if (who && G && lenis) { const sk = G.quickTo(who, 'skewX', { duration: .5, ease: 'power3' }); tick(() => sk(clamp(-lenis.velocity * .35, -12, 12))); }
+  if (who && G && lenis) { const o = { v: 0 }, sk = G.quickTo(o, 'v', { duration: .5, ease: 'power3', onUpdate: () => who.style.setProperty('--sk', o.v.toFixed(2) + 'deg') }); tick(() => sk(clamp(-lenis.velocity * .35, -12, 12))); }
 
   /* ---------- STORY: the laptop ---------- */
   const story = $('.story');
@@ -220,7 +240,7 @@
     const tl = G.timeline({
       defaults: { ease: 'power2.inOut' },
       scrollTrigger: {
-        trigger: story, start: 'top top', end: 'bottom bottom', scrub: .9,
+        trigger: story, start: 'top top', end: 'bottom bottom', scrub: .55,
         onUpdate: self => {
           const p = self.progress, idx = Math.min(3, Math.floor(p * 4.001));
           steps.forEach((s, i) => s.classList.toggle('is-on', i === idx));
@@ -229,6 +249,10 @@
       }
     });
     tl.to(lap, { '--open': '16deg', '--ry': '-12deg', '--tilt': '-17deg', '--s': 1, duration: 1.1 })
+      .to(lap, { '--lit': 1, duration: .5, ease: 'power1.in' }, .55)
+      .fromTo($('.lap__boot', story), { opacity: 0 }, { opacity: 1, duration: .25, ease: 'none' }, .7)
+      .from($('.lap__boot img', story), { scale: .6, opacity: 0, duration: .3, ease: 'back.out(2)' }, .75)
+      .to($('.lap__boot', story), { opacity: 0, duration: .3, ease: 'none' }, 1.05)
       .from($$('.wire__nav i', story), { scaleX: 0, transformOrigin: 'left', stagger: .1, duration: .4 }, 1.1)
       .from($$('.wire__hero .lines > *', story), { scaleX: 0, transformOrigin: 'left', stagger: .08, duration: .45, ease: 'back.out(1.6)' }, 1.2)
       .from($('.wire__img', story), { scale: .4, opacity: 0, rotate: -8, duration: .6, ease: 'back.out(2)' }, 1.35)
@@ -268,12 +292,13 @@
     const dayEls = $$('.day:not(.empty)', cal);
     cal.closest('[data-inview]').addEventListener('reveal', () => {
       if (G && !reduce) {
-        G.from(dayEls, { scale: .4, opacity: 0, duration: .7, ease: 'back.out(2.4)', stagger: { grid: 'auto', from: 'start', amount: .8 } });
+        G.from(dayEls, { scale: .5, opacity: 0, duration: .6, ease: 'back.out(2)', stagger: { grid: 'auto', from: 'start', amount: .7 }, clearProps: 'transform,opacity' });
         G.fromTo($('.cal__play'), { left: '-60px' }, { left: '100%', duration: 1.6, ease: 'power1.inOut', delay: .2 });
       }
       dayEls.forEach((d, i) => setTimeout(() => d.classList.add('lit'), reduce ? 0 : 300 + i * 35));
     }, { once: true });
   }
+  if (cal) cal.addEventListener('click', e => { const d = e.target.closest('.day:not(.empty)'); $$('.day.tapped', cal).forEach(x => x !== d && x.classList.remove('tapped')); if (d) d.classList.toggle('tapped'); });
   $$('[data-odo]').forEach(el => odoIO.observe(el));
 
   /* ---------- before / after ---------- */
@@ -351,6 +376,7 @@
   if (G && fine && !reduce) $$('.plan').forEach(pl => {
     G.set(pl, { transformPerspective: 1200 });
     const rx = G.quickTo(pl, 'rotationX', { duration: .7, ease: 'power3' }), ry = G.quickTo(pl, 'rotationY', { duration: .7, ease: 'power3' }), ty = G.quickTo(pl, 'y', { duration: .5, ease: 'power3' });
+    pl.addEventListener('pointerenter', () => { pl.style.transition = 'box-shadow .4s'; }, { once: true });
     pl.addEventListener('pointermove', e => { const r = pl.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; rx((.5 - y) * 9); ry((x - .5) * 11); ty(-6); pl.style.setProperty('--gx', x * 100 + '%'); pl.style.setProperty('--gy', y * 100 + '%'); });
     pl.addEventListener('pointerleave', () => { rx(0); ry(0); ty(0); });
   });
@@ -358,15 +384,16 @@
   /* ---------- estimator ---------- */
   const est = $('#est');
   if (est) {
-    const ranges = [[600, 900], [1200, 1800], [2000, 3500]];
-    const plans = ['Starter build · Essential care from £29/mo', 'Standard build · Plus care from £49/mo', 'Larger build · Pro care from £89/mo'];
-    let size = 0;
-    const price = $('#estPrice'), plan = $('#estPlan'), shop = $('#estShop'), rescue = $('#estRescue');
+    const ranges = [[299, 299], [600, 900], [1200, 1800], [2000, 3500]];
+    const plans = ['Launch site · with any care plan, from £29/mo', 'Starter build · Essential care from £29/mo', 'Standard build · Plus care from £49/mo', 'Larger build · Pro care from £89/mo'];
+    let size = 1;
+    const price = $('#estPrice'), plan = $('#estPlan'), shop = $('#estShop'), rescue = $('#estRescue'), meter = $('#estMeter');
     const f = n => '£' + n.toLocaleString('en-GB');
     const update = () => {
-      const i = Math.max(size, shop.checked ? 2 : 0);
-      price.textContent = f(ranges[i][0]) + '–' + f(ranges[i][1]);
+      const i = Math.max(size, shop.checked ? 3 : 0);
+      price.textContent = ranges[i][0] === ranges[i][1] ? f(ranges[i][0]) : f(ranges[i][0]) + ' to ' + f(ranges[i][1]);
       plan.textContent = plans[i] + (rescue.checked ? ' · free migration included' : '');
+      if (meter) meter.style.transform = `scaleX(${(i + 1) / 4})`;
       if (G && !reduce) G.fromTo(price, { y: 18, opacity: 0, filter: 'blur(6px)' }, { y: 0, opacity: 1, filter: 'blur(0px)', duration: .55, ease: 'power3.out' });
     };
     $$('.seg button', est).forEach(b => b.addEventListener('click', () => { $$('.seg button', est).forEach(x => x.setAttribute('aria-pressed', x === b)); size = +b.dataset.size; update(); }));
@@ -427,6 +454,155 @@
         toast('<b>Couldn’t reach our form.</b> Opening your email app instead, or email hello@lrweb.uk.'); mailto();
       }).catch(() => { btn.disabled = false; btn.innerHTML = label; toast('<b>Couldn’t reach our form.</b> Opening your email app instead, or email hello@lrweb.uk.'); mailto(); });
     });
+  }
+
+  /* ---------- plain-English tips (hover, focus or tap) ---------- */
+  const tips = $$('.jg');
+  if (tips.length) {
+    const box = document.createElement('div'); box.className = 'tipbox'; box.id = 'tipbox'; box.setAttribute('role', 'tooltip'); document.body.append(box);
+    let cur = null, at = 0, sy = 0;
+    const show = el => {
+      if (cur && cur !== el) cur.classList.remove('on');
+      cur = el; at = performance.now(); sy = scrollY;
+      box.innerHTML = '<b>In plain English</b>' + el.dataset.tip; el.setAttribute('aria-describedby', 'tipbox'); el.classList.add('on');
+      place(); box.classList.add('on');
+    };
+    const place = () => {
+      if (!cur) return;
+      const r = cur.getBoundingClientRect(), tw = box.offsetWidth, th = box.offsetHeight;
+      const x = clamp(r.left + r.width / 2 - tw / 2, 12, innerWidth - tw - 12);
+      let y = r.top - th - 10; if (y < 70) y = r.bottom + 10;
+      box.style.left = x + 'px'; box.style.top = y + 'px';
+    };
+    const hide = () => { if (!cur) return; cur.classList.remove('on'); cur.removeAttribute('aria-describedby'); cur = null; box.classList.remove('on'); };
+    tips.forEach(el => {
+      el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(el); });
+      el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); });
+      el.addEventListener('focus', () => show(el));
+      el.addEventListener('blur', hide);
+      el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (cur === el && performance.now() - at > 350) hide(); else show(el); });
+    });
+    document.addEventListener('click', hide); addEventListener('scroll', () => { if (cur && Math.abs(scrollY - sy) > 40) hide(); else place(); }, { passive: true });
+    addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+  }
+
+  /* ---------- two jobs: the build loop ---------- */
+  const bs = $('.bscene');
+  if (bs && G && !reduce) {
+    const page = $('.bs-page', bs), opt = $('.bs-opt', bs), optB = $('b', opt), cur = $('.bs-cursor', bs), stamp = $('.bs-stamp', bs), steps = $$('.bs-steps span', bs);
+    const THEMES = [['#C46A3A', '#0F2A3D', '#F6F1E9'], ['#3DB88D', '#0B0D35', '#EEF7F3'], ['#E0A340', '#3B2416', '#FBF3E6']];
+    const theme = i => { const t = THEMES[i]; page.style.setProperty('--pa', t[0]); page.style.setProperty('--pb', t[1]); page.style.setProperty('--pc', t[2]); optB.textContent = 'ABC'[i]; };
+    const step = i => () => steps.forEach((s, j) => { s.classList.toggle('on', j === i); s.classList.toggle('done', j < i); });
+    const nav = $$('.bs-nav > *', bs), heads = $$('.bs-h', bs), texts = $$('.bs-t', bs), btn = $('.bs-btn', bs), img = $('.bs-img', bs), cards = $$('.bs-cards i', bs);
+    const all = [...nav, ...heads, ...texts, btn, img, ...cards];
+    const click = () => G.timeline().to(cur, { scale: .75, duration: .08 }).to(cur, { scale: 1, duration: .15 }).to(opt, { scale: 1.15, duration: .1 }, 0).to(opt, { scale: 1, duration: .2 });
+    const tl = G.timeline({ repeat: -1, paused: true, defaults: { ease: 'power2.out' } });
+    tl.call(step(0)).call(() => theme(0))
+      .set(all, { opacity: 0 }).set(stamp, { opacity: 0, scale: 1.8, rotate: -16 }).set(cur, { left: '72%', top: '78%', opacity: 1 })
+      .to({}, { duration: .7 })
+      .call(step(1))
+      .fromTo(nav, { opacity: 0, y: -8 }, { opacity: 1, y: 0, stagger: .06, duration: .35 })
+      .fromTo(heads, { opacity: 1, scaleX: 0, transformOrigin: '0 50%' }, { scaleX: 1, stagger: .15, duration: .45 })
+      .fromTo(texts, { opacity: 1, scaleX: 0, transformOrigin: '0 50%' }, { scaleX: 1, stagger: .1, duration: .35 }, '-=.1')
+      .fromTo(btn, { opacity: 0, scale: .3 }, { opacity: 1, scale: 1, duration: .45, ease: 'back.out(3)' })
+      .fromTo(img, { opacity: 1, clipPath: 'inset(0 100% 0 0 round 10px)' }, { clipPath: 'inset(0 0% 0 0 round 10px)', duration: .6, ease: 'power2.inOut' }, '<-.25')
+      .fromTo(cards, { opacity: 0, y: 14 }, { opacity: 1, y: 0, stagger: .08, duration: .4, ease: 'back.out(2)' })
+      .to(cur, { left: '86%', top: '6%', duration: .8, ease: 'power2.inOut' })
+      .call(() => { theme(1); click(); }).to({}, { duration: 1 })
+      .call(() => { theme(2); click(); }).to({}, { duration: 1 })
+      .call(() => { theme(0); click(); }).to({}, { duration: .5 })
+      .call(step(2))
+      .to(cur, { left: '30%', top: '64%', duration: .8, ease: 'power2.inOut' })
+      .to(btn, { scale: 1.15, duration: .15, yoyo: true, repeat: 1 })
+      .call(step(3))
+      .to(stamp, { opacity: 1, scale: 1, rotate: -5, duration: .5, ease: 'back.out(3)' })
+      .to(cur, { opacity: 0, duration: .3 }, '<')
+      .to({}, { duration: 2 })
+      .to([...all, stamp], { opacity: 0, duration: .45, ease: 'power1.in' });
+    new IntersectionObserver(([e]) => e.isIntersecting ? tl.play() : tl.pause()).observe(bs);
+  }
+
+  /* ---------- two jobs: the care orbit ---------- */
+  const cs = $('.cscene');
+  if (cs) {
+    const sats = $$('.cs-sat', cs), msg = $('.cs-msg', cs), N = sats.length;
+    let vis = false, W = cs.clientWidth, H = cs.clientHeight, lastFront = -1;
+    if (window.ResizeObserver) new ResizeObserver(() => { W = cs.clientWidth; H = cs.clientHeight; }).observe(cs);
+    new IntersectionObserver(([e]) => vis = e.isIntersecting).observe(cs);
+    if (!reduce) sats.forEach(s => { s.style.left = '50%'; s.style.top = '50%'; });
+    const t0 = performance.now();
+    if (!reduce) tick(now => {
+      if (!vis) return;
+      const t = (now - t0) / 1000 * .4;
+      let front = -1, best = -2;
+      sats.forEach((s, i) => {
+        const a = t + i * Math.PI * 2 / N, sn = Math.sin(a), k = (sn + 1) / 2;
+        s.style.transform = `translate(${(Math.cos(a) * W * .437).toFixed(1)}px,${(sn * H * .26).toFixed(1)}px) scale(${(.7 + .3 * k).toFixed(3)})`;
+        s.style.zIndex = sn > 0 ? 3 : 1; s.style.opacity = (.4 + .6 * k).toFixed(2);
+        if (sn > best) { best = sn; front = i; }
+      });
+      if (front !== lastFront && best > .99) {
+        lastFront = front; const s = sats[front];
+        s.classList.remove('ping'); void s.offsetWidth; s.classList.add('ping');
+        msg.style.opacity = 0; setTimeout(() => { msg.textContent = s.dataset.msg; msg.style.opacity = 1; }, 200);
+      }
+    });
+  }
+
+  /* ---------- referral ticket: amount toggle, tilt and foil ---------- */
+  $$('.ticketwrap').forEach(w => {
+    const tk = $('.ticket', w), sh = $('.ticket-shadow', w), n = $('.ticket__n', w), btns = $$('.ticket__tog button', w);
+    let val = 50;
+    const setAmt = to => {
+      if (!G || reduce) { n.textContent = to; val = to; return; }
+      const o = { v: val }; val = to;
+      G.to(o, { v: to, duration: .7, ease: 'power3.out', onUpdate: () => n.textContent = Math.round(o.v) });
+      G.fromTo(n, { scale: .92 }, { scale: 1, duration: .6, ease: 'back.out(3)' });
+    };
+    btns.forEach(b => b.addEventListener('click', () => { btns.forEach(x => x.setAttribute('aria-pressed', x === b)); setAmt(+b.dataset.amt); }));
+    tk.addEventListener('reveal', () => { if (G && !reduce) { const o = { v: 0 }; G.to(o, { v: 50, duration: 1.4, delay: .4, ease: 'power3.out', onUpdate: () => n.textContent = Math.round(o.v) }); } }, { once: true });
+    if (G && fine && !reduce) {
+      G.set(sh, { transformPerspective: 1100 });
+      const rx = G.quickTo(sh, 'rotationX', { duration: .8, ease: 'power3' }), ry = G.quickTo(sh, 'rotationY', { duration: .8, ease: 'power3' });
+      w.addEventListener('pointermove', e => {
+        const r = sh.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        rx(clamp((.5 - y) * 12, -10, 10)); ry(clamp((x - .5) * 16, -12, 12));
+        tk.style.setProperty('--fx', (100 - x * 100) + '%'); tk.style.setProperty('--fy', (y * 100) + '%');
+      });
+      w.addEventListener('pointerleave', () => { rx(0); ry(0); });
+    }
+  });
+
+  /* ---------- services: the control room ---------- */
+  const ctrl = $('.ctrl');
+  if (ctrl) {
+    const items = $$('.ctrl__item', ctrl), panels = $$('.cp', ctrl);
+    let idx = 0, timer = null, auto = !reduce, vis = false;
+    const select = (i, user) => {
+      idx = (i + items.length) % items.length;
+      items.forEach((b, j) => b.setAttribute('aria-selected', j === idx));
+      panels.forEach((p, j) => { p.hidden = j !== idx; p.classList.toggle('on', j === idx); });
+      if (user) { auto = false; ctrl.classList.remove('auto'); clearTimeout(timer); const st = $('.ctrl__stage', ctrl).getBoundingClientRect(); if (innerWidth < 1060 && st.top > innerHeight * .55) { lenis ? lenis.scrollTo(st.top + scrollY - 90, { duration: .9 }) : scrollTo({ top: st.top + scrollY - 90, behavior: 'smooth' }); } }
+      else if (auto) { ctrl.classList.remove('auto'); void ctrl.offsetWidth; ctrl.classList.add('auto'); }
+      schedule();
+    };
+    const schedule = () => { clearTimeout(timer); if (auto && vis) timer = setTimeout(() => select(idx + 1), 6000); };
+    items.forEach((b, i) => {
+      b.addEventListener('click', () => select(i, true));
+      b.addEventListener('keydown', e => { const k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key]; if (k) { e.preventDefault(); select(idx + k, true); items[idx].focus(); } });
+      b.tabIndex = i === 0 ? 0 : -1;
+    });
+    ctrl.addEventListener('focusin', () => items.forEach((b, j) => b.tabIndex = j === idx ? 0 : -1));
+    new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis && auto) select(idx); else clearTimeout(timer); }, { threshold: .3 }).observe(ctrl);
+  }
+
+  /* ---------- legal pages: print + table of contents ---------- */
+  $$('[data-print]').forEach(b => b.addEventListener('click', () => print()));
+  const toc = $$('.toc a');
+  if (toc.length) {
+    const map = new Map(toc.map(a => [a.getAttribute('href').slice(1), a]));
+    const tio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { toc.forEach(a => a.classList.remove('on')); const a = map.get(e.target.id); a && a.classList.add('on'); } }), { rootMargin: '-15% 0px -75% 0px' });
+    $$('.legal h2[id]').forEach(h => tio.observe(h));
   }
 
   /* ---------- small things ---------- */

@@ -20,9 +20,10 @@
 <link rel="preload" href="assets/fonts/font-15.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fonts.css">
 <link rel="stylesheet" href="assets/css/site.css">
-<script>document.documentElement.classList.add('js')</script>
+<script>(function(d){d.classList.add('js');try{if(sessionStorage.getItem('lr-pt')){d.classList.add('pt-in');sessionStorage.removeItem('lr-pt')}}catch(e){}})(document.documentElement)</script>
 </head>
 <body>
+<div class="curtain" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nav">
   <div class="nav__in">
@@ -43,13 +44,40 @@
   </div>
 </section>
 
+<section class="sec sec--ref">
+  <div class="container">
+    <div class="ticketwrap ticketwrap--big">
+  <div class="ticket-shadow"><div class="ticket" data-inview>
+    <div class="ticket__main">
+      <div class="ticket__aur" aria-hidden="true"></div>
+      <p class="ticket__kick"><img src="assets/img/favicon.svg" alt="" width="18" height="18">LRWeb · referral pass · admit one</p>
+      <h3 class="ticket__h">Send a friend our way.<br>Get paid for it.</h3>
+      <div class="ticket__amt" aria-live="polite"><span class="ticket__cur">£</span><span class="ticket__n" id="tkAmtB">50</span></div>
+      <div class="ticket__tog" role="group" aria-label="What your friend signs up for">
+        <button type="button" aria-pressed="true" data-amt="50">Website + care plan</button><button type="button" aria-pressed="false" data-amt="20">Care plan only</button>
+      </div>
+      <dl class="ticket__meta"><div><dt>Paid by</dt><dd>Bank transfer</dd></div><div><dt>Limit</dt><dd>None at all</dd></div><div><dt>Paperwork</dt><dd>Just your name</dd></div></dl>
+    </div>
+    <div class="ticket__stub">
+      <span class="ticket__small">Paid within</span><b class="ticket__days">7</b><span class="ticket__small">days of them staying 30</span>
+      <div class="ticket__code" aria-hidden="true"></div>
+      <span class="ticket__no">No. 000001</span>
+    </div>
+    <span class="ticket__foil" aria-hidden="true"></span>
+  </div></div>
+  <div class="ticket__side">
+    <p class="kicker">Referrals</p>
+    <h3>Know someone whose website needs rescuing?</h3>
+    <p>Tell them to mention your name when they get in touch. Once they’ve signed up and stayed for 30 days, we send you real money. Not vouchers, not credit.</p>
+    
+  </div>
+</div>
+  </div>
+</section>
 <section class="sec">
   <div class="container">
-    <div class="split split--center" style="margin-bottom:56px">
-      <div><p class="kicker" data-reveal>The deal, in one breath</p><h2 data-split>Refer someone, they stick around for 30 days, you get paid within a week.</h2></div>
-      <div class="ref__amounts" data-reveal style="--d:1;justify-content:flex-start"><div class="ref__amount"><b data-count="20" data-prefix="£">£0</b><span>hosting referral</span></div><div class="ref__amount"><b data-count="50" data-prefix="£">£0</b><span>design + hosting</span></div></div>
-    </div>
-    <div class="deal"><div class="rule" data-reveal style="--d:0"><span class="n">01</span><h3>Name us at signup</h3><p>Your friend mentions your name when they get in touch. That’s all the paperwork there is.</p></div><div class="rule" data-reveal style="--d:1"><span class="n">02</span><h3>They stay 30 days</h3><p>The reward becomes payable once the referred client has paid and remained active for 30 days.</p></div><div class="rule" data-reveal style="--d:2"><span class="n">03</span><h3>Paid within 7 days</h3><p>Once eligible, your reward lands by bank transfer within about a week. No vouchers, no credit, actual money.</p></div><div class="rule" data-reveal style="--d:3"><span class="n">04</span><h3>No limit</h3><p>Refer two people, get paid twice. Refer ten, we’ll probably also buy you lunch.</p></div></div>
+    <div class="sec-head"><p class="kicker" data-reveal>The deal, in one breath</p><h2 data-split>Refer someone, they stick around for 30 days, you get paid within a week.</h2></div>
+    <div class="rroute" data-inview><div class="rroute__track" aria-hidden="true"><i></i><span class="rroute__coin">£</span></div><ol><li style="--i:0"><span class="rr__dot">1</span><b>You mention us</b><span>Tell a friend, a client, your cousin with the dodgy website.</span></li><li style="--i:1"><span class="rr__dot">2</span><b>They say your name</b><span>When they first get in touch. That’s the only paperwork.</span></li><li style="--i:2"><span class="rr__dot">3</span><b>They stay 30 days</b><span>Once they’ve paid and stuck around for a month…</span></li><li style="--i:3"><span class="rr__dot">4</span><b>You get paid</b><span>£20 or £50 lands in your bank within 7 days.</span></li></ol></div>
   </div>
 </section>
 <section class="sec sec--white">
@@ -80,10 +108,10 @@
         <span class="status"><i></i>All client sites monitored 24/7</span>
       </div>
       <div><h4>LRWeb</h4><ul><li><a href="services.html">What we do</a></li><li><a href="work.html">Example sites</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="about.html">About</a></li><li><a href="referrals.html">Referrals</a></li></ul></div>
-      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="https://lrweb.uk/privacy">Privacy policy</a></li><li><a href="https://lrweb.uk/terms">Terms of service</a></li></ul></div>
+      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of service</a></li></ul></div>
     </div>
     <div class="foot__legal">
-      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="https://lrweb.uk/terms#business-information">business information</a>, <a href="https://lrweb.uk/terms">terms of service</a> and <a href="https://lrweb.uk/privacy">privacy policy</a>.</p>
+      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="terms.html#business-information">business information</a>, <a href="terms.html">terms of service</a> and <a href="privacy.html">privacy policy</a>.</p>
       <div class="foot__bottom"><span>© <span data-year>2026</span> LRWeb · lrweb.uk</span><span>Type “panic” anywhere. Go on.</span></div>
     </div>
   </div>

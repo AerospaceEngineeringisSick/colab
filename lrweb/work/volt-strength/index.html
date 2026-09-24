@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VOLT Strength Club — Independent gym, Leeds</title>
+<title>VOLT Strength Club | Independent gym, Leeds</title>
 <meta name="description" content="24/7 independent strength gym in Leeds. 120+ classes a week, proper free weights, zero posers. Grab a free day pass.">
 <meta name="theme-color" content="#0A0A0A">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23EE3A2B'/%3E%3Cpath d='M36 6L14 36h14l-4 22 24-32H34z' fill='%230A0A0A'/%3E%3C/svg%3E">
@@ -261,14 +261,24 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .lr-badge:hover{transform:translateY(-3px)}
 .lr-badge img{height:17px;width:auto}
 .lr-badge span{opacity:.7}
-.lr-wipe{position:fixed;inset:0;z-index:999;background:#070824;pointer-events:none;animation:lrOut .8s cubic-bezier(.65,0,.35,1) .1s forwards;overflow:hidden}
-.lr-wipe::after{content:"";position:absolute;left:50%;bottom:0;width:60vmin;height:30vmin;transform:translateX(-50%);border-radius:60vmin 60vmin 0 0;background:linear-gradient(35deg,#3DB88D,#0B86EA 55%,#3F4DE6)}
-@keyframes lrOut{to{transform:translateY(-101%)}}
+.lr-wipe{position:fixed;inset:0;z-index:999;display:flex;pointer-events:none;visibility:hidden}
+.lr-wipe i{flex:1;transform:scaleY(0)}
+.lr-wipe i:nth-child(1){background:#3DB88D}.lr-wipe i:nth-child(2){background:#0B86EA}.lr-wipe i:nth-child(3){background:#3F4DE6}.lr-wipe i:nth-child(4){background:#12018D}
+.lr-in .lr-wipe,.lr-go .lr-wipe{visibility:visible}
+.lr-in .lr-wipe i{transform:scaleY(1);transform-origin:top;animation:lrOut .6s cubic-bezier(.65,0,.35,1) .05s both}
+.lr-go .lr-wipe i{transform-origin:bottom;animation:lrIn .46s cubic-bezier(.55,0,.75,.2) both}
+.lr-wipe i:nth-child(2){animation-delay:.12s}.lr-wipe i:nth-child(3){animation-delay:.19s}.lr-wipe i:nth-child(4){animation-delay:.26s}
+.lr-go .lr-wipe i:nth-child(2){animation-delay:.06s}.lr-go .lr-wipe i:nth-child(3){animation-delay:.12s}.lr-go .lr-wipe i:nth-child(4){animation-delay:.18s}
+@keyframes lrOut{from{transform:scaleY(1)}to{transform:scaleY(0)}}
+@keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
+html{overflow-x:clip}
 </style>
+<script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>
 <body>
-<div class="lr-wipe" aria-hidden="true"></div>
+<div class="lr-wipe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <a class="lr-badge" href="../../work.html"><img src="../../assets/img/logo-light.png" alt="LRWeb"><span>Example site</span></a>
 
 <header class="top">
@@ -284,12 +294,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <div class="hero__grid" aria-hidden="true"></div>
   <canvas id="ecg" aria-hidden="true"></canvas>
   <div class="wrap hero__in">
-    <span class="tag fade">Independent strength club — Leeds · 24/7</span>
+    <span class="tag fade">Independent strength club · Leeds · 24/7</span>
     <h1 class="D"><span class="ln"><span>Lift heavy.</span></span><span class="ln"><span class="o">Rack your</span></span><span class="ln"><span class="v">weights.</span></span></h1>
     <div class="hero__row fade">
-      <p>Proper free weights, coaches who actually coach and 120+ classes a week. No posers, no contracts, no nonsense — just a room full of people getting stronger.</p>
+      <p>Proper free weights, coaches who actually coach and 120+ classes a week. No posers, no contracts, no nonsense. Just a room full of people getting stronger.</p>
       <div class="hero__ctas"><a href="#pass" class="btn btn--volt">Claim a free day pass <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a><a href="#classes" class="btn btn--line">See classes</a></div>
-      <div class="bpm" aria-live="off"><span class="mono">Your heart rate (scroll faster)</span><div class="bpm__v"><i></i><span id="bpm">72</span><small>BPM</small></div></div>
+      <div class="bpm" aria-live="off"><span class="mono">Your heart rate (scroll faster)</span><div class="bpm__v"><i></i><span id="bpm">64</span><small>BPM</small></div></div>
     </div>
   </div>
 </section>
@@ -326,13 +336,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="quiz__side">
       <span class="tag">Plan finder</span>
       <h2 class="D" data-r>Not sure<br>where to<br><span style="color:var(--volt)">start?</span></h2>
-      <p data-r style="--d:1">Three quick questions and we’ll point you at the membership that fits how you actually train — not the one that makes us the most money.</p>
+      <p data-r style="--d:1">Three quick questions and we’ll point you at the membership that fits how you actually train, not the one that makes us the most money.</p>
     </div>
     <div class="qbox" data-r style="--d:1">
       <div class="qprog"><i id="qprog" style="transform:scaleX(.05)"></i></div>
       <div class="q on" data-q="0"><span class="mono">Question 1 of 3</span><h3>What are you training for?</h3><div class="answers"><button class="ans" data-v="strength">Getting properly strong <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="fit">General fitness &amp; feeling good <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="classes">Sweaty classes with a crew <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button></div></div>
       <div class="q" data-q="1"><span class="mono">Question 2 of 3</span><h3>How often can you train?</h3><div class="answers"><button class="ans" data-v="1">1–2 times a week <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="2">3–4 times a week <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="3">5+ (I live here now) <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button></div></div>
-      <div class="q" data-q="2"><span class="mono">Question 3 of 3</span><h3>When do you usually train?</h3><div class="answers"><button class="ans" data-v="off">Daytime, when it’s quiet <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="peak">Before or after work <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="any">Whenever — 3am included <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button></div></div>
+      <div class="q" data-q="2"><span class="mono">Question 3 of 3</span><h3>When do you usually train?</h3><div class="answers"><button class="ans" data-v="off">Daytime, when it’s quiet <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="peak">Before or after work <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="any">Whenever, 3am included <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button></div></div>
       <div class="q result" data-q="3" id="result"></div>
     </div>
   </div>
@@ -443,44 +453,42 @@ const slamWords = [['Lift heavy', 'Rack your weights', 'Chalk is free', 'PBs eve
 const rows = $$('.slam__row').map((r, i) => { const html = slamWords[i].map(w => `<span>${w}</span>`).join(''); r.innerHTML = html + html + html + html; return { r, x: 0, dir: +r.dataset.dir, w: 0 }; });
 const measure = () => rows.forEach(o => o.w = o.r.scrollWidth / 4);
 
-/* ECG canvas — BPM follows scroll speed */
+/* ECG canvas: BPM follows scroll speed */
 const cv = $('#ecg'), ctx = cv.getContext('2d');
-let W, H, dpr, bpm = 72, vel = 0, lastY = scrollY, visible = true, phase = 0;
-const resize = () => { dpr = Math.min(devicePixelRatio, 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); measure(); };
+let W, H, dpr, bpm = 64, vel = 0, lastY = scrollY, visible = true, phase = 0;
+const SAMP = 2; let buf = new Float32Array(2), head = 0, acc = 0, bph = 0;
+const resize = () => { dpr = Math.min(devicePixelRatio, 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); const nb = new Float32Array(Math.ceil(W / SAMP) + 1); nb.set(buf.subarray(0, Math.min(buf.length, nb.length))); buf = nb; head %= buf.length; measure(); };
 resize(); addEventListener('resize', resize);
+if (window.ResizeObserver) new ResizeObserver(resize).observe(cv);
 new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(cv);
-const beat = x => { // one heartbeat, x in [0,1)
-  if (x < .1) return Math.sin(x / .1 * Math.PI) * .08;
-  if (x < .16) return 0;
-  if (x < .19) return -.12 * (x - .16) / .03;
-  if (x < .23) return -.12 + 1.12 * (x - .19) / .04;
-  if (x < .27) return 1 - 1.35 * (x - .23) / .04;
-  if (x < .3) return -.35 + .35 * (x - .27) / .03;
-  if (x < .45) return 0;
-  if (x < .6) return Math.sin((x - .45) / .15 * Math.PI) * .18;
-  return 0;
-};
+// one heartbeat, x in [0,1): smooth P, QRS and T waves (sums of gaussians, no hard corners)
+const gs = (x, m, w) => Math.exp(-((x - m) * (x - m)) / (2 * w * w));
+const beat = x => .07 * gs(x, .1, .025) - .08 * gs(x, .2, .009) + gs(x, .225, .011) - .22 * gs(x, .25, .01) + .15 * gs(x, .46, .045);
 const bpmEl = $('#bpm'), bpmBox = $('.bpm');
+// a calm monitor sweep: the trace stays put, a write-head moves across and old beats fade out
 function drawECG(dt) {
+  const n = buf.length, sweep = Math.max(260, W / 3.4);
+  acc += sweep * dt / 1000 / SAMP;
+  while (acc >= 1) { acc--; head = (head + 1) % n; bph += (bpm / 60) * (SAMP / sweep); buf[head] = beat(bph % 1); }
   ctx.clearRect(0, 0, W, H);
-  const period = W / 2.6; // px per beat at base
-  phase += dt * (bpm / 60) * period / 1000 * 1.0;
-  const lines = [{ y: H * .38, a: .1, amp: H * .1, off: 90 }, { y: H * .5, a: 1, amp: H * .16, off: 0 }, { y: H * .64, a: .08, amp: H * .08, off: 200 }];
-  lines.forEach(L => {
+  const base = H * .52, amp = Math.min(H * .12, 110), gap = Math.round(60 / SAMP), total = n - gap, CH = 14, len = total / CH;
+  ctx.lineJoin = ctx.lineCap = 'round'; ctx.lineWidth = 2;
+  for (let c = CH - 1; c >= 0; c--) {
+    const a = .7 * Math.pow(1 - c / CH, 1.6);
     ctx.beginPath();
-    for (let x = 0; x <= W; x += 3) {
-      const u = ((x + phase + L.off) / period) % 1;
-      const y = L.y - beat(u < 0 ? u + 1 : u) * L.amp;
-      x ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    let first = true, prevIdx = -1;
+    for (let k = Math.floor(c * len); k <= Math.ceil((c + 1) * len) && k < total; k++) {
+      const idx = (head - k + n) % n, x = idx * SAMP, y = base - buf[idx] * amp;
+      if (first || idx > prevIdx) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
+      prevIdx = idx;
     }
-    ctx.strokeStyle = L.a === 1 ? 'rgba(238,58,43,.95)' : `rgba(244,244,240,${L.a})`;
-    ctx.lineWidth = L.a === 1 ? 2.5 : 1.5;
-    if (L.a === 1) { ctx.shadowColor = 'rgba(238,58,43,.6)'; ctx.shadowBlur = 16; } else ctx.shadowBlur = 0;
+    ctx.strokeStyle = `rgba(238,58,43,${a.toFixed(3)})`;
+    ctx.shadowBlur = c === 0 ? 8 : 0; ctx.shadowColor = 'rgba(238,58,43,.35)';
     ctx.stroke();
-  });
-  // fade the leading edge like a monitor sweep
-  const g = ctx.createLinearGradient(0, 0, W, 0); g.addColorStop(0, 'rgba(10,10,10,.85)'); g.addColorStop(.25, 'rgba(10,10,10,0)');
-  ctx.shadowBlur = 0; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+  const hx = head * SAMP, hy = base - buf[head] * amp;
+  ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(238,58,43,.5)'; ctx.fillStyle = '#FF7A6E';
+  ctx.beginPath(); ctx.arc(hx, hy, 3, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
 }
 
 /* timetable */
@@ -501,7 +509,7 @@ function classesFor(d) {
 function renderClasses() {
   const list = classesFor(day).filter(c => type === 'All' || c.type === type);
   const el = $('#classList');
-  if (!list.length) { el.innerHTML = '<li class="tt__empty">No classes of that type today — try another day.</li>'; return; }
+  if (!list.length) { el.innerHTML = '<li class="tt__empty">No classes of that type today. Try another day.</li>'; return; }
   el.innerHTML = list.map((c, i) => {
     const [h, m] = c.time.split(':').map(Number), start = h * 60 + m, isToday = day === now.d;
     const live = isToday && now.mins >= start && now.mins < start + c.dur, done = isToday && now.mins >= start + c.dur;
@@ -512,7 +520,7 @@ function renderClasses() {
       <div><h3>${c.name}</h3><span class="type t-${c.type}">${c.type}</span></div>
       <span class="coach">with ${COACH[c.type]}</span>
       <span class="inten" aria-label="Intensity ${c.int} of 5">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= c.int ? 'on' : ''}"></i>`).join('')}</span>
-      <div class="spots ${low ? 'low' : ''}">${left ? `${left} of ${c.cap} spots left` : 'Full — join waitlist'}<div class="bar"><i style="transform:scaleX(${(c.cap - left) / c.cap})"></i></div></div>
+      <div class="spots ${low ? 'low' : ''}">${left ? `${left} of ${c.cap} spots left` : 'Full · join waitlist'}<div class="bar"><i style="transform:scaleX(${(c.cap - left) / c.cap})"></i></div></div>
       <button class="bk ${booked.has(id) ? 'booked' : ''}" data-id="${id}" ${done ? 'disabled' : ''}>${booked.has(id) ? 'Booked ✓' : left ? 'Book' : 'Waitlist'}</button>
     </li>`;
   }).join('');
@@ -533,9 +541,9 @@ $$('.q .ans').forEach(a => a.addEventListener('click', () => {
 }));
 function showResult() {
   const [goal, freq, when] = answers;
-  let plan = 'Full Access', id = 'plan-full', why = 'Round-the-clock access and eight classes a month — the sweet spot for most lifters.';
+  let plan = 'Full Access', id = 'plan-full', why = 'Round-the-clock access and eight classes a month: the sweet spot for most lifters.';
   if (when === 'off' && goal !== 'classes' && freq !== '3') { plan = 'Off-Peak'; id = 'plan-off'; why = 'You train when it’s quiet, so why pay for peak hours? All the iron, none of the queue.'; }
-  if (goal === 'classes' || freq === '3') { plan = 'Unlimited'; id = 'plan-unl'; why = 'You’ll be here a lot — unlimited classes and the recovery room will pay for themselves.'; }
+  if (goal === 'classes' || freq === '3') { plan = 'Unlimited'; id = 'plan-unl'; why = 'You’ll be here a lot, so unlimited classes and the recovery room will pay for themselves.'; }
   $('#result').innerHTML = `<span class="mono">Your match</span><div class="D">${plan}</div><p>${why}</p><a href="#join" class="btn btn--volt" data-jump="${id}">See the plan</a><button class="restart" id="restart">Start again</button>`;
   $('#restart').addEventListener('click', () => { answers.length = 0; prog.style.transform = 'scaleX(.05)'; $$('.q').forEach(x => x.classList.toggle('on', x.dataset.q === '0')); });
   $('[data-jump]').addEventListener('click', () => { const p = $('#' + id); setTimeout(() => p.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }], { duration: 700, delay: 600, easing: 'cubic-bezier(.8,0,.1,1)' }), 0); });
@@ -560,7 +568,7 @@ const ZONES = [
   ['Zone 02', 'The rig', 'A 14-metre monster of a rig with squat stations, pull-up bars, rings and every attachment you can think of.', ['6 squat bays', 'Rings', 'Landmines', 'Dip stations']],
   ['Zone 03', 'Turf lane', '25 metres of turf for sled pushes, prowler sprints, carries and the occasional regrettable burpee broad jump.', ['Sleds', 'Prowlers', 'Farmers handles', 'Sandbags']],
   ['Zone 04', 'Boxing corner', 'Heavy bags, a speed bag and a raised ring for Box Clever and Fight Fit classes. Gloves on the wall if you forget yours.', ['8 heavy bags', 'Ring', 'Speed bag', 'Loan gloves']],
-  ['Zone 05', 'Recovery room', 'An infrared sauna and two cold plunge tubs. Unlimited members only — worth it for the sauna chat alone.', ['Infrared sauna', 'Cold plunge', 'Massage guns', 'Foam rollers']],
+  ['Zone 05', 'Recovery room', 'An infrared sauna and two cold plunge tubs. Unlimited members only, and worth it for the sauna chat alone.', ['Infrared sauna', 'Cold plunge', 'Massage guns', 'Foam rollers']],
   ['Zone 06', 'Cardio deck', 'Assault bikes, rowers, SkiErgs and a couple of treadmills for the brave. All with a view of the platforms.', ['Assault bikes', 'Concept2 rowers', 'SkiErgs', 'Curved treadmills']]
 ];
 function zone(i) {
@@ -573,14 +581,14 @@ $$('.fp .z').forEach(z => { z.addEventListener('mouseenter', () => zone(+z.datas
 zone(0);
 
 /* member quotes */
-const Q = [['+40kg', 'On my deadlift in six months. The coaches here actually care about your form.', 'Hannah · member since 2023'], ['5am', 'Is my favourite time now. Never thought I’d say that. The Early Volt crew are unreal.', 'Raj · Full Access'], ['0', 'Contracts signed. I paused for three months when I had surgery — no questions asked.', 'Chris · Unlimited'], ['1st', 'Powerlifting meet at 52. Marcus got me there. Terrified, loved it, doing it again.', 'Sue · Full Access'], ['16', 'People max per class, so you never feel lost at the back. Best gym in Leeds.', 'Tomasz · Unlimited']];
+const Q = [['+40kg', 'On my deadlift in six months. The coaches here actually care about your form.', 'Hannah · member since 2023'], ['5am', 'Is my favourite time now. Never thought I’d say that. The Early Volt crew are unreal.', 'Raj · Full Access'], ['0', 'Contracts signed. I paused for three months when I had surgery, no questions asked.', 'Chris · Unlimited'], ['1st', 'Powerlifting meet at 52. Marcus got me there. Terrified, loved it, doing it again.', 'Sue · Full Access'], ['16', 'People max per class, so you never feel lost at the back. Best gym in Leeds.', 'Tomasz · Unlimited']];
 const qh = Q.map(([b, p, s]) => `<article class="qt"><b>${b}</b><p>${p}</p><span>${s}</span></article>`).join('');
 $('#quotes').innerHTML = qh + qh;
 
 /* hold-to-claim */
 const hold = $('#hold'), note = $('#passNote'), email = $('#passEmail');
 let hp = 0, holding = false, claimed = false;
-const startHold = e => { if (claimed) return; if (!/^\S+@\S+\.\S+$/.test(email.value)) { email.focus(); note.textContent = 'Pop your email in first — then hold.'; email.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-10px)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }], { duration: 300 }); return; } holding = true; e.preventDefault(); };
+const startHold = e => { if (claimed) return; if (!/^\S+@\S+\.\S+$/.test(email.value)) { email.focus(); note.textContent = 'Pop your email in first, then hold.'; email.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-10px)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }], { duration: 300 }); return; } holding = true; e.preventDefault(); };
 const endHold = () => { holding = false; };
 hold.addEventListener('pointerdown', startHold); addEventListener('pointerup', endHold); hold.addEventListener('pointerleave', endHold);
 hold.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) startHold(e); });
@@ -602,7 +610,7 @@ function holdFrame(dt) {
   if (holding) note.textContent = `Charging… ${Math.round(hp * 100)}%`;
   if (hp >= 1) {
     claimed = true; holding = false;
-    hold.textContent = 'Pass claimed ⚡'; note.textContent = 'Check your inbox — your pass is on its way. (Demo)';
+    hold.textContent = 'Pass claimed ⚡'; note.textContent = 'Check your inbox. Your pass is on its way. (Demo)';
     const r = hold.getBoundingClientRect(); if (!reduce) burst(r.left + r.width / 2, r.top + r.height / 2);
   }
 }
@@ -614,9 +622,9 @@ function loop(n) {
   const y = scrollY; const v = Math.abs(y - lastY); lastY = y;
   vel = lerp(vel, v, .08);
   top.classList.toggle('solid', y > 40); if (Math.abs(y - ly) > 4) { top.classList.toggle('hide', y > ly && y > 500); ly = y; }
-  bpm = lerp(bpm, clamp(72 + vel * 4, 72, 188), .05);
+  bpm = lerp(bpm, clamp(64 + vel * 3.2, 64, 176), .04);
   bpmEl.textContent = Math.round(bpm); bpmBox.style.setProperty('--beat', (60 / bpm).toFixed(2) + 's');
-  if (visible && !reduce) drawECG(dt); else if (reduce && !drawECG.did) { drawECG(0); drawECG.did = 1; }
+  if (visible && !reduce) drawECG(dt); else if (reduce && !drawECG.did) { for (let i = 0; i < buf.length; i++) buf[i] = beat((i * SAMP / (W / 2.6)) % 1); head = buf.length - 1; drawECG(0); drawECG.did = 1; }
   if (!reduce) rows.forEach(o => { if (!o.w) return; o.x -= (1.2 + vel * .35) * o.dir * dt / 16; if (o.x < -o.w) o.x += o.w; if (o.x > 0) o.x -= o.w; o.r.style.transform = `translate3d(${o.x}px,0,0)`; });
   holdFrame(dt);
   requestAnimationFrame(loop);
@@ -625,5 +633,8 @@ function loop(n) {
 requestAnimationFrame(loop);
 })();
 </script>
+<script>(function(){if(!location.hash)scrollTo(0,0);var d=document.documentElement,b=document.querySelector('.lr-badge');
+if(b)b.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();try{sessionStorage.setItem('lr-pt','1')}catch(_){}d.classList.remove('lr-in');d.classList.add('lr-go');setTimeout(function(){location.href=b.href},640)});
+addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('lr-go','lr-in')});})();</script>
 </body>
 </html>

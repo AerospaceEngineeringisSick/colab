@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Form &amp; Field — Architects, Edinburgh</title>
+<title>Form &amp; Field | Architects, Edinburgh</title>
 <meta name="description" content="Form &amp; Field is an Edinburgh architecture practice designing homes, workplaces and public buildings that sit quietly in their place.">
 <meta name="theme-color" content="#E9E7E1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23E9E7E1'/%3E%3Crect x='12' y='12' width='26' height='40' fill='none' stroke='%23111' stroke-width='3'/%3E%3Crect x='30' y='26' width='22' height='26' fill='%231F3FD1'/%3E%3C/svg%3E">
@@ -112,8 +112,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .js [data-r]{opacity:0;transform:translateY(30px);transition:opacity 1.2s var(--ease),transform 1.4s var(--ease);transition-delay:calc(var(--d,0)*100ms)}
 .js [data-r].in{opacity:1;transform:none}
 
-/* projects — horizontal */
-.work{height:520vh;position:relative}
+/* projects: horizontal */
+.work{height:380vh;position:relative}
 .work__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:28px}
 .work__head{display:flex;justify-content:space-between;align-items:flex-end;padding:0 var(--pad)}
 .work__head h2{font-size:clamp(40px,4.8vw,84px);font-weight:300;letter-spacing:-.05em;line-height:.95}
@@ -137,9 +137,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .proj__info dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;border-top:1px solid var(--hair);padding-top:12px}
 .proj__info dt{font-family:var(--m);font-size:10px;text-transform:uppercase;color:var(--mute);padding-top:2px}
 .proj__no{font-family:var(--m);font-size:11px;color:var(--blue)}
+.tblock{position:absolute;right:14px;bottom:14px;z-index:2;display:grid;grid-template-columns:auto auto;border:1px solid var(--ink);background:var(--paper);font-family:var(--m);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+.tblock b{grid-column:1/-1;font-weight:500;padding:5px 8px;border-bottom:1px solid var(--ink);color:var(--ink);font-size:10px}
+.tblock span{padding:4px 8px;border-bottom:1px solid var(--hair)}
+.tblock span:nth-of-type(odd){border-right:1px solid var(--hair)}
+.proj__img{box-shadow:0 30px 60px -34px rgba(20,20,18,.3)}
+.proj__img::before{content:"";position:absolute;inset:8px;border:1px solid rgba(17,17,17,.16);pointer-events:none;z-index:1}
+@media (max-width:640px){.tblock{display:none}}
+
 
 /* assembly */
-.build{height:360vh;position:relative;background:var(--ink);color:var(--paper)}
+.build{height:280vh;position:relative;background:var(--ink);color:var(--paper)}
 .build::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(233,231,225,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(233,231,225,.05) 1px,transparent 1px);background-size:40px 40px}
 .build__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;grid-template-columns:repeat(12,1fr);gap:20px;padding:0 var(--pad);align-items:center}
 .build__txt{grid-column:1/5;position:relative;z-index:1}
@@ -232,14 +240,24 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .lr-badge:hover{transform:translateY(-3px)}
 .lr-badge img{height:17px;width:auto}
 .lr-badge span{opacity:.7}
-.lr-wipe{position:fixed;inset:0;z-index:999;background:#070824;pointer-events:none;animation:lrOut .8s cubic-bezier(.65,0,.35,1) .1s forwards;overflow:hidden}
-.lr-wipe::after{content:"";position:absolute;left:50%;bottom:0;width:60vmin;height:30vmin;transform:translateX(-50%);border-radius:60vmin 60vmin 0 0;background:linear-gradient(35deg,#3DB88D,#0B86EA 55%,#3F4DE6)}
-@keyframes lrOut{to{transform:translateY(-101%)}}
+.lr-wipe{position:fixed;inset:0;z-index:999;display:flex;pointer-events:none;visibility:hidden}
+.lr-wipe i{flex:1;transform:scaleY(0)}
+.lr-wipe i:nth-child(1){background:#3DB88D}.lr-wipe i:nth-child(2){background:#0B86EA}.lr-wipe i:nth-child(3){background:#3F4DE6}.lr-wipe i:nth-child(4){background:#12018D}
+.lr-in .lr-wipe,.lr-go .lr-wipe{visibility:visible}
+.lr-in .lr-wipe i{transform:scaleY(1);transform-origin:top;animation:lrOut .6s cubic-bezier(.65,0,.35,1) .05s both}
+.lr-go .lr-wipe i{transform-origin:bottom;animation:lrIn .46s cubic-bezier(.55,0,.75,.2) both}
+.lr-wipe i:nth-child(2){animation-delay:.12s}.lr-wipe i:nth-child(3){animation-delay:.19s}.lr-wipe i:nth-child(4){animation-delay:.26s}
+.lr-go .lr-wipe i:nth-child(2){animation-delay:.06s}.lr-go .lr-wipe i:nth-child(3){animation-delay:.12s}.lr-go .lr-wipe i:nth-child(4){animation-delay:.18s}
+@keyframes lrOut{from{transform:scaleY(1)}to{transform:scaleY(0)}}
+@keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
+html{overflow-x:clip}
 </style>
+<script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>
 <body>
-<div class="lr-wipe" aria-hidden="true"></div>
+<div class="lr-wipe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <a class="lr-badge" href="../../work.html"><img src="../../assets/img/logo-light.png" alt="LRWeb"><span>Example site</span></a>
 <div class="cols" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="xh" aria-hidden="true"><div class="xh__v"></div><div class="xh__h"></div><div class="xh__box"></div><div class="xh__lbl"></div></div>
@@ -254,10 +272,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 
 <main>
 <section class="hero">
-  <div class="hero__meta m"><span>Architects — Edinburgh</span><span id="coords">55.9533° N, 3.1883° W</span><span>Est. 2009</span></div>
+  <div class="hero__meta m"><span>Architects · Edinburgh</span><span id="coords">55.9533° N, 3.1883° W</span><span>Est. 2009</span></div>
   <div class="hero__title">
     <h1><span class="ln"><span>Form <b>&amp;</b></span></span><span class="ln"><span>Field</span></span></h1>
-    <p class="hero__lede">An architecture practice designing homes, workplaces and public buildings that sit quietly in their place — and make a real difference to the people inside them.</p>
+    <p class="hero__lede">An architecture practice designing homes, workplaces and public buildings that sit quietly in their place, and make a real difference to the people inside them.</p>
   </div>
   <div class="hero__draw draw" id="heroDraw" aria-hidden="true"></div>
   <div class="hero__foot m">
@@ -271,7 +289,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <section class="sec">
   <div class="grid12">
     <p class="sec__no m">(01) Practice</p>
-    <p class="statement" data-split>We believe the best buildings feel <em>inevitable</em> — as if they could only ever have been there. So we start with the site, the light and the people, and let the form follow.</p>
+    <p class="statement" data-split>We believe the best buildings feel <em>inevitable</em>, as if they could only ever have been there. So we start with the site, the light and the people, and let the form follow.</p>
   </div>
 </section>
 
@@ -282,14 +300,14 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       <div class="work__count"><span id="pNow">01</span><i><b id="pBar"></b></i><span>04</span></div>
     </div>
     <div class="track" id="track">
-      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="boathouse" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
-        <div class="proj__info"><div><span class="proj__no">P—01</span><h3 style="margin-top:10px">Leith Boathouse</h3></div><p>A timber-clad community rowing club on the Water of Leith, with a gallery that opens the boat store to the street.</p><dl><dt>Year</dt><dd>2025</dd><dt>Type</dt><dd>Community</dd><dt>Area</dt><dd>640 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
-      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="house" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
-        <div class="proj__info"><div><span class="proj__no">P—02</span><h3 style="margin-top:10px">Pentland House</h3></div><p>Three stepped concrete volumes tucked into a hillside, each framing a different view of the Pentland Hills.</p><dl><dt>Year</dt><dd>2024</dd><dt>Type</dt><dd>Residential</dd><dt>Area</dt><dd>310 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
-      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="library" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
-        <div class="proj__info"><div><span class="proj__no">P—03</span><h3 style="margin-top:10px">Canongate Reading Room</h3></div><p>The retrofit of a Victorian tram depot into a neighbourhood library, keeping every arch and adding a timber reading loft.</p><dl><dt>Year</dt><dd>2023</dd><dt>Type</dt><dd>Public / reuse</dd><dt>Area</dt><dd>1,180 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
-      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="terrace" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
-        <div class="proj__info"><div><span class="proj__no">P—04</span><h3 style="margin-top:10px">Moray Row</h3></div><p>Five Passivhaus terraced homes for a housing co-operative, each with its own gable, garden and roof terrace.</p><dl><dt>Year</dt><dd>2026</dd><dt>Type</dt><dd>Housing</dd><dt>Area</dt><dd>5 × 120 m²</dd><dt>Status</dt><dd>On site</dd></dl></div></article>
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="boathouse" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg><div class="tblock" aria-hidden="true"><b>Leith Boathouse</b><span>Dwg A-101</span><span>Scale 1:100</span><span>Rev C</span><span>2025</span></div></div>
+        <div class="proj__info"><div><span class="proj__no">P.01</span><h3 style="margin-top:10px">Leith Boathouse</h3></div><p>A timber-clad community rowing club on the Water of Leith, with a gallery that opens the boat store to the street.</p><dl><dt>Year</dt><dd>2025</dd><dt>Type</dt><dd>Community</dd><dt>Area</dt><dd>640 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="house" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg><div class="tblock" aria-hidden="true"><b>Pentland House</b><span>Dwg A-204</span><span>Scale 1:200</span><span>Rev C</span><span>2024</span></div></div>
+        <div class="proj__info"><div><span class="proj__no">P.02</span><h3 style="margin-top:10px">Pentland House</h3></div><p>Three stepped concrete volumes tucked into a hillside, each framing a different view of the Pentland Hills.</p><dl><dt>Year</dt><dd>2024</dd><dt>Type</dt><dd>Residential</dd><dt>Area</dt><dd>310 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="library" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg><div class="tblock" aria-hidden="true"><b>Canongate Reading Room</b><span>Dwg A-310</span><span>Scale 1:100</span><span>Rev C</span><span>2023</span></div></div>
+        <div class="proj__info"><div><span class="proj__no">P.03</span><h3 style="margin-top:10px">Canongate Reading Room</h3></div><p>The retrofit of a Victorian tram depot into a neighbourhood library, keeping every arch and adding a timber reading loft.</p><dl><dt>Year</dt><dd>2023</dd><dt>Type</dt><dd>Public / reuse</dd><dt>Area</dt><dd>1,180 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="terrace" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg><div class="tblock" aria-hidden="true"><b>Moray Row</b><span>Dwg A-402</span><span>Scale 1:100</span><span>Rev C</span><span>2026</span></div></div>
+        <div class="proj__info"><div><span class="proj__no">P.04</span><h3 style="margin-top:10px">Moray Row</h3></div><p>Five Passivhaus terraced homes for a housing co-operative, each with its own gable, garden and roof terrace.</p><dl><dt>Year</dt><dd>2026</dd><dt>Type</dt><dd>Housing</dd><dt>Area</dt><dd>5 × 120 m²</dd><dt>Status</dt><dd>On site</dd></dl></div></article>
     </div>
   </div>
 </section>
@@ -300,10 +318,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       <p class="m">(03) How a building comes together</p>
       <h2>Designed from the ground up.</h2>
       <ol class="phases" id="phases">
-        <li class="on"><span>01</span><div><b>Site</b><p>We spend time on site before we draw a line — the ground, the trees, the neighbours, the wind.</p></div></li>
+        <li class="on"><span>01</span><div><b>Site</b><p>We spend time on site before we draw a line: the ground, the trees, the neighbours, the wind.</p></div></li>
         <li><span>02</span><div><b>Structure</b><p>Honest structure, usually timber, sized to use as little carbon as possible.</p></div></li>
         <li><span>03</span><div><b>Envelope</b><p>Airtight, well insulated and wrapped in materials that age gracefully.</p></div></li>
-        <li><span>04</span><div><b>Light</b><p>Windows placed for views and daylight first, heat loss second — then balanced.</p></div></li>
+        <li><span>04</span><div><b>Light</b><p>Windows placed for views and daylight first, heat loss second, then balanced.</p></div></li>
       </ol>
     </div>
     <div class="build__stage"><svg id="iso" viewBox="-420 -360 840 640" aria-label="Isometric model of a building assembling"></svg></div>
@@ -385,7 +403,7 @@ const KINDS = {
     s += person(470, 400, 1) + person(600, 400, .95);
     s += L('M60 460c40-8 80 8 120 0s80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0', 'ln-b');
     s += dim(150, 440, 690, 440, '28 400', 16) + dim(720, 110, 720, 400, '12 800');
-    s += `<text class="lbl" x="40" y="40">ELEVATION A — SOUTH</text><text class="lbl" x="40" y="54">SCALE 1:100</text>`;
+    s += `<text class="lbl" x="40" y="40">ELEVATION A · SOUTH</text><text class="lbl" x="40" y="54">SCALE 1:100</text>`;
     return s;
   },
   house() {
@@ -396,7 +414,7 @@ const KINDS = {
     s += tree(80, 372, 16) + tree(720, 292, 20) + tree(640, 300, 12);
     s += person(560, 326, .9);
     s += dim(120, 410, 550, 410, '18 600') + dim(700, 110, 700, 360, '9 750');
-    s += `<text class="lbl" x="40" y="40">SECTION B—B</text><text class="lbl" x="40" y="54">SCALE 1:100</text>`;
+    s += `<text class="lbl" x="40" y="40">SECTION B-B</text><text class="lbl" x="40" y="54">SCALE 1:100</text>`;
     return s;
   },
   library() {
@@ -405,7 +423,7 @@ const KINDS = {
     s += L('M110 240H690', 'ln-b') + `<text class="lbl" x="700" y="244">NEW LOFT +4.200</text>`;
     s += person(250, 400) + person(262, 400, .9) + person(520, 400, 1.05);
     s += dim(80, 440, 720, 440, '42 000') + dim(740, 130, 740, 400, '11 200');
-    s += `<text class="lbl" x="40" y="40">ELEVATION — CANONGATE</text><text class="lbl" x="40" y="54">EXISTING ARCHES RETAINED</text>`;
+    s += `<text class="lbl" x="40" y="40">ELEVATION · CANONGATE</text><text class="lbl" x="40" y="54">EXISTING ARCHES RETAINED</text>`;
     return s;
   },
   terrace() {
@@ -499,7 +517,7 @@ blocks.push([2, `<g>${box(-150, -150, 110, 200, 250, 80)}${glass(-130, -150, 125
 blocks.push([3, `<g>${box(-150, -150, 190, 200, 250, 10)}${box(-110, -110, 200, 110, 110, 14, 'grass')}</g>`]);
 blocks.push([3, `<g>${box(80, 60, 110, 60, 60, 8)}</g>`]);
 const sun = `<g id="sun" opacity="0"><circle cx="300" cy="-300" r="26" fill="#F2C94C"/>${[0, 1, 2].map(i => `<line class="sun-ray" style="opacity:1" x1="${280 - i * 10}" y1="${-280 + i * 10}" x2="${40 - i * 60}" y2="${-60 + i * 50}"/>`).join('')}</g>`;
-iso.innerHTML = sun + blocks.map((b, i) => `<g class="blk" data-i="${i}" data-ph="${b[0]}">${b[1]}</g>`).join('') + `<g transform="translate(-400 250)"><text class="lbl" style="fill:#8d8a82">AXONOMETRIC — NOT TO SCALE</text></g>`;
+iso.innerHTML = sun + blocks.map((b, i) => `<g class="blk" data-i="${i}" data-ph="${b[0]}">${b[1]}</g>`).join('') + `<g transform="translate(-400 250)"><text class="lbl" style="fill:#8d8a82">AXONOMETRIC · NOT TO SCALE</text></g>`;
 const blkEls = $$('.blk', iso), phases = $$('#phases li'), sunEl = $('#sun'), build = $('.build');
 function buildFrame() {
   if (innerWidth <= 1000) { blkEls.forEach(b => { b.style.transform = ''; b.style.opacity = 1; }); sunEl.setAttribute('opacity', 1); phases.forEach(p => p.classList.add('on')); return; }
@@ -544,5 +562,8 @@ function loop() {
 requestAnimationFrame(loop);
 })();
 </script>
+<script>(function(){if(!location.hash)scrollTo(0,0);var d=document.documentElement,b=document.querySelector('.lr-badge');
+if(b)b.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();try{sessionStorage.setItem('lr-pt','1')}catch(_){}d.classList.remove('lr-in');d.classList.add('lr-go');setTimeout(function(){location.href=b.href},640)});
+addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('lr-go','lr-in')});})();</script>
 </body>
 </html>

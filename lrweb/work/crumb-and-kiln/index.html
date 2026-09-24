@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crumb &amp; Kiln — Sourdough bakery, Bristol</title>
+<title>Crumb &amp; Kiln | Sourdough bakery, Bristol</title>
 <meta name="description" content="Slow-fermented sourdough, flaky pastry and very good buns, baked every morning in Bristol. Order by 9pm, collect warm.">
 <meta name="theme-color" content="#F3EADB">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23C4572D'/%3E%3Cpath d='M16 38c0-10 7-18 16-18s16 8 16 18c0 4-7 6-16 6s-16-2-16-6z' fill='%23F3EADB'/%3E%3C/svg%3E">
@@ -164,7 +164,7 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
 .ink{fill:none;stroke:var(--crust);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- process (pinned) ---------- */
-.proc{height:360vh;position:relative;background:var(--flour-2)}
+.proc{height:280vh;position:relative;background:var(--flour-2)}
 .proc__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px}
 .proc__text{position:relative;display:grid}
 .proc__step{grid-area:1/1;opacity:0;transform:translateY(30px);transition:opacity .6s,transform .8s var(--ease);pointer-events:none}
@@ -286,14 +286,24 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
 .lr-badge:hover{transform:translateY(-3px)}
 .lr-badge img{height:17px;width:auto}
 .lr-badge span{opacity:.7}
-.lr-wipe{position:fixed;inset:0;z-index:999;background:#070824;pointer-events:none;animation:lrOut .8s cubic-bezier(.65,0,.35,1) .1s forwards;overflow:hidden}
-.lr-wipe::after{content:"";position:absolute;left:50%;bottom:0;width:60vmin;height:30vmin;transform:translateX(-50%);border-radius:60vmin 60vmin 0 0;background:linear-gradient(35deg,#3DB88D,#0B86EA 55%,#3F4DE6)}
-@keyframes lrOut{to{transform:translateY(-101%)}}
+.lr-wipe{position:fixed;inset:0;z-index:999;display:flex;pointer-events:none;visibility:hidden}
+.lr-wipe i{flex:1;transform:scaleY(0)}
+.lr-wipe i:nth-child(1){background:#3DB88D}.lr-wipe i:nth-child(2){background:#0B86EA}.lr-wipe i:nth-child(3){background:#3F4DE6}.lr-wipe i:nth-child(4){background:#12018D}
+.lr-in .lr-wipe,.lr-go .lr-wipe{visibility:visible}
+.lr-in .lr-wipe i{transform:scaleY(1);transform-origin:top;animation:lrOut .6s cubic-bezier(.65,0,.35,1) .05s both}
+.lr-go .lr-wipe i{transform-origin:bottom;animation:lrIn .46s cubic-bezier(.55,0,.75,.2) both}
+.lr-wipe i:nth-child(2){animation-delay:.12s}.lr-wipe i:nth-child(3){animation-delay:.19s}.lr-wipe i:nth-child(4){animation-delay:.26s}
+.lr-go .lr-wipe i:nth-child(2){animation-delay:.06s}.lr-go .lr-wipe i:nth-child(3){animation-delay:.12s}.lr-go .lr-wipe i:nth-child(4){animation-delay:.18s}
+@keyframes lrOut{from{transform:scaleY(1)}to{transform:scaleY(0)}}
+@keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
+html{overflow-x:clip}
 </style>
+<script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>
 <body>
-<div class="lr-wipe" aria-hidden="true"></div>
+<div class="lr-wipe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <a class="lr-badge" href="../../work.html"><img src="../../assets/img/logo-light.png" alt="LRWeb"><span>Example site</span></a>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -324,7 +334,7 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
   <canvas id="flour" aria-hidden="true"></canvas>
   <div class="wrap hero__grid">
     <div>
-      <span class="kicker">Sourdough bakery &amp; coffee — Bristol</span>
+      <span class="kicker">Sourdough bakery &amp; coffee · Bristol</span>
       <h1 class="disp" data-words>Bread worth getting up <i>early</i> for.</h1>
       <p class="lede">Slow-fermented sourdough, flaky pastry and seriously good buns, baked in small batches every morning on Mill Row. Order by 9pm, collect it warm.</p>
       <div class="hero__ctas">
@@ -371,7 +381,7 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
     </div>
     <div class="board" data-r>
       <div class="board__top">
-        <h3>The bake board <i>— <span id="dayName">today</span></i></h3>
+        <h3>The bake board <i>for <span id="dayName">today</span></i></h3>
         <div class="board__clock"><span id="bclock">--:--</span><small>Bristol time</small></div>
       </div>
       <p class="board__note" id="boardNote"></p>
@@ -402,10 +412,10 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
 <section class="proc" id="process">
   <div class="wrap proc__pin">
     <div class="proc__text">
-      <div class="proc__step on"><span class="kicker">Step one · Day 1, 9am</span><h3 class="disp">Mix <i>slowly.</i></h3><p>Flour from a Cotswolds mill, Bristol tap water, salt and Doris — our 7-year-old starter. That’s the whole list. No yeast, no improvers, no shortcuts.</p></div>
+      <div class="proc__step on"><span class="kicker">Step one · Day 1, 9am</span><h3 class="disp">Mix <i>slowly.</i></h3><p>Flour from a Cotswolds mill, Bristol tap water, salt and Doris, our 7-year-old starter. That’s the whole list. No yeast, no improvers, no shortcuts.</p></div>
       <div class="proc__step"><span class="kicker">Step two · Every 30 minutes</span><h3 class="disp">Fold <i>gently.</i></h3><p>Instead of kneading, we stretch and fold the dough by hand through the afternoon. It builds strength without knocking out the air.</p></div>
       <div class="proc__step"><span class="kicker">Step three · Overnight</span><h3 class="disp">Prove <i>patiently.</i></h3><p>Shaped loaves rest in the cold for 16 hours. The wild yeasts get to work, developing that deep, tangy flavour you can’t fake.</p></div>
-      <div class="proc__step"><span class="kicker">Step four · Day 3, 5am</span><h3 class="disp">Bake <i>boldly.</i></h3><p>Into a 250°C deck oven with a blast of steam. We push the bake darker than most — that’s where the flavour lives.</p></div>
+      <div class="proc__step"><span class="kicker">Step four · Day 3, 5am</span><h3 class="disp">Bake <i>boldly.</i></h3><p>Into a 250°C deck oven with a blast of steam. We push the bake darker than most. That’s where the flavour lives.</p></div>
       <div class="proc__meta" aria-hidden="true"><div>Hour<b id="pHour">0</b></div><div>Dough temp<b id="pTemp">24°</b></div></div>
     </div>
     <div class="proc__stage" aria-hidden="true">
@@ -430,15 +440,15 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
       <div><span class="kicker">Our story</span><p class="quote disp" data-r style="margin-top:22px">It started with a jar of starter, a borrowed oven and far too many failed loaves.</p></div>
       <div class="story__body" data-r style="--d:1">
         <p>Crumb &amp; Kiln began in 2019 as a Saturday-only hatch on Mill Row. We sold out of forty loaves in an hour, panicked, and baked eighty the next week.</p>
-        <p>Today we’re a small team of six bakers who still do everything the slow way — long ferments, hand shaping and a stubborn refusal to compromise on flour. Our leftover bread goes to Bristol food banks every evening, so nothing goes to waste.</p>
+        <p>Today we’re a small team of six bakers who still do everything the slow way: long ferments, hand shaping and a stubborn refusal to compromise on flour. Our leftover bread goes to Bristol food banks every evening, so nothing goes to waste.</p>
         <p>Come for a loaf. Stay for a flat white and a cardamom knot. Everyone does.</p>
-        <p class="story__sig">— Maya &amp; Tom, founders</p>
+        <p class="story__sig">Maya &amp; Tom, founders</p>
       </div>
     </div>
     <div class="facts">
       <div class="fact" data-r style="--d:0"><b data-count="3">0</b><span>Ingredients in our sourdough</span></div>
       <div class="fact" data-r style="--d:1"><b data-count="48">0</b><span>Hours from mix to loaf</span></div>
-      <div class="fact" data-r style="--d:2"><b data-count="0">0</b><span>Loaves wasted — the rest go to food banks</span></div>
+      <div class="fact" data-r style="--d:2"><b data-count="0">0</b><span>Loaves wasted. The rest go to food banks</span></div>
     </div>
   </div>
 </section>
@@ -491,7 +501,7 @@ body::before{content:"";position:fixed;inset:0;z-index:80;pointer-events:none;op
   <div class="wrap">
     <span class="kicker">The Friday list</span>
     <h2 class="disp" data-r>First dibs on <i>weekend specials.</i></h2>
-    <p data-r style="--d:1">What’s in the oven this weekend, straight to your inbox every Friday. No spam — just bread, and the occasional recipe.</p>
+    <p data-r style="--d:1">What’s in the oven this weekend, straight to your inbox every Friday. No spam, just bread, and the occasional recipe.</p>
     <form data-r style="--d:2" id="newsForm"><input type="email" required placeholder="your@email.com" aria-label="Email address"><button class="btn btn--terra" style="height:48px">Sign me up</button></form>
     <p class="ok" id="newsOk" role="status"></p>
     <div class="wheat-row" aria-hidden="true"><svg viewBox="0 0 30 60"><use href="#i-wheat"/></svg><svg viewBox="0 0 30 60"><use href="#i-wheat"/></svg><svg viewBox="0 0 30 60"><use href="#i-wheat"/></svg><svg viewBox="0 0 30 60"><use href="#i-wheat"/></svg><svg viewBox="0 0 30 60"><use href="#i-wheat"/></svg></div>
@@ -579,10 +589,10 @@ function renderBoard() {
   }).join('');
   $('#slots').innerHTML = html;
   const note = $('#boardNote'), nbL = $('#nbLabel'), nbI = $('#nbItem');
-  if (closedDay) { note.textContent = 'We’re closed on Mondays — the ovens are resting. Here’s what Tuesday looks like.'; nbL.textContent = 'Back tomorrow'; nbI.textContent = 'Ovens resting'; }
-  else if (mins < 6 * 60 + 30) { note.textContent = 'The bakers are just arriving. First loaves out at 6:30.'; nbL.textContent = 'First bake'; nbI.textContent = '6:30 — sourdough'; }
-  else if (mins >= 15 * 60) { note.textContent = 'That’s a wrap for today. Tomorrow’s first loaves come out at 6:30 — order tonight to guarantee yours.'; nbL.textContent = 'Tomorrow, 6:30'; nbI.textContent = 'Country sourdough'; $$('#slots .slot').forEach(s => { s.className = 'slot'; $('em', s).textContent = 'Tomorrow'; }); }
-  else { note.textContent = nowItem ? `${nowItem} just came out — still warm if you’re quick.` : (nextItem ? `Next up: ${nextItem[0]} in ${nextItem[1]} minutes.` : 'Last bakes of the day are on the counter.'); nbL.textContent = nowItem ? 'Warm right now' : 'Next out'; nbI.textContent = nowItem || (nextItem ? nextItem[0] : 'Brownies'); }
+  if (closedDay) { note.textContent = 'We’re closed on Mondays. The ovens are resting. Here’s what Tuesday looks like.'; nbL.textContent = 'Back tomorrow'; nbI.textContent = 'Ovens resting'; }
+  else if (mins < 6 * 60 + 30) { note.textContent = 'The bakers are just arriving. First loaves out at 6:30.'; nbL.textContent = 'First bake'; nbI.textContent = '6:30 · sourdough'; }
+  else if (mins >= 15 * 60) { note.textContent = 'That’s a wrap for today. Tomorrow’s first loaves come out at 6:30, so order tonight to guarantee yours.'; nbL.textContent = 'Tomorrow, 6:30'; nbI.textContent = 'Country sourdough'; $$('#slots .slot').forEach(s => { s.className = 'slot'; $('em', s).textContent = 'Tomorrow'; }); }
+  else { note.textContent = nowItem ? `${nowItem} just came out. Still warm if you’re quick.` : (nextItem ? `Next up: ${nextItem[0]} in ${nextItem[1]} minutes.` : 'Last bakes of the day are on the counter.'); nbL.textContent = nowItem ? 'Warm right now' : 'Next out'; nbI.textContent = nowItem || (nextItem ? nextItem[0] : 'Brownies'); }
 }
 renderBoard(); setInterval(renderBoard, 30000);
 
@@ -592,7 +602,7 @@ function renderOpen() {
   const hrs = { 0: [510, 780], 1: null, 2: [450, 900], 3: [450, 900], 4: [450, 900], 5: [450, 900], 6: [480, 900] }[t.d];
   const open = hrs && mins >= hrs[0] && mins < hrs[1];
   const el = $('#openNow'); el.classList.toggle('closed', !open);
-  $('span', el).textContent = open ? `Open now — until ${Math.floor(hrs[1] / 60)}:${String(hrs[1] % 60).padStart(2, '0')}` : 'Closed right now';
+  $('span', el).textContent = open ? `Open now until ${Math.floor(hrs[1] / 60)}:${String(hrs[1] % 60).padStart(2, '0')}` : 'Closed right now';
   $('#signTxt').textContent = open ? 'OPEN' : 'CLOSED';
   $$('#hours li').forEach(li => li.classList.toggle('today', +li.dataset.d === t.d));
 }
@@ -603,7 +613,7 @@ renderOpen(); setInterval(renderOpen, 60000);
   const c = $('#flour'); if (!c || reduce) return;
   const ctx = c.getContext('2d'); let w, h, dpr, parts = [], mx = -999, my = -999, vis = true;
   const resize = () => { dpr = Math.min(devicePixelRatio, 2); w = c.clientWidth; h = c.clientHeight; c.width = w * dpr; c.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
-  resize(); addEventListener('resize', resize);
+  resize(); addEventListener('resize', resize); if (window.ResizeObserver) new ResizeObserver(resize).observe(c);
   const N = innerWidth < 700 ? 60 : 130;
   for (let i = 0; i < N; i++) parts.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2.2 + .6, vx: (Math.random() - .5) * .2, vy: Math.random() * .35 + .08, a: Math.random() * .5 + .2, ph: Math.random() * 6.28 });
   c.parentElement.addEventListener('pointermove', e => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
@@ -679,7 +689,7 @@ renderCart();
 const toast = msg => { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3200); };
 $('#reserve').addEventListener('click', () => {
   if (!cart.size) return toast('Add something tasty first!');
-  closeDrawer(); toast(`Reserved for ${$('#slot').value.toLowerCase()} — see you then! (demo)`); cart.clear(); renderCart();
+  closeDrawer(); toast(`Reserved for ${$('#slot').value.toLowerCase()}. See you then! (demo)`); cart.clear(); renderCart();
 });
 $('#newsForm').addEventListener('submit', e => { e.preventDefault(); $('#newsOk').textContent = 'You’re on the list. See you Friday ✳'; e.target.reset(); });
 
@@ -721,5 +731,8 @@ addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimat
 procFrame();
 })();
 </script>
+<script>(function(){if(!location.hash)scrollTo(0,0);var d=document.documentElement,b=document.querySelector('.lr-badge');
+if(b)b.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();try{sessionStorage.setItem('lr-pt','1')}catch(_){}d.classList.remove('lr-in');d.classList.add('lr-go');setTimeout(function(){location.href=b.href},640)});
+addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('lr-go','lr-in')});})();</script>
 </body>
 </html>

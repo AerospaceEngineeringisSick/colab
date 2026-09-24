@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tidewater — Harbourside seafood, St Ives</title>
+<title>Tidewater | Harbourside seafood, St Ives</title>
 <meta name="description" content="Day-boat seafood on the harbour at St Ives, Cornwall. The menu changes with the catch. Book a table for tonight.">
 <meta name="theme-color" content="#0E2A36">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230E2A36'/%3E%3Ccircle cx='32' cy='30' r='10' fill='%23E8715A'/%3E%3Cpath d='M6 38q7-6 13 0t13 0 13 0 13 0' stroke='%23EAF1EE' stroke-width='4' fill='none'/%3E%3C/svg%3E">
@@ -136,7 +136,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .menu__note{margin-top:30px;color:var(--foam-d);font-size:14px;display:flex;gap:30px;flex-wrap:wrap}
 
 /* boat to plate */
-.journey{height:300vh;position:relative;background:var(--sand-2)}
+.journey{height:240vh;position:relative;background:var(--sand-2)}
 .journey__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
 .journey h2{font-size:clamp(46px,6vw,96px);max-width:900px}
 .route{width:100%;height:auto;margin-top:30px;overflow:visible}
@@ -221,14 +221,24 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .lr-badge:hover{transform:translateY(-3px)}
 .lr-badge img{height:17px;width:auto}
 .lr-badge span{opacity:.7}
-.lr-wipe{position:fixed;inset:0;z-index:999;background:#070824;pointer-events:none;animation:lrOut .8s cubic-bezier(.65,0,.35,1) .1s forwards;overflow:hidden}
-.lr-wipe::after{content:"";position:absolute;left:50%;bottom:0;width:60vmin;height:30vmin;transform:translateX(-50%);border-radius:60vmin 60vmin 0 0;background:linear-gradient(35deg,#3DB88D,#0B86EA 55%,#3F4DE6)}
-@keyframes lrOut{to{transform:translateY(-101%)}}
+.lr-wipe{position:fixed;inset:0;z-index:999;display:flex;pointer-events:none;visibility:hidden}
+.lr-wipe i{flex:1;transform:scaleY(0)}
+.lr-wipe i:nth-child(1){background:#3DB88D}.lr-wipe i:nth-child(2){background:#0B86EA}.lr-wipe i:nth-child(3){background:#3F4DE6}.lr-wipe i:nth-child(4){background:#12018D}
+.lr-in .lr-wipe,.lr-go .lr-wipe{visibility:visible}
+.lr-in .lr-wipe i{transform:scaleY(1);transform-origin:top;animation:lrOut .6s cubic-bezier(.65,0,.35,1) .05s both}
+.lr-go .lr-wipe i{transform-origin:bottom;animation:lrIn .46s cubic-bezier(.55,0,.75,.2) both}
+.lr-wipe i:nth-child(2){animation-delay:.12s}.lr-wipe i:nth-child(3){animation-delay:.19s}.lr-wipe i:nth-child(4){animation-delay:.26s}
+.lr-go .lr-wipe i:nth-child(2){animation-delay:.06s}.lr-go .lr-wipe i:nth-child(3){animation-delay:.12s}.lr-go .lr-wipe i:nth-child(4){animation-delay:.18s}
+@keyframes lrOut{from{transform:scaleY(1)}to{transform:scaleY(0)}}
+@keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
+html{overflow-x:clip}
 </style>
+<script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>
 <body>
-<div class="lr-wipe" aria-hidden="true"></div>
+<div class="lr-wipe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <a class="lr-badge" href="../../work.html"><img src="../../assets/img/logo-light.png" alt="LRWeb"><span>Example site</span></a>
 
 <header class="top">
@@ -246,7 +256,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="hero__txt" id="heroTxt">
       <div class="hero__top"><span class="cap">Harbourside seafood · St Ives, Cornwall</span>
       <h1 class="serif" aria-label="Tidewater"><span style="--i:0">T</span><span style="--i:1">i</span><span style="--i:2">d</span><span style="--i:3">e</span><span style="--i:4">w</span><span style="--i:5">a</span><span style="--i:6">t</span><span style="--i:7">e</span><span style="--i:8">r</span></h1></div>
-      <div class="hero__bot"><p class="sub">Day-boat fish, Cornish crab and a table facing the harbour. The menu changes with the tide — and so does the view.</p>
+      <div class="hero__bot"><p class="sub">Day-boat fish, Cornish crab and a table facing the harbour. The menu changes with the tide, and so does the view.</p>
       <div class="hero__ctas"><a href="#book" class="btn btn--foam">Book a table</a><a href="#menu" class="btn btn--line">Tonight’s menu</a></div></div>
     </div>
     <div class="hero__meta"><span class="cap" id="skyTxt">Afternoon on the harbour</span><span class="scrollhint cap"><i></i>Scroll for sunset</span></div>
@@ -262,11 +272,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <p class="body" data-r style="--d:1">No freezers full of prawns, no fish flown in from halfway round the world. If the weather keeps the boats in, the menu gets smaller. We think that’s how a seafood restaurant should work.</p>
     </div>
     <aside class="tides" data-r style="--d:1" aria-label="Today's tides">
-      <div class="tides__head"><div><h3>Today’s tides</h3><p class="state" id="tideState">—</p></div><span class="cap" style="font-size:10px;color:var(--foam-d)" id="tideDate"></span></div>
+      <div class="tides__head"><div><h3>Today’s tides</h3><p class="state" id="tideState">·</p></div><span class="cap" style="font-size:10px;color:var(--foam-d)" id="tideDate"></span></div>
       <svg viewBox="0 0 400 130" id="tideSvg" aria-hidden="true"></svg>
       <div class="tides__times" id="tideTimes"></div>
       <div class="catch" aria-label="Landed this morning"><span>Mackerel</span><span>Hake</span><span>Cock crab</span><span>Lobster</span><span>Ray</span><span>Mussels</span></div>
-      <small>Indicative times for St Ives Bay — check official tide tables before heading out.</small>
+      <small>Indicative times for St Ives Bay. Check official tide tables before heading out.</small>
     </aside>
   </div>
 </section>
@@ -275,14 +285,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <div class="wrap">
     <div class="menu__head">
       <div><span class="cap" style="color:var(--gold)">Tonight’s menu</span><h2 class="serif h2" data-r style="margin-top:14px">From the <em>boats</em><br>to the table.</h2></div>
-      <p data-r style="--d:1">Written at 3pm every day once we know what’s landed. Anything marked “market” depends on the catch — just ask.</p>
+      <p data-r style="--d:1">Written at 3pm every day once we know what’s landed. Anything marked “market” depends on the catch, so just ask.</p>
     </div>
     <div class="mtabs" role="tablist" id="mtabs"><button role="tab" aria-selected="true" data-k="small">Small plates</button><button role="tab" aria-selected="false" data-k="boats">From the boats</button><button role="tab" aria-selected="false" data-k="sides">Sides</button><button role="tab" aria-selected="false" data-k="pud">Puddings</button><span class="ink" aria-hidden="true"></span></div>
     <div class="menu__grid">
       <ul class="dishes" id="dishes" role="tabpanel"></ul>
       <div class="menu__art" aria-hidden="true" id="art"></div>
     </div>
-    <div class="menu__note"><span>(V) vegetarian · (GF) gluten free · (VE) vegan</span><span>Allergies? Tell us — we cook everything to order.</span></div>
+    <div class="menu__note"><span>(V) vegetarian · (GF) gluten free · (VE) vegan</span><span>Allergies? Tell us. We cook everything to order.</span></div>
   </div>
 </section>
 
@@ -379,21 +389,33 @@ function sky(t) {
   return { top: mix(a.top, b.top, f), hor: mix(a.hor, b.hor, f), sun: mix(a.sun, b.sun, f), sea: mix(a.sea, b.sea, f), seaD: mix(a.seaD, b.seaD, f), glow: lerp(a.glow, b.glow, f) };
 }
 const resize = () => {
-  dpr = Math.min(devicePixelRatio, 1.75); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  stars = Array.from({ length: 140 }, () => ({ x: Math.random() * W, y: Math.random() * H * .55, r: Math.random() * 1.3 + .2, tw: Math.random() * 6 }));
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  dpr = Math.min(devicePixelRatio, 1.75); W = w; H = h; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  stars = Array.from({ length: 150 }, () => ({ x: Math.random() * W, y: Math.random() * H * .55, r: Math.random() * 1.1 + .35, tw: Math.random() * 6 }));
 };
 resize(); addEventListener('resize', resize);
+if (window.ResizeObserver) new ResizeObserver(resize).observe(cv);
 const gulls = Array.from({ length: 4 }, (_, i) => ({ x: Math.random(), y: .18 + Math.random() * .16, s: .00004 + Math.random() * .00003, ph: Math.random() * 6, sz: 7 + Math.random() * 6 }));
 function wave(x, t, L) { return Math.sin(x * L.f + t * L.s + L.p) * L.a + Math.sin(x * L.f * 2.3 - t * L.s * 1.3 + L.p) * L.a * .35; }
+// soft wedge: a few stacked translucent wedges so the beam has feathered edges
+function beam(len, spread, alpha) {
+  for (let k = 0; k < 9; k++) {
+    const sp = spread * (1.25 - k * .12), a = alpha * .075;
+    const g = ctx.createLinearGradient(0, 0, len, 0); g.addColorStop(0, `rgba(255,236,196,${a})`); g.addColorStop(.5, `rgba(255,236,196,${a * .45})`); g.addColorStop(1, 'rgba(255,236,196,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(len, -len * sp); ctx.lineTo(len, len * sp); ctx.lineTo(0, 2); ctx.closePath(); ctx.fill();
+  }
+}
 function drawSea(t) {
-  const c = sky(skyT), hor = H * (W < 700 ? .48 : .6);
+  if (!W) { resize(); if (!W) return; }
+  const c = sky(skyT), hor = H * (W < 700 ? .48 : .6), S = Math.max(.75, Math.min(1.4, W / 1300));
   // sky
   let g = ctx.createLinearGradient(0, 0, 0, hor);
   g.addColorStop(0, rgb(c.top)); g.addColorStop(1, rgb(c.hor));
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, hor + 2);
-  // stars
+  // stars (round, gently twinkling)
   const night = clamp((skyT - .6) / .35, 0, 1);
-  if (night > 0) for (const s of stars) { if (s.y > hor - 10) continue; ctx.fillStyle = `rgba(255,255,240,${night * (.4 + .6 * Math.abs(Math.sin(t / 900 + s.tw)))})`; ctx.fillRect(s.x, s.y, s.r * 1.4, s.r * 1.4); }
+  if (night > 0) for (const s of stars) { if (s.y > hor - 14) continue; ctx.globalAlpha = night * (.35 + .65 * Math.abs(Math.sin(t / 1100 + s.tw))); ctx.fillStyle = '#FFFDF0'; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill(); }
+  ctx.globalAlpha = 1;
   // sun
   const sx = W * .62, sy = lerp(hor * .38, hor + W * .02, clamp(skyT / .8, 0, 1)), sr = Math.max(40, W * .045);
   g = ctx.createRadialGradient(sx, sy, sr * .5, sx, sy, sr * 7);
@@ -401,18 +423,47 @@ function drawSea(t) {
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, hor);
   ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, hor); ctx.clip();
   ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fillStyle = rgb(c.sun, clamp(1 - night * 1.2, 0, 1)); ctx.fill(); ctx.restore();
-  // moon at night
-  if (night > 0) { ctx.beginPath(); ctx.arc(W * .2, hor * .3, 26, 0, Math.PI * 2); ctx.fillStyle = `rgba(245,240,225,${night})`; ctx.fill(); ctx.beginPath(); ctx.arc(W * .2 + 10, hor * .3 - 6, 24, 0, Math.PI * 2); ctx.fillStyle = rgb(c.top, night); ctx.fill(); }
-  // headland + lighthouse
-  ctx.fillStyle = rgb(mix(c.seaD, [0, 0, 0], .3));
-  ctx.beginPath(); ctx.moveTo(W * .8, hor); ctx.bezierCurveTo(W * .84, hor - H * .05, W * .9, hor - H * .07, W, hor - H * .08); ctx.lineTo(W, hor); ctx.fill();
-  const lx = W * .9, ly = hor - H * .066;
-  ctx.fillRect(lx - 5, ly - 38, 10, 38); ctx.fillStyle = rgb(night > .2 ? [255, 230, 170] : [230, 110, 90]); ctx.fillRect(lx - 6, ly - 46, 12, 8);
-  if (night > .05) {
-    const ang = t / 1400, len = W * .7;
-    ctx.save(); ctx.translate(lx, ly - 42); ctx.rotate(Math.sin(ang) * .9 + Math.PI);
-    g = ctx.createLinearGradient(0, 0, len, 0); g.addColorStop(0, `rgba(255,236,190,${.35 * night})`); g.addColorStop(1, 'rgba(255,236,190,0)');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(len, -len * .06); ctx.lineTo(len, len * .06); ctx.closePath(); ctx.fill(); ctx.restore();
+  // crescent moon with a soft halo (a real cut-out, so it never shows a mismatched disc)
+  if (night > 0) {
+    const mx = W * .2, my = hor * .3, mr = 24 * S;
+    g = ctx.createRadialGradient(mx, my, mr, mx, my, mr * 5); g.addColorStop(0, `rgba(245,240,225,${.18 * night})`); g.addColorStop(1, 'rgba(245,240,225,0)');
+    ctx.fillStyle = g; ctx.fillRect(mx - mr * 5, my - mr * 5, mr * 10, mr * 10);
+    ctx.save(); ctx.beginPath(); ctx.arc(mx, my, mr, 0, 6.283); ctx.clip();
+    ctx.beginPath(); ctx.rect(mx - mr, my - mr, mr * 2, mr * 2); ctx.arc(mx + mr * .42, my - mr * .25, mr * .92, 0, 6.283, true);
+    ctx.fillStyle = `rgba(247,242,226,${night})`; ctx.fill('evenodd'); ctx.restore();
+  }
+  // headland with cottages
+  const land = rgb(mix(c.seaD, [0, 0, 0], .3));
+  ctx.fillStyle = land;
+  ctx.beginPath(); ctx.moveTo(W * .76, hor + 1); ctx.bezierCurveTo(W * .82, hor - H * .045, W * .88, hor - H * .075, W, hor - H * .085); ctx.lineTo(W, hor + 1); ctx.fill();
+  const cot = [[.815, .018], [.835, .03], [.955, .07], [.975, .072]];
+  cot.forEach(([fx, fh], i) => { const x = W * fx, y = hor - H * fh, w = 16 * S, h = 12 * S;
+    ctx.fillStyle = land; ctx.fillRect(x, y - h, w, h + 2); ctx.beginPath(); ctx.moveTo(x - 2, y - h); ctx.lineTo(x + w / 2, y - h - 8 * S); ctx.lineTo(x + w + 2, y - h); ctx.fill();
+    if (night > .15) { ctx.fillStyle = `rgba(255,214,140,${night * (i % 2 ? .9 : .7)})`; ctx.fillRect(x + w * .3, y - h * .6, 4 * S, 4 * S); } });
+  // lighthouse: tapered white tower, red bands, gallery and lantern
+  const lx = W * .905, lb = hor - H * .078, th = 58 * S, tw0 = 13 * S, tw1 = 9 * S;
+  ctx.save(); ctx.translate(lx, lb);
+  ctx.beginPath(); ctx.moveTo(-tw0, 0); ctx.lineTo(-tw1, -th); ctx.lineTo(tw1, -th); ctx.lineTo(tw0, 0); ctx.closePath();
+  const dusk = clamp(skyT * 1.3, 0, 1);
+  ctx.fillStyle = rgb(mix([246, 242, 232], [120, 130, 140], dusk * .75)); ctx.fill();
+  ctx.save(); ctx.clip(); ctx.fillStyle = rgb(mix([214, 84, 64], [110, 50, 45], dusk * .7));
+  for (let k = 0; k < 3; k++) ctx.fillRect(-tw0, -th * (.22 + k * .28), tw0 * 2, th * .13);
+  ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(2 * S, -th, tw0, th); ctx.restore();
+  ctx.fillStyle = rgb(mix([40, 50, 60], [10, 14, 20], dusk)); ctx.fillRect(-tw1 - 4 * S, -th - 3 * S, (tw1 + 4 * S) * 2, 3 * S);
+  const lit = clamp((skyT - .45) / .3, 0, 1);
+  ctx.fillStyle = lit > 0 ? `rgba(255,232,170,${.35 + .65 * lit})` : 'rgba(180,200,210,.8)'; ctx.fillRect(-tw1 * .75, -th - 12 * S, tw1 * 1.5, 9 * S);
+  ctx.fillStyle = rgb(mix([40, 50, 60], [10, 14, 20], dusk)); ctx.beginPath(); ctx.moveTo(-tw1 - 1, -th - 12 * S); ctx.lineTo(0, -th - 19 * S); ctx.lineTo(tw1 + 1, -th - 12 * S); ctx.fill();
+  ctx.restore();
+  // rotating beam: turns all the way round; bright flash when it faces us
+  if (lit > .02) {
+    const ly = lb - th - 7.5 * S, ang = t / 1500;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(lx, ly);
+    for (const off of [0, Math.PI]) {
+      const a = ang + off, side = Math.cos(a), toward = Math.sin(a);
+      if (Math.abs(side) > .03) { ctx.save(); ctx.scale(side > 0 ? 1 : -1, 1); beam(W * .7 * Math.abs(side), .05 + .06 * (1 - Math.abs(side)), lit * .8); ctx.restore(); }
+      if (toward > .6) { const f = (toward - .6) / .4; g = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 * S); g.addColorStop(0, `rgba(255,244,210,${.8 * f * lit})`); g.addColorStop(1, 'rgba(255,244,210,0)'); ctx.fillStyle = g; ctx.fillRect(-60 * S, -60 * S, 120 * S, 120 * S); }
+    }
+    ctx.restore();
   }
   // gulls
   ctx.strokeStyle = night > .5 ? 'rgba(234,241,238,.4)' : 'rgba(14,42,54,.7)'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
@@ -421,7 +472,7 @@ function drawSea(t) {
     const x = b.x * W, y = b.y * H + Math.sin(t / 700 + b.ph) * 6, fl = Math.sin(t / 160 + b.ph) * .6;
     ctx.beginPath(); ctx.moveTo(x - b.sz, y - b.sz * fl * .6); ctx.quadraticCurveTo(x - b.sz * .4, y - b.sz * .5, x, y); ctx.quadraticCurveTo(x + b.sz * .4, y - b.sz * .5, x + b.sz, y - b.sz * fl * .6); ctx.stroke();
   }
-  // sea layers (far → near)
+  // sea layers (far to near)
   const layers = 6;
   for (let i = 0; i < layers; i++) {
     const k = i / (layers - 1);
@@ -429,31 +480,35 @@ function drawSea(t) {
     const L = { f: .004 + (1 - k) * .006, s: .0006 + k * .0008, a: 2 + k * 14, p: i * 1.7 };
     const col = mix(c.sea, c.seaD, k);
     ctx.beginPath(); ctx.moveTo(0, H);
-    for (let x = 0; x <= W + 10; x += 10) ctx.lineTo(x, y0 + wave(x, t, L));
+    for (let x = 0; x <= W + 8; x += 8) ctx.lineTo(x, y0 + wave(x, t, L));
     ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = rgb(col); ctx.fill();
-    // foam highlight
     ctx.beginPath();
-    for (let x = 0; x <= W + 10; x += 10) { const y = y0 + wave(x, t, L); x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    for (let x = 0; x <= W + 8; x += 8) { const y = y0 + wave(x, t, L); x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
     ctx.strokeStyle = rgb(mix(c.hor, [255, 255, 255], .3), .12 + k * .1); ctx.lineWidth = 1 + k; ctx.stroke();
-    // boat rides layer 2
+    if (i === 0 && lit > .05) { // lighthouse light on the water
+      for (let j = 0; j < 12; j++) { const yy = hor + 4 + j * j * .7, ww = (18 - j) * S * (.6 + .4 * Math.sin(t / 260 + j * 1.9)); ctx.fillStyle = `rgba(255,228,160,${lit * .22 * (1 - j / 12)})`; ctx.beginPath(); ctx.ellipse(lx + Math.sin(t / 400 + j) * 3, yy, ww, 1.3, 0, 0, 6.283); ctx.fill(); }
+    }
+    // fishing boat rides layer 2
     if (i === 2) {
       const bx = W * .3 + Math.sin(t / 9000) * W * .04, by = y0 + wave(bx, t, L), slope = (wave(bx + 6, t, L) - wave(bx - 6, t, L)) / 12;
-      ctx.save(); ctx.translate(bx, by); ctx.rotate(Math.atan(slope)); const s = Math.max(.7, W / 1400);
-      ctx.scale(s, s);
-      ctx.fillStyle = rgb(mix(c.seaD, [0, 0, 0], .2)); ctx.beginPath(); ctx.moveTo(-34, -6); ctx.lineTo(34, -6); ctx.lineTo(26, 6); ctx.lineTo(-26, 6); ctx.fill();
-      ctx.fillStyle = 'rgba(232,113,90,.95)'; ctx.fillRect(-12, -24, 20, 18);
-      ctx.fillStyle = rgb(mix(c.seaD, [0, 0, 0], .2)); ctx.fillRect(10, -40, 2.5, 34);
-      if (night > .3) { ctx.fillStyle = `rgba(255,220,150,${night})`; ctx.fillRect(-8, -20, 5, 5); ctx.fillRect(0, -20, 5, 5); }
+      ctx.save(); ctx.translate(bx, by); ctx.rotate(Math.atan(slope)); const s2 = Math.max(.75, W / 1400); ctx.scale(s2, s2);
+      const hull = rgb(mix([28, 52, 66], [8, 16, 22], night));
+      ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.ellipse(-30, 5, 16, 2, 0, 0, 6.283); ctx.fill();
+      ctx.fillStyle = hull; ctx.beginPath(); ctx.moveTo(-38, -8); ctx.quadraticCurveTo(0, -4, 40, -12); ctx.lineTo(30, 6); ctx.quadraticCurveTo(0, 9, -28, 6); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(232,113,90,.95)'; ctx.fillRect(-36, -8, 70, 3);
+      ctx.fillStyle = rgb(mix([244, 240, 230], [70, 80, 90], night * .8)); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-14, -26, 22, 19, 3) : ctx.rect(-14, -26, 22, 19); ctx.fill();
+      ctx.fillStyle = hull; ctx.fillRect(12, -44, 2.4, 37); ctx.beginPath(); ctx.moveTo(14, -44); ctx.lineTo(28, -40); ctx.lineTo(14, -36); ctx.fill();
+      ctx.fillStyle = night > .3 ? `rgba(255,220,150,${night})` : 'rgba(150,200,220,.9)'; ctx.fillRect(-10, -22, 6, 5); ctx.fillRect(-1, -22, 6, 5);
+      if (night > .3) { g = ctx.createRadialGradient(13, -46, 0, 13, -46, 16); g.addColorStop(0, `rgba(255,230,170,${night * .8})`); g.addColorStop(1, 'rgba(255,230,170,0)'); ctx.fillStyle = g; ctx.fillRect(-3, -62, 32, 32); }
       ctx.restore();
     }
   }
-  // sun reflection
+  // sun reflection: soft ellipses rather than hard bars
   const refl = clamp(1 - night * 1.4, 0, 1) * c.glow;
-  if (refl > .02) for (let i = 0; i < 26; i++) {
-    const y = hor + 6 + i * i * .9, w = (sr * 1.6) * (1 - i / 30) * (.6 + .4 * Math.sin(t / 300 + i * 1.3));
-    ctx.fillStyle = rgb(c.sun, refl * .5 * (1 - i / 26)); ctx.fillRect(sx - w / 2 + Math.sin(t / 500 + i) * 6, y, w, 2);
+  if (refl > .02) for (let i = 0; i < 22; i++) {
+    const y = hor + 5 + i * i * 1.05, w = (sr * 1.5) * (1 - i / 26) * (.55 + .45 * Math.sin(t / 340 + i * 1.3));
+    ctx.fillStyle = rgb(c.sun, refl * .42 * (1 - i / 22)); ctx.beginPath(); ctx.ellipse(sx + Math.sin(t / 520 + i) * 6, y, Math.max(1, w / 2), 1.6 + i * .08, 0, 0, 6.283); ctx.fill();
   }
-  // lighthouse glint on water at night
 }
 const heroSec = $('.hero'), heroTxt = $('#heroTxt'), skyTxt = $('#skyTxt');
 const skyNames = ['Afternoon on the harbour', 'Golden hour', 'Sunset over Porthminster', 'Night falls on St Ives'];
@@ -476,7 +531,7 @@ function tides() {
   $('#tideDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Europe/London' });
   const cur = now.getTime(), rising = level(cur + 6e4) > level(cur);
   const nextE = events.find(e => e.ts > cur && e.high === rising);
-  $('#tideState').textContent = `Tide ${rising ? 'rising' : 'falling'}${nextE ? ` — ${rising ? 'high' : 'low'} water at ${fmt(nextE.ts)}` : ''}`;
+  $('#tideState').textContent = `Tide ${rising ? 'rising' : 'falling'}${nextE ? `, ${rising ? 'high' : 'low'} water at ${fmt(nextE.ts)}` : ''}`;
   // draw curve
   const pts = []; for (let i = 0; i <= 96; i++) { const ts = start + i * 15 * 6e4; pts.push([i / 96 * 400, 70 - level(ts) * 42]); }
   const d = 'M' + pts.map(p => p.map(v => v.toFixed(1)).join(' ')).join(' L');
@@ -552,7 +607,7 @@ $('#bookForm').addEventListener('submit', e => {
   const di = +$('#dates [aria-pressed="true"]').dataset.i, d = new Date(today); d.setDate(d.getDate() + di);
   const t = $('#times [aria-pressed="true"]').dataset.t, s = $('#seats [aria-pressed="true"]').dataset.s;
   const c = $('#confirm');
-  c.innerHTML = `<span class="cap" style="color:var(--gold)">Table requested</span><h3>See you ${di === 0 ? 'tonight' : d.toLocaleDateString('en-GB', { weekday: 'long' })}, ${nm.value.trim().split(' ')[0]}.</h3><p>${guests} ${guests === 1 ? 'guest' : 'guests'} · ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })} at ${t} · ${s}. We’ll email ${em.value} to confirm within the hour. (Demo — no table has actually been booked.)</p><button type="button" class="btn btn--foam" style="margin-top:26px" id="again">Make another booking</button>`;
+  c.innerHTML = `<span class="cap" style="color:var(--gold)">Table requested</span><h3>See you ${di === 0 ? 'tonight' : d.toLocaleDateString('en-GB', { weekday: 'long' })}, ${nm.value.trim().split(' ')[0]}.</h3><p>${guests} ${guests === 1 ? 'guest' : 'guests'} · ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })} at ${t} · ${s}. We’ll email ${em.value} to confirm within the hour. (Demo: no table has actually been booked.)</p><button type="button" class="btn btn--foam" style="margin-top:26px" id="again">Make another booking</button>`;
   c.classList.add('on');
   $('#again').addEventListener('click', () => c.classList.remove('on'));
 });
@@ -582,5 +637,8 @@ function frame(t) {
 requestAnimationFrame(frame);
 })();
 </script>
+<script>(function(){if(!location.hash)scrollTo(0,0);var d=document.documentElement,b=document.querySelector('.lr-badge');
+if(b)b.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();try{sessionStorage.setItem('lr-pt','1')}catch(_){}d.classList.remove('lr-in');d.classList.add('lr-go');setTimeout(function(){location.href=b.href},640)});
+addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('lr-go','lr-in')});})();</script>
 </body>
 </html>

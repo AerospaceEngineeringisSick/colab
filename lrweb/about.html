@@ -20,9 +20,10 @@
 <link rel="preload" href="assets/fonts/font-15.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fonts.css">
 <link rel="stylesheet" href="assets/css/site.css">
-<script>document.documentElement.classList.add('js')</script>
+<script>(function(d){d.classList.add('js');try{if(sessionStorage.getItem('lr-pt')){d.classList.add('pt-in');sessionStorage.removeItem('lr-pt')}}catch(e){}})(document.documentElement)</script>
 </head>
 <body>
+<div class="curtain" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nav">
   <div class="nav__in">
@@ -55,16 +56,39 @@
 
 <section class="sec sec--white">
   <div class="container">
-    <div class="sec-head"><p class="kicker" data-reveal>The two of us</p><h2 data-split>Luke and Ralph.</h2></div>
+    <div class="sec-head"><p class="kicker" data-reveal>The two of us</p><h2 data-split>Luke and Ralph. Both in Berkshire.</h2><p class="lead" data-reveal>Ralph is out west in Hungerford and Kintbury, Luke is over in Wokingham. We find a lot of our clients close to home, and we look after businesses right across the UK too.</p></div>
     <div class="people">
   <article class="person" data-reveal>
     <div class="person__mark person__mark--l" aria-hidden="true"><span>L</span></div>
-    <div><h3>Luke</h3><p class="role">Co-founder · builds &amp; looks after the sites</p><p>Handles the design, development and day-to-day care. Believes a website should load fast, read clearly, and never make its owner feel stupid. Allergic to jargon.</p></div>
+    <div><h3>Luke</h3><p class="role">Co-founder · builds &amp; looks after the sites</p><p class="where"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 15s5-4.6 5-8.5A5 5 0 0 0 3 6.5C3 10.4 8 15 8 15z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="6.5" r="1.8" fill="currentColor"/></svg>Wokingham, Berkshire</p><p>Handles the design, development and day-to-day care. Believes a website should load fast, read clearly, and never make its owner feel stupid. Allergic to jargon.</p></div>
   </article>
   <article class="person person--r" data-reveal style="--d:1">
     <div class="person__mark person__mark--r" aria-hidden="true"><span>R</span></div>
-    <div><h3>Ralph</h3><p class="role">Co-founder · keeps everything running</p><p>Handles the operations side, making sure the hosting hums, the backups happen, and clients always know where things stand. The reason invoices arrive on time.</p></div>
+    <div><h3>Ralph</h3><p class="role">Co-founder · keeps everything running</p><p class="where"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 15s5-4.6 5-8.5A5 5 0 0 0 3 6.5C3 10.4 8 15 8 15z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="6.5" r="1.8" fill="currentColor"/></svg>Hungerford &amp; Kintbury, Berkshire</p><p>Handles the operations side, making sure the hosting hums, the backups happen, and clients always know where things stand. The reason invoices arrive on time.</p></div>
   </article>
+</div>
+    <div class="locmap" data-inview><div class="lm-in">
+  <svg viewBox="0 10 780 300" role="img" aria-label="Map of Berkshire: Ralph is in Hungerford and Kintbury in the west, Luke is in Wokingham in the east. Between them they cover the county, and they work with clients across the UK.">
+    <defs>
+      <linearGradient id="lmLink" x1="0" x2="1"><stop offset="0" stop-color="#3DB88D"/><stop offset=".55" stop-color="#0B86EA"/><stop offset="1" stop-color="#3F4DE6"/></linearGradient>
+      <radialGradient id="lmGlowG"><stop offset="0" stop-color="#3DB88D" stop-opacity=".45"/><stop offset="1" stop-color="#3DB88D" stop-opacity="0"/></radialGradient>
+      <radialGradient id="lmGlowB"><stop offset="0" stop-color="#0B86EA" stop-opacity=".45"/><stop offset="1" stop-color="#0B86EA" stop-opacity="0"/></radialGradient>
+      <pattern id="lmDots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="rgba(245,248,250,.12)"/></pattern>
+    </defs>
+    <path class="lm-county" d="M22 150 C40 118 92 112 150 124 C215 104 262 96 318 88 C352 70 392 96 430 118 C470 100 498 58 548 34 C600 20 650 50 700 88 C738 104 766 120 764 148 C756 178 720 196 690 214 C660 240 640 262 600 268 C556 276 520 248 480 244 C430 252 380 262 330 256 C270 262 220 272 160 266 C110 262 60 252 36 226 C18 204 12 176 22 150Z"/>
+    <path class="lm-county-dots" d="M22 150 C40 118 92 112 150 124 C215 104 262 96 318 88 C352 70 392 96 430 118 C470 100 498 58 548 34 C600 20 650 50 700 88 C738 104 766 120 764 148 C756 178 720 196 690 214 C660 240 640 262 600 268 C556 276 520 248 480 244 C430 252 380 262 330 256 C270 262 220 272 160 266 C110 262 60 252 36 226 C18 204 12 176 22 150Z" fill="url(#lmDots)"/>
+    <path class="lm-river" d="M336 90 C352 110 360 124 371 129 C400 140 430 150 455 155 C475 158 488 146 497 140 C505 110 498 84 504 67 C530 44 570 30 595 34 C615 50 630 76 644 90 C670 110 695 122 714 127"/>
+    <path class="lm-river" d="M74 208 C100 222 112 226 122 226 C160 226 185 224 208 223 C230 221 240 219 251 219 C320 214 400 190 455 160"/>
+    <path class="lm-m4" d="M49 157 C80 166 95 172 105 174 C150 184 180 190 210 190 L336 190 C390 196 420 210 448 213 C480 212 505 204 525 196 C560 170 600 136 623 123 C660 112 690 112 714 112"/>
+    <text class="lm-road" x="300" y="184">M4</text>
+    <g class="lm-town" transform="translate(208 223)"><circle r="3"/><text x="8" y="4">Newbury</text></g><g class="lm-town" transform="translate(449 163)"><circle r="3"/><text x="8" y="4">Reading</text></g><g class="lm-town s" transform="translate(608 206)"><circle r="3"/><text x="8" y="4">Bracknell</text></g><g class="lm-town s" transform="translate(631 87)"><circle r="3"/><text x="8" y="4">Maidenhead</text></g><g class="lm-town s" transform="translate(711 131)"><circle r="3"/><text x="8" y="4">Windsor</text></g>
+    <path class="lm-link" pathLength="1" d="M122 226 C250 300 430 300 550 212"/>
+    <g class="lm-pin lm-pin--r" transform="translate(122 226)"><circle r="46" fill="url(#lmGlowG)" class="lm-halo"/><circle r="9" class="lm-ring"/><circle r="6"/></g>
+    <g class="lm-pin lm-pin--l" transform="translate(550 212)"><circle r="46" fill="url(#lmGlowB)" class="lm-halo"/><circle r="9" class="lm-ring"/><circle r="6"/></g>
+  </svg>
+  <div class="lm-tag lm-tag--r" style="--x:15.6%;--y:72%"><b>Ralph</b><span>Hungerford &amp; Kintbury</span></div>
+  <div class="lm-tag lm-tag--l" style="--x:70.5%;--y:67.3%"><b>Luke</b><span>Wokingham</span></div></div>
+  <div class="lm-uk"><span class="lm-uk__dot"></span><b>And the rest of the UK</b><span>Email, phone and video calls work just as well from Cornwall to Caithness.</span></div>
 </div>
   </div>
 </section>
@@ -103,12 +127,16 @@
         <g transform="translate(190 240)"><rect x="-38" y="-14" width="76" height="28" rx="14" fill="rgba(61,184,141,.14)" stroke="rgba(61,184,141,.4)"/><text x="0" y="5" text-anchor="middle" fill="#6FE0B4" font-family="Instrument Sans" font-size="12" font-weight="600">Backups</text></g>
       </svg>
       <dl>
-        <div><dt>Germany · DE</dt><dd>Your website &amp; server<span>EU data centres, fast connections to the UK, strict privacy law</span></dd></div>
+        <div><dt>Germany · DE</dt><dd>Your website &amp; server<span>Netcup’s EU data centres: fast connections to the UK, strict privacy law</span></dd></div>
         <div><dt>Renewable</dt><dd>100% green energy<span>Our data centres run entirely on renewable power</span></dd></div>
         <div><dt>EU</dt><dd>Daily backups<span>Stored completely separately from the server, encrypted</span></dd></div>
-        <div><dt>Global edge</dt><dd>DNS &amp; protection<span>Cloudflare keeps things fast and shrugs off attacks</span></dd></div>
+        <div><dt>Global edge</dt><dd><button type="button" class="jg" data-tip="The internet’s address book. It tells browsers where to find your website.">DNS</button> &amp; protection<span>Cloudflare keeps things fast and shrugs off attacks</span></dd></div>
         <div><dt>24/7</dt><dd>Monitoring<span>Independent checks every minute, alerts straight to us</span></dd></div>
       </dl>
+    </div>
+    <div class="roadmap" data-reveal>
+      <span class="roadmap__tag">On the roadmap</span>
+      <p><b>We may move hosting to London.</b> We’re looking at Leaseweb’s LON-01 data centre in Slough, which Leaseweb publishes as 100% renewable. It would put your website even closer to UK visitors. If we go ahead, every client gets 30 days’ notice first, with the new location and energy details.</p>
     </div>
   </div>
 </section>
@@ -134,10 +162,10 @@
         <span class="status"><i></i>All client sites monitored 24/7</span>
       </div>
       <div><h4>LRWeb</h4><ul><li><a href="services.html">What we do</a></li><li><a href="work.html">Example sites</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="about.html">About</a></li><li><a href="referrals.html">Referrals</a></li></ul></div>
-      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="https://lrweb.uk/privacy">Privacy policy</a></li><li><a href="https://lrweb.uk/terms">Terms of service</a></li></ul></div>
+      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of service</a></li></ul></div>
     </div>
     <div class="foot__legal">
-      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="https://lrweb.uk/terms#business-information">business information</a>, <a href="https://lrweb.uk/terms">terms of service</a> and <a href="https://lrweb.uk/privacy">privacy policy</a>.</p>
+      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="terms.html#business-information">business information</a>, <a href="terms.html">terms of service</a> and <a href="privacy.html">privacy policy</a>.</p>
       <div class="foot__bottom"><span>© <span data-year>2026</span> LRWeb · lrweb.uk</span><span>Type “panic” anywhere. Go on.</span></div>
     </div>
   </div>

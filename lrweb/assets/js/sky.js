@@ -30,7 +30,8 @@ vec3 sky(vec2 uv, float ax){
   vec2 cell = floor(sp); vec2 f = fract(sp) - .5;
   float r = hash(cell);
   vec2 off = (vec2(hash(cell + 3.1), hash(cell + 7.7)) - .5) * .6;
-  float star = step(.982, r) * smoothstep(.14, 0., length(f + off));
+  float px = 150. / uRes.y;                       // one canvas pixel in cell units
+  float star = step(.982, r) * smoothstep(max(.12, px * 1.5), 0., length(f + off));
   float tw = .5 + .5 * sin(uTime * (1. + r * 3.) + r * 60.);
   float fadeS = (1. - smoothstep(.55, .95, uProg)) * smoothstep(.02, .2, h);
   col += vec3(.9, .95, 1.) * star * tw * fadeS * (r > .997 ? 1.6 : .75);
@@ -83,17 +84,24 @@ void main(){
     float dx = abs(ax - sunC.x);
     float colW = R * (.5 + depth * 1.2);
     float column = exp(-pow(dx / colW, 2.) * 2.) * rise;
-    float g = noise(vec2(uv.x * uRes.x * .16 / uQ, uv.y * uRes.y * .4 / uQ - t * 3.));
-    float spark = pow(g, 9.) * 3.2;
+    // glitter: one soft, randomly placed glint per cell of a perspective grid on the water.
+    // Gaussian shapes fade out well inside each cell, so no cell edges ever show.
+    float z = 1. / (depth + .08);
+    vec2 gp = vec2(ax * z * 40. + w * 2., z * 9.);
+    vec2 cid = floor(gp), f = fract(gp) - .5;
+    float r = hash(cid);
+    vec2 o = (vec2(hash(cid + 1.7), hash(cid + 4.3)) - .5) * .45;
+    vec2 q = (f - o) / vec2(.3, .12);
+    float tw = .5 + .5 * sin(t * (1.6 + r * 3.5) + r * 40.);
+    float spark = exp(-dot(q, q) * 2.4) * smoothstep(.45, .95, tw) * step(.3, r) * 3.2 * smoothstep(.03, .16, depth);
     col += brand((ax - sunC.x) / (2. * R) + .5) * column * (.16 + spark) * (1. - depth * .45);
-    // faint ripple highlights everywhere
-    col += vec3(.5, .7, 1.) * pow(noise(vec2(uv.x * 90., k * 260. / (depth + .2) - t)), 14.) * .12 * (1. - depth);
+    col += vec3(.55, .75, 1.) * spark * .045 * (1. - column);
   }
   float d2 = length(vec2(ax, uv.y) - sunC);
   col += mix(BLUE, GREEN, .35) * exp(-max(d2 - R, 0.) * 6.5) * rise * .38;
-  col += vec3(.85, .92, 1.) * exp(-abs(uv.y - uHz) * uRes.y / uQ * .9) * .5 * step(.001, uHz);
+  col += vec3(.85, .92, 1.) * exp(-abs(uv.y - uHz) * uRes.y * .55) * .42 * step(.001, uHz);
   col *= 1. - .22 * pow(length(uv - vec2(.5, .58)) * 1.2, 2.);
-  col += (hash(gl_FragCoord.xy + fract(t) * 37.) - .5) * .02;
+  col += (hash(gl_FragCoord.xy) - .5) * .008;   // static dither against banding
   gl_FragColor = vec4(col, 1.);
 }`;
 
@@ -119,21 +127,30 @@ void main(){
       this.gl = gl; this.ok = true; this.t0 = performance.now();
       this.resize();
       new IntersectionObserver(([e]) => this.visible = e.isIntersecting, { rootMargin: '100px' }).observe(canvas);
-      addEventListener('resize', () => this.resize());
+      // size follows the element, not just the window (fixes skies that start at 0x0)
+      if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(canvas);
+      else addEventListener('resize', () => this.resize());
+      this.scale = 1; this.slow = 0; this.last = 0;
       canvas.classList.add('sky-ready');
     }
     resize() {
       if (!this.ok) return;
-      const small = innerWidth < 760;
-      this.q = Math.min(devicePixelRatio || 1, 2) * (small ? .5 : .62) * this.o.quality;
+      const small = innerWidth < 760, dpr = Math.min(devicePixelRatio || 1, 2);
+      // aim for ~0.8 CSS px per canvas px on desktop, less on phones; adaptive scale drops it if frames get slow
+      this.q = Math.min(dpr, small ? 1.1 : 1.25) * (small ? .62 : .8) * this.o.quality * (this.scale || 1);
       const w = this.c.clientWidth, h = this.c.clientHeight;
-      this.c.width = Math.max(2, Math.round(w * this.q)); this.c.height = Math.max(2, Math.round(h * this.q));
-      this.gl.viewport(0, 0, this.c.width, this.c.height);
+      const W = Math.max(2, Math.round(w * this.q)), H = Math.max(2, Math.round(h * this.q));
+      if (W === this.c.width && H === this.c.height) return;
+      this.c.width = W; this.c.height = H;
+      this.gl.viewport(0, 0, W, H);
     }
     set(k, v) { this.o[k] = v; }
     pointer(x, y) { this.mt = [x, y]; }
     render(now) {
       if (!this.ok || !this.visible) return;
+      // adaptive quality: if frames keep taking longer than ~22ms, render fewer pixels
+      if (this.last) { const dt = now - this.last; this.slow = dt > 22 && dt < 200 ? this.slow + 1 : Math.max(0, this.slow - 1); if (this.slow > 40 && this.scale > .55) { this.scale *= .85; this.slow = 0; this.resize(); } }
+      this.last = now;
       const gl = this.gl, u = this.u, o = this.o, reduce = LRSky.reduce;
       this.mouse[0] += (this.mt[0] - this.mouse[0]) * .04; this.mouse[1] += (this.mt[1] - this.mouse[1]) * .04;
       gl.uniform2f(u.uRes, this.c.width, this.c.height);

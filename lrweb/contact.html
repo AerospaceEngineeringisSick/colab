@@ -20,9 +20,10 @@
 <link rel="preload" href="assets/fonts/font-15.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fonts.css">
 <link rel="stylesheet" href="assets/css/site.css">
-<script>document.documentElement.classList.add('js')</script>
+<script>(function(d){d.classList.add('js');try{if(sessionStorage.getItem('lr-pt')){d.classList.add('pt-in');sessionStorage.removeItem('lr-pt')}}catch(e){}})(document.documentElement)</script>
 </head>
 <body>
+<div class="curtain" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nav">
   <div class="nav__in">
@@ -61,11 +62,11 @@
           <div class="field"><label for="f-biz">Business / organisation</label><input id="f-biz" name="organisation" autocomplete="organization"></div>
           <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required><span class="err">Please add a valid email address.</span></div>
           <div class="field"><label for="f-url">Current website (if you have one)</label><input id="f-url" name="website" inputmode="url" placeholder="yourbusiness.co.uk"></div>
-          <div class="field full" id="f-tier-wrap" hidden><label for="f-tier">Which plan looks right?</label><select id="f-tier" name="plan"><option>Not sure yet</option><option>Essential — £29/mo</option><option>Plus — £49/mo</option><option>Pro — £89/mo</option></select></div>
+          <div class="field full" id="f-tier-wrap" hidden><label for="f-tier">Which plan looks right?</label><select id="f-tier" name="plan"><option>Not sure yet</option><option>Essential, £29/mo</option><option>Plus, £49/mo</option><option>Pro, £89/mo</option></select></div>
           <div class="field full"><label for="f-msg" id="f-msg-label">Tell us about the project</label><textarea id="f-msg" name="message" required placeholder="What does the website need to do? Any sites you like the look of? Rough timeline?"></textarea><span class="err">Please add a few words about what you need.</span></div>
           <input class="hp" id="f-hp" name="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         </div>
-        <div class="form__foot"><small>We use what you send us only to reply to your enquiry and discuss the work. No mailing lists, and we don’t pass your details to anyone else. See our <a href="https://lrweb.uk/privacy" style="text-decoration:underline">privacy policy</a>.</small><button type="submit" class="btn btn-primary">Send enquiry <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="form__foot"><small>We use what you send us only to reply to your enquiry and discuss the work. No mailing lists, and we don’t pass your details to anyone else. See our <a href="privacy.html" style="text-decoration:underline">privacy policy</a>.</small><button type="submit" class="btn btn-primary">Send enquiry <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </form>
       <div class="form form-ok" id="formOk" hidden><div class="tick"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 tabindex="-1">Thanks, your enquiry is on its way.</h3><p>We read every message ourselves and aim to reply within one working day. In the meantime, support@lrweb.uk is there for existing clients.</p></div>
     </div>
@@ -81,10 +82,10 @@
         <span class="status"><i></i>All client sites monitored 24/7</span>
       </div>
       <div><h4>LRWeb</h4><ul><li><a href="services.html">What we do</a></li><li><a href="work.html">Example sites</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="about.html">About</a></li><li><a href="referrals.html">Referrals</a></li></ul></div>
-      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="https://lrweb.uk/privacy">Privacy policy</a></li><li><a href="https://lrweb.uk/terms">Terms of service</a></li></ul></div>
+      <div><h4>Get in touch</h4><ul><li><a href="contact.html">Start a conversation</a></li><li><a href="mailto:hello@lrweb.uk">hello@lrweb.uk</a></li><li><a href="mailto:support@lrweb.uk">support@lrweb.uk</a> <span style="opacity:.6">(clients)</span></li><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of service</a></li></ul></div>
     </div>
     <div class="foot__legal">
-      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="https://lrweb.uk/terms#business-information">business information</a>, <a href="https://lrweb.uk/terms">terms of service</a> and <a href="https://lrweb.uk/privacy">privacy policy</a>.</p>
+      <p>LRWeb Ltd is a company registered in England &amp; Wales, company number 17458216, registered office: 1 Pillarbox Cottages Winding Wood, Kintbury, Hungerford, England RG17 9RN. LRWeb is a trading name of LRWeb Ltd. Not registered for VAT, so no VAT is added to the prices shown. If we must register, VAT is added on 30 days notice. Full <a href="terms.html#business-information">business information</a>, <a href="terms.html">terms of service</a> and <a href="privacy.html">privacy policy</a>.</p>
       <div class="foot__bottom"><span>© <span data-year>2026</span> LRWeb · lrweb.uk</span><span>Type “panic” anywhere. Go on.</span></div>
     </div>
   </div>

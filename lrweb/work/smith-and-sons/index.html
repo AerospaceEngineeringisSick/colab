@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Smith &amp; Sons — Plumbing &amp; Heating, West Berkshire</title>
+<title>Smith &amp; Sons | Plumbing &amp; Heating, West Berkshire</title>
 <meta name="description" content="Family-run plumbing and heating in Newbury, Hungerford and West Berkshire since 1987. Boilers, bathrooms, leaks and 24/7 emergency callouts. Fixed quotes, tidy work.">
 <meta name="theme-color" content="#0F2A3D">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F2A3D'/%3E%3Cpath d='M18 46V30a12 12 0 0 1 12-12h16' fill='none' stroke='%23C46A3A' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -79,37 +79,46 @@ h2{font-size:clamp(34px,4.4vw,56px)}
 .stars{color:#F5B83D;letter-spacing:2px}
 .hero__art{position:relative;margin-right:-6%}
 .hero__art svg{width:112%;max-width:none;height:auto;overflow:visible;margin-left:-6%}
-.pipe{fill:none;stroke:url(#copperG);stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--ease)}
-.pipe-hi{fill:none;stroke:rgba(255,255,255,.35);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--ease)}
-.flow{fill:none;stroke:#7CC6F2;stroke-width:3;stroke-linecap:round;stroke-dasharray:6 22;opacity:0;transition:opacity .6s 1.6s;animation:flow 1.2s linear infinite}
-.flow.hot{stroke:#FFB38A}
-@keyframes flow{to{stroke-dashoffset:-28}}
-.ready .pipe,.ready .pipe-hi{stroke-dashoffset:0}
-.ready .flow{opacity:.9}
-.joint{fill:var(--copper-d);opacity:0;transition:opacity .4s 1.4s}
-.ready .joint{opacity:1}
-.boiler{opacity:0;transform:translateY(20px);transition:opacity .8s .3s,transform 1s var(--ease) .3s}
-.ready .boiler{opacity:1;transform:none}
+.pipe{fill:none;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease)}
+.pipe.hot{stroke:url(#copperG)}.pipe.cold{stroke:url(#coldG)}
+.flow{fill:none;stroke:#DDF3FF;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:4 16;opacity:0;transition:opacity .6s 1.6s;animation:flow 1s linear infinite}
+.flow.hot{stroke:#FFE0C9}
+@keyframes flow{to{stroke-dashoffset:-20}}
+.ready .pipe{stroke-dashoffset:0}
+.ready .flow{opacity:.95}
 .flame{transform-box:fill-box;transform-origin:50% 100%;animation:flicker .18s infinite alternate}
-@keyframes flicker{to{transform:scaleY(.86) scaleX(1.06)}}
-.needle{transform-box:view-box;transform-origin:476px 292px;transform:rotate(-120deg);transition:transform 2.2s cubic-bezier(.34,1.56,.64,1) 1.2s}
-.ready .needle{transform:rotate(-20deg)}
-.heat path{fill:none;stroke:#FFB38A;stroke-width:3;stroke-linecap:round;opacity:0;animation:heat 2.6s ease-in-out infinite}
+@keyframes flicker{to{transform:scaleY(.84) scaleX(1.08)}}
+.heat path{fill:none;stroke:#FF9A66;stroke-width:2.6;stroke-linecap:round;opacity:0;animation:heat 2.6s ease-in-out infinite}
 .heat path:nth-child(2){animation-delay:.8s}.heat path:nth-child(3){animation-delay:1.6s}
-@keyframes heat{0%{opacity:0;transform:translateY(10px)}40%{opacity:.8}100%{opacity:0;transform:translateY(-26px)}}
-.rad{opacity:0;transition:opacity .8s .6s}
-.ready .rad{opacity:1}
-.rad .fin{transition:fill 3s 2s}
-.ready .rad .fin{fill:#F3E6DC}
-.drip{animation:drip 2.4s cubic-bezier(.55,0,1,.45) infinite}
-@keyframes drip{0%,30%{transform:translateY(0);opacity:0}35%{opacity:1}90%{transform:translateY(46px);opacity:1}100%{transform:translateY(46px);opacity:0}}
+@keyframes heat{0%{opacity:0;transform:translateY(8px)}40%{opacity:.85}100%{opacity:0;transform:translateY(-18px)}}
+.fins{transition:stroke 2.5s 1.8s}.ready .fins{stroke:#F6C9AE}
+.shower line{stroke:#7CC6F2;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:3 9;animation:shower .6s linear infinite;opacity:0;transition:opacity .5s 2s}
+.ready .shower line{opacity:1}
+@keyframes shower{to{stroke-dashoffset:-12}}
+.drip{animation:drip 2.2s cubic-bezier(.55,0,1,.45) infinite}
+@keyframes drip{0%,30%{transform:translateY(0);opacity:0}35%{opacity:1}90%{transform:translateY(12px);opacity:1}100%{transform:translateY(12px);opacity:0}}
+.steam circle{fill:rgba(255,255,255,.55);transform-box:fill-box;transform-origin:center;animation:steam 3s ease-out infinite}
+.steam circle:nth-child(2){animation-delay:1s}.steam circle:nth-child(3){animation-delay:2s}
+@keyframes steam{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:.8}100%{opacity:0;transform:translate(-40px,-50px) scale(2.4)}}
+.smoke{stroke-dasharray:10 40;animation:smoke 3s linear infinite;opacity:.6}
+@keyframes smoke{to{stroke-dashoffset:-50}}
+.lamp{animation:lamp 4s ease-in-out infinite}
+@keyframes lamp{50%{opacity:.75}}
+.room{transition:filter .3s}
+.van{transform:translateX(-200px);transition:transform 2.2s cubic-bezier(.2,.9,.25,1) .2s}
+.ready .van{transform:none}
+.wheel{transform-box:fill-box;transform-origin:center}
+.wheel path{transform-box:fill-box;transform-origin:center;animation:spin .5s linear 5 .2s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.headlight{animation:hl 2s ease-in-out infinite}
+@keyframes hl{50%{opacity:.4}}
 .art-chip{position:absolute;background:#fff;color:var(--ink);border-radius:14px;padding:12px 14px;box-shadow:0 20px 40px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;font-size:14px;font-weight:500;opacity:0;transform:translateY(12px);transition:opacity .6s,transform .8s var(--ease)}
 .art-chip b{display:block;font-size:15px}
 .art-chip small{color:var(--muted)}
 .art-chip svg{width:30px;height:30px;flex:none}
 .ready .art-chip{opacity:1;transform:none}
-.art-chip.c1{left:-4%;bottom:10%;transition-delay:2s}
-.art-chip.c2{right:0;top:-2%;transition-delay:2.3s}
+.art-chip.c1{left:-2%;top:6%;transition-delay:2s}
+.art-chip.c2{right:-4%;bottom:-8%;transition-delay:2.4s}
 
 /* strip */
 .strip{background:var(--white);border-bottom:1px solid var(--line)}
@@ -270,14 +279,24 @@ h2{font-size:clamp(34px,4.4vw,56px)}
 .lr-badge:hover{transform:translateY(-3px)}
 .lr-badge img{height:17px;width:auto}
 .lr-badge span{opacity:.7}
-.lr-wipe{position:fixed;inset:0;z-index:999;background:#070824;pointer-events:none;animation:lrOut .8s cubic-bezier(.65,0,.35,1) .1s forwards;overflow:hidden}
-.lr-wipe::after{content:"";position:absolute;left:50%;bottom:0;width:60vmin;height:30vmin;transform:translateX(-50%);border-radius:60vmin 60vmin 0 0;background:linear-gradient(35deg,#3DB88D,#0B86EA 55%,#3F4DE6)}
-@keyframes lrOut{to{transform:translateY(-101%)}}
+.lr-wipe{position:fixed;inset:0;z-index:999;display:flex;pointer-events:none;visibility:hidden}
+.lr-wipe i{flex:1;transform:scaleY(0)}
+.lr-wipe i:nth-child(1){background:#3DB88D}.lr-wipe i:nth-child(2){background:#0B86EA}.lr-wipe i:nth-child(3){background:#3F4DE6}.lr-wipe i:nth-child(4){background:#12018D}
+.lr-in .lr-wipe,.lr-go .lr-wipe{visibility:visible}
+.lr-in .lr-wipe i{transform:scaleY(1);transform-origin:top;animation:lrOut .6s cubic-bezier(.65,0,.35,1) .05s both}
+.lr-go .lr-wipe i{transform-origin:bottom;animation:lrIn .46s cubic-bezier(.55,0,.75,.2) both}
+.lr-wipe i:nth-child(2){animation-delay:.12s}.lr-wipe i:nth-child(3){animation-delay:.19s}.lr-wipe i:nth-child(4){animation-delay:.26s}
+.lr-go .lr-wipe i:nth-child(2){animation-delay:.06s}.lr-go .lr-wipe i:nth-child(3){animation-delay:.12s}.lr-go .lr-wipe i:nth-child(4){animation-delay:.18s}
+@keyframes lrOut{from{transform:scaleY(1)}to{transform:scaleY(0)}}
+@keyframes lrIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.lr-wipe{display:none!important}}
 .shot .lr-badge,.shot .lr-wipe{display:none}
+html{overflow-x:clip}
 </style>
+<script>(function(d){try{if(sessionStorage.getItem('lr-pt')){d.classList.add('lr-in');sessionStorage.removeItem('lr-pt')}}catch(e){}if('scrollRestoration' in history)history.scrollRestoration='manual'})(document.documentElement)</script>
 </head>
 <body>
-<div class="lr-wipe" aria-hidden="true"></div>
+<div class="lr-wipe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <a class="lr-badge" href="../../work.html"><img src="../../assets/img/logo-light.png" alt="LRWeb"><span>Example site</span></a>
 
 <div class="sos"><div class="wrap"><i></i>Burst pipe or no heating? We’re on call 24/7 · <a href="tel:01635000000">01635 000 000</a></div></div>
@@ -300,8 +319,8 @@ h2{font-size:clamp(34px,4.4vw,56px)}
   <div class="wrap">
     <div>
       <span class="avail" id="avail"><i></i>Taking bookings this week</span>
-      <h1>Plumbing done <span>properly.</span></h1>
-      <p class="sub">Family-run since 1987. Fixed quotes, tidy work, and a real person on the phone. Covering Newbury, Hungerford and the villages in between.</p>
+      <h1>Burst pipe?<br><span>Breathe.</span></h1>
+      <p class="sub">We’re usually at your door within 90 minutes. For everything that isn’t an emergency: fixed quotes, tidy work and a real person on the phone. Family-run in West Berkshire since 1987.</p>
       <div class="hero__ctas"><a href="#book" class="btn btn--copper">Book a visit <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a><a href="#prices" class="btn btn--line">What will it cost?</a></div>
       <div class="trust">
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l8 4v5c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V7l8-4z"/></svg>Gas Safe registered</span>
@@ -310,47 +329,111 @@ h2{font-size:clamp(34px,4.4vw,56px)}
       </div>
     </div>
     <div class="hero__art" aria-hidden="true">
-      <svg viewBox="0 0 560 440">
+      <svg viewBox="0 0 560 470">
         <defs>
-          <linearGradient id="copperG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E39A6B"/><stop offset=".5" stop-color="#C46A3A"/><stop offset="1" stop-color="#9E4F26"/></linearGradient>
+          <linearGradient id="copperG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0A778"/><stop offset=".5" stop-color="#C46A3A"/><stop offset="1" stop-color="#9E4F26"/></linearGradient>
+          <linearGradient id="coldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9AD8FA"/><stop offset="1" stop-color="#3C93CC"/></linearGradient>
+          <linearGradient id="roomUp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6E8"/><stop offset="1" stop-color="#F3E5CF"/></linearGradient>
+          <linearGradient id="roomDn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FCEFDC"/><stop offset="1" stop-color="#EEDDC2"/></linearGradient>
+          <radialGradient id="lampG"><stop offset="0" stop-color="#FFD58A" stop-opacity=".75"/><stop offset="1" stop-color="#FFD58A" stop-opacity="0"/></radialGradient>
+          <linearGradient id="roofG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E4A60"/><stop offset="1" stop-color="#1D3549"/></linearGradient>
+          <pattern id="tiles" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#E4F2F8"/><path d="M14 0H0V14" fill="none" stroke="#C9E1EC" stroke-width="1.2"/></pattern>
+          <clipPath id="houseClip"><rect x="160" y="190" width="350" height="230"/></clipPath>
         </defs>
-        <!-- pipes -->
-        <path class="pipe" pathLength="1" d="M20 380 H140 Q170 380 170 350 V220 Q170 190 200 190 H330"/>
-        <path class="pipe-hi" pathLength="1" d="M20 376 H140 Q166 376 166 350 V220 Q166 186 200 186 H330"/>
-        <path class="flow" d="M20 380 H140 Q170 380 170 350 V220 Q170 190 200 190 H330"/>
-        <path class="pipe" pathLength="1" d="M440 330 V400 H250 Q220 400 220 370 V330" style="transition-delay:.3s"/>
-        <path class="flow hot" d="M440 330 V400 H250 Q220 400 220 370 V330"/>
-        <path class="pipe" pathLength="1" d="M520 170 H500 Q470 170 470 140 V100" style="transition-delay:.5s"/>
-        <path class="flow hot" d="M520 170 H500 Q470 170 470 140 V100"/>
-        <g><circle class="joint" cx="170" cy="290" r="10"/><circle class="joint" cx="280" cy="190" r="10"/><circle class="joint" cx="340" cy="400" r="10"/></g>
-        <!-- radiator -->
-        <g class="rad" transform="translate(30 250)">
-          <rect x="0" y="0" width="120" height="90" rx="8" fill="#E7EDF2" stroke="#9FB2C1" stroke-width="2"/>
-          <g fill="#DCE4EA" class="finwrap">
-            <rect class="fin" x="10" y="8" width="12" height="74" rx="6"/><rect class="fin" x="30" y="8" width="12" height="74" rx="6"/><rect class="fin" x="50" y="8" width="12" height="74" rx="6"/><rect class="fin" x="70" y="8" width="12" height="74" rx="6"/><rect class="fin" x="90" y="8" width="12" height="74" rx="6"/>
+        <!-- night bits -->
+        <g class="sky-bits"><circle cx="52" cy="62" r="18" fill="#F6E7C8"/><circle cx="60" cy="56" r="16" fill="#0F2A3D"/><circle cx="120" cy="40" r="1.6" fill="#fff"/><circle cx="96" cy="118" r="1.2" fill="#fff"/><circle cx="34" cy="160" r="1.4" fill="#fff"/><circle cx="530" cy="40" r="1.3" fill="#fff"/><circle cx="170" cy="96" r="1.1" fill="#fff"/></g>
+        <!-- roof + chimney -->
+        <rect x="430" y="92" width="34" height="62" fill="#8B4A2B"/><rect x="424" y="86" width="46" height="12" rx="2" fill="#6E3A21"/>
+        <path class="smoke" d="M447 80c-8-10 8-14 0-26" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="5" stroke-linecap="round"/>
+        <path d="M128 192 L335 66 L542 192 Z" fill="url(#roofG)"/><path d="M128 192 L335 66 L542 192" fill="none" stroke="#0B2233" stroke-width="6" stroke-linejoin="round"/>
+        <circle cx="335" cy="140" r="20" fill="#FFE2A8" class="attic"/><path d="M315 140h40M335 120v40" stroke="#2E4A60" stroke-width="3"/>
+        <!-- rooms (cut-away) -->
+        <rect x="160" y="190" width="175" height="110" fill="url(#tiles)"/>
+        <rect x="345" y="190" width="165" height="110" fill="url(#roomUp)"/>
+        <rect x="160" y="310" width="175" height="110" fill="url(#roomDn)"/>
+        <rect x="345" y="310" width="165" height="110" fill="url(#roomDn)"/>
+        <g clip-path="url(#houseClip)">
+          <circle class="lamp" cx="480" cy="360" r="70" fill="url(#lampG)"/>
+          <circle cx="420" cy="215" r="60" fill="url(#lampG)" opacity=".5"/>
+        </g>
+        <!-- structure -->
+        <g fill="#EFE6D8" stroke="#0B2233" stroke-width="2.5">
+          <rect x="150" y="186" width="10" height="244"/><rect x="510" y="186" width="10" height="244"/>
+          <rect x="335" y="186" width="10" height="244"/>
+          <rect x="150" y="300" width="370" height="10"/><rect x="150" y="420" width="370" height="12"/>
+        </g>
+        <!-- bathroom: bath, shower, towel rail -->
+        <g class="room room--bath">
+          <path d="M176 262h120v14a18 18 0 0 1-18 18h-84a18 18 0 0 1-18-18z" fill="#fff" stroke="#9FB2C1" stroke-width="2"/>
+          <rect x="172" y="256" width="128" height="8" rx="4" fill="#fff" stroke="#9FB2C1" stroke-width="2"/>
+          <path class="bathwater" d="M180 266h112" stroke="#7CC6F2" stroke-width="5" stroke-linecap="round"/>
+          <rect x="310" y="218" width="18" height="60" rx="4" fill="none" stroke="#C46A3A" stroke-width="3"/><path d="M310 232h18M310 246h18M310 260h18" stroke="#C46A3A" stroke-width="2.4"/>
+          <g class="heat heat--sm"><path d="M314 212c-4-6 4-9 0-15"/><path d="M324 212c-4-6 4-9 0-15"/></g>
+          <path d="M262 212h-18" stroke="#9FB2C1" stroke-width="4" stroke-linecap="round"/>
+          <path d="M232 208h24l-4 8h-16z" fill="#C8D3DC"/>
+          <g class="shower"><line x1="236" y1="220" x2="232" y2="250"/><line x1="244" y1="220" x2="243" y2="252"/><line x1="252" y1="220" x2="255" y2="250"/></g>
+        </g>
+        <!-- bedroom: window, bed, radiator -->
+        <g class="room room--bed">
+          <rect x="400" y="202" width="70" height="46" rx="4" fill="#0F2A3D" stroke="#EFE6D8" stroke-width="4"/><path d="M435 202v46M400 225h70" stroke="#EFE6D8" stroke-width="3"/>
+          <circle cx="452" cy="214" r="1.4" fill="#fff"/><circle cx="416" cy="238" r="1.2" fill="#fff"/><circle cx="424" cy="212" r="1" fill="#fff"/>
+          <rect x="356" y="270" width="68" height="22" rx="4" fill="#D98C5F"/><rect x="356" y="262" width="22" height="12" rx="5" fill="#fff"/><rect x="352" y="252" width="6" height="40" rx="2" fill="#8B5A3C"/>
+          <rect class="radi" x="436" y="258" width="62" height="32" rx="5" fill="#E7EDF2" stroke="#9FB2C1" stroke-width="2"/><path class="fins" d="M446 262v24M456 262v24M466 262v24M476 262v24M486 262v24" stroke="#C8D3DC" stroke-width="4" stroke-linecap="round"/>
+          <g class="heat"><path d="M452 252c-5-7 5-11 0-18"/><path d="M468 252c-5-7 5-11 0-18"/><path d="M484 252c-5-7 5-11 0-18"/></g>
+        </g>
+        <!-- kitchen: counter, sink + drip, boiler -->
+        <g class="room room--kit">
+          <rect x="166" y="376" width="112" height="44" fill="#6F8FA6"/><rect x="162" y="370" width="120" height="8" rx="2" fill="#DCCBB0"/>
+          <path d="M184 382h36M232 382h36" stroke="#56758C" stroke-width="2"/><circle cx="202" cy="398" r="2" fill="#DCCBB0"/><circle cx="250" cy="398" r="2" fill="#DCCBB0"/>
+          <rect x="192" y="364" width="44" height="8" rx="3" fill="#B9C6D0"/>
+          <path d="M214 364v-16h14" fill="none" stroke="#9FB2C1" stroke-width="4" stroke-linecap="round"/>
+          <circle class="drip" cx="228" cy="354" r="3.6" fill="#7CC6F2"/>
+          <rect x="174" y="322" width="60" height="30" rx="3" fill="#fff" stroke="#D6CBB8" stroke-width="2"/><path d="M204 322v30" stroke="#D6CBB8" stroke-width="2"/>
+          <g class="boiler">
+            <rect x="284" y="318" width="44" height="58" rx="6" fill="#fff" stroke="#C8D3DC" stroke-width="2"/>
+            <rect x="290" y="326" width="32" height="14" rx="3" fill="#0F2A3D"/><text x="306" y="337" text-anchor="middle" font-family="Rubik, sans-serif" font-weight="700" font-size="10" fill="#7FDCAA">55°</text>
+            <g transform="translate(299 346)"><path class="flame" d="M7 18c-5.6 0-8.4-4.2-7-8.4 1.4-3.5 4.2-4.2 4.2-8.4 3.5 2.8 7 6.3 7 10.5 0 3.5-2.1 6.3-4.2 6.3z" fill="#FF8A4C"/><path class="flame" d="M7 18c-2.8 0-4.2-2.1-3.5-4.2.7-1.4 2.1-2.1 2.1-4.2 2.1 1.4 3.5 3.5 3.5 5.6 0 1.4-.7 2.8-2.1 2.8z" fill="#FFD27A"/></g>
           </g>
-          <g class="heat"><path d="M30 -8c-6-8 6-12 0-20"/><path d="M60 -8c-6-8 6-12 0-20"/><path d="M90 -8c-6-8 6-12 0-20"/></g>
+          <g class="steam"><circle cx="140" cy="332" r="6"/><circle cx="140" cy="332" r="5"/><circle cx="140" cy="332" r="4"/></g>
+          <rect x="150" y="328" width="14" height="6" rx="2" fill="#B9C6D0"/>
         </g>
-        <!-- boiler -->
-        <g class="boiler">
-          <rect x="330" y="120" width="180" height="210" rx="16" fill="#FFFFFF"/>
-          <rect x="330" y="120" width="180" height="210" rx="16" fill="none" stroke="#D6DEE5" stroke-width="2"/>
-          <rect x="352" y="146" width="136" height="54" rx="8" fill="#0F2A3D"/>
-          <text x="366" y="180" font-family="Rubik, sans-serif" font-weight="700" font-size="22" fill="#7FDCAA">55°C</text>
-          <g transform="translate(446 160)"><path class="flame" d="M10 26c-8 0-12-6-10-12 2-5 6-6 6-12 5 4 10 9 10 15 0 5-3 9-6 9z" fill="#FF8A4C"/><path class="flame" d="M10 26c-4 0-6-3-5-6 1-2 3-3 3-6 3 2 5 5 5 8 0 2-1 4-3 4z" fill="#FFD27A"/></g>
-          <circle cx="476" cy="292" r="26" fill="#F2F5F8" stroke="#C8D3DC" stroke-width="2"/>
-          <path d="M456 300 A22 22 0 1 1 496 300" fill="none" stroke="#2FA36B" stroke-width="4" stroke-linecap="round"/>
-          <line class="needle" x1="476" y1="292" x2="476" y2="274" stroke="#0F2A3D" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="476" cy="292" r="4" fill="#0F2A3D"/>
-          <text x="352" y="240" font-family="Rubik, sans-serif" font-size="12" fill="#5B6B78">Pressure</text>
-          <text x="352" y="258" font-family="Rubik, sans-serif" font-weight="700" font-size="18" fill="#0F2A3D">1.5 bar</text>
-          <rect x="352" y="276" width="70" height="8" rx="4" fill="#E7EDF2"/><rect x="352" y="292" width="50" height="8" rx="4" fill="#E7EDF2"/>
+        <!-- living room: sofa, lamp, radiator, plant -->
+        <g class="room room--liv">
+          <rect x="360" y="380" width="80" height="30" rx="8" fill="#3C93CC"/><rect x="356" y="372" width="14" height="38" rx="6" fill="#2F7DB0"/><rect x="430" y="372" width="14" height="38" rx="6" fill="#2F7DB0"/><rect x="368" y="366" width="64" height="20" rx="7" fill="#4AA3DA"/>
+          <path d="M486 330v48" stroke="#5B6B78" stroke-width="3"/><path d="M474 330h24l-5-14h-14z" fill="#FFD58A"/><rect x="478" y="376" width="16" height="4" rx="2" fill="#5B6B78"/>
+          <rect class="radi" x="452" y="388" width="50" height="24" rx="5" fill="#E7EDF2" stroke="#9FB2C1" stroke-width="2"/><path class="fins" d="M462 392v16M472 392v16M482 392v16M492 392v16" stroke="#C8D3DC" stroke-width="4" stroke-linecap="round"/>
+          <path d="M366 356c0-12 8-14 8-24M374 356c2-10 10-12 12-20" stroke="#2FA36B" stroke-width="4" fill="none" stroke-linecap="round"/>
         </g>
-        <!-- tap + drip -->
-        <g transform="translate(470 60)"><rect x="-8" y="30" width="16" height="12" rx="3" fill="url(#copperG)"/><path d="M-20 30 h40" stroke="url(#copperG)" stroke-width="8" stroke-linecap="round"/><circle class="drip" cx="0" cy="48" r="5" fill="#7CC6F2"/></g>
+        <rect x="0" y="432" width="560" height="38" fill="#0B2233"/><path d="M0 432H560" stroke="#1D3549" stroke-width="2"/>
+        <!-- pipes: cold main in, hot to shower & towel rail, heating loop to radiators -->
+        <g class="pipes">
+          <path class="pipe cold" pathLength="1" d="M4 446 H300 V376"/>
+          <path class="pipe cold" pathLength="1" d="M214 446 V372" style="transition-delay:.2s"/>
+          <path class="pipe hot" pathLength="1" d="M296 318 V212 H262" style="transition-delay:.4s"/>
+          <path class="pipe hot" pathLength="1" d="M306 318 V282 H319" style="transition-delay:.5s"/>
+          <path class="pipe hot" pathLength="1" d="M318 376 V415 H477 V412" style="transition-delay:.6s"/>
+          <path class="pipe hot" pathLength="1" d="M328 350 H348 V296 H467 V290" style="transition-delay:.7s"/>
+          <path class="flow" d="M4 446 H300 V376"/>
+          <path class="flow" d="M214 446 V372"/>
+          <path class="flow hot" d="M296 318 V212 H262"/>
+          <path class="flow hot" d="M306 318 V282 H319"/>
+          <path class="flow hot" d="M318 376 V415 H477 V412"/>
+          <path class="flow hot" d="M328 350 H348 V296 H467 V290"/>
+        </g>
+        <!-- the van turns up -->
+        <g class="van">
+          <g transform="translate(18 382)">
+            <path d="M0 10a10 10 0 0 1 10-10h78v46H0z" fill="#fff"/><path d="M88 8h22l18 20v18H88z" fill="#F4F7FA"/><path d="M94 12h14l12 14H94z" fill="#9AD8FA"/>
+            <rect x="0" y="30" width="128" height="6" fill="#C46A3A"/>
+            <text x="10" y="22" font-family="Rubik, sans-serif" font-weight="700" font-size="11" fill="#0F2A3D">Smith &amp; Sons</text>
+            <g class="wheel" transform="translate(26 48)"><circle r="10" fill="#1D2B36"/><circle r="4" fill="#B9C6D0"/><path d="M-4 0h8" stroke="#1D2B36" stroke-width="2"/></g>
+            <g class="wheel" transform="translate(104 48)"><circle r="10" fill="#1D2B36"/><circle r="4" fill="#B9C6D0"/><path d="M-4 0h8" stroke="#1D2B36" stroke-width="2"/></g>
+            <circle cx="126" cy="32" r="3" fill="#FFD58A" class="headlight"/>
+          </g>
+        </g>
       </svg>
       <div class="art-chip c1"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#E6F6EE"/><path d="M9 15.5l4 4 8-9" fill="none" stroke="#2FA36B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Boiler serviced</b><small>Thatcham · this morning</small></div></div>
-      <div class="art-chip c2"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#FBF1EA"/><path d="M15 8v8l5 3" fill="none" stroke="#C46A3A" stroke-width="2.6" stroke-linecap="round"/></svg><div><b>Emergency? Usually there in 90 min</b><small>Across West Berkshire</small></div></div>
+      <div class="art-chip c2"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#FBF1EA"/><path d="M15 8v8l5 3" fill="none" stroke="#C46A3A" stroke-width="2.6" stroke-linecap="round"/></svg><div><b><span class="stars" style="letter-spacing:1px">★★★★★</span> “Sorted our boiler on Christmas Eve.”</b><small>Karen, Kintbury</small></div></div>
     </div>
   </div>
 </section>
@@ -549,5 +632,8 @@ $('#pcForm').addEventListener('submit', e => {
 });
 })();
 </script>
+<script>(function(){if(!location.hash)scrollTo(0,0);var d=document.documentElement,b=document.querySelector('.lr-badge');
+if(b)b.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();try{sessionStorage.setItem('lr-pt','1')}catch(_){}d.classList.remove('lr-in');d.classList.add('lr-go');setTimeout(function(){location.href=b.href},640)});
+addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('lr-go','lr-in')});})();</script>
 </body>
 </html>

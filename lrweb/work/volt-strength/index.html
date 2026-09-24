@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLT Strength Club — Independent gym, Leeds</title>
+<meta name="description" content="24/7 independent strength gym in Leeds. 120+ classes a week, proper free weights, zero posers. Grab a free day pass.">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23DFFF3F'/%3E%3Cpath d='M36 6L14 36h14l-4 22 24-32H34z' fill='%230A0A0A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --volt:#DFFF3F; --volt-d:#B8D61F; --black:#0A0A0A; --g1:#121212; --g2:#1B1B1B; --g3:#2A2A2A; --mid:#7A7A7A; --white:#F4F4F0; --red:#FF3D2E;
+  --f-d:"Unbounded",system-ui,sans-serif; --f-b:"Manrope",system-ui,sans-serif; --f-m:"IBM Plex Mono",ui-monospace,monospace;
+  --pad:clamp(16px,4vw,56px); --ease:cubic-bezier(.22,1,.36,1); --punch:cubic-bezier(.8,0,.1,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--black);color:var(--white);font-family:var(--f-b);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg,canvas{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--volt);outline-offset:4px}
+::selection{background:var(--volt);color:var(--black)}
+.wrap{max-width:1440px;margin:0 auto;padding:0 var(--pad)}
+.D{font-family:var(--f-d);font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:-.03em}
+.mono{font-family:var(--f-m);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-m);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--volt)}
+.tag::before{content:"";width:8px;height:8px;background:var(--volt)}
+.btn{display:inline-flex;align-items:center;gap:12px;height:60px;padding:0 28px;font-family:var(--f-d);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.02em;position:relative;overflow:hidden;isolation:isolate;border-radius:4px;transition:transform .3s var(--punch)}
+.btn:active{transform:scale(.96)}
+.btn--volt{background:var(--volt);color:var(--black)}
+.btn--volt::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%);transform:translateX(-120%);z-index:-1;transition:transform .7s var(--ease)}
+.btn--volt:hover::after{transform:translateX(120%)}
+.btn--line{border:2px solid var(--white)}
+.btn--line:hover{background:var(--white);color:var(--black)}
+.btn svg{width:20px;height:20px}
+
+/* header */
+.top{position:fixed;inset:0 0 auto;z-index:50;mix-blend-mode:normal;transition:background .3s,transform .4s var(--ease)}
+.top.solid{background:rgba(10,10,10,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.top.hide{transform:translateY(-100%)}
+.top__in{height:80px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--f-d);font-weight:900;font-size:26px;letter-spacing:-.04em}
+.logo i{width:36px;height:36px;background:var(--volt);color:var(--black);display:grid;place-items:center;border-radius:6px;transition:transform .5s var(--punch)}
+.logo:hover i{transform:rotate(-12deg) scale(1.1)}
+.logo i svg{width:20px;height:20px}
+.top nav{display:flex;gap:6px}
+.top nav a{font-family:var(--f-m);font-size:13px;text-transform:uppercase;letter-spacing:.08em;padding:10px 14px;border-radius:4px;transition:background .2s,color .2s}
+.top nav a:hover{background:var(--volt);color:var(--black)}
+.top .btn{height:46px;font-size:13px;padding:0 18px}
+
+/* hero */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:110px 0 40px;overflow:hidden}
+#ecg{position:absolute;inset:0;width:100%;height:100%}
+.hero__grid{position:absolute;inset:0;background-image:linear-gradient(rgba(244,244,240,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(244,244,240,.05) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse at 60% 40%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse at 60% 40%,#000 20%,transparent 75%)}
+.hero__in{position:relative;z-index:2}
+.hero h1{font-size:clamp(58px,10.4vw,188px);margin:20px 0 36px}
+.hero h1 .ln{display:block;overflow:hidden}
+.hero h1 .ln span{display:inline-block;transform:translateY(105%) skewY(8deg);transition:transform .9s var(--punch)}
+.hero h1 .ln:nth-child(2) span{transition-delay:.08s}.hero h1 .ln:nth-child(3) span{transition-delay:.16s}
+.go .hero h1 .ln span{transform:none}
+.hero h1 .v{color:var(--volt);font-style:italic}
+.hero h1 .o{color:transparent;-webkit-text-stroke:2px var(--white)}
+.hero__row{display:grid;grid-template-columns:1fr auto auto;gap:40px;align-items:end}
+.hero__row p{max-width:460px;color:#bdbdb6;font-size:18px}
+.hero__ctas{display:flex;gap:12px;flex-wrap:wrap}
+.bpm{border:1px solid var(--g3);padding:14px 18px;border-radius:6px;min-width:190px;background:rgba(10,10,10,.6);backdrop-filter:blur(8px)}
+.bpm__v{font-family:var(--f-d);font-weight:800;font-size:44px;line-height:1;display:flex;align-items:baseline;gap:8px;font-variant-numeric:tabular-nums}
+.bpm__v small{font-family:var(--f-m);font-size:12px;color:var(--mid);font-weight:400}
+.bpm__v i{width:14px;height:14px;background:var(--red);border-radius:50%;align-self:center;animation:beat var(--beat,.83s) infinite}
+@keyframes beat{0%,40%,100%{transform:scale(.7);opacity:.6}10%{transform:scale(1.25);opacity:1}}
+.bpm .mono{color:var(--mid);display:block;margin-bottom:6px}
+.fade{opacity:0;transform:translateY(20px);transition:opacity .8s .5s,transform .9s var(--ease) .5s}
+.go .fade{opacity:1;transform:none}
+
+/* slam band */
+.slam{background:var(--volt);color:var(--black);overflow:hidden;padding:16px 0;transform:rotate(-3deg) scale(1.06);margin:30px 0 40px;position:relative;z-index:3}
+.slam__row{display:flex;white-space:nowrap;will-change:transform}
+.slam__row span{font-family:var(--f-d);font-weight:900;font-size:clamp(34px,4.6vw,70px);text-transform:uppercase;letter-spacing:-.03em;padding-right:40px;display:inline-flex;align-items:center;gap:40px}
+.slam__row span::after{content:"";width:.6em;height:.6em;background:var(--black);clip-path:polygon(55% 0,10% 58%,45% 58%,40% 100%,90% 38%,55% 38%)}
+.slam--2{background:var(--black);color:var(--white);transform:rotate(2deg) scale(1.06);margin-top:-30px;border-block:2px solid var(--g3)}
+.slam--2 .slam__row span{color:transparent;-webkit-text-stroke:1.5px var(--white)}
+.slam--2 .slam__row span::after{background:var(--volt)}
+
+/* sections */
+.sec{padding:clamp(90px,11vw,160px) 0;position:relative}
+.sec__head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:clamp(40px,5vw,70px)}
+.sec__head h2{font-size:clamp(44px,6.8vw,116px);margin-top:18px}
+.sec__head p{max-width:400px;color:#a9a9a2}
+.js [data-r]{opacity:0;transform:translateY(60px) scale(.98);transition:opacity .7s var(--ease),transform .9s var(--punch);transition-delay:calc(var(--d,0)*80ms)}
+.js [data-r].in{opacity:1;transform:none}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--g3);border:2px solid var(--g3)}
+.stat{background:var(--black);padding:34px 28px;display:grid;gap:10px;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;left:0;bottom:0;width:100%;height:4px;background:var(--volt);transform:scaleX(0);transform-origin:left;transition:transform 1.4s var(--punch) .2s}
+.stat.in::before{transform:scaleX(1)}
+.stat b{font-family:var(--f-d);font-weight:900;font-size:clamp(48px,5.4vw,88px);line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stat b sup{font-size:.4em;color:var(--volt);vertical-align:top;margin-left:4px}
+.stat span{color:#a9a9a2}
+
+/* timetable */
+.tt{border:2px solid var(--g3);border-radius:10px;overflow:hidden}
+.tt__bar{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:16px;background:var(--g1);border-bottom:2px solid var(--g3)}
+.days,.types{display:flex;gap:6px;flex-wrap:wrap}
+.days button,.types button{font-family:var(--f-m);font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:10px 14px;border-radius:4px;border:1px solid var(--g3);transition:all .2s}
+.days button[aria-pressed="true"]{background:var(--white);color:var(--black);border-color:var(--white)}
+.days button .today{display:inline-block;width:6px;height:6px;background:var(--volt);border-radius:50%;margin-left:6px;vertical-align:middle}
+.types button[aria-pressed="true"]{background:var(--volt);color:var(--black);border-color:var(--volt)}
+.classes{list-style:none}
+.cls{display:grid;grid-template-columns:110px 1.4fr 1fr 150px 170px 120px;gap:20px;align-items:center;padding:20px;border-bottom:1px solid var(--g2);position:relative;animation:clsIn .5s var(--punch) backwards;animation-delay:calc(var(--i)*40ms);transition:background .25s}
+@keyframes clsIn{from{opacity:0;transform:translateX(-30px)}}
+.cls:hover{background:var(--g1)}
+.cls:last-child{border-bottom:0}
+.cls time{font-family:var(--f-d);font-weight:800;font-size:22px;font-variant-numeric:tabular-nums}
+.cls time small{display:block;font-family:var(--f-m);font-size:11px;color:var(--mid);font-weight:400}
+.cls h3{font-family:var(--f-d);font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:-.02em}
+.cls .type{font-family:var(--f-m);font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:3px;display:inline-block;margin-top:6px}
+.t-Strength{background:rgba(223,255,63,.15);color:var(--volt)}.t-HIIT{background:rgba(255,61,46,.16);color:#ff7a6e}.t-Mobility{background:rgba(120,190,255,.14);color:#8fc8ff}.t-Boxing{background:rgba(255,190,60,.15);color:#ffc75a}
+.cls .coach{color:#bdbdb6;font-size:15px}
+.inten{display:flex;gap:3px}
+.inten i{width:14px;height:22px;background:var(--g2);transform:skewX(-12deg);transition:background .3s}
+.inten i.on{background:var(--volt)}
+.spots{font-size:13px;color:#a9a9a2}
+.spots .bar{height:6px;background:var(--g2);border-radius:3px;overflow:hidden;margin-top:6px}
+.spots .bar i{display:block;height:100%;background:var(--white);transform-origin:left;animation:fill 1.2s var(--ease) backwards}
+.spots.low .bar i{background:var(--red)}
+@keyframes fill{from{transform:scaleX(0)}}
+.cls .bk{height:44px;padding:0 18px;border-radius:4px;border:2px solid var(--white);font-family:var(--f-d);font-weight:800;font-size:12px;text-transform:uppercase;transition:all .2s}
+.cls .bk:hover{background:var(--volt);border-color:var(--volt);color:var(--black)}
+.cls .bk.booked{background:var(--volt);border-color:var(--volt);color:var(--black)}
+.cls.live{background:linear-gradient(90deg,rgba(223,255,63,.08),transparent 60%)}
+.cls.live::before{content:"LIVE NOW";position:absolute;left:20px;top:6px;font-family:var(--f-m);font-size:10px;letter-spacing:.1em;color:var(--red);animation:blink 1s steps(1) infinite}
+.cls.done{opacity:.35}
+@keyframes blink{50%{opacity:.2}}
+.tt__empty{padding:40px 20px;color:var(--mid);text-align:center}
+
+/* quiz */
+.quiz{display:grid;grid-template-columns:1fr 1.2fr;gap:clamp(30px,5vw,80px);align-items:stretch}
+.quiz__side h2{font-size:clamp(44px,6vw,100px);margin:18px 0 20px}
+.quiz__side p{color:#a9a9a2;max-width:420px}
+.qbox{background:var(--g1);border:2px solid var(--g3);border-radius:10px;padding:clamp(22px,3vw,40px);position:relative;overflow:hidden;min-height:430px;display:flex;flex-direction:column}
+.qprog{height:4px;background:var(--g2);border-radius:2px;margin-bottom:30px;overflow:hidden}
+.qprog i{display:block;height:100%;background:var(--volt);transform-origin:left;transition:transform .6s var(--punch)}
+.q{display:none;animation:qIn .6s var(--punch)}
+.q.on{display:block}
+@keyframes qIn{from{opacity:0;transform:translateY(30px)}}
+.q h3{font-family:var(--f-d);font-weight:800;font-size:clamp(24px,2.4vw,34px);text-transform:uppercase;letter-spacing:-.02em;margin-bottom:24px;line-height:1.05}
+.q .mono{color:var(--mid);display:block;margin-bottom:12px}
+.answers{display:grid;gap:10px}
+.ans{text-align:left;padding:18px 20px;border:2px solid var(--g3);border-radius:6px;font-weight:600;font-size:17px;display:flex;justify-content:space-between;align-items:center;transition:all .2s}
+.ans:hover{border-color:var(--volt);transform:translateX(6px)}
+.ans svg{width:20px;height:20px;opacity:0;transition:opacity .2s}
+.ans:hover svg{opacity:1}
+.result{text-align:left}
+.result .D{font-size:clamp(40px,4.4vw,70px);color:var(--volt);margin:6px 0 12px}
+.result p{color:#bdbdb6;margin-bottom:24px}
+.result .restart{font-family:var(--f-m);font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-left:16px}
+.result .restart:hover{color:var(--white)}
+
+/* plans */
+.billing{display:inline-flex;align-items:center;gap:14px;font-family:var(--f-m);font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+.switch{width:64px;height:34px;border-radius:99px;background:var(--g2);border:2px solid var(--g3);position:relative;transition:background .3s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--white);transition:transform .4s var(--punch),background .3s}
+.switch[aria-checked="true"]{background:var(--volt);border-color:var(--volt)}
+.switch[aria-checked="true"]::after{transform:translateX(30px);background:var(--black)}
+.billing .save{background:var(--red);color:var(--white);padding:4px 8px;border-radius:3px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.plan{border:2px solid var(--g3);border-radius:10px;padding:32px;display:flex;flex-direction:column;gap:20px;position:relative;background:var(--g1);transition:transform .5s var(--punch),border-color .3s}
+.plan:hover{transform:translateY(-8px);border-color:var(--white)}
+.plan--hot{border:0;padding:34px;background:var(--black);isolation:isolate}
+.plan--hot::before{content:"";position:absolute;inset:0;border-radius:10px;padding:2px;background:conic-gradient(from var(--ang,0deg),var(--volt),transparent 30%,transparent 70%,var(--volt));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:ang 4s linear infinite;z-index:-1}
+@property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes ang{to{--ang:360deg}}
+.plan__pop{position:absolute;top:-14px;left:32px;background:var(--volt);color:var(--black);font-family:var(--f-m);font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:6px 10px;border-radius:3px}
+.plan h3{font-family:var(--f-d);font-weight:800;font-size:26px;text-transform:uppercase;letter-spacing:-.02em}
+.plan .who{color:#a9a9a2;margin-top:-12px}
+.price{display:flex;align-items:baseline;gap:6px;padding:16px 0;border-block:1px solid var(--g3)}
+.price b{font-family:var(--f-d);font-weight:900;font-size:64px;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.price small{font-family:var(--f-m);color:var(--mid)}
+.plan ul{list-style:none;display:grid;gap:10px;flex:1}
+.plan li{display:flex;gap:10px;font-size:15px}
+.plan li::before{content:"";flex:none;width:16px;height:16px;margin-top:4px;background:var(--volt);clip-path:polygon(55% 0,10% 58%,45% 58%,40% 100%,90% 38%,55% 38%)}
+.plan li.no{color:#555}
+.plan li.no::before{background:#333}
+
+/* floor plan */
+.floor{display:grid;grid-template-columns:1.5fr 1fr;gap:30px;align-items:center}
+.fp{width:100%;border:2px solid var(--g3);border-radius:10px;background:var(--g1)}
+.fp .z{fill:var(--g2);stroke:var(--g3);stroke-width:2;cursor:pointer;transition:fill .3s}
+.fp .z:hover,.fp .z.on{fill:var(--volt)}
+.fp .zl{font-family:var(--f-d);font-weight:800;font-size:15px;text-transform:uppercase;fill:var(--white);pointer-events:none;transition:fill .3s}
+.fp .zl.on{fill:var(--black)}
+.fp .kit{stroke:rgba(244,244,240,.18);stroke-width:2;fill:none;pointer-events:none}
+.zinfo{min-height:300px}
+.zinfo .mono{color:var(--volt)}
+.zinfo h3{font-family:var(--f-d);font-weight:900;font-size:clamp(34px,3.6vw,56px);text-transform:uppercase;line-height:.95;margin:12px 0 16px;letter-spacing:-.03em}
+.zinfo p{color:#bdbdb6}
+.zinfo ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.zinfo li{font-family:var(--f-m);font-size:12px;text-transform:uppercase;padding:8px 10px;border:1px solid var(--g3);border-radius:4px}
+.zinfo > div{animation:qIn .5s var(--punch)}
+
+/* quotes */
+.quotes{overflow:hidden;border-block:2px solid var(--g3);padding:30px 0}
+.quotes__row{display:flex;gap:18px;width:max-content;animation:roll 50s linear infinite}
+.quotes:hover .quotes__row{animation-play-state:paused}
+@keyframes roll{to{transform:translateX(-50%)}}
+.qt{width:380px;flex:none;background:var(--g1);border:1px solid var(--g3);border-radius:10px;padding:24px;display:grid;gap:14px}
+.qt p{font-size:17px;font-weight:500}
+.qt b{font-family:var(--f-d);font-weight:800;font-size:40px;color:var(--volt);line-height:1;letter-spacing:-.04em}
+.qt span{font-family:var(--f-m);font-size:12px;color:var(--mid);text-transform:uppercase}
+
+/* pass */
+.pass{background:var(--volt);color:var(--black);overflow:hidden}
+.pass .tag{color:var(--black)}.pass .tag::before{background:var(--black)}
+.pass h2{font-size:clamp(56px,10vw,180px);margin:20px 0 30px}
+.pass__row{display:flex;gap:30px;align-items:center;flex-wrap:wrap}
+.pass form{display:flex;gap:10px;flex-wrap:wrap;flex:1;min-width:280px;max-width:640px}
+.pass input{flex:1;min-width:200px;height:68px;border:3px solid var(--black);border-radius:6px;background:transparent;font:inherit;font-size:19px;font-weight:600;padding:0 20px;color:var(--black);outline:none}
+.pass input::placeholder{color:rgba(10,10,10,.5)}
+.hold{height:68px;padding:0 30px;border-radius:6px;background:var(--black);color:var(--volt);font-family:var(--f-d);font-weight:800;font-size:15px;text-transform:uppercase;position:relative;overflow:hidden;isolation:isolate;user-select:none;-webkit-user-select:none;touch-action:none}
+.hold::before{content:"";position:absolute;inset:0;background:var(--white);transform:scaleX(var(--p,0));transform-origin:left;z-index:-1}
+.hold.charged{color:var(--black)}
+.pass__note{font-family:var(--f-m);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.pass__big{position:absolute;right:-4vw;bottom:-6vw;font-family:var(--f-d);font-weight:900;font-size:36vw;line-height:.8;color:rgba(10,10,10,.06);pointer-events:none;letter-spacing:-.06em}
+.burst{position:fixed;pointer-events:none;z-index:90;width:10px;height:10px}
+
+/* footer */
+.foot{padding:70px 0 30px;border-top:2px solid var(--g3)}
+.foot__grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}
+.foot h4{font-family:var(--f-m);font-weight:400;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--mid);margin-bottom:14px}
+.foot ul{list-style:none;display:grid;gap:8px}
+.foot a:hover{color:var(--volt)}
+.foot__logo{font-family:var(--f-d);font-weight:900;font-size:clamp(80px,12vw,200px);line-height:.8;letter-spacing:-.06em;color:var(--volt)}
+.foot__bar{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:50px;padding-top:20px;border-top:1px solid var(--g2);color:var(--mid);font-size:14px}
+
+@media (max-width:1100px){
+  .top nav{display:none}
+  .hero__row{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .cls{grid-template-columns:90px 1fr auto;row-gap:12px}
+  .cls .coach,.cls .inten{display:none}
+  .cls .spots{grid-column:2}
+  .cls .bk{grid-row:1/3;grid-column:3}
+  .quiz,.floor{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr}
+  .foot__grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:600px){
+  .stats{grid-template-columns:1fr}
+  .top .btn{display:none}
+  .qt{width:300px}
+  .bpm{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition-duration:.01ms !important}}
+
+.lr-badge{position:fixed;left:16px;bottom:16px;z-index:95;display:inline-flex;align-items:center;gap:8px;padding:10px 14px 10px 12px;border-radius:99px;background:#EFEBE3;color:#0C0C0B;font:500 13px/1 system-ui,sans-serif;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);transition:transform .4s}
+.lr-badge:hover{transform:translateY(-3px)}
+.lr-badge i{width:8px;height:8px;border-radius:50%;background:#FF4F1A}
+.lr-wipe{position:fixed;inset:0;z-index:999;background:#FF4F1A;pointer-events:none;animation:lrOut .9s cubic-bezier(.65,0,.35,1) .05s forwards}
+@keyframes lrOut{to{transform:translateY(-101%)}}
+.shot .lr-badge,.shot .lr-wipe{display:none}
+</style>
+</head>
+<body>
+<div class="lr-wipe" aria-hidden="true"></div>
+<a class="lr-badge" href="../../index.html#work"><i></i>Concept by <b>LRWeb</b></a>
+
+<header class="top">
+  <div class="wrap top__in">
+    <a href="#" class="logo" aria-label="VOLT Strength Club home"><i><svg viewBox="0 0 20 20" fill="currentColor"><path d="M11 1L3 11h5l-1.5 8L15 8H10z"/></svg></i>VOLT</a>
+    <nav aria-label="Main"><a href="#classes">Classes</a><a href="#finder">Plan finder</a><a href="#join">Memberships</a><a href="#space">The space</a></nav>
+    <a href="#pass" class="btn btn--volt">Free day pass</a>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="hero__grid" aria-hidden="true"></div>
+  <canvas id="ecg" aria-hidden="true"></canvas>
+  <div class="wrap hero__in">
+    <span class="tag fade">Independent strength club — Leeds · 24/7</span>
+    <h1 class="D"><span class="ln"><span>Train like</span></span><span class="ln"><span class="o">you</span> <span class="v">mean</span></span><span class="ln"><span class="v">it.</span></span></h1>
+    <div class="hero__row fade">
+      <p>Proper free weights, coaches who actually coach and 120+ classes a week. No posers, no contracts, no nonsense — just a room full of people getting stronger.</p>
+      <div class="hero__ctas"><a href="#pass" class="btn btn--volt">Claim a free day pass <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a><a href="#classes" class="btn btn--line">See classes</a></div>
+      <div class="bpm" aria-live="off"><span class="mono">Your heart rate (scroll faster)</span><div class="bpm__v"><i></i><span id="bpm">72</span><small>BPM</small></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="slam" aria-hidden="true"><div class="slam__row" data-dir="1"></div></div>
+<div class="slam slam--2" aria-hidden="true"><div class="slam__row" data-dir="-1"></div></div>
+
+<section class="sec" style="padding-top:60px">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat" data-r style="--d:0"><b><span data-count="24">0</span><sup>/7</sup></b><span>Keycard access, every single day of the year.</span></div>
+      <div class="stat" data-r style="--d:1"><b><span data-count="120">0</span><sup>+</sup></b><span>Coached classes every week, from 6am to 9pm.</span></div>
+      <div class="stat" data-r style="--d:2"><b><span data-count="6500">0</span><sup>kg</sup></b><span>Of calibrated plates, bars and bumpers to lift.</span></div>
+      <div class="stat" data-r style="--d:3"><b><span data-count="1">0</span><sup>rule</sup></b><span>Rack your weights. That’s it. That’s the rule.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="classes" style="padding-top:40px">
+  <div class="wrap">
+    <div class="sec__head">
+      <div><span class="tag">Class timetable</span><h2 class="D" data-r>Pick your<br><span style="color:var(--volt)">poison.</span></h2></div>
+      <p data-r style="--d:1">Every class is capped at 16 so the coach can actually watch your form. Tap book, turn up, work hard. Members book up to 7 days ahead.</p>
+    </div>
+    <div class="tt" data-r>
+      <div class="tt__bar"><div class="days" id="days" role="group" aria-label="Day"></div><div class="types" id="types" role="group" aria-label="Class type"></div></div>
+      <ol class="classes" id="classList"></ol>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="finder" style="background:var(--g1);border-block:2px solid var(--g3)">
+  <div class="wrap quiz">
+    <div class="quiz__side">
+      <span class="tag">Plan finder</span>
+      <h2 class="D" data-r>Not sure<br>where to<br><span style="color:var(--volt)">start?</span></h2>
+      <p data-r style="--d:1">Three quick questions and we’ll point you at the membership that fits how you actually train — not the one that makes us the most money.</p>
+    </div>
+    <div class="qbox" data-r style="--d:1">
+      <div class="qprog"><i id="qprog" style="transform:scaleX(.05)"></i></div>
+      <div class="q on" data-q="0"><span class="mono">Question 1 of 3</span><h3>What are you training for?</h3><div class="answers"><button class="ans" data-v="strength">Getting properly strong <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="fit">General fitness &amp; feeling good <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="classes">Sweaty classes with a crew <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button></div></div>
+      <div class="q" data-q="1"><span class="mono">Question 2 of 3</span><h3>How often can you train?</h3><div class="answers"><button class="ans" data-v="1">1–2 times a week <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="2">3–4 times a week <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="3">5+ (I live here now) <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button></div></div>
+      <div class="q" data-q="2"><span class="mono">Question 3 of 3</span><h3>When do you usually train?</h3><div class="answers"><button class="ans" data-v="off">Daytime, when it’s quiet <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="peak">Before or after work <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button><button class="ans" data-v="any">Whenever — 3am included <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button></div></div>
+      <div class="q result" data-q="3" id="result"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="join">
+  <div class="wrap">
+    <div class="sec__head">
+      <div><span class="tag">Memberships</span><h2 class="D" data-r>No contracts.<br><span style="color:var(--volt)">No catches.</span></h2></div>
+      <div class="billing" data-r style="--d:1"><span>Monthly</span><button class="switch" id="bill" role="switch" aria-checked="false" aria-label="Switch to annual billing"></button><span>Annual</span><span class="save">2 months free</span></div>
+    </div>
+    <div class="plans">
+      <article class="plan" data-r style="--d:0" id="plan-off"><h3>Off-Peak</h3><p class="who">For daytime trainers &amp; shift workers</p><div class="price"><b data-m="24" data-y="240">£24</b><small data-per>/ month</small></div><ul><li>Gym access 9am–4pm &amp; after 8pm</li><li>Free weights, rigs &amp; turf</li><li>Induction with a coach</li><li class="no">Classes</li><li class="no">Recovery room</li></ul><a href="#pass" class="btn btn--line">Start Off-Peak</a></article>
+      <article class="plan plan--hot" data-r style="--d:1" id="plan-full"><span class="plan__pop">Most members pick this</span><h3>Full Access</h3><p class="who">For people serious about lifting</p><div class="price"><b data-m="39" data-y="390">£39</b><small data-per>/ month</small></div><ul><li>24/7 keycard access</li><li>Everything in the gym</li><li>8 classes a month</li><li>Quarterly programme review</li><li class="no">Recovery room</li></ul><a href="#pass" class="btn btn--volt">Start Full Access</a></article>
+      <article class="plan" data-r style="--d:2" id="plan-unl"><h3>Unlimited</h3><p class="who">For people who basically live here</p><div class="price"><b data-m="59" data-y="590">£59</b><small data-per>/ month</small></div><ul><li>24/7 keycard access</li><li>Unlimited classes</li><li>Sauna &amp; cold plunge</li><li>Monthly 1:1 with a coach</li><li>Bring a friend free, weekly</li></ul><a href="#pass" class="btn btn--line">Go Unlimited</a></article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="space" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec__head">
+      <div><span class="tag">The space</span><h2 class="D" data-r>10,000 sq ft<br>of <span style="color:var(--volt)">iron.</span></h2></div>
+      <p data-r style="--d:1">A converted railway arch in Holbeck, fitted out by lifters for lifters. Hover a zone to have a look around.</p>
+    </div>
+    <div class="floor">
+      <svg class="fp" viewBox="0 0 900 520" data-r aria-label="Gym floor plan">
+        <g id="zones">
+          <rect class="z" data-z="0" x="20" y="20" width="400" height="230" rx="6"/>
+          <rect class="z" data-z="1" x="440" y="20" width="440" height="140" rx="6"/>
+          <rect class="z" data-z="2" x="440" y="180" width="440" height="140" rx="6"/>
+          <rect class="z" data-z="3" x="20" y="270" width="260" height="230" rx="6"/>
+          <rect class="z" data-z="4" x="300" y="270" width="120" height="230" rx="6"/>
+          <rect class="z" data-z="5" x="440" y="340" width="440" height="160" rx="6"/>
+        </g>
+        <g class="kit">
+          <rect x="50" y="60" width="60" height="150"/><rect x="140" y="60" width="60" height="150"/><rect x="230" y="60" width="60" height="150"/><rect x="320" y="60" width="60" height="150"/>
+          <path d="M470 90h380M470 60v60M850 60v60"/>
+          <path d="M470 250h380" stroke-dasharray="12 10"/>
+          <circle cx="80" cy="340" r="18"/><circle cx="140" cy="340" r="18"/><circle cx="200" cy="340" r="18"/><circle cx="80" cy="420" r="18"/><circle cx="140" cy="420" r="18"/><circle cx="200" cy="420" r="18"/>
+          <rect x="320" y="300" width="80" height="60"/><rect x="320" y="400" width="80" height="70"/>
+          <path d="M480 380h40v90h-40zM560 380h40v90h-40zM640 380h40v90h-40zM720 380h40v90h-40zM800 380h40v90h-40z"/>
+        </g>
+        <g id="zlabels">
+          <text class="zl" data-z="0" x="36" y="240">Platforms</text>
+          <text class="zl" data-z="1" x="456" y="150">The rig</text>
+          <text class="zl" data-z="2" x="456" y="310">Turf lane</text>
+          <text class="zl" data-z="3" x="36" y="490">Boxing</text>
+          <text class="zl" data-z="4" x="312" y="490">Recovery</text>
+          <text class="zl" data-z="5" x="456" y="490">Cardio deck</text>
+        </g>
+      </svg>
+      <div class="zinfo" id="zinfo" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<div class="quotes" aria-label="Member quotes"><div class="quotes__row" id="quotes"></div></div>
+
+<section class="sec pass" id="pass">
+  <div class="pass__big" aria-hidden="true">VOLT</div>
+  <div class="wrap" style="position:relative">
+    <span class="tag">Free day pass</span>
+    <h2 class="D">Your first<br>session’s on us.</h2>
+    <div class="pass__row">
+      <form id="passForm"><input type="email" id="passEmail" required placeholder="Email address" aria-label="Email address"><button type="button" class="hold" id="hold" aria-label="Press and hold to claim your free pass">Hold to claim ⚡</button></form>
+      <p class="pass__note" id="passNote">Press and hold the button. Commitment starts now.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__grid">
+      <div><div class="foot__logo">VOLT</div><p style="color:var(--mid);margin-top:16px">Arch 7, Tannery Wharf, Holbeck, Leeds LS11</p></div>
+      <div><h4>Train</h4><ul><li><a href="#classes">Classes</a></li><li><a href="#join">Memberships</a></li><li><a href="#">Personal training</a></li></ul></div>
+      <div><h4>Club</h4><ul><li><a href="#space">The space</a></li><li><a href="#">Coaches</a></li><li><a href="#">Careers</a></li></ul></div>
+      <div><h4>Follow</h4><ul><li><a href="#">Instagram</a></li><li><a href="#">TikTok</a></li><li><a href="#">Strava club</a></li></ul></div>
+    </div>
+    <div class="foot__bar"><span>© 2026 VOLT Strength Club Ltd</span><span>Rack your weights.</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, t) => a + (b - a) * t;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (/shot/.test(location.search)) document.documentElement.classList.add('shot');
+setTimeout(() => document.documentElement.classList.add('go'), reduce ? 0 : 250);
+
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+$$('[data-r]').forEach(el => io.observe(el));
+const top = $('.top'); let ly = 0;
+
+/* counters */
+const cio = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return; cio.unobserve(e.target);
+  const el = e.target, to = +el.dataset.count, t0 = performance.now();
+  const f = n => { const t = clamp((n - t0) / 1500, 0, 1); el.textContent = Math.round(to * (1 - Math.pow(1 - t, 4))).toLocaleString('en-GB'); if (t < 1) requestAnimationFrame(f); };
+  reduce ? el.textContent = to.toLocaleString('en-GB') : requestAnimationFrame(f);
+}), { threshold: .5 });
+$$('[data-count]').forEach(el => cio.observe(el));
+
+/* slam bands */
+const slamWords = [['Lift heavy', 'Rack your weights', 'Chalk is free', 'PBs every week', 'No posers'], ['Squat', 'Bench', 'Deadlift', 'Press', 'Row', 'Carry', 'Repeat']];
+const rows = $$('.slam__row').map((r, i) => { const html = slamWords[i].map(w => `<span>${w}</span>`).join(''); r.innerHTML = html + html + html + html; return { r, x: 0, dir: +r.dataset.dir, w: 0 }; });
+const measure = () => rows.forEach(o => o.w = o.r.scrollWidth / 4);
+
+/* ECG canvas — BPM follows scroll speed */
+const cv = $('#ecg'), ctx = cv.getContext('2d');
+let W, H, dpr, bpm = 72, vel = 0, lastY = scrollY, visible = true, phase = 0;
+const resize = () => { dpr = Math.min(devicePixelRatio, 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); measure(); };
+resize(); addEventListener('resize', resize);
+new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(cv);
+const beat = x => { // one heartbeat, x in [0,1)
+  if (x < .1) return Math.sin(x / .1 * Math.PI) * .08;
+  if (x < .16) return 0;
+  if (x < .19) return -.12 * (x - .16) / .03;
+  if (x < .23) return -.12 + 1.12 * (x - .19) / .04;
+  if (x < .27) return 1 - 1.35 * (x - .23) / .04;
+  if (x < .3) return -.35 + .35 * (x - .27) / .03;
+  if (x < .45) return 0;
+  if (x < .6) return Math.sin((x - .45) / .15 * Math.PI) * .18;
+  return 0;
+};
+const bpmEl = $('#bpm'), bpmBox = $('.bpm');
+function drawECG(dt) {
+  ctx.clearRect(0, 0, W, H);
+  const period = W / 2.6; // px per beat at base
+  phase += dt * (bpm / 60) * period / 1000 * 1.0;
+  const lines = [{ y: H * .38, a: .1, amp: H * .1, off: 90 }, { y: H * .5, a: 1, amp: H * .16, off: 0 }, { y: H * .64, a: .08, amp: H * .08, off: 200 }];
+  lines.forEach(L => {
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 3) {
+      const u = ((x + phase + L.off) / period) % 1;
+      const y = L.y - beat(u < 0 ? u + 1 : u) * L.amp;
+      x ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.strokeStyle = L.a === 1 ? 'rgba(223,255,63,.9)' : `rgba(244,244,240,${L.a})`;
+    ctx.lineWidth = L.a === 1 ? 2.5 : 1.5;
+    if (L.a === 1) { ctx.shadowColor = 'rgba(223,255,63,.6)'; ctx.shadowBlur = 16; } else ctx.shadowBlur = 0;
+    ctx.stroke();
+  });
+  // fade the leading edge like a monitor sweep
+  const g = ctx.createLinearGradient(0, 0, W, 0); g.addColorStop(0, 'rgba(10,10,10,.85)'); g.addColorStop(.25, 'rgba(10,10,10,0)');
+  ctx.shadowBlur = 0; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+/* timetable */
+const COACH = { Strength: 'Marcus', HIIT: 'Jess', Mobility: 'Aisha', Boxing: 'Deano' };
+const BASE = [['06:00', 'Early Volt', 'HIIT', 4, 45], ['07:00', 'Barbell Basics', 'Strength', 3, 60], ['09:30', 'Mobility Flow', 'Mobility', 1, 45], ['12:15', 'Lunch Burn', 'HIIT', 4, 30], ['17:30', 'Power Hour', 'Strength', 5, 60], ['18:30', 'Box Clever', 'Boxing', 4, 50], ['19:30', 'Stretch & Reset', 'Mobility', 1, 40], ['20:15', 'Oly Lifting Club', 'Strength', 4, 75]];
+const WEEKEND = [['08:00', 'Saturday Smash', 'HIIT', 5, 45], ['09:30', 'Strongman Sessions', 'Strength', 5, 90], ['11:00', 'Pads & Mitts', 'Boxing', 3, 50], ['12:30', 'Yoga for Lifters', 'Mobility', 1, 60]];
+const DAYN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const lon = () => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', weekday: 'short', hour12: false }).formatToParts(new Date()).map(x => [x.type, x.value])); return { mins: (+p.hour % 24) * 60 + +p.minute, d: DAYN.indexOf(p.weekday) }; };
+const now = lon();
+let day = now.d < 0 ? 0 : now.d, type = 'All';
+const booked = new Set();
+$('#days').innerHTML = DAYN.map((d, i) => `<button data-d="${i}" aria-pressed="${i === day}">${d}${i === now.d ? '<span class="today" title="Today"></span>' : ''}</button>`).join('');
+$('#types').innerHTML = ['All', 'Strength', 'HIIT', 'Mobility', 'Boxing'].map(t => `<button data-t="${t}" aria-pressed="${t === type}">${t}</button>`).join('');
+function classesFor(d) {
+  const list = d >= 5 ? WEEKEND : BASE.map((c, i) => (d % 2 && i === 5) ? ['18:30', 'Fight Fit', 'Boxing', 5, 50] : c);
+  return list.map(c => ({ time: c[0], name: c[1], type: c[2], int: c[3], dur: c[4], cap: 16, taken: (c[1].length * 7 + d * 5) % 17 }));
+}
+function renderClasses() {
+  const list = classesFor(day).filter(c => type === 'All' || c.type === type);
+  const el = $('#classList');
+  if (!list.length) { el.innerHTML = '<li class="tt__empty">No classes of that type today — try another day.</li>'; return; }
+  el.innerHTML = list.map((c, i) => {
+    const [h, m] = c.time.split(':').map(Number), start = h * 60 + m, isToday = day === now.d;
+    const live = isToday && now.mins >= start && now.mins < start + c.dur, done = isToday && now.mins >= start + c.dur;
+    const left = Math.max(0, c.cap - c.taken - (booked.has(day + c.name) ? 1 : 0)), low = left <= 3;
+    const id = day + c.name;
+    return `<li class="cls ${live ? 'live' : ''} ${done ? 'done' : ''}" style="--i:${i}">
+      <time>${c.time}<small>${c.dur} min</small></time>
+      <div><h3>${c.name}</h3><span class="type t-${c.type}">${c.type}</span></div>
+      <span class="coach">with ${COACH[c.type]}</span>
+      <span class="inten" aria-label="Intensity ${c.int} of 5">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= c.int ? 'on' : ''}"></i>`).join('')}</span>
+      <div class="spots ${low ? 'low' : ''}">${left ? `${left} of ${c.cap} spots left` : 'Full — join waitlist'}<div class="bar"><i style="transform:scaleX(${(c.cap - left) / c.cap})"></i></div></div>
+      <button class="bk ${booked.has(id) ? 'booked' : ''}" data-id="${id}" ${done ? 'disabled' : ''}>${booked.has(id) ? 'Booked ✓' : left ? 'Book' : 'Waitlist'}</button>
+    </li>`;
+  }).join('');
+}
+$('#days').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; day = +b.dataset.d; $$('#days button').forEach(x => x.setAttribute('aria-pressed', x === b)); renderClasses(); });
+$('#types').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; type = b.dataset.t; $$('#types button').forEach(x => x.setAttribute('aria-pressed', x === b)); renderClasses(); });
+$('#classList').addEventListener('click', e => { const b = e.target.closest('.bk'); if (!b) return; const id = b.dataset.id; booked.has(id) ? booked.delete(id) : booked.add(id); renderClasses(); });
+renderClasses();
+
+/* plan finder */
+const answers = [];
+const prog = $('#qprog');
+$$('.q .ans').forEach(a => a.addEventListener('click', () => {
+  const q = +a.closest('.q').dataset.q; answers[q] = a.dataset.v;
+  prog.style.transform = `scaleX(${(q + 1) / 3})`;
+  $$('.q').forEach(x => x.classList.toggle('on', +x.dataset.q === q + 1));
+  if (q === 2) showResult();
+}));
+function showResult() {
+  const [goal, freq, when] = answers;
+  let plan = 'Full Access', id = 'plan-full', why = 'Round-the-clock access and eight classes a month — the sweet spot for most lifters.';
+  if (when === 'off' && goal !== 'classes' && freq !== '3') { plan = 'Off-Peak'; id = 'plan-off'; why = 'You train when it’s quiet, so why pay for peak hours? All the iron, none of the queue.'; }
+  if (goal === 'classes' || freq === '3') { plan = 'Unlimited'; id = 'plan-unl'; why = 'You’ll be here a lot — unlimited classes and the recovery room will pay for themselves.'; }
+  $('#result').innerHTML = `<span class="mono">Your match</span><div class="D">${plan}</div><p>${why}</p><a href="#join" class="btn btn--volt" data-jump="${id}">See the plan</a><button class="restart" id="restart">Start again</button>`;
+  $('#restart').addEventListener('click', () => { answers.length = 0; prog.style.transform = 'scaleX(.05)'; $$('.q').forEach(x => x.classList.toggle('on', x.dataset.q === '0')); });
+  $('[data-jump]').addEventListener('click', () => { const p = $('#' + id); setTimeout(() => p.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }], { duration: 700, delay: 600, easing: 'cubic-bezier(.8,0,.1,1)' }), 0); });
+}
+
+/* billing toggle with animated prices */
+const bill = $('#bill');
+bill.addEventListener('click', () => {
+  const yearly = bill.getAttribute('aria-checked') !== 'true';
+  bill.setAttribute('aria-checked', yearly);
+  $$('.price b').forEach(b => {
+    const from = +b.textContent.replace(/\D/g, ''), to = +(yearly ? b.dataset.y : b.dataset.m), t0 = performance.now();
+    const f = n => { const t = clamp((n - t0) / 600, 0, 1); b.textContent = '£' + Math.round(lerp(from, to, 1 - Math.pow(1 - t, 3))); if (t < 1) requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+  });
+  $$('[data-per]').forEach(s => s.textContent = yearly ? '/ year' : '/ month');
+});
+
+/* floor plan */
+const ZONES = [
+  ['Zone 01', 'Lifting platforms', 'Eight competition platforms with Eleiko bars, calibrated plates and bumpers. Drop it like you mean it.', ['8 platforms', 'Calibrated plates', 'Chalk bowls', 'Jerk blocks']],
+  ['Zone 02', 'The rig', 'A 14-metre monster of a rig with squat stations, pull-up bars, rings and every attachment you can think of.', ['6 squat bays', 'Rings', 'Landmines', 'Dip stations']],
+  ['Zone 03', 'Turf lane', '25 metres of turf for sled pushes, prowler sprints, carries and the occasional regrettable burpee broad jump.', ['Sleds', 'Prowlers', 'Farmers handles', 'Sandbags']],
+  ['Zone 04', 'Boxing corner', 'Heavy bags, a speed bag and a raised ring for Box Clever and Fight Fit classes. Gloves on the wall if you forget yours.', ['8 heavy bags', 'Ring', 'Speed bag', 'Loan gloves']],
+  ['Zone 05', 'Recovery room', 'An infrared sauna and two cold plunge tubs. Unlimited members only — worth it for the sauna chat alone.', ['Infrared sauna', 'Cold plunge', 'Massage guns', 'Foam rollers']],
+  ['Zone 06', 'Cardio deck', 'Assault bikes, rowers, SkiErgs and a couple of treadmills for the brave. All with a view of the platforms.', ['Assault bikes', 'Concept2 rowers', 'SkiErgs', 'Curved treadmills']]
+];
+function zone(i) {
+  $$('.fp .z').forEach(z => z.classList.toggle('on', +z.dataset.z === i));
+  $$('.fp .zl').forEach(z => z.classList.toggle('on', +z.dataset.z === i));
+  const [n, t, d, kit] = ZONES[i];
+  $('#zinfo').innerHTML = `<div><span class="mono">${n}</span><h3>${t}</h3><p>${d}</p><ul>${kit.map(k => `<li>${k}</li>`).join('')}</ul></div>`;
+}
+$$('.fp .z').forEach(z => { z.addEventListener('mouseenter', () => zone(+z.dataset.z)); z.addEventListener('click', () => zone(+z.dataset.z)); });
+zone(0);
+
+/* member quotes */
+const Q = [['+40kg', 'On my deadlift in six months. The coaches here actually care about your form.', 'Hannah · member since 2023'], ['5am', 'Is my favourite time now. Never thought I’d say that. The Early Volt crew are unreal.', 'Raj · Full Access'], ['0', 'Contracts signed. I paused for three months when I had surgery — no questions asked.', 'Chris · Unlimited'], ['1st', 'Powerlifting meet at 52. Marcus got me there. Terrified, loved it, doing it again.', 'Sue · Full Access'], ['16', 'People max per class, so you never feel lost at the back. Best gym in Leeds.', 'Tomasz · Unlimited']];
+const qh = Q.map(([b, p, s]) => `<article class="qt"><b>${b}</b><p>${p}</p><span>${s}</span></article>`).join('');
+$('#quotes').innerHTML = qh + qh;
+
+/* hold-to-claim */
+const hold = $('#hold'), note = $('#passNote'), email = $('#passEmail');
+let hp = 0, holding = false, claimed = false;
+const startHold = e => { if (claimed) return; if (!/^\S+@\S+\.\S+$/.test(email.value)) { email.focus(); note.textContent = 'Pop your email in first — then hold.'; email.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-10px)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }], { duration: 300 }); return; } holding = true; e.preventDefault(); };
+const endHold = () => { holding = false; };
+hold.addEventListener('pointerdown', startHold); addEventListener('pointerup', endHold); hold.addEventListener('pointerleave', endHold);
+hold.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) startHold(e); });
+hold.addEventListener('keyup', endHold);
+function burst(x, y) {
+  for (let i = 0; i < 24; i++) {
+    const b = document.createElement('div'); b.className = 'burst';
+    b.style.cssText = `left:${x}px;top:${y}px;background:${i % 3 ? '#0A0A0A' : '#F4F4F0'};clip-path:polygon(55% 0,10% 58%,45% 58%,40% 100%,90% 38%,55% 38%);width:${14 + Math.random() * 14}px;height:${14 + Math.random() * 14}px`;
+    document.body.append(b);
+    const a = Math.random() * Math.PI * 2, d = 80 + Math.random() * 160;
+    b.animate([{ transform: 'translate(-50%,-50%) scale(1) rotate(0)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(.4) rotate(${Math.random() * 360}deg)`, opacity: 0 }], { duration: 900 + Math.random() * 400, easing: 'cubic-bezier(.2,.8,.2,1)' }).onfinish = () => b.remove();
+  }
+}
+function holdFrame(dt) {
+  if (claimed) return;
+  hp = clamp(hp + (holding ? dt / 1100 : -dt / 400), 0, 1);
+  hold.style.setProperty('--p', hp);
+  hold.classList.toggle('charged', hp > .5);
+  if (holding) note.textContent = `Charging… ${Math.round(hp * 100)}%`;
+  if (hp >= 1) {
+    claimed = true; holding = false;
+    hold.textContent = 'Pass claimed ⚡'; note.textContent = 'Check your inbox — your pass is on its way. (Demo)';
+    const r = hold.getBoundingClientRect(); if (!reduce) burst(r.left + r.width / 2, r.top + r.height / 2);
+  }
+}
+
+/* main loop */
+let last = performance.now();
+function loop(n) {
+  const dt = Math.min(50, n - last); last = n;
+  const y = scrollY; const v = Math.abs(y - lastY); lastY = y;
+  vel = lerp(vel, v, .08);
+  top.classList.toggle('solid', y > 40); if (Math.abs(y - ly) > 4) { top.classList.toggle('hide', y > ly && y > 500); ly = y; }
+  bpm = lerp(bpm, clamp(72 + vel * 4, 72, 188), .05);
+  bpmEl.textContent = Math.round(bpm); bpmBox.style.setProperty('--beat', (60 / bpm).toFixed(2) + 's');
+  if (visible && !reduce) drawECG(dt); else if (reduce && !drawECG.did) { drawECG(0); drawECG.did = 1; }
+  if (!reduce) rows.forEach(o => { if (!o.w) return; o.x -= (1.2 + vel * .35) * o.dir * dt / 16; if (o.x < -o.w) o.x += o.w; if (o.x > 0) o.x -= o.w; o.r.style.transform = `translate3d(${o.x}px,0,0)`; });
+  holdFrame(dt);
+  requestAnimationFrame(loop);
+}
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(measure);
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

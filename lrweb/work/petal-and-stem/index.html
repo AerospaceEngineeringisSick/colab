@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Petal &amp; Stem — Florist, Hackney</title>
+<meta name="description" content="Seasonal, British-grown flowers arranged in our Hackney studio and delivered by bike across East London. Build your own bouquet online.">
+<meta name="theme-color" content="#F2D8CF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231E3A2B'/%3E%3Cg fill='%23E9A6A0'%3E%3Cellipse cx='32' cy='20' rx='7' ry='11'/%3E%3Cellipse cx='32' cy='44' rx='7' ry='11'/%3E%3Cellipse cx='20' cy='32' rx='11' ry='7'/%3E%3Cellipse cx='44' cy='32' rx='11' ry='7'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='6' fill='%23F2E3A5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --blush:#F2D8CF; --blush-2:#EBC8BC; --cream:#FBF4EC; --green:#1E3A2B; --green-2:#2E5140; --leaf:#6E9A6A; --butter:#F2E3A5; --plum:#5B2A45; --petal:#E9A6A0; --coral:#E4796B;
+  --f-d:"Gloock",Georgia,serif; --f-b:"Figtree",system-ui,sans-serif;
+  --pad:clamp(16px,4vw,56px); --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--blush);color:var(--green);font-family:var(--f-b);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg,canvas{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--plum);outline-offset:4px;border-radius:6px}
+::selection{background:var(--green);color:var(--blush)}
+.wrap{max-width:1380px;margin:0 auto;padding:0 var(--pad)}
+.disp{font-family:var(--f-d);font-weight:400;letter-spacing:-.02em;line-height:.98}
+.disp em{font-style:italic;color:var(--plum)}
+.eyebrow{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;display:inline-flex;align-items:center;gap:10px}
+.eyebrow svg{width:18px;height:18px;color:var(--coral)}
+.btn{display:inline-flex;align-items:center;gap:10px;height:56px;padding:0 28px;border-radius:99px;font-weight:600;font-size:15px;transition:transform .5s var(--spring),background .3s,color .3s;white-space:nowrap}
+.btn:hover{transform:translateY(-3px) rotate(-1deg)}
+.btn--green{background:var(--green);color:var(--cream)}
+.btn--green:hover{background:var(--plum)}
+.btn--ghost{border:1.5px solid var(--green)}
+.btn--ghost:hover{background:var(--green);color:var(--cream)}
+.btn svg{width:18px;height:18px}
+
+/* header */
+.top{position:fixed;inset:14px var(--pad) auto;z-index:50;transition:transform .6s var(--ease)}
+.top.hide{transform:translateY(-140%)}
+.top__in{height:66px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 10px 0 22px;border-radius:99px;background:rgba(251,244,236,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 10px 30px -18px rgba(30,58,43,.4);max-width:1280px;margin:0 auto}
+.logo{font-family:var(--f-d);font-size:25px;display:flex;align-items:center;gap:8px}
+.logo svg{width:30px;height:30px;transition:transform 1s var(--spring)}
+.logo:hover svg{transform:rotate(90deg)}
+.logo em{font-style:italic;color:var(--coral)}
+.top nav{display:flex;gap:4px}
+.top nav a{padding:8px 14px;border-radius:99px;font-weight:500;font-size:15px;transition:background .3s}
+.top nav a:hover{background:var(--blush)}
+.bag{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 8px 0 18px;border-radius:99px;background:var(--green);color:var(--cream);font-weight:600;font-size:14px}
+.bag b{width:32px;height:32px;border-radius:50%;background:var(--petal);color:var(--green);display:grid;place-items:center}
+.bag.pop b{animation:pop .6s var(--spring)}
+@keyframes pop{40%{transform:scale(1.5)}}
+
+/* hero */
+.hero{position:relative;min-height:100svh;padding:130px 0 0;overflow:hidden;display:flex;flex-direction:column}
+.hero__txt{position:relative;z-index:3;text-align:center}
+.hero h1{font-size:clamp(58px,9vw,160px);margin:20px auto 22px;max-width:14ch}
+.hero h1 .w{display:inline-block;opacity:0;transform:translateY(40px) scale(.9);filter:blur(8px);transition:opacity 1s var(--ease),transform 1.2s var(--spring),filter 1s;transition-delay:calc(var(--i)*90ms + .2s)}
+.bloomed .hero h1 .w{opacity:1;transform:none;filter:none}
+.hero p.lede{max-width:560px;margin:0 auto;font-size:19px;color:#3b5446}
+.hero__ctas{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.garden{position:relative;flex:1;min-height:320px;margin-top:10px;z-index:2}
+.garden svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;overflow:visible}
+.stem{fill:none;stroke:var(--green-2);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease);transition-delay:var(--dl)}
+.bloomed .stem{stroke-dashoffset:0}
+.leaf{fill:var(--leaf);transform-box:fill-box;transform-origin:0% 50%;transform:scale(0);transition:transform .9s var(--spring);transition-delay:calc(var(--dl) + .6s)}
+.bloomed .leaf{transform:scale(1)}
+.head{transform-box:fill-box;transform-origin:center;transform:scale(0) rotate(-120deg);transition:transform 1.4s var(--spring);transition-delay:calc(var(--dl) + 1s)}
+.bloomed .head{transform:none}
+#petals{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+.hero__ground{position:absolute;left:0;right:0;bottom:0;height:18px;background:var(--green);z-index:3}
+
+/* marquee */
+.ribbon{background:var(--green);color:var(--blush);padding:18px 0;overflow:hidden}
+.ribbon__row{display:flex;width:max-content;animation:roll 36s linear infinite}
+.ribbon span{font-family:var(--f-d);font-size:clamp(26px,3vw,40px);padding:0 26px;display:inline-flex;align-items:center;gap:52px;white-space:nowrap}
+.ribbon span:nth-child(odd){font-style:italic;color:var(--petal)}
+.ribbon span::after{content:"";width:20px;height:20px;background:var(--butter);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@keyframes roll{to{transform:translateX(-50%)}}
+
+/* sections */
+.sec{padding:clamp(90px,12vw,170px) 0;position:relative}
+.sec__head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:clamp(40px,5vw,70px)}
+.sec__head h2{font-size:clamp(46px,6.4vw,104px);margin-top:14px;max-width:900px}
+.sec__head p{max-width:400px;color:#3b5446}
+.js [data-r]{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1.2s var(--ease);transition-delay:calc(var(--d,0)*90ms)}
+.js [data-r].in{opacity:1;transform:none}
+
+/* builder */
+.builder{background:var(--cream);border-radius:40px;padding:clamp(20px,3vw,44px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,60px);box-shadow:0 40px 80px -50px rgba(30,58,43,.5)}
+.stage{position:relative;background:var(--blush);border-radius:28px;min-height:560px;overflow:hidden;display:grid;place-items:end center}
+.stage::before{content:"";position:absolute;inset:auto 10% 8% 10%;height:30px;border-radius:50%;background:rgba(30,58,43,.12);filter:blur(8px)}
+.stage svg{width:100%;height:100%;position:absolute;inset:0;overflow:visible}
+.stage__price{position:absolute;top:20px;left:20px;background:var(--cream);border-radius:20px;padding:12px 18px;z-index:2}
+.stage__price small{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:600;color:#6b7f72}
+.stage__price b{font-family:var(--f-d);font-size:40px;font-weight:400;line-height:1;font-variant-numeric:tabular-nums}
+.stage__tip{position:absolute;right:20px;top:20px;max-width:220px;background:var(--green);color:var(--cream);border-radius:18px 18px 4px 18px;padding:12px 16px;font-size:14px;z-index:2;transition:opacity .4s,transform .5s var(--spring)}
+.stage__tip.hide{opacity:0;transform:scale(.8) translateY(10px)}
+.stem-b{fill:none;stroke:var(--green-2);stroke-width:2.6;stroke-linecap:round}
+.fl{transform-box:fill-box;transform-origin:50% 100%;animation:grow .9s var(--spring) backwards}
+@keyframes grow{from{transform:scale(0) rotate(-20deg)}}
+.wrapper{transition:fill .5s}
+.picks h3{font-family:var(--f-d);font-size:32px;font-weight:400;margin-bottom:6px}
+.picks > p{color:#3b5446;margin-bottom:20px}
+.stems{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stemc{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;background:var(--blush);border-radius:18px;padding:10px 12px;transition:background .3s,transform .4s var(--spring)}
+.stemc:hover{transform:translateY(-2px)}
+.stemc.has{background:var(--butter)}
+.stemc svg{width:48px;height:48px}
+.stemc b{display:block;font-weight:600;font-size:15px;line-height:1.2}
+.stemc small{color:#5b6f62;font-size:13px}
+.cnt{display:flex;align-items:center;gap:6px}
+.cnt button{width:30px;height:30px;border-radius:50%;background:var(--cream);font-weight:700;transition:background .2s,transform .3s var(--spring)}
+.cnt button:hover{background:var(--green);color:var(--cream);transform:scale(1.1)}
+.cnt output{min-width:18px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.opt-row{margin-top:24px}
+.opt-row .lbl{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:block}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.sw{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:99px;border:1.5px solid transparent;background:var(--blush);font-weight:500;font-size:14px;transition:border-color .3s}
+.sw i{width:28px;height:28px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.sw[aria-pressed="true"]{border-color:var(--green)}
+.note{width:100%;margin-top:10px;border:0;border-bottom:1.5px solid rgba(30,58,43,.3);background:transparent;font:inherit;font-family:var(--f-d);font-style:italic;font-size:22px;padding:8px 0;color:var(--green);outline:none}
+.note:focus{border-color:var(--plum)}
+.picks__foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:26px;flex-wrap:wrap}
+.picks__foot small{color:#5b6f62}
+
+/* shop */
+.shop{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.prod{display:flex;flex-direction:column;gap:12px}
+.prod__img{aspect-ratio:4/5;border-radius:26px;background:var(--c);position:relative;overflow:hidden;display:grid;place-items:end center}
+.prod__img svg{width:100%;height:100%;transition:transform 1s var(--spring);transform-origin:50% 100%}
+.prod:hover .prod__img svg{transform:scale(1.06) rotate(-2deg)}
+.prod__img .quick{position:absolute;left:12px;right:12px;bottom:12px;height:48px;border-radius:99px;background:var(--cream);font-weight:600;font-size:14px;transform:translateY(80px);transition:transform .6s var(--spring)}
+.prod:hover .quick,.quick:focus{transform:none}
+.prod__tag{position:absolute;top:14px;left:14px;background:var(--cream);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:600}
+.prod h3{font-family:var(--f-d);font-weight:400;font-size:26px;line-height:1.05}
+.prod p{display:flex;justify-content:space-between;color:#3b5446;font-size:15px}
+.prod p b{font-weight:600;color:var(--green)}
+
+/* subscription */
+.subs{background:var(--green);color:var(--cream);border-radius:40px;padding:clamp(28px,5vw,70px);position:relative;overflow:hidden}
+.subs .disp em{color:var(--petal)}
+.subs h2{font-size:clamp(46px,6vw,96px);margin:14px 0 20px;max-width:760px}
+.subs > p{max-width:520px;color:#c9d6cc}
+.freq{display:inline-flex;background:var(--green-2);padding:5px;border-radius:99px;margin:34px 0;position:relative}
+.freq button{position:relative;z-index:1;padding:10px 20px;border-radius:99px;font-weight:600;font-size:14px;transition:color .3s}
+.freq button[aria-pressed="true"]{color:var(--green)}
+.freq .pill{position:absolute;top:5px;bottom:5px;left:5px;border-radius:99px;background:var(--butter);transition:left .6s var(--spring),width .6s var(--spring)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tier{border:1.5px solid rgba(251,244,236,.2);border-radius:26px;padding:26px;display:grid;gap:10px;transition:background .4s,transform .5s var(--spring)}
+.tier:hover{background:var(--green-2);transform:translateY(-6px)}
+.tier h3{font-family:var(--f-d);font-weight:400;font-size:30px}
+.tier .pr{font-family:var(--f-d);font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.tier .pr small{font-family:var(--f-b);font-size:14px;color:#c9d6cc}
+.tier p{color:#c9d6cc;font-size:15px}
+.subs__deco{position:absolute;right:-60px;top:-60px;width:360px;height:360px;opacity:.9;animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* seasons wheel */
+.seasons{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,90px);align-items:center}
+.wheel{width:100%;max-width:560px;aspect-ratio:1;justify-self:center;position:relative}
+.wheel svg{width:100%;height:100%;overflow:visible}
+.wheel .seg{fill:var(--cream);stroke:var(--blush);stroke-width:3;cursor:pointer;transition:fill .3s}
+.wheel .seg:hover{fill:var(--butter)}
+.wheel .seg.now{fill:var(--petal)}
+.wheel .seg.sel{fill:var(--green)}
+.wheel text{font-family:var(--f-b);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;fill:var(--green);pointer-events:none}
+.wheel text.sel{fill:var(--cream)}
+.wheel__rot{transition:transform 1.2s var(--spring);transform-origin:250px 250px}
+.wheel__c{position:absolute;inset:27%;border-radius:50%;background:var(--green);color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+.wheel__c small{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--petal);font-weight:600}
+.wheel__c b{font-family:var(--f-d);font-weight:400;font-size:clamp(26px,2.8vw,40px);line-height:1;margin:6px 0 10px}
+.wheel__c span{font-size:14px;color:#c9d6cc;line-height:1.5}
+.seasons__txt h2{font-size:clamp(46px,6vw,96px);margin:14px 0 20px}
+.seasons__txt p{color:#3b5446;max-width:460px}
+.postcode{margin-top:36px;background:var(--cream);border-radius:26px;padding:24px}
+.postcode label{font-weight:600;display:block;margin-bottom:10px}
+.postcode form{display:flex;gap:8px}
+.postcode input{flex:1;min-width:0;height:52px;border-radius:99px;border:1.5px solid rgba(30,58,43,.2);background:var(--blush);font:inherit;font-weight:600;text-transform:uppercase;padding:0 20px;outline:none;color:var(--green)}
+.postcode input:focus{border-color:var(--green)}
+.postcode .res{margin-top:12px;min-height:1.6em;font-weight:500}
+.bike{display:inline-block;width:34px;height:20px;vertical-align:-4px;margin-right:6px}
+.bike .wh{transform-box:fill-box;transform-origin:center;animation:spin 1s linear infinite}
+
+/* footer */
+.foot{background:var(--green);color:var(--cream);padding:90px 0 30px;margin-top:40px;overflow:hidden;position:relative}
+.foot__big{font-family:var(--f-d);font-size:clamp(80px,15vw,260px);line-height:.85;letter-spacing:-.03em;white-space:nowrap}
+.foot__big em{font-style:italic;color:var(--petal)}
+.foot__row{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:40px;padding-top:20px;border-top:1px solid rgba(251,244,236,.2);font-size:14px;color:#c9d6cc}
+.foot__row nav{display:flex;gap:20px}
+.toast{position:fixed;left:50%;bottom:24px;z-index:90;transform:translate(-50%,calc(100% + 40px));background:var(--green);color:var(--cream);border-radius:99px;padding:14px 22px;font-weight:600;transition:transform .7s var(--spring);box-shadow:0 20px 40px -20px rgba(0,0,0,.5)}
+.toast.on{transform:translate(-50%,0)}
+
+@media (max-width:1060px){
+  .top nav{display:none}
+  .builder,.seasons{grid-template-columns:1fr}
+  .shop{grid-template-columns:1fr 1fr}
+  .tiers{grid-template-columns:1fr}
+  .stage{min-height:420px}
+}
+@media (max-width:560px){
+  .stems{grid-template-columns:1fr}
+  .shop{grid-template-columns:1fr}
+  .bag span{display:none}
+  .garden{min-height:260px}
+  .prod__img .quick{transform:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition-duration:.01ms !important;transition-delay:0s !important}}
+
+.lr-badge{position:fixed;left:16px;bottom:16px;z-index:95;display:inline-flex;align-items:center;gap:8px;padding:10px 14px 10px 12px;border-radius:99px;background:#0C0C0B;color:#EFEBE3;font:500 13px/1 system-ui,sans-serif;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);transition:transform .4s}
+.lr-badge:hover{transform:translateY(-3px)}
+.lr-badge i{width:8px;height:8px;border-radius:50%;background:#FF4F1A}
+.lr-wipe{position:fixed;inset:0;z-index:999;background:#FF4F1A;pointer-events:none;animation:lrOut .9s cubic-bezier(.65,0,.35,1) .05s forwards}
+@keyframes lrOut{to{transform:translateY(-101%)}}
+.shot .lr-badge,.shot .lr-wipe{display:none}
+</style>
+</head>
+<body>
+<div class="lr-wipe" aria-hidden="true"></div>
+<a class="lr-badge" href="../../index.html#work"><i></i>Concept by <b>LRWeb</b></a>
+
+<header class="top">
+  <div class="top__in">
+    <a href="#" class="logo" aria-label="Petal &amp; Stem home"><svg viewBox="0 0 30 30" aria-hidden="true"><g fill="#E9A6A0"><ellipse cx="15" cy="8" rx="4" ry="6.5"/><ellipse cx="15" cy="22" rx="4" ry="6.5"/><ellipse cx="8" cy="15" rx="6.5" ry="4"/><ellipse cx="22" cy="15" rx="6.5" ry="4"/></g><circle cx="15" cy="15" r="4" fill="#1E3A2B"/></svg>Petal <em>&amp;</em> Stem</a>
+    <nav aria-label="Main"><a href="#build">Build a bouquet</a><a href="#shop">Shop</a><a href="#subs">Subscriptions</a><a href="#seasons">In season</a></nav>
+    <button class="bag" id="bag" aria-label="Basket"><span>Basket</span><b id="bagN">0</b></button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <canvas id="petals" aria-hidden="true"></canvas>
+  <div class="wrap hero__txt">
+    <span class="eyebrow"><svg viewBox="0 0 20 20" fill="currentColor"><ellipse cx="10" cy="5" rx="3" ry="5"/><ellipse cx="10" cy="15" rx="3" ry="5"/><ellipse cx="5" cy="10" rx="5" ry="3"/><ellipse cx="15" cy="10" rx="5" ry="3"/></svg>Florist · Hackney, East London</span>
+    <h1 class="disp" data-words>Flowers with a bit of <em>personality.</em></h1>
+    <p class="lede">Seasonal, British-grown where we can, arranged in our Hackney studio and delivered by bike across East London — usually the same day.</p>
+    <div class="hero__ctas"><a href="#build" class="btn btn--green">Build your own bouquet <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a><a href="#shop" class="btn btn--ghost">Shop ready-made</a></div>
+  </div>
+  <div class="garden" aria-hidden="true"><svg id="garden" preserveAspectRatio="xMidYMax slice"></svg></div>
+  <div class="hero__ground" aria-hidden="true"></div>
+</section>
+
+<div class="ribbon" aria-hidden="true"><div class="ribbon__row"><span>Same-day bike delivery</span><span>British-grown</span><span>No floral foam, ever</span><span>Compostable wrapping</span><span>Same-day bike delivery</span><span>British-grown</span><span>No floral foam, ever</span><span>Compostable wrapping</span></div></div>
+
+<section class="sec" id="build">
+  <div class="wrap">
+    <div class="sec__head">
+      <div><span class="eyebrow">Bouquet builder</span><h2 class="disp" data-r>Pick your stems. <em>We’ll do the rest.</em></h2></div>
+      <p data-r style="--d:1">Choose your flowers and watch your bouquet come together. Our florists will tweak the shape by hand before it leaves the studio.</p>
+    </div>
+    <div class="builder" data-r>
+      <div class="stage">
+        <div class="stage__price"><small>Your bouquet</small><b id="price">£12.00</b></div>
+        <div class="stage__tip" id="tip">Start by adding a few stems — try roses and eucalyptus.</div>
+        <svg id="bouquet" viewBox="0 0 500 560" aria-label="Preview of your bouquet"></svg>
+      </div>
+      <div class="picks">
+        <h3>Choose your flowers</h3>
+        <p>£12 covers wrapping, a handwritten card and delivery prep. Add up to 20 stems.</p>
+        <div class="stems" id="stemList"></div>
+        <div class="opt-row"><span class="lbl">Wrapping</span><div class="swatches" id="wraps"><button class="sw" aria-pressed="true" data-w="#D9B98F"><i style="background:#D9B98F"></i>Kraft</button><button class="sw" aria-pressed="false" data-w="#F6C9C3"><i style="background:#F6C9C3"></i>Blush tissue</button><button class="sw" aria-pressed="false" data-w="#B8CBB0"><i style="background:#B8CBB0"></i>Sage</button><button class="sw" aria-pressed="false" data-w="#5B2A45"><i style="background:#5B2A45"></i>Plum</button></div></div>
+        <div class="opt-row"><label class="lbl" for="note">Card message</label><input class="note" id="note" maxlength="80" placeholder="Happy birthday, you legend x"></div>
+        <div class="picks__foot"><small id="stemCount">0 stems</small><button class="btn btn--green" id="addBouquet">Add to basket</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="shop" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec__head">
+      <div><span class="eyebrow">Ready-made</span><h2 class="disp" data-r>This week’s <em>favourites.</em></h2></div>
+      <p data-r style="--d:1">Designed by our florists around whatever’s best at the market this week. Order by 1pm for same-day delivery in E postcodes.</p>
+    </div>
+    <div class="shop" id="shopGrid"></div>
+  </div>
+</section>
+
+<section class="sec" id="subs" style="padding-top:0">
+  <div class="wrap">
+    <div class="subs" data-r>
+      <svg class="subs__deco" viewBox="0 0 200 200" aria-hidden="true" id="subsDeco"></svg>
+      <span class="eyebrow" style="color:var(--butter)">Flower subscription</span>
+      <h2 class="disp">Fresh flowers, <em>on repeat.</em></h2>
+      <p>A seasonal bouquet delivered to your door. Pause, skip or cancel any time — no awkward phone calls.</p>
+      <div class="freq" id="freq" role="group" aria-label="Delivery frequency"><span class="pill" aria-hidden="true"></span><button aria-pressed="true" data-m="1">Weekly</button><button aria-pressed="false" data-m="1.1">Fortnightly</button><button aria-pressed="false" data-m="1.2">Monthly</button></div>
+      <div class="tiers">
+        <div class="tier"><h3>The Posy</h3><div class="pr" data-base="25">£25<small> / delivery</small></div><p>A petite jam-jar bunch for the kitchen table.</p></div>
+        <div class="tier"><h3>The Classic</h3><div class="pr" data-base="38">£38<small> / delivery</small></div><p>Our signature hand-tied bouquet. The one most people choose.</p></div>
+        <div class="tier"><h3>The Showstopper</h3><div class="pr" data-base="60">£60<small> / delivery</small></div><p>Big, blousy and designed to be seen from across the room.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="seasons" style="padding-top:0">
+  <div class="wrap seasons">
+    <div class="wheel" data-r>
+      <svg viewBox="0 0 500 500" aria-label="Seasonal flower calendar"><g class="wheel__rot" id="wheelRot"></g></svg>
+      <div class="wheel__c" aria-live="polite"><small id="wcLabel">In season now</small><b id="wcMonth">—</b><span id="wcFlowers"></span></div>
+    </div>
+    <div class="seasons__txt">
+      <span class="eyebrow">What’s in season</span>
+      <h2 class="disp" data-r>Grown here. <em>Right now.</em></h2>
+      <p data-r style="--d:1">We buy from British growers first and fill the gaps from Dutch markets. Tap a month on the wheel to see what’s at its best.</p>
+      <div class="postcode" data-r style="--d:2">
+        <label for="pc">Can we deliver by bike?</label>
+        <form id="pcForm"><input id="pc" placeholder="E8 3RL" autocomplete="postal-code" maxlength="8"><button class="btn btn--green" style="height:52px">Check</button></form>
+        <p class="res" id="pcRes" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__big">Petal <em>&amp;</em> Stem</div>
+    <div class="foot__row"><span>© 2026 Petal &amp; Stem · 14 Primrose Mews, Hackney, London E8</span><nav><a href="#">Instagram</a><a href="#">Workshops</a><a href="#">Weddings</a><a href="#">Care guide</a></nav></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, t) => a + (b - a) * t;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (/shot/.test(location.search)) document.documentElement.classList.add('shot');
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+/* ---------- flower heads (centred at 0,0) ---------- */
+const FL = {
+  rose(c, s = 1) { let g = ''; const shades = [c, shade(c, -12), shade(c, -24), shade(c, -34)]; [26, 20, 14, 8].forEach((r, i) => { for (let k = 0; k < 5; k++) { const a = k * 72 + i * 36; g += `<ellipse cx="0" cy="${-r * .45}" rx="${r * .7}" ry="${r * .62}" fill="${shades[i]}" transform="rotate(${a})"/>`; } }); g += `<path d="M-4 0a4 4 0 1 1 8 0a7 7 0 1 1-14 0" fill="none" stroke="${shade(c, -45)}" stroke-width="1.6"/>`; return `<g transform="scale(${s})">${g}</g>`; },
+  ranunculus(c, s = 1) { let g = ''; for (let r = 26; r > 2; r -= 4) g += `<circle r="${r}" fill="${shade(c, (26 - r) * -1.6)}" stroke="${shade(c, -30)}" stroke-width=".8" stroke-opacity=".4"/>`; return `<g transform="scale(${s})">${g}<circle r="4" fill="#3b5446"/></g>`; },
+  tulip(c, s = 1) { return `<g transform="scale(${s})"><path d="M-18 -6C-20 -30 -8 -38 0 -40C8 -38 20 -30 18 -6C14 8 -14 8 -18 -6Z" fill="${c}"/><path d="M-18 -6C-16 -26 -6 -34 -2 -38C-6 -24 -8 -6 -4 6C-12 6 -16 2 -18 -6Z" fill="${shade(c, -14)}"/><path d="M18 -6C16 -26 6 -34 2 -38C6 -24 8 -6 4 6C12 6 16 2 18 -6Z" fill="${shade(c, -8)}"/></g>`; },
+  daisy(c, s = 1) { let g = ''; for (let k = 0; k < 16; k++) g += `<ellipse cx="0" cy="-15" rx="4.2" ry="13" fill="${k % 2 ? c : shade(c, -6)}" transform="rotate(${k * 22.5})"/>`; return `<g transform="scale(${s})">${g}<circle r="8" fill="#E9B949"/><circle r="8" fill="none" stroke="#b58a2a" stroke-dasharray="1 2.4" stroke-width="3"/></g>`; },
+  peony(c, s = 1) { let g = ''; for (let i = 0; i < 3; i++) { const r = 32 - i * 9; for (let k = 0; k < 8; k++) { const a = k * 45 + i * 22; g += `<path d="M0 0C${-r * .6} ${-r * .3} ${-r * .5} ${-r} 0 ${-r}C${r * .5} ${-r} ${r * .6} ${-r * .3} 0 0Z" fill="${shade(c, -i * 10 + (k % 2) * 4)}" transform="rotate(${a})"/>`; } } return `<g transform="scale(${s})">${g}<circle r="5" fill="${shade(c, -38)}"/></g>`; },
+  sweetpea(c, s = 1) { return `<g transform="scale(${s})"><path d="M0 4C-26 0 -26 -30 0 -26C26 -30 26 0 0 4Z" fill="${c}"/><path d="M0 2C-14 0 -14 -16 0 -14C14 -16 14 0 0 2Z" fill="${shade(c, -16)}"/><path d="M-4 4C-4 12 4 12 4 4" fill="${shade(c, -26)}"/></g>`; },
+  euca(c, s = 1) { let g = `<path d="M0 30V-40" stroke="#5e7d6a" stroke-width="2.4" fill="none"/>`; for (let i = 0; i < 6; i++) { const y = 24 - i * 12, sd = i % 2 ? 1 : -1; g += `<circle cx="${sd * 9}" cy="${y}" r="${8 - i * .6}" fill="${i % 2 ? '#8FB3A0' : '#9CC0AC'}"/>`; } return `<g transform="scale(${s})">${g}</g>`; }
+};
+function shade(hex, pct) { const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = n >> 8 & 255, b = n & 255; const f = pct / 100; r = clamp(Math.round(r + r * f), 0, 255); g = clamp(Math.round(g + g * f), 0, 255); b = clamp(Math.round(b + b * f), 0, 255); return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join(''); }
+
+/* ---------- hero garden ---------- */
+const garden = $('#garden');
+let GW = 1440, GH = 400, plants = [];
+function buildGarden() {
+  const r = garden.parentElement.getBoundingClientRect(); GW = Math.max(360, r.width); GH = Math.max(260, r.height);
+  garden.setAttribute('viewBox', `0 0 ${GW} ${GH}`);
+  seed = 11;
+  const kinds = [['peony', '#F4B6B0'], ['daisy', '#FBF4EC'], ['tulip', '#E4796B'], ['rose', '#C95A6E'], ['ranunculus', '#F2C9A6'], ['sweetpea', '#B98BC9'], ['euca', ''], ['tulip', '#F2E3A5'], ['peony', '#E9A6A0'], ['daisy', '#F2E3A5'], ['rose', '#F6C9C3'], ['ranunculus', '#E4796B'], ['sweetpea', '#F4B6B0'], ['euca', '']];
+  const n = Math.round(GW / 110);
+  plants = [];
+  let html = '';
+  for (let i = 0; i < n; i++) {
+    const [k, c] = kinds[i % kinds.length];
+    const x = (i + .5) / n * GW + (rnd() - .5) * 40, h = GH * (.4 + rnd() * .42), bend = (rnd() - .5) * 60;
+    const top = [x + bend, GH - h], dl = (i * .09 + rnd() * .3).toFixed(2) + 's', s = .9 + rnd() * .9;
+    const d = `M${x} ${GH}C${x} ${GH - h * .4} ${x + bend} ${GH - h * .7} ${top[0]} ${top[1]}`;
+    const ly = GH - h * (.3 + rnd() * .2), lx = x + bend * .25;
+    html += `<g class="plant" data-x="${x}" data-y="${GH}" style="--dl:${dl}">
+      <path class="stem" pathLength="1" d="${d}"/>
+      <g transform="rotate(-24 ${lx} ${ly})"><ellipse class="leaf" cx="${lx + 22}" cy="${ly}" rx="22" ry="8"/></g>
+      <g transform="rotate(204 ${lx} ${ly + 30})"><ellipse class="leaf" cx="${lx + 18}" cy="${ly + 30}" rx="18" ry="7"/></g>
+      <g transform="translate(${top[0]} ${top[1]})"><g class="head">${FL[k](c || '#8FB3A0', s)}</g></g></g>`;
+    plants.push({ x, ph: rnd() * 6.28 });
+  }
+  garden.innerHTML = html;
+  garden._plants = $$('.plant', garden);
+}
+buildGarden();
+let rT; addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { buildGarden(); document.documentElement.classList.add('bloomed'); }, 200); });
+
+/* hero words */
+$$('[data-words]').forEach(h => { let i = 0; [...h.childNodes].forEach(c => { if (c.nodeType === 3) { const f = document.createDocumentFragment(); c.textContent.split(/(\s+)/).forEach(t => { if (!t) return; if (/^\s+$/.test(t)) return f.append(t); const s = document.createElement('span'); s.className = 'w'; s.style.setProperty('--i', i++); s.textContent = t; f.append(s); }); c.replaceWith(f); } else { c.classList.add('w'); c.style.setProperty('--i', i++); } }); });
+setTimeout(() => document.documentElement.classList.add('bloomed'), reduce ? 0 : 250);
+
+/* ---------- falling petals ---------- */
+const pc = $('#petals'), px = pc.getContext('2d');
+let PW, PH, petals = [], pVis = true, mouseX = .5;
+const pres = () => { const d = Math.min(devicePixelRatio, 2); PW = pc.clientWidth; PH = pc.clientHeight; pc.width = PW * d; pc.height = PH * d; px.setTransform(d, 0, 0, d, 0, 0); };
+pres(); addEventListener('resize', pres);
+const PCOL = ['#E9A6A0', '#F4B6B0', '#F2E3A5', '#FBF4EC', '#E4796B'];
+for (let i = 0; i < (innerWidth < 700 ? 18 : 34); i++) petals.push({ x: Math.random() * PW, y: Math.random() * PH, s: 5 + Math.random() * 7, vy: .3 + Math.random() * .6, rot: Math.random() * 6, vr: (Math.random() - .5) * .04, sw: Math.random() * 6, c: PCOL[i % PCOL.length] });
+new IntersectionObserver(([e]) => pVis = e.isIntersecting).observe(pc);
+addEventListener('pointermove', e => { mouseX = e.clientX / innerWidth; }, { passive: true });
+
+/* ---------- bouquet builder ---------- */
+const STEMS = [
+  ['rose', 'Garden rose', 3.5, '#C95A6E'], ['peony', 'Peony', 5, '#F4B6B0'], ['ranunculus', 'Ranunculus', 3, '#F2C9A6'],
+  ['tulip', 'Tulip', 2.5, '#E4796B'], ['sweetpea', 'Sweet pea', 2, '#B98BC9'], ['daisy', 'Ox-eye daisy', 1.5, '#FBF4EC'], ['euca', 'Eucalyptus', 1.5, '']
+];
+const counts = Object.fromEntries(STEMS.map(s => [s[0], 0]));
+let wrapCol = '#D9B98F';
+$('#stemList').innerHTML = STEMS.map(([k, n, p, c]) => `<div class="stemc" data-k="${k}"><svg viewBox="-40 -48 80 80" aria-hidden="true">${FL[k](c || '#8FB3A0', .95)}</svg><div><b>${n}</b><small>£${p.toFixed(2)} a stem</small></div><div class="cnt"><button aria-label="Remove ${n}" data-d="-1">−</button><output>0</output><button aria-label="Add ${n}" data-d="1">+</button></div></div>`).join('');
+const bq = $('#bouquet');
+let shown = 0, priceShown = 12;
+function renderBouquet(added) {
+  const list = []; STEMS.forEach(([k, , , c]) => { for (let i = 0; i < counts[k]; i++) list.push([k, c]); });
+  // interleave so colours mix nicely
+  seed = 3; list.sort(() => rnd() - .5);
+  const n = list.length, cx = 250, tie = [cx, 430];
+  let stems = '', heads = '';
+  list.forEach(([k, c], i) => {
+    const t = n > 1 ? i / (n - 1) : .5, ang = (t - .5) * Math.min(80, 20 + n * 5) * Math.PI / 180;
+    const len = 250 + ((i * 53) % 7) * 14 - Math.abs(t - .5) * 60;
+    const hx = tie[0] + Math.sin(ang) * len, hy = tie[1] - Math.cos(ang) * len;
+    stems += `<path class="stem-b" d="M${tie[0] + (t - .5) * 24} 520 L${tie[0]} ${tie[1]} Q${tie[0] + Math.sin(ang) * len * .5} ${tie[1] - Math.cos(ang) * len * .5 - 10} ${hx} ${hy}"/>`;
+    const isNew = added && i === list.findIndex(x => x[0] === added);
+    heads += `<g transform="translate(${hx.toFixed(1)} ${hy.toFixed(1)}) rotate(${(ang * 57).toFixed(1)})"><g class="${isNew ? 'fl' : ''}">${FL[k](c || '#8FB3A0', k === 'euca' ? 1.3 : 1.25)}</g></g>`;
+  });
+  const wrap = `<path class="wrapper" d="M130 330 L250 540 L370 330 Q250 370 130 330Z" fill="${wrapCol}"/><path d="M130 330 L250 540 L180 350Z" fill="rgba(0,0,0,.08)"/><path d="M130 330Q250 370 370 330" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="2"/>
+    <g transform="translate(250 452)"><path d="M0 0C-30 -24 -46 -2 -30 8C-18 14 -6 6 0 0C6 6 18 14 30 8C46 -2 30 -24 0 0Z" fill="${wrapCol === '#5B2A45' ? '#F2E3A5' : '#5B2A45'}"/><path d="M0 0l-16 40M0 0l14 42" stroke="${wrapCol === '#5B2A45' ? '#F2E3A5' : '#5B2A45'}" stroke-width="5" stroke-linecap="round"/><circle r="6" fill="${wrapCol === '#5B2A45' ? '#e8d48a' : '#4a2238'}"/></g>`;
+  const note = $('#note').value.trim();
+  const tag = note ? `<g transform="translate(330 470) rotate(8)"><rect width="140" height="64" rx="4" fill="#FBF4EC" stroke="rgba(0,0,0,.1)"/><text x="12" y="28" font-family="Gloock, Georgia, serif" font-style="italic" font-size="13" fill="#1E3A2B">${note.replace(/[<&>]/g, '').slice(0, 20)}</text><text x="12" y="46" font-family="Gloock, Georgia, serif" font-style="italic" font-size="13" fill="#1E3A2B">${note.replace(/[<&>]/g, '').slice(20, 40)}</text><line x1="-20" y1="10" x2="0" y2="20" stroke="#5B2A45"/></g>` : '';
+  bq.innerHTML = n ? stems + heads + wrap + tag : `<g opacity=".5">${wrap}</g><text x="250" y="250" text-anchor="middle" font-family="Gloock, Georgia, serif" font-size="26" fill="#1E3A2B" opacity=".5">Your bouquet starts here</text>` + tag;
+  // price + tips
+  const total = 12 + STEMS.reduce((a, [k, , p]) => a + counts[k] * p, 0);
+  const t0 = performance.now(), from = priceShown;
+  const pf = now => { const t = clamp((now - t0) / 500, 0, 1); priceShown = lerp(from, total, 1 - Math.pow(1 - t, 3)); $('#price').textContent = '£' + priceShown.toFixed(2); if (t < 1) requestAnimationFrame(pf); };
+  requestAnimationFrame(pf);
+  $('#stemCount').textContent = `${n} stem${n === 1 ? '' : 's'}${n >= 20 ? ' (max)' : ''}`;
+  const tip = $('#tip');
+  let msg = '';
+  if (!n) msg = 'Start by adding a few stems — try roses and eucalyptus.';
+  else if (!counts.euca && n >= 3) msg = 'Florist’s tip: a couple of eucalyptus stems give it shape and scent.';
+  else if (n > 0 && n < 5) msg = 'Looking lovely. Five or more stems makes a proper hand-tie.';
+  else if (n % 2 === 0 && n < 12) msg = 'Odd numbers look more natural — one more?';
+  tip.textContent = msg; tip.classList.toggle('hide', !msg);
+  $$('.stemc').forEach(el => { const c = counts[el.dataset.k]; el.classList.toggle('has', c > 0); $('output', el).textContent = c; });
+}
+$('#stemList').addEventListener('click', e => {
+  const b = e.target.closest('button[data-d]'); if (!b) return;
+  const k = b.closest('.stemc').dataset.k, d = +b.dataset.d;
+  const total = Object.values(counts).reduce((a, v) => a + v, 0);
+  if (d > 0 && total >= 20) return toast('That’s 20 stems — any more and you’ll need a bigger vase!');
+  counts[k] = clamp(counts[k] + d, 0, 20);
+  renderBouquet(d > 0 ? k : null);
+});
+$$('#wraps .sw').forEach(s => s.addEventListener('click', () => { $$('#wraps .sw').forEach(x => x.setAttribute('aria-pressed', x === s)); wrapCol = s.dataset.w; renderBouquet(); }));
+$('#note').addEventListener('input', () => renderBouquet());
+let bagN = 0;
+const bag = $('#bag');
+const addToBag = (label) => { bagN++; $('#bagN').textContent = bagN; bag.classList.remove('pop'); void bag.offsetWidth; bag.classList.add('pop'); toast(`${label} added to your basket (demo)`); };
+$('#addBouquet').addEventListener('click', () => { const n = Object.values(counts).reduce((a, v) => a + v, 0); if (!n) return toast('Add a few flowers first!'); addToBag(`Your ${n}-stem bouquet`); });
+counts.rose = 3; counts.peony = 2; counts.euca = 2; counts.daisy = 2;
+renderBouquet();
+
+/* ---------- shop ---------- */
+const PRODUCTS = [
+  ['The Hackney', 'Peonies, garden roses & eucalyptus', 45, '#F6C9C3', [['peony', '#F4B6B0'], ['rose', '#C95A6E'], ['euca', ''], ['peony', '#E9A6A0'], ['rose', '#F6C9C3']], 'Bestseller'],
+  ['Sunday Market', 'Tulips, ranunculus & daisies', 38, '#F2E3A5', [['tulip', '#E4796B'], ['ranunculus', '#F2C9A6'], ['daisy', '#FBF4EC'], ['tulip', '#F4B6B0'], ['daisy', '#FBF4EC']], ''],
+  ['Wild Thing', 'Sweet peas, daisies & greenery', 34, '#CFE0CB', [['sweetpea', '#B98BC9'], ['daisy', '#FBF4EC'], ['euca', ''], ['sweetpea', '#F4B6B0'], ['sweetpea', '#E9A6A0']], 'New'],
+  ['Plum Crazy', 'Deep roses, ranunculus & tulips', 52, '#E5C6D2', [['rose', '#8E3B5B'], ['ranunculus', '#C95A6E'], ['tulip', '#5B2A45'], ['rose', '#C95A6E'], ['euca', '']], '']
+];
+function miniBouquet(items, bg) {
+  let s = '';
+  items.forEach(([k, c], i) => { const ang = (i / (items.length - 1) - .5) * 70, rad = ang * Math.PI / 180, len = 150 + (i % 2) * 24; const hx = 150 + Math.sin(rad) * len, hy = 330 - Math.cos(rad) * len; s += `<path class="stem-b" d="M150 330L${hx.toFixed(1)} ${hy.toFixed(1)}"/>`; });
+  items.forEach(([k, c], i) => { const ang = (i / (items.length - 1) - .5) * 70, rad = ang * Math.PI / 180, len = 150 + (i % 2) * 24; const hx = 150 + Math.sin(rad) * len, hy = 330 - Math.cos(rad) * len; s += `<g transform="translate(${hx.toFixed(1)} ${hy.toFixed(1)}) rotate(${ang})">${FL[k](c || '#8FB3A0', 1.15)}</g>`; });
+  s += `<path d="M80 250L150 380L220 250Q150 276 80 250Z" fill="${shade(bg, -14)}"/><path d="M80 250L150 380L110 262Z" fill="rgba(0,0,0,.06)"/>`;
+  return `<svg viewBox="0 0 300 380" aria-hidden="true">${s}</svg>`;
+}
+$('#shopGrid').innerHTML = PRODUCTS.map(([n, d, p, bg, items, tag], i) => `<article class="prod" data-r style="--d:${i}"><div class="prod__img" style="--c:${bg}">${tag ? `<span class="prod__tag">${tag}</span>` : ''}${miniBouquet(items, bg)}<button class="quick" data-add="${n}">Add to basket — £${p}</button></div><h3>${n}</h3><p><span>${d}</span><b>£${p}</b></p></article>`).join('');
+$('#shopGrid').addEventListener('click', e => { const b = e.target.closest('[data-add]'); if (b) addToBag(b.dataset.add); });
+
+/* ---------- subscription toggle ---------- */
+const freq = $('#freq'), pill = $('.pill', freq);
+const movePill = b => { pill.style.left = b.offsetLeft + 'px'; pill.style.width = b.offsetWidth + 'px'; };
+$$('button', freq).forEach(b => b.addEventListener('click', () => {
+  $$('button', freq).forEach(x => x.setAttribute('aria-pressed', x === b)); movePill(b);
+  const m = +b.dataset.m;
+  $$('.tier .pr').forEach(el => { const v = Math.round(+el.dataset.base * m); el.firstChild.textContent = `£${v}`; el.animate([{ transform: 'translateY(-8px)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 500, easing: 'cubic-bezier(.34,1.56,.64,1)' }); });
+}));
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => movePill($('[aria-pressed="true"]', freq)));
+movePill($('[aria-pressed="true"]', freq));
+$('#subsDeco').innerHTML = `<g transform="translate(100 100)">${FL.daisy('#E9A6A0', 3.4)}</g>`;
+
+/* ---------- seasons wheel ---------- */
+const MONTHS = [['January', 'Hellebores, anemones, narcissi'], ['February', 'Tulips, mimosa, ranunculus'], ['March', 'Daffodils, blossom, hyacinths'], ['April', 'Tulips, fritillaries, ranunculus'], ['May', 'Peonies, lilac, alliums'], ['June', 'Peonies, sweet peas, garden roses'], ['July', 'Sweet peas, cornflowers, delphiniums'], ['August', 'Dahlias, sunflowers, cosmos'], ['September', 'Dahlias, zinnias, rudbeckia'], ['October', 'Chrysanthemums, rosehips, autumn leaves'], ['November', 'Amaryllis, skimmia, dried grasses'], ['December', 'Holly, ilex berries, winter foliage']];
+const cur = new Date().getMonth();
+const rot = $('#wheelRot');
+const arc = (i, r1, r2) => { const a0 = (i * 30 - 90 - 15) * Math.PI / 180, a1 = (i * 30 - 90 + 15) * Math.PI / 180; const p = (r, a) => `${250 + r * Math.cos(a)} ${250 + r * Math.sin(a)}`; return `M${p(r2, a0)}A${r2} ${r2} 0 0 1 ${p(r2, a1)}L${p(r1, a1)}A${r1} ${r1} 0 0 0 ${p(r1, a0)}Z`; };
+rot.innerHTML = MONTHS.map(([m], i) => { const a = i * 30, lr = 196; const x = 250 + lr * Math.cos((a - 90) * Math.PI / 180), y = 250 + lr * Math.sin((a - 90) * Math.PI / 180); return `<path class="seg ${i === cur ? 'now' : ''}" data-i="${i}" d="${arc(i, 145, 245)}"/><text data-i="${i}" x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${a} ${x} ${y})">${m.slice(0, 3)}</text>`; }).join('');
+let sel = cur;
+function pickMonth(i) {
+  sel = i;
+  $$('.seg', rot).forEach(s => s.classList.toggle('sel', +s.dataset.i === i && i !== cur));
+  $$('text', rot).forEach(t => t.classList.toggle('sel', +t.dataset.i === i && i !== cur));
+  rot.style.transform = `rotate(${-i * 30}deg)`;
+  $('#wcLabel').textContent = i === cur ? 'In season now' : 'In season in';
+  $('#wcMonth').textContent = MONTHS[i][0]; $('#wcFlowers').textContent = MONTHS[i][1];
+}
+rot.addEventListener('click', e => { const s = e.target.closest('.seg'); if (s) pickMonth(+s.dataset.i); });
+pickMonth(cur);
+
+/* ---------- postcode checker ---------- */
+$('#pcForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#pc').value.toUpperCase().replace(/\s+/g, ''), res = $('#pcRes');
+  const bike = '<svg class="bike" viewBox="0 0 34 20" fill="none" stroke="#1E3A2B" stroke-width="1.6"><circle class="wh" cx="7" cy="13" r="6" stroke-dasharray="3 2"/><circle class="wh" cx="27" cy="13" r="6" stroke-dasharray="3 2"/><path d="M7 13l6-8h9l5 8M13 5l4 8h-10"/></svg>';
+  if (!/^[A-Z]{1,2}\d/.test(v)) { res.textContent = 'Hmm, that doesn’t look like a postcode. Try something like E8 3RL.'; return; }
+  const out = v.length >= 5 ? v.slice(0, -3) : v; // drop the inward code (e.g. 3RL)
+  const area = (out.match(/^[A-Z]{1,2}\d[A-Z\d]?/) || [out])[0];
+  if (/^E\d/.test(area) || /^EC\d/.test(area) || /^(N1|N16|N4|N5)$/.test(area)) res.innerHTML = `${bike}Yes! Same-day bike delivery to ${area} when you order by 1pm.`;
+  else if (/^(N|NW|SE|SW|W|WC)\d/.test(area)) res.innerHTML = `We cover ${area} with next-day London delivery — still by a real person, not a van roulette.`;
+  else res.textContent = `We can get flowers to ${area} by next-day tracked courier, packed in compostable boxes.`;
+});
+
+/* ---------- toast ---------- */
+let tt; function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2800); }
+
+/* ---------- reveal ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+$$('[data-r]').forEach(el => io.observe(el));
+
+/* ---------- loop: wind + petals + header ---------- */
+const top = $('.top'); let ly = 0, wind = 0;
+function loop(t) {
+  const y = scrollY;
+  if (Math.abs(y - ly) > 4) { top.classList.toggle('hide', y > ly && y > 400); ly = y; }
+  if (!reduce) {
+    wind = lerp(wind, (mouseX - .5) * 10, .03);
+    if (y < innerHeight * 1.2 && garden._plants) garden._plants.forEach((g, i) => { const p = plants[i]; if (!p) return; const a = Math.sin(t / 1400 + p.ph) * 2.2 + wind * (1 - Math.abs(p.x / GW - mouseX)); g.setAttribute('transform', `rotate(${a.toFixed(2)} ${p.x.toFixed(1)} ${GH})`); });
+    if (pVis) {
+      px.clearRect(0, 0, PW, PH);
+      for (const p of petals) {
+        p.y += p.vy; p.x += Math.sin(t / 1000 + p.sw) * .6 + wind * .06; p.rot += p.vr;
+        if (p.y > PH + 20) { p.y = -20; p.x = Math.random() * PW; }
+        if (p.x > PW + 20) p.x = -20; if (p.x < -20) p.x = PW + 20;
+        px.save(); px.translate(p.x, p.y); px.rotate(p.rot); px.scale(1, .55 + .45 * Math.sin(t / 400 + p.sw));
+        px.beginPath(); px.ellipse(0, 0, p.s * .6, p.s, 0, 0, Math.PI * 2); px.fillStyle = p.c; px.globalAlpha = .85; px.fill(); px.restore();
+      }
+      px.globalAlpha = 1;
+    }
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

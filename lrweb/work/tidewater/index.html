@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tidewater — Harbourside seafood, St Ives</title>
+<meta name="description" content="Day-boat seafood on the harbour at St Ives, Cornwall. The menu changes with the catch. Book a table for tonight.">
+<meta name="theme-color" content="#0E2A36">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230E2A36'/%3E%3Ccircle cx='32' cy='30' r='10' fill='%23E8715A'/%3E%3Cpath d='M6 38q7-6 13 0t13 0 13 0 13 0' stroke='%23EAF1EE' stroke-width='4' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..800&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --sea:#0E2A36; --abyss:#081C25; --deep:#123845; --foam:#EAF1EE; --foam-d:#B7C9C6; --sand:#EADFC8; --sand-2:#DCCDAE; --coral:#E8715A; --gold:#F2B366; --kelp:#2F5D50;
+  --f-d:"Bodoni Moda",Didot,"Times New Roman",serif; --f-b:"Jost",system-ui,sans-serif;
+  --pad:clamp(16px,4vw,56px); --ease:cubic-bezier(.22,1,.36,1); --tide:cubic-bezier(.45,0,.25,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--sand);color:var(--sea);font-family:var(--f-b);font-size:17px;line-height:1.6;font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg,canvas{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1.5px solid var(--coral);outline-offset:4px}
+::selection{background:var(--coral);color:var(--foam)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 var(--pad)}
+.serif{font-family:var(--f-d);font-weight:400;font-variation-settings:"opsz" 96;letter-spacing:-.02em;line-height:.95}
+.serif em{font-style:italic}
+.cap{font-size:12px;text-transform:uppercase;letter-spacing:.28em;font-weight:500}
+.btn{display:inline-flex;align-items:center;gap:14px;height:56px;padding:0 30px;border-radius:99px;font-size:13px;text-transform:uppercase;letter-spacing:.2em;font-weight:500;position:relative;overflow:hidden;isolation:isolate;transition:color .5s}
+.btn::before{content:"";position:absolute;left:-10%;right:-10%;top:100%;height:200%;background:var(--coral);border-radius:50% 50% 0 0;z-index:-1;transition:top .8s var(--tide),border-radius .8s var(--tide)}
+.btn:hover::before{top:-50%;border-radius:0}
+.btn--foam{background:var(--foam);color:var(--sea)}
+.btn--foam:hover{color:var(--foam)}
+.btn--line{border:1px solid rgba(234,241,238,.5);color:var(--foam)}
+.btn--sea{background:var(--sea);color:var(--foam)}
+
+/* header */
+.top{position:fixed;inset:0 0 auto;z-index:50;color:var(--sea);transition:background .5s,color .5s,transform .6s var(--ease)}
+.top.solid{background:rgba(234,223,200,.9);color:var(--sea);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.top.hide{transform:translateY(-100%)}
+.top__in{height:86px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px}
+.top nav{display:flex;gap:30px}
+.top nav a{font-size:12px;text-transform:uppercase;letter-spacing:.24em;position:relative}
+.top nav a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:6px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6'%3E%3Cpath d='M0 3q3-3 6 0t6 0' fill='none' stroke='%23E8715A' stroke-width='1.2'/%3E%3C/svg%3E") repeat-x;background-size:12px 6px;clip-path:inset(0 100% 0 0);transition:clip-path .6s var(--ease);animation:wav 1s linear infinite}
+.top nav a:hover::after{clip-path:inset(0 0 0 0)}
+@keyframes wav{to{background-position:12px 0}}
+.logo{font-family:var(--f-d);font-style:italic;font-size:32px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.logo svg{width:30px;height:30px}
+.top__right{justify-self:end;display:flex;align-items:center;gap:18px}
+.top__right .btn{height:46px;padding:0 22px;font-size:12px}
+.top .btn--foam{background:var(--sea);color:var(--foam)}
+.top.dusk{color:var(--foam)}
+.top.dusk .btn--foam{background:var(--foam);color:var(--sea)}
+.top.solid{color:var(--sea)}
+.top.solid .btn--foam{background:var(--sea);color:var(--foam)}
+
+/* hero */
+.hero{height:230vh;position:relative;background:var(--abyss)}
+.hero__stage{position:sticky;top:0;height:100vh;overflow:hidden}
+#sea{position:absolute;inset:0;width:100%;height:100%}
+.hero__txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;color:var(--foam);padding:15vh var(--pad) 15vh;will-change:opacity,transform}
+.hero__top{display:flex;flex-direction:column;align-items:center;color:var(--sea)}
+.hero__bot{display:flex;flex-direction:column;align-items:center}
+.hero__txt .cap{opacity:.85}
+.hero h1{font-size:clamp(84px,17vw,300px);font-style:italic;margin:.06em 0 0;display:flex;text-shadow:0 10px 60px rgba(243,228,198,.5)}
+.hero h1 span{display:inline-block;animation:float 5s ease-in-out infinite;animation-delay:calc(var(--i) * -.35s);opacity:0;transition:opacity 1.6s var(--ease);transition-delay:calc(var(--i) * 80ms)}
+.on .hero h1 span{opacity:1}
+@keyframes float{50%{transform:translateY(-.06em)}}
+.hero p.sub{font-size:clamp(17px,1.5vw,21px);font-weight:300;max-width:520px;opacity:.9}
+.hero__ctas{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap;justify-content:center}
+.hero__meta{position:absolute;left:var(--pad);right:var(--pad);bottom:28px;display:flex;justify-content:space-between;color:var(--foam);gap:20px}
+.hero__meta .cap{font-size:11px;opacity:.8}
+.scrollhint{display:flex;align-items:center;gap:10px}
+.scrollhint i{width:1px;height:40px;background:rgba(234,241,238,.3);position:relative;overflow:hidden}
+.scrollhint i::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--foam);animation:drip 2s var(--tide) infinite}
+@keyframes drip{to{top:100%}}
+
+/* sections */
+.sec{padding:clamp(90px,12vw,170px) 0;position:relative}
+.js [data-r]{opacity:0;transform:translateY(40px);transition:opacity 1.2s var(--ease),transform 1.4s var(--ease);transition-delay:calc(var(--d,0)*110ms)}
+.js [data-r].in{opacity:1;transform:none}
+.h2{font-size:clamp(50px,7vw,116px)}
+.wavy{display:block;width:120px;height:14px;margin:22px 0;color:var(--coral)}
+.wavy path{stroke-dasharray:140;stroke-dashoffset:140;transition:stroke-dashoffset 1.6s var(--ease) .3s}
+.in .wavy path,.wavy.in path{stroke-dashoffset:0}
+
+/* intro + tides */
+.intro{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(40px,7vw,120px);align-items:start}
+.intro p.lead{font-family:var(--f-d);font-size:clamp(28px,2.8vw,44px);line-height:1.2;letter-spacing:-.01em}
+.intro p.lead em{color:var(--coral)}
+.intro p.body{margin-top:26px;max-width:520px;color:#3f5a61}
+.tides{background:var(--sea);color:var(--foam);border-radius:24px;padding:30px;position:relative;overflow:hidden}
+.tides__head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.tides h3{font-family:var(--f-d);font-style:italic;font-size:34px;line-height:1}
+.tides .state{font-size:14px;color:var(--gold);margin-top:6px}
+.tides svg{width:100%;margin:22px 0 14px;overflow:visible}
+.tides .curve{fill:none;stroke:var(--foam);stroke-width:1.5}
+.tides .fill{fill:url(#tg)}
+.tides .grid line{stroke:rgba(234,241,238,.1)}
+.tides .grid text{fill:rgba(234,241,238,.5);font-size:10px;font-family:var(--f-b);letter-spacing:.1em}
+.buoy{animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px) rotate(4deg)}}
+.tides__times{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;border-top:1px solid rgba(234,241,238,.15);padding-top:16px}
+.tides__times div{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--foam-d)}
+.tides__times b{display:block;font-family:var(--f-d);font-size:24px;font-weight:400;letter-spacing:0;color:var(--foam);text-transform:none;margin-top:2px}
+.tides small{display:block;margin-top:14px;font-size:12px;color:rgba(234,241,238,.5)}
+.catch{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.catch span{font-size:13px;padding:6px 12px;border-radius:99px;border:1px solid rgba(234,241,238,.25)}
+
+/* menu */
+.menu{background:var(--sea);color:var(--foam);overflow:hidden}
+.menu__head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:50px}
+.menu__head p{max-width:380px;color:var(--foam-d)}
+.mtabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid rgba(234,241,238,.15);position:relative;margin-bottom:40px}
+.mtabs button{padding:16px 22px;font-size:13px;text-transform:uppercase;letter-spacing:.22em;color:var(--foam-d);transition:color .3s}
+.mtabs button[aria-selected="true"]{color:var(--foam)}
+.mtabs .ink{position:absolute;bottom:-4px;height:8px;left:0;width:100px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8'%3E%3Cpath d='M0 4q4-4 8 0t8 0' fill='none' stroke='%23E8715A' stroke-width='1.6'/%3E%3C/svg%3E") repeat-x;background-size:16px 8px;transition:left .7s var(--tide),width .7s var(--tide);animation:wav2 .8s linear infinite}
+@keyframes wav2{to{background-position:16px 0}}
+.menu__grid{display:grid;grid-template-columns:1.4fr .6fr;gap:60px;align-items:start}
+.dishes{list-style:none}
+.dish{display:grid;grid-template-columns:1fr auto;gap:6px 30px;padding:22px 0;border-bottom:1px solid rgba(234,241,238,.12);animation:rise .8s var(--ease) backwards;animation-delay:calc(var(--i)*70ms);transition:padding .5s var(--ease)}
+.dish:hover{padding-left:14px}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}}
+.dish h4{font-family:var(--f-d);font-size:clamp(24px,2.2vw,32px);font-weight:400;line-height:1.1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dish p{color:var(--foam-d);font-size:15px;grid-column:1}
+.dish .pr{font-family:var(--f-d);font-size:24px;grid-row:1/3;grid-column:2;align-self:center}
+.diet{font-family:var(--f-b);font-size:10px;letter-spacing:.1em;border:1px solid rgba(234,241,238,.35);border-radius:99px;padding:2px 7px}
+.menu__art{position:sticky;top:120px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 40%,var(--deep),var(--abyss));display:grid;place-items:center;overflow:hidden}
+.menu__art::after{content:"";position:absolute;inset:14px;border-radius:50%;border:1px dashed rgba(234,241,238,.2);animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.menu__art svg{width:70%;color:var(--gold)}
+.menu__art svg path,.menu__art svg circle,.menu__art svg ellipse{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len,600);stroke-dashoffset:var(--len,600);animation:draw 2.4s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.menu__note{margin-top:30px;color:var(--foam-d);font-size:14px;display:flex;gap:30px;flex-wrap:wrap}
+
+/* boat to plate */
+.journey{height:300vh;position:relative;background:var(--sand-2)}
+.journey__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.journey h2{font-size:clamp(46px,6vw,96px);max-width:900px}
+.route{width:100%;height:auto;margin-top:30px;overflow:visible}
+.route .path{fill:none;stroke:var(--sea);stroke-width:2;stroke-dasharray:3 10;stroke-linecap:round}
+.route .done{fill:none;stroke:var(--coral);stroke-width:3;stroke-linecap:round}
+.route .stop circle{fill:var(--sand-2);stroke:var(--sea);stroke-width:2;transition:fill .5s}
+.route .stop.on circle{fill:var(--coral);stroke:var(--coral)}
+.route .stop text{font-family:var(--f-b);font-size:13px;letter-spacing:.2em;text-transform:uppercase;fill:var(--sea)}
+.route .stop .t{font-family:var(--f-d);font-size:30px;letter-spacing:0;text-transform:none;font-style:italic}
+.route .stop .d{font-size:14px;letter-spacing:0;text-transform:none;fill:#3f5a61}
+#boat{transition:none}
+
+/* book */
+.book{background:var(--foam)}
+.book__grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(40px,7vw,110px)}
+.book__side p{color:#3f5a61;margin-top:20px;max-width:420px}
+.book__side ul{list-style:none;margin-top:36px;display:grid;gap:14px}
+.book__side li{display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(14,42,54,.15)}
+.book__side li span:first-child{font-size:12px;text-transform:uppercase;letter-spacing:.2em}
+.form{background:var(--sand);border-radius:28px;padding:clamp(24px,3vw,44px);display:grid;gap:28px;position:relative;overflow:hidden}
+.form legend,.form .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.24em;font-weight:500;margin-bottom:12px;display:block}
+.form fieldset{border:0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.chip{flex:none;padding:10px 14px;border-radius:14px;border:1px solid rgba(14,42,54,.2);text-align:center;transition:all .3s;min-width:62px}
+.chip b{display:block;font-family:var(--f-d);font-size:24px;font-weight:400;line-height:1.1}
+.chip small{font-size:11px;text-transform:uppercase;letter-spacing:.14em}
+.chip[aria-pressed="true"]{background:var(--sea);color:var(--foam);border-color:var(--sea)}
+.chip:disabled{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+.stepper{display:flex;align-items:center;gap:20px}
+.stepper button{width:48px;height:48px;border-radius:50%;border:1px solid rgba(14,42,54,.25);font-size:22px;transition:background .3s,color .3s}
+.stepper button:hover{background:var(--sea);color:var(--foam)}
+.stepper output{font-family:var(--f-d);font-size:56px;line-height:1;min-width:60px;text-align:center;display:inline-block}
+.stepper span{color:#3f5a61}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.inp{width:100%;height:54px;border:0;border-bottom:1px solid rgba(14,42,54,.3);background:transparent;font:inherit;font-size:18px;color:var(--sea);outline:none;transition:border-color .3s}
+.inp:focus{border-color:var(--coral)}
+.form .btn{justify-self:start}
+.confirm{position:absolute;inset:0;background:var(--sea);color:var(--foam);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(24px,4vw,56px);clip-path:circle(0% at 50% 100%);transition:clip-path 1.2s var(--tide)}
+.confirm.on{clip-path:circle(150% at 50% 100%)}
+.confirm h3{font-family:var(--f-d);font-style:italic;font-size:clamp(44px,5vw,76px);line-height:1;margin:14px 0 18px}
+.confirm p{color:var(--foam-d);max-width:440px}
+
+/* words */
+.words{text-align:center}
+.quote{font-family:var(--f-d);font-size:clamp(32px,4vw,62px);line-height:1.12;max-width:1000px;margin:0 auto;min-height:3.4em;display:grid}
+.quote > p{grid-area:1/1;opacity:0;transform:translateY(20px);transition:opacity 1s var(--ease),transform 1.2s var(--ease)}
+.quote > p.on{opacity:1;transform:none}
+.quote em{color:var(--coral)}
+.who{margin-top:30px}
+.dots{display:flex;gap:10px;justify-content:center;margin-top:24px}
+.dots button{width:34px;height:3px;background:rgba(14,42,54,.2);border-radius:3px;transition:background .3s}
+.dots button[aria-current="true"]{background:var(--coral)}
+
+/* footer */
+.foot{background:var(--abyss);color:var(--foam);padding:90px 0 30px;position:relative;overflow:hidden}
+.foot__wave{position:absolute;left:0;right:0;top:-1px;height:60px;color:var(--sand)}
+.foot__grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px;position:relative}
+.foot__big{font-family:var(--f-d);font-style:italic;font-size:clamp(70px,11vw,180px);line-height:.9;letter-spacing:-.03em}
+.foot h4{font-size:12px;text-transform:uppercase;letter-spacing:.24em;font-weight:500;color:var(--foam-d);margin-bottom:14px}
+.foot p,.foot li{color:var(--foam-d);list-style:none}
+.foot__bar{margin-top:60px;padding-top:20px;border-top:1px solid rgba(234,241,238,.12);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px;color:rgba(234,241,238,.5)}
+
+@media (max-width:980px){
+  .top nav{display:none}
+  .top__in{grid-template-columns:auto 1fr}
+  .logo{grid-column:1}
+  .intro,.menu__grid,.book__grid,.foot__grid{grid-template-columns:1fr}
+  .menu__art{display:none}
+  .journey{height:auto}
+  .journey__pin{position:relative;height:auto;padding:100px 0}
+}
+@media (max-width:600px){
+  .row2{grid-template-columns:1fr}
+  .tides__times{grid-template-columns:1fr 1fr}
+  .hero__meta .scrollhint{display:none}
+  .top__right .btn{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition-duration:.01ms !important}}
+
+.lr-badge{position:fixed;left:16px;bottom:16px;z-index:95;display:inline-flex;align-items:center;gap:8px;padding:10px 14px 10px 12px;border-radius:99px;background:#0C0C0B;color:#EFEBE3;font:500 13px/1 system-ui,sans-serif;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);transition:transform .4s}
+.lr-badge:hover{transform:translateY(-3px)}
+.lr-badge i{width:8px;height:8px;border-radius:50%;background:#FF4F1A}
+.lr-wipe{position:fixed;inset:0;z-index:999;background:#FF4F1A;pointer-events:none;animation:lrOut .9s cubic-bezier(.65,0,.35,1) .05s forwards}
+@keyframes lrOut{to{transform:translateY(-101%)}}
+.shot .lr-badge,.shot .lr-wipe{display:none}
+</style>
+</head>
+<body>
+<div class="lr-wipe" aria-hidden="true"></div>
+<a class="lr-badge" href="../../index.html#work"><i></i>Concept by <b>LRWeb</b></a>
+
+<header class="top">
+  <div class="wrap top__in">
+    <nav aria-label="Main"><a href="#menu">Menu</a><a href="#story">Boat to plate</a><a href="#book">Reservations</a></nav>
+    <a href="#" class="logo" aria-label="Tidewater home"><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="13" r="6" fill="#E8715A"/><path d="M2 19q3.25-3 6.5 0t6.5 0 6.5 0 6.5 0M2 24q3.25-3 6.5 0t6.5 0 6.5 0 6.5 0" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>Tidewater</a>
+    <div class="top__right"><span class="cap" style="font-size:11px" id="openTxt">St Ives</span><a href="#book" class="btn btn--foam">Book a table</a></div>
+  </div>
+</header>
+
+<main>
+<section class="hero" aria-label="Tidewater, harbourside seafood in St Ives">
+  <div class="hero__stage">
+    <canvas id="sea" aria-hidden="true"></canvas>
+    <div class="hero__txt" id="heroTxt">
+      <div class="hero__top"><span class="cap">Harbourside seafood · St Ives, Cornwall</span>
+      <h1 class="serif" aria-label="Tidewater"><span style="--i:0">T</span><span style="--i:1">i</span><span style="--i:2">d</span><span style="--i:3">e</span><span style="--i:4">w</span><span style="--i:5">a</span><span style="--i:6">t</span><span style="--i:7">e</span><span style="--i:8">r</span></h1></div>
+      <div class="hero__bot"><p class="sub">Day-boat fish, Cornish crab and a table facing the harbour. The menu changes with the tide — and so does the view.</p>
+      <div class="hero__ctas"><a href="#book" class="btn btn--foam">Book a table</a><a href="#menu" class="btn btn--line">Tonight’s menu</a></div></div>
+    </div>
+    <div class="hero__meta"><span class="cap" id="skyTxt">Afternoon on the harbour</span><span class="scrollhint cap"><i></i>Scroll for sunset</span></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap intro">
+    <div>
+      <span class="cap" style="color:var(--coral)">Since 2011</span>
+      <svg class="wavy" viewBox="0 0 120 14" data-r aria-hidden="true"><path d="M2 7q7.5-7 15 0t15 0 15 0 15 0 15 0 15 0 15 0 15 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <p class="lead" data-r>We cook whatever the St Ives boats bring in: <em>simply, generously</em> and never more than a few hours after it’s landed.</p>
+      <p class="body" data-r style="--d:1">No freezers full of prawns, no fish flown in from halfway round the world. If the weather keeps the boats in, the menu gets smaller. We think that’s how a seafood restaurant should work.</p>
+    </div>
+    <aside class="tides" data-r style="--d:1" aria-label="Today's tides">
+      <div class="tides__head"><div><h3>Today’s tides</h3><p class="state" id="tideState">—</p></div><span class="cap" style="font-size:10px;color:var(--foam-d)" id="tideDate"></span></div>
+      <svg viewBox="0 0 400 130" id="tideSvg" aria-hidden="true"></svg>
+      <div class="tides__times" id="tideTimes"></div>
+      <div class="catch" aria-label="Landed this morning"><span>Mackerel</span><span>Hake</span><span>Cock crab</span><span>Lobster</span><span>Ray</span><span>Mussels</span></div>
+      <small>Indicative times for St Ives Bay — check official tide tables before heading out.</small>
+    </aside>
+  </div>
+</section>
+
+<section class="sec menu" id="menu">
+  <div class="wrap">
+    <div class="menu__head">
+      <div><span class="cap" style="color:var(--gold)">Tonight’s menu</span><h2 class="serif h2" data-r style="margin-top:14px">From the <em>boats</em><br>to the table.</h2></div>
+      <p data-r style="--d:1">Written at 3pm every day once we know what’s landed. Anything marked “market” depends on the catch — just ask.</p>
+    </div>
+    <div class="mtabs" role="tablist" id="mtabs"><button role="tab" aria-selected="true" data-k="small">Small plates</button><button role="tab" aria-selected="false" data-k="boats">From the boats</button><button role="tab" aria-selected="false" data-k="sides">Sides</button><button role="tab" aria-selected="false" data-k="pud">Puddings</button><span class="ink" aria-hidden="true"></span></div>
+    <div class="menu__grid">
+      <ul class="dishes" id="dishes" role="tabpanel"></ul>
+      <div class="menu__art" aria-hidden="true" id="art"></div>
+    </div>
+    <div class="menu__note"><span>(V) vegetarian · (GF) gluten free · (VE) vegan</span><span>Allergies? Tell us — we cook everything to order.</span></div>
+  </div>
+</section>
+
+<section class="journey" id="story">
+  <div class="journey__pin">
+    <div class="wrap">
+      <span class="cap" style="color:var(--coral)">Boat to plate</span>
+      <h2 class="serif" style="margin-top:14px">Caught at dawn. <em>On your plate by dinner.</em></h2>
+      <svg class="route" viewBox="0 0 1200 300" id="route" aria-label="Timeline from 4am boats leaving to 6pm service">
+        <path class="path" id="rpath" d="M40 160 C180 60 260 260 400 160 S620 60 760 160 S1000 260 1160 150"/>
+        <path class="done" id="rdone" d="M40 160 C180 60 260 260 400 160 S620 60 760 160 S1000 260 1160 150"/>
+        <g class="stop" data-at="0"><circle cx="40" cy="160" r="9"/><text x="40" y="215" text-anchor="start">04:00</text><text class="t" x="40" y="250" text-anchor="start">Boats out</text><text class="d" x="40" y="274" text-anchor="start">Handliners leave the harbour</text></g>
+        <g class="stop" data-at=".33"><circle cx="400" cy="160" r="9"/><text x="400" y="30" text-anchor="middle">10:00</text><text class="t" x="400" y="66" text-anchor="middle">Landed</text><text class="d" x="400" y="92" text-anchor="middle">We pick the best on the quay</text></g>
+        <g class="stop" data-at=".63"><circle cx="760" cy="160" r="9"/><text x="760" y="215" text-anchor="middle">14:00</text><text class="t" x="760" y="250" text-anchor="middle">Prepped</text><text class="d" x="760" y="274" text-anchor="middle">Filleted, dressed, menu written</text></g>
+        <g class="stop" data-at="1"><circle cx="1160" cy="150" r="9"/><text x="1160" y="24" text-anchor="end">18:00</text><text class="t" x="1160" y="60" text-anchor="end">On your plate</text><text class="d" x="1160" y="86" text-anchor="end">Service starts. Bon appétit.</text></g>
+        <g id="boat"><g transform="translate(-26 -40)"><path d="M4 30 L48 30 L42 40 L10 40 Z" fill="#0E2A36"/><path d="M26 30 V4 L44 26 Z" fill="#E8715A"/><path d="M24 30 V10 L10 26 Z" fill="#EAF1EE" stroke="#0E2A36" stroke-width="1.2"/></g></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="sec book" id="book">
+  <div class="wrap book__grid">
+    <div class="book__side">
+      <span class="cap" style="color:var(--coral)">Reservations</span>
+      <h2 class="serif h2" data-r style="margin-top:14px">Save us a <em>window</em> seat.</h2>
+      <p data-r style="--d:1">We keep a handful of tables for walk-ins every night, but the harbour view goes fast in summer. For groups over 8, give us a ring.</p>
+      <ul data-r style="--d:2"><li><span>Lunch</span><span>Wed – Sun, 12:00 – 14:30</span></li><li><span>Dinner</span><span>Tue – Sat, 17:30 – 21:30</span></li><li><span>Phone</span><span>01736 000 000</span></li><li><span>Find us</span><span>4 Smeaton’s Quay, St Ives TR26</span></li></ul>
+    </div>
+    <form class="form" id="bookForm" data-r style="--d:1" novalidate>
+      <fieldset><legend>Date</legend><div class="chips" id="dates"></div></fieldset>
+      <div><span class="lbl">Guests</span><div class="stepper"><button type="button" id="minus" aria-label="Fewer guests">−</button><output id="guests">2</output><button type="button" id="plus" aria-label="More guests">+</button><span id="gtxt">guests</span></div></div>
+      <fieldset><legend>Time</legend><div class="chips" id="times"></div></fieldset>
+      <fieldset><legend>Seating</legend><div class="chips" id="seats"><button type="button" class="chip" aria-pressed="true" data-s="Harbour window"><small>Harbour window</small></button><button type="button" class="chip" aria-pressed="false" data-s="Terrace"><small>Terrace</small></button><button type="button" class="chip" aria-pressed="false" data-s="Counter"><small>Kitchen counter</small></button></div></fieldset>
+      <div class="row2"><label><span class="lbl">Name</span><input class="inp" id="nm" autocomplete="name" required></label><label><span class="lbl">Email</span><input class="inp" id="em" type="email" autocomplete="email" required></label></div>
+      <button class="btn btn--sea" type="submit">Request table</button>
+      <div class="confirm" id="confirm" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
+<section class="sec words">
+  <div class="wrap">
+    <span class="cap" style="color:var(--coral)">Kind words</span>
+    <div class="quote" id="quote" style="margin-top:30px">
+      <p class="on">“The crab on toast alone is worth the <em>five-hour drive</em> from London. We booked again before we’d paid the bill.”</p>
+      <p>“Sat in the window as the sun went down over the harbour, eating hake that was <em>swimming that morning.</em> Perfect.”</p>
+      <p>“Unpretentious, generous and <em>properly Cornish.</em> The saffron bun pudding should be illegal.”</p>
+    </div>
+    <p class="cap who" id="who">Eleanor, TripAdvisor</p>
+    <div class="dots" id="qdots"><button aria-current="true" aria-label="Review 1"></button><button aria-label="Review 2"></button><button aria-label="Review 3"></button></div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <svg class="foot__wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path fill="currentColor" d="M0 0h1440v20c-120 30-240 30-360 0s-240-30-360 0-240 30-360 0S120-10 0 20z"/></svg>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div><div class="foot__big">Tidewater</div><p style="margin-top:14px">4 Smeaton’s Quay, St Ives, Cornwall TR26</p></div>
+      <div><h4>Opening</h4><ul><li>Lunch Wed–Sun</li><li>Dinner Tue–Sat</li><li>Closed Mondays</li></ul></div>
+      <div><h4>Say hello</h4><ul><li>hello@tidewaterstives.co.uk</li><li>01736 000 000</li><li>Instagram</li></ul></div>
+    </div>
+    <div class="foot__bar"><span>© 2026 Tidewater Kitchen Ltd</span><span>Fish from St Ives day boats · MSC-friendly sourcing</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, t) => a + (b - a) * t;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (/shot/.test(location.search)) document.documentElement.classList.add('shot');
+setTimeout(() => document.documentElement.classList.add('on'), 200);
+
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+$$('[data-r]').forEach(el => io.observe(el));
+
+/* ---------- generative seascape ---------- */
+const cv = $('#sea'), ctx = cv.getContext('2d');
+let W, H, dpr, stars = [], skyT = 0, skyTarget = 0;
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+// sky keyframes: afternoon → golden hour → sunset → night
+const K = [
+  { top: '#6FA8C7', hor: '#F3E4C6', sun: '#FFF4D6', sea: '#2E6E80', seaD: '#0E2A36', glow: .35 },
+  { top: '#557FA3', hor: '#F6C98A', sun: '#FFD79A', sea: '#2B5C70', seaD: '#0C2530', glow: .6 },
+  { top: '#2B3A67', hor: '#F28C5B', sun: '#FF8A4C', sea: '#27435A', seaD: '#0A1C27', glow: .9 },
+  { top: '#050E17', hor: '#1B2E44', sun: '#E8715A', sea: '#0F2231', seaD: '#040B12', glow: .1 }
+].map(k => ({ ...k, top: hex(k.top), hor: hex(k.hor), sun: hex(k.sun), sea: hex(k.sea), seaD: hex(k.seaD) }));
+function sky(t) {
+  const s = clamp(t, 0, 1) * (K.length - 1), i = Math.min(K.length - 2, Math.floor(s)), f = s - i, a = K[i], b = K[i + 1];
+  return { top: mix(a.top, b.top, f), hor: mix(a.hor, b.hor, f), sun: mix(a.sun, b.sun, f), sea: mix(a.sea, b.sea, f), seaD: mix(a.seaD, b.seaD, f), glow: lerp(a.glow, b.glow, f) };
+}
+const resize = () => {
+  dpr = Math.min(devicePixelRatio, 1.75); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  stars = Array.from({ length: 140 }, () => ({ x: Math.random() * W, y: Math.random() * H * .55, r: Math.random() * 1.3 + .2, tw: Math.random() * 6 }));
+};
+resize(); addEventListener('resize', resize);
+const gulls = Array.from({ length: 4 }, (_, i) => ({ x: Math.random(), y: .18 + Math.random() * .16, s: .00004 + Math.random() * .00003, ph: Math.random() * 6, sz: 7 + Math.random() * 6 }));
+function wave(x, t, L) { return Math.sin(x * L.f + t * L.s + L.p) * L.a + Math.sin(x * L.f * 2.3 - t * L.s * 1.3 + L.p) * L.a * .35; }
+function drawSea(t) {
+  const c = sky(skyT), hor = H * (W < 700 ? .48 : .6);
+  // sky
+  let g = ctx.createLinearGradient(0, 0, 0, hor);
+  g.addColorStop(0, rgb(c.top)); g.addColorStop(1, rgb(c.hor));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, hor + 2);
+  // stars
+  const night = clamp((skyT - .6) / .35, 0, 1);
+  if (night > 0) for (const s of stars) { if (s.y > hor - 10) continue; ctx.fillStyle = `rgba(255,255,240,${night * (.4 + .6 * Math.abs(Math.sin(t / 900 + s.tw)))})`; ctx.fillRect(s.x, s.y, s.r * 1.4, s.r * 1.4); }
+  // sun
+  const sx = W * .62, sy = lerp(hor * .38, hor + W * .02, clamp(skyT / .8, 0, 1)), sr = Math.max(40, W * .045);
+  g = ctx.createRadialGradient(sx, sy, sr * .5, sx, sy, sr * 7);
+  g.addColorStop(0, rgb(c.sun, .55 * c.glow)); g.addColorStop(1, rgb(c.sun, 0));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, hor);
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, hor); ctx.clip();
+  ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fillStyle = rgb(c.sun, clamp(1 - night * 1.2, 0, 1)); ctx.fill(); ctx.restore();
+  // moon at night
+  if (night > 0) { ctx.beginPath(); ctx.arc(W * .2, hor * .3, 26, 0, Math.PI * 2); ctx.fillStyle = `rgba(245,240,225,${night})`; ctx.fill(); ctx.beginPath(); ctx.arc(W * .2 + 10, hor * .3 - 6, 24, 0, Math.PI * 2); ctx.fillStyle = rgb(c.top, night); ctx.fill(); }
+  // headland + lighthouse
+  ctx.fillStyle = rgb(mix(c.seaD, [0, 0, 0], .3));
+  ctx.beginPath(); ctx.moveTo(W * .8, hor); ctx.bezierCurveTo(W * .84, hor - H * .05, W * .9, hor - H * .07, W, hor - H * .08); ctx.lineTo(W, hor); ctx.fill();
+  const lx = W * .9, ly = hor - H * .066;
+  ctx.fillRect(lx - 5, ly - 38, 10, 38); ctx.fillStyle = rgb(night > .2 ? [255, 230, 170] : [230, 110, 90]); ctx.fillRect(lx - 6, ly - 46, 12, 8);
+  if (night > .05) {
+    const ang = t / 1400, len = W * .7;
+    ctx.save(); ctx.translate(lx, ly - 42); ctx.rotate(Math.sin(ang) * .9 + Math.PI);
+    g = ctx.createLinearGradient(0, 0, len, 0); g.addColorStop(0, `rgba(255,236,190,${.35 * night})`); g.addColorStop(1, 'rgba(255,236,190,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(len, -len * .06); ctx.lineTo(len, len * .06); ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  // gulls
+  ctx.strokeStyle = night > .5 ? 'rgba(234,241,238,.4)' : 'rgba(14,42,54,.7)'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+  for (const b of gulls) {
+    b.x += b.s * 16; if (b.x > 1.1) b.x = -.1;
+    const x = b.x * W, y = b.y * H + Math.sin(t / 700 + b.ph) * 6, fl = Math.sin(t / 160 + b.ph) * .6;
+    ctx.beginPath(); ctx.moveTo(x - b.sz, y - b.sz * fl * .6); ctx.quadraticCurveTo(x - b.sz * .4, y - b.sz * .5, x, y); ctx.quadraticCurveTo(x + b.sz * .4, y - b.sz * .5, x + b.sz, y - b.sz * fl * .6); ctx.stroke();
+  }
+  // sea layers (far → near)
+  const layers = 6;
+  for (let i = 0; i < layers; i++) {
+    const k = i / (layers - 1);
+    const y0 = hor + Math.pow(k, 1.6) * (H - hor) * .92;
+    const L = { f: .004 + (1 - k) * .006, s: .0006 + k * .0008, a: 2 + k * 14, p: i * 1.7 };
+    const col = mix(c.sea, c.seaD, k);
+    ctx.beginPath(); ctx.moveTo(0, H);
+    for (let x = 0; x <= W + 10; x += 10) ctx.lineTo(x, y0 + wave(x, t, L));
+    ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = rgb(col); ctx.fill();
+    // foam highlight
+    ctx.beginPath();
+    for (let x = 0; x <= W + 10; x += 10) { const y = y0 + wave(x, t, L); x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.strokeStyle = rgb(mix(c.hor, [255, 255, 255], .3), .12 + k * .1); ctx.lineWidth = 1 + k; ctx.stroke();
+    // boat rides layer 2
+    if (i === 2) {
+      const bx = W * .3 + Math.sin(t / 9000) * W * .04, by = y0 + wave(bx, t, L), slope = (wave(bx + 6, t, L) - wave(bx - 6, t, L)) / 12;
+      ctx.save(); ctx.translate(bx, by); ctx.rotate(Math.atan(slope)); const s = Math.max(.7, W / 1400);
+      ctx.scale(s, s);
+      ctx.fillStyle = rgb(mix(c.seaD, [0, 0, 0], .2)); ctx.beginPath(); ctx.moveTo(-34, -6); ctx.lineTo(34, -6); ctx.lineTo(26, 6); ctx.lineTo(-26, 6); ctx.fill();
+      ctx.fillStyle = 'rgba(232,113,90,.95)'; ctx.fillRect(-12, -24, 20, 18);
+      ctx.fillStyle = rgb(mix(c.seaD, [0, 0, 0], .2)); ctx.fillRect(10, -40, 2.5, 34);
+      if (night > .3) { ctx.fillStyle = `rgba(255,220,150,${night})`; ctx.fillRect(-8, -20, 5, 5); ctx.fillRect(0, -20, 5, 5); }
+      ctx.restore();
+    }
+  }
+  // sun reflection
+  const refl = clamp(1 - night * 1.4, 0, 1) * c.glow;
+  if (refl > .02) for (let i = 0; i < 26; i++) {
+    const y = hor + 6 + i * i * .9, w = (sr * 1.6) * (1 - i / 30) * (.6 + .4 * Math.sin(t / 300 + i * 1.3));
+    ctx.fillStyle = rgb(c.sun, refl * .5 * (1 - i / 26)); ctx.fillRect(sx - w / 2 + Math.sin(t / 500 + i) * 6, y, w, 2);
+  }
+  // lighthouse glint on water at night
+}
+const heroSec = $('.hero'), heroTxt = $('#heroTxt'), skyTxt = $('#skyTxt');
+const skyNames = ['Afternoon on the harbour', 'Golden hour', 'Sunset over Porthminster', 'Night falls on St Ives'];
+let seaVisible = true;
+new IntersectionObserver(([e]) => seaVisible = e.isIntersecting).observe(cv);
+
+/* ---------- tides (indicative, semi-diurnal model) ---------- */
+function tides() {
+  const P = 12.4206 * 3600e3, ref = Date.UTC(2026, 0, 1, 3, 12);
+  const now = new Date(), mid = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+  const offset = mid - now; // local wall-clock shift
+  const dayStart = new Date(mid); dayStart.setHours(0, 0, 0, 0);
+  const start = dayStart.getTime() - offset;
+  const level = ts => Math.cos(2 * Math.PI * (ts - ref) / P);
+  const events = [];
+  let n = Math.floor((start - ref) / (P / 2)) - 1;
+  for (; ; n++) { const ts = ref + n * P / 2; if (ts > start + 864e5) break; if (ts >= start) events.push({ ts, high: n % 2 === 0 }); }
+  const fmt = ts => new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+  $('#tideTimes').innerHTML = events.slice(0, 4).map(e => `<div>${e.high ? 'High' : 'Low'}<b>${fmt(e.ts)}</b></div>`).join('');
+  $('#tideDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Europe/London' });
+  const cur = now.getTime(), rising = level(cur + 6e4) > level(cur);
+  const nextE = events.find(e => e.ts > cur && e.high === rising);
+  $('#tideState').textContent = `Tide ${rising ? 'rising' : 'falling'}${nextE ? ` — ${rising ? 'high' : 'low'} water at ${fmt(nextE.ts)}` : ''}`;
+  // draw curve
+  const pts = []; for (let i = 0; i <= 96; i++) { const ts = start + i * 15 * 6e4; pts.push([i / 96 * 400, 70 - level(ts) * 42]); }
+  const d = 'M' + pts.map(p => p.map(v => v.toFixed(1)).join(' ')).join(' L');
+  const nx = clamp((cur - start) / 864e5, 0, 1) * 400, ny = 70 - level(cur) * 42;
+  $('#tideSvg').innerHTML = `<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8715A" stop-opacity=".35"/><stop offset="1" stop-color="#E8715A" stop-opacity="0"/></linearGradient></defs>
+    <g class="grid">${[0, 6, 12, 18, 24].map(h => `<line x1="${h / 24 * 400}" y1="16" x2="${h / 24 * 400}" y2="118"/><text x="${h / 24 * 400}" y="130" text-anchor="${h === 0 ? 'start' : h === 24 ? 'end' : 'middle'}">${String(h % 24).padStart(2, '0')}:00</text>`).join('')}</g>
+    <path class="fill" d="${d} L400 118 L0 118 Z"/><path class="curve" d="${d}"/>
+    <line x1="${nx}" y1="10" x2="${nx}" y2="118" stroke="#F2B366" stroke-dasharray="3 4"/>
+    <g transform="translate(${nx} ${ny})"><g class="buoy"><circle r="7" fill="#E8715A"/><rect x="-1.5" y="-18" width="3" height="12" fill="#EAF1EE"/><circle cy="-20" r="3" fill="#F2B366"/></g></g>`;
+}
+tides(); setInterval(tides, 60000);
+
+/* ---------- open status in header ---------- */
+(() => {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', weekday: 'short', hour12: false }).formatToParts(new Date()).map(x => [x.type, x.value]));
+  const m = (+p.hour % 24) * 60 + +p.minute, d = p.weekday;
+  const lunch = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun'].includes(d) && m >= 720 && m < 870, dinner = ['Tue', 'Wed', 'Thu', 'Fri', 'Sat'].includes(d) && m >= 1050 && m < 1290;
+  $('#openTxt').textContent = lunch ? 'Open for lunch' : dinner ? 'Open for dinner' : 'St Ives, Cornwall';
+})();
+
+/* ---------- menu ---------- */
+const MENU = {
+  small: [['Porthleven oysters', 'Shallot vinegar, lemon, brown bread', '3 for £10.50', 'GF'], ['Cured mackerel', 'Pickled beetroot, horseradish cream, dill', '£9', 'GF'], ['Crab on toast', 'Brown crab butter, white meat, pickled cucumber', '£12', ''], ['Salt & pepper squid', 'Lime and seaweed aioli', '£10', ''], ['Smoked haddock croquettes', 'Curried mayonnaise', '£8.50', '']],
+  boats: [['Whole grilled plaice', 'Brown shrimp and caper butter', '£24', 'GF'], ['Hake, mussels & fennel', 'Saffron broth, rouille, grilled bread', '£26', ''], ['Half Cornish lobster', 'Garlic butter, chips, leaves', 'Market', 'GF'], ['Day-boat fish of the day', 'Ask your server what came in this morning', 'Market', ''], ['Fish & chips', 'Beer batter, mushy peas, proper tartare', '£19', '']],
+  sides: [['Chips', 'Cooked in beef dripping, sea salt', '£5', 'GF'], ['Samphire', 'Butter and lemon', '£6', 'V'], ['Charred hispi cabbage', 'Anchovy crumb', '£6', ''], ['New potatoes', 'Seaweed butter, chives', '£5', 'V']],
+  pud: [['Saffron bun pudding', 'Bread &amp; butter pudding, clotted cream', '£9', 'V'], ['Burnt honey tart', 'Crème fraîche, bee pollen', '£9', 'V'], ['Clotted cream ice cream', 'Two scoops, honeycomb', '£6', 'GF'], ['Cornish cheeses', 'Cornish Yarg, Kern, Cornish Blue, crackers', '£12', 'V']]
+};
+const ART = {
+  small: '<svg viewBox="0 0 200 200"><ellipse cx="100" cy="110" rx="70" ry="46"/><path d="M36 104c20-10 40 10 64 0s44 10 64 0"/><path d="M50 128c16-6 34 8 50 0s34 8 50 0"/><path d="M60 80c10-12 30-18 40-18s30 6 40 18"/><circle cx="100" cy="108" r="10"/><path d="M160 60l12-12M164 74l18-4M150 50l4-16"/></svg>',
+  boats: '<svg viewBox="0 0 200 200"><path d="M24 100c30-36 90-44 130-10 10-8 22-18 36-20-6 14-6 46 0 60-14-2-26-12-36-20-40 34-100 26-130-10z"/><circle cx="46" cy="96" r="4"/><path d="M60 80c10 8 10 24 0 34"/><path d="M84 76c6 8 8 16 4 22M104 74c6 8 8 16 4 22M124 78c6 8 8 16 4 22M94 110c4 6 4 10 2 14M114 112c4 6 4 10 2 14"/><path d="M100 70c-6-12 0-22 12-26 0 10 6 18 14 22"/></svg>',
+  sides: '<svg viewBox="0 0 200 200"><path d="M100 180V60"/><path d="M100 150c-20-10-34-30-36-56M100 120c22-8 34-26 38-50M100 96c-16-8-24-24-24-42M100 76c12-6 18-18 18-34"/><circle cx="64" cy="92" r="4"/><circle cx="138" cy="68" r="4"/><circle cx="76" cy="52" r="4"/><circle cx="118" cy="40" r="4"/><path d="M60 180h80"/></svg>',
+  pud: '<svg viewBox="0 0 200 200"><path d="M70 100l30 84 30-84"/><path d="M76 118l48 0M84 140l32 0M92 162l16 0"/><path d="M64 100c-10-30 10-54 36-54s46 24 36 54z"/><path d="M80 58c6-16 22-24 36-18"/><circle cx="100" cy="36" r="8"/><path d="M100 28c2-8 8-12 14-12"/></svg>'
+};
+const tabs = $$('#mtabs button'), inkBar = $('#mtabs .ink');
+function showMenu(k) {
+  tabs.forEach(b => b.setAttribute('aria-selected', b.dataset.k === k));
+  const b = tabs.find(x => x.dataset.k === k); inkBar.style.left = b.offsetLeft + 'px'; inkBar.style.width = b.offsetWidth + 'px';
+  $('#dishes').innerHTML = MENU[k].map(([n, d, p, diet], i) => `<li class="dish" style="--i:${i}"><h4>${n}${diet ? `<span class="diet">${diet}</span>` : ''}</h4><p>${d}</p><span class="pr">${p}</span></li>`).join('');
+  const art = $('#art'); art.innerHTML = ART[k];
+  $$('path,circle,ellipse', art).forEach(el => { let len = 600; try { len = Math.ceil(el.getTotalLength()); } catch (e) {} el.style.setProperty('--len', len); });
+}
+tabs.forEach(b => b.addEventListener('click', () => showMenu(b.dataset.k)));
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => showMenu($('#mtabs [aria-selected="true"]').dataset.k));
+showMenu('small');
+
+/* ---------- boat to plate ---------- */
+const journey = $('.journey'), rpath = $('#rpath'), rdone = $('#rdone'), boat = $('#boat'), stops = $$('.route .stop');
+const RL = rpath.getTotalLength(); rdone.style.strokeDasharray = RL; rdone.style.strokeDashoffset = RL;
+function journeyFrame() {
+  const r = journey.getBoundingClientRect();
+  const p = innerWidth <= 980 ? 1 : clamp(-r.top / (r.height - innerHeight) * 1.1 - .05, 0, 1);
+  const pt = rpath.getPointAtLength(p * RL), pt2 = rpath.getPointAtLength(Math.min(RL, p * RL + 2));
+  const ang = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
+  boat.setAttribute('transform', `translate(${pt.x} ${pt.y}) rotate(${clamp(ang, -25, 25) * .6})`);
+  rdone.style.strokeDashoffset = RL * (1 - p);
+  stops.forEach(s => s.classList.toggle('on', p >= +s.dataset.at - .02));
+}
+
+/* ---------- booking ---------- */
+const dates = $('#dates'), times = $('#times');
+const today = new Date();
+dates.innerHTML = Array.from({ length: 14 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() + i); const closed = d.getDay() === 1; return `<button type="button" class="chip" aria-pressed="${i === (today.getDay() === 1 ? 1 : 0)}" data-i="${i}" ${closed ? 'disabled title="Closed Mondays"' : ''}><small>${i === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' })}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString('en-GB', { month: 'short' })}</small></button>`; }).join('');
+times.innerHTML = ['17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'].map((t, i) => `<button type="button" class="chip" aria-pressed="${t === '19:00'}" data-t="${t}" ${[2, 4].includes(i) ? 'disabled' : ''}><b style="font-size:20px">${t}</b></button>`).join('');
+const pick = (wrap) => wrap.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b || b.disabled) return; $$('.chip', wrap).forEach(x => x.setAttribute('aria-pressed', x === b)); });
+[dates, times, $('#seats')].forEach(pick);
+let guests = 2; const gOut = $('#guests');
+const setG = v => { guests = clamp(v, 1, 8); gOut.textContent = guests; $('#gtxt').textContent = guests === 1 ? 'guest' : guests === 8 ? 'guests (max online)' : 'guests'; gOut.animate([{ transform: 'translateY(-10px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 400, easing: 'cubic-bezier(.22,1,.36,1)' }); };
+$('#minus').addEventListener('click', () => setG(guests - 1)); $('#plus').addEventListener('click', () => setG(guests + 1));
+$('#bookForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const nm = $('#nm'), em = $('#em');
+  if (!nm.value.trim()) return nm.focus(); if (!/^\S+@\S+\.\S+$/.test(em.value)) return em.focus();
+  const di = +$('#dates [aria-pressed="true"]').dataset.i, d = new Date(today); d.setDate(d.getDate() + di);
+  const t = $('#times [aria-pressed="true"]').dataset.t, s = $('#seats [aria-pressed="true"]').dataset.s;
+  const c = $('#confirm');
+  c.innerHTML = `<span class="cap" style="color:var(--gold)">Table requested</span><h3>See you ${di === 0 ? 'tonight' : d.toLocaleDateString('en-GB', { weekday: 'long' })}, ${nm.value.trim().split(' ')[0]}.</h3><p>${guests} ${guests === 1 ? 'guest' : 'guests'} · ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })} at ${t} · ${s}. We’ll email ${em.value} to confirm within the hour. (Demo — no table has actually been booked.)</p><button type="button" class="btn btn--foam" style="margin-top:26px" id="again">Make another booking</button>`;
+  c.classList.add('on');
+  $('#again').addEventListener('click', () => c.classList.remove('on'));
+});
+
+/* ---------- reviews ---------- */
+const qs = $$('#quote p'), qd = $$('#qdots button'), who = ['Eleanor, TripAdvisor', 'Marcus, Google review', 'Jen, OpenTable'];
+let qi = 0, qt;
+const showQ = i => { qi = i % qs.length; qs.forEach((p, j) => p.classList.toggle('on', j === qi)); qd.forEach((b, j) => b.setAttribute('aria-current', j === qi)); $('#who').textContent = who[qi]; clearTimeout(qt); if (!reduce) qt = setTimeout(() => showQ(qi + 1), 6500); };
+qd.forEach((b, i) => b.addEventListener('click', () => showQ(i))); showQ(0);
+
+/* ---------- header + loop ---------- */
+const top = $('.top'); let ly = 0;
+function frame(t) {
+  const y = scrollY;
+  const hr = heroSec.getBoundingClientRect();
+  const hp = clamp(-hr.top / (hr.height - innerHeight), 0, 1);
+  skyTarget = hp; skyT = lerp(skyT, skyTarget, .08);
+  heroTxt.style.opacity = clamp(1 - hp * 1.6, 0, 1); heroTxt.style.transform = `translateY(${-hp * 80}px)`;
+  skyTxt.textContent = skyNames[Math.min(3, Math.floor(skyT * 3.999))];
+  if (seaVisible) drawSea(reduce ? 0 : t);
+  top.classList.toggle('solid', hr.bottom < 90);
+  top.classList.toggle('dusk', skyT > .45);
+  if (Math.abs(y - ly) > 4) { top.classList.toggle('hide', y > ly && y > innerHeight * 2.4); ly = y; }
+  journeyFrame();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

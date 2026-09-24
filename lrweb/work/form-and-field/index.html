@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form &amp; Field — Architects, Edinburgh</title>
+<meta name="description" content="Form &amp; Field is an Edinburgh architecture practice designing homes, workplaces and public buildings that sit quietly in their place.">
+<meta name="theme-color" content="#E9E7E1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23E9E7E1'/%3E%3Crect x='12' y='12' width='26' height='40' fill='none' stroke='%23111' stroke-width='3'/%3E%3Crect x='30' y='26' width='22' height='26' fill='%231F3FD1'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@200..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --paper:#E9E7E1; --paper-2:#DEDBD3; --paper-3:#CFCBC1; --ink:#111; --ink-2:#3A3936; --mute:#7C7970; --blue:#1F3FD1; --blue-l:#DCE1F7;
+  --hair:rgba(17,17,17,.12); --grid:rgba(17,17,17,.055);
+  --f:"Geist",system-ui,-apple-system,sans-serif; --m:"Geist Mono",ui-monospace,monospace;
+  --pad:clamp(16px,3.6vw,52px); --ease:cubic-bezier(.19,1,.22,1); --io:cubic-bezier(.77,0,.18,1);
+  --col:calc((100vw - var(--pad) * 2 - 11 * 20px) / 12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1px solid var(--blue);outline-offset:4px}
+::selection{background:var(--blue);color:var(--paper)}
+.m{font-family:var(--m);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.wrap{padding:0 var(--pad)}
+.hair{height:1px;background:var(--hair)}
+.has-cross,.has-cross a,.has-cross button{cursor:none}
+
+/* blueprint paper grid */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:40px 40px;background-position:-1px -1px}
+
+/* column overlay (press G) */
+.cols{position:fixed;inset:0;z-index:70;pointer-events:none;padding:0 var(--pad);display:grid;grid-template-columns:repeat(12,1fr);gap:20px;opacity:0;transition:opacity .4s}
+.cols i{background:rgba(31,63,209,.07);border-inline:1px solid rgba(31,63,209,.25)}
+.show-cols .cols{opacity:1}
+
+/* crosshair cursor */
+.xh{position:fixed;inset:0;z-index:80;pointer-events:none;display:none}
+.has-cross .xh{display:block}
+.xh__v,.xh__h{position:absolute;background:rgba(31,63,209,.45)}
+.xh__v{top:0;bottom:0;width:1px;left:0}
+.xh__h{left:0;right:0;height:1px;top:0}
+.xh__box{position:absolute;left:0;top:0;width:16px;height:16px;margin:-8px 0 0 -8px;border:1px solid var(--blue);transition:width .4s var(--ease),height .4s var(--ease),margin .4s var(--ease),background .3s}
+.xh__lbl{position:absolute;left:0;top:0;font-family:var(--m);font-size:10px;color:var(--blue);white-space:nowrap;transform:translate(14px,14px)}
+.xh.on-link .xh__box{width:44px;height:44px;margin:-22px 0 0 -22px;background:rgba(31,63,209,.08)}
+
+/* header */
+.top{position:fixed;inset:0 0 auto;z-index:60;background:linear-gradient(var(--paper) 60%,rgba(233,231,225,0));transition:transform .7s var(--ease)}
+.top.hide{transform:translateY(-100%)}
+.top__in{height:74px;display:grid;grid-template-columns:repeat(12,1fr);gap:20px;align-items:center;padding:0 var(--pad)}
+.logo{grid-column:1/4;display:flex;align-items:center;gap:12px;font-weight:500;font-size:17px;letter-spacing:-.01em}
+.logo svg{width:26px;height:26px}
+.logo svg rect:last-child{transition:transform .8s var(--io);transform-origin:center}
+.logo:hover svg rect:last-child{transform:translate(-8px,-8px)}
+.top nav{grid-column:5/10;display:flex;gap:28px}
+.top nav a{font-size:14px;position:relative;color:var(--ink-2)}
+.top nav a sup{font-family:var(--m);font-size:9px;color:var(--mute);margin-left:3px}
+.top nav a::after{content:"";position:absolute;left:0;bottom:-3px;width:100%;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .6s var(--ease)}
+.top nav a:hover{color:var(--ink)}
+.top nav a:hover::after{transform:scaleX(1);transform-origin:left}
+.top__r{grid-column:10/13;justify-self:end;display:flex;gap:16px;align-items:center}
+.gbtn{font-family:var(--m);font-size:11px;text-transform:uppercase;border:1px solid var(--hair);padding:7px 10px;transition:all .3s}
+.gbtn:hover,.show-cols .gbtn{border-color:var(--blue);color:var(--blue)}
+.cta{font-size:14px;display:inline-flex;align-items:center;gap:10px;border-bottom:1px solid var(--ink);padding-bottom:2px}
+.cta svg{width:14px;height:14px;transition:transform .6s var(--ease)}
+.cta:hover svg{transform:translate(3px,-3px)}
+
+/* hero */
+.hero{min-height:100svh;padding:110px var(--pad) 30px;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:auto 1fr auto;gap:20px;position:relative}
+.hero__meta{grid-column:1/-1;display:flex;justify-content:space-between;color:var(--mute);border-top:1px solid var(--ink);padding-top:10px}
+.hero__title{grid-column:1/6;align-self:end;padding-bottom:40px}
+.hero h1{font-size:clamp(56px,8.8vw,160px);font-weight:300;letter-spacing:-.055em;line-height:.9}
+.hero h1 .ln{display:block;overflow:hidden}
+.hero h1 .ln > span{display:block;transform:translateY(102%);transition:transform 1.4s var(--io)}
+.hero h1 .ln:nth-child(2) > span{transition-delay:.1s}
+.go .hero h1 .ln > span{transform:none}
+.hero h1 b{font-weight:600;color:var(--blue)}
+.hero__lede{margin-top:34px;max-width:400px;color:var(--ink-2);font-size:18px;line-height:1.5;opacity:0;transition:opacity 1.2s .8s}
+.go .hero__lede{opacity:1}
+.hero__draw{grid-column:6/13;align-self:end;position:relative}
+.hero__draw svg{width:100%;height:auto;overflow:visible}
+.hero__foot{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;border-top:1px solid var(--hair);padding-top:14px}
+.hero__foot div{color:var(--mute)}
+.hero__foot b{display:block;font-family:var(--f);font-weight:400;font-size:15px;color:var(--ink);text-transform:none;letter-spacing:0;margin-top:4px}
+
+/* line drawing primitives */
+.ln-d{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linecap:square;vector-effect:non-scaling-stroke}
+.ln-t{fill:none;stroke:var(--ink);stroke-width:.6;vector-effect:non-scaling-stroke;opacity:.6}
+.ln-b{fill:none;stroke:var(--blue);stroke-width:1;vector-effect:non-scaling-stroke}
+.dim text,.lbl{font-family:var(--m);font-size:9px;fill:var(--blue);letter-spacing:.06em}
+.draw :is(.ln-d,.ln-t,.ln-b){stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--io);transition-delay:calc(var(--i,0) * 18ms)}
+.draw.in :is(.ln-d,.ln-t,.ln-b){stroke-dashoffset:0}
+.draw .fill{opacity:0;transition:opacity 1.2s var(--ease);transition-delay:1.4s}
+.draw.in .fill{opacity:1}
+.draw text{opacity:0;transition:opacity .8s 1.2s}
+.draw.in text{opacity:1}
+
+/* intro */
+.sec{padding:clamp(100px,13vw,190px) var(--pad);position:relative}
+.grid12{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+.sec__no{grid-column:1/3;color:var(--mute)}
+.statement{grid-column:3/12;font-size:clamp(30px,3.9vw,64px);font-weight:300;letter-spacing:-.04em;line-height:1.08}
+.statement .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.statement .w > span{display:inline-block;transform:translateY(105%);transition:transform 1.2s var(--io);transition-delay:calc(var(--i) * 22ms)}
+.statement.in .w > span{transform:none}
+.statement em{font-style:normal;color:var(--blue)}
+.js [data-r]{opacity:0;transform:translateY(30px);transition:opacity 1.2s var(--ease),transform 1.4s var(--ease);transition-delay:calc(var(--d,0)*100ms)}
+.js [data-r].in{opacity:1;transform:none}
+
+/* projects — horizontal */
+.work{height:520vh;position:relative}
+.work__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:28px}
+.work__head{display:flex;justify-content:space-between;align-items:flex-end;padding:0 var(--pad)}
+.work__head h2{font-size:clamp(40px,4.8vw,84px);font-weight:300;letter-spacing:-.05em;line-height:.95}
+.work__head .m{color:var(--mute)}
+.work__count{font-family:var(--m);font-size:13px;display:flex;align-items:center;gap:14px}
+.work__count i{width:120px;height:1px;background:var(--hair);position:relative}
+.work__count i b{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(0)}
+.track{display:flex;gap:20px;padding:0 var(--pad);will-change:transform}
+.proj{flex:none;width:min(64vw,980px);display:grid;grid-template-columns:1fr 250px;gap:20px;border-top:1px solid var(--ink);padding-top:14px}
+.proj__img{grid-column:1;aspect-ratio:16/10;background:var(--paper-2);position:relative;overflow:hidden;border:1px solid var(--hair)}
+.proj__img svg{position:absolute;inset:0;width:100%;height:100%}
+.proj__img .tint{position:absolute;inset:0;background:var(--blue);mix-blend-mode:multiply;clip-path:inset(100% 0 0 0);transition:clip-path 1s var(--io);opacity:.9}
+.proj:hover .proj__img .tint{clip-path:inset(0 0 0 0)}
+.proj:hover .ln-d,.proj:hover .ln-t{stroke:var(--paper)}
+.proj:hover .fill{fill:rgba(233,231,225,.12)}
+.proj__img .ln-d,.proj__img .ln-t{transition:stroke .6s .2s}
+.proj__img svg:last-of-type{z-index:1}
+.proj__info{display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.proj__info h3{font-size:30px;font-weight:400;letter-spacing:-.04em;line-height:1}
+.proj__info p{color:var(--ink-2);font-size:15px}
+.proj__info dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;border-top:1px solid var(--hair);padding-top:12px}
+.proj__info dt{font-family:var(--m);font-size:10px;text-transform:uppercase;color:var(--mute);padding-top:2px}
+.proj__no{font-family:var(--m);font-size:11px;color:var(--blue)}
+
+/* assembly */
+.build{height:360vh;position:relative;background:var(--ink);color:var(--paper)}
+.build::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(233,231,225,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(233,231,225,.05) 1px,transparent 1px);background-size:40px 40px}
+.build__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;grid-template-columns:repeat(12,1fr);gap:20px;padding:0 var(--pad);align-items:center}
+.build__txt{grid-column:1/5;position:relative;z-index:1}
+.build__txt .m{color:#8d8a82}
+.build__txt h2{font-size:clamp(40px,4.6vw,80px);font-weight:300;letter-spacing:-.05em;line-height:.95;margin:16px 0 40px}
+.phases{list-style:none;border-top:1px solid rgba(233,231,225,.2)}
+.phases li{display:grid;grid-template-columns:40px 1fr;gap:10px;padding:16px 0;border-bottom:1px solid rgba(233,231,225,.2);color:#6f6c65;transition:color .5s}
+.phases li.on{color:var(--paper)}
+.phases li span{font-family:var(--m);font-size:11px;padding-top:4px}
+.phases li.on span{color:#7E95FF}
+.phases li b{font-weight:500;font-size:20px;letter-spacing:-.02em;display:block}
+.phases li p{font-size:14px;max-height:0;overflow:hidden;transition:max-height .8s var(--ease),opacity .6s;opacity:0}
+.phases li.on p{max-height:80px;opacity:.75}
+.build__stage{grid-column:5/13;height:86vh;display:grid;place-items:center}
+.build__stage svg{width:100%;height:100%;overflow:visible}
+.iso-top{fill:#F3F1EC}.iso-l{fill:#C9C5BB}.iso-r{fill:#A9A59A}
+.iso-edge{fill:none;stroke:#111;stroke-width:1;stroke-linejoin:round}
+.iso-glass-l{fill:#8FA2F0}.iso-glass-r{fill:#5D75E2}
+.iso-top-grass{fill:#8B9A6B}.iso-l-grass{fill:#6D7C50}.iso-r-grass{fill:#5A6841}
+.blk{transition:none}
+.sun-ray{stroke:#F2C94C;stroke-width:1.5;stroke-dasharray:4 6;opacity:0}
+
+/* approach */
+.principles{grid-column:3/13;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:70px}
+.pr{border-top:1px solid var(--ink);padding-top:16px;display:grid;gap:14px;align-content:start}
+.pr svg{width:64px;height:64px}
+.pr h3{font-size:24px;font-weight:400;letter-spacing:-.03em}
+.pr p{color:var(--ink-2);font-size:15px}
+.nums{grid-column:3/13;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:100px}
+.nums div{border-left:1px solid var(--hair);padding-left:16px}
+.nums b{display:block;font-size:clamp(48px,5vw,84px);font-weight:200;letter-spacing:-.06em;line-height:1;font-variant-numeric:tabular-nums}
+.nums span{color:var(--mute)}
+
+/* studio */
+.team{grid-column:3/13;list-style:none;margin-top:60px;border-top:1px solid var(--ink)}
+.team li{display:grid;grid-template-columns:2fr 2fr 1fr 60px;gap:20px;align-items:center;padding:18px 0;border-bottom:1px solid var(--hair);position:relative;transition:padding .6s var(--ease)}
+.team li:hover{padding-left:20px}
+.team li::before{content:"";position:absolute;left:0;top:50%;width:8px;height:8px;background:var(--blue);transform:translateY(-50%) scale(0);transition:transform .5s var(--ease)}
+.team li:hover::before{transform:translateY(-50%) scale(1)}
+.team b{font-weight:400;font-size:clamp(20px,2vw,28px);letter-spacing:-.03em}
+.team span{color:var(--ink-2)}
+.team .m{color:var(--mute)}
+.team i{width:44px;height:44px;border:1px solid var(--ink);display:grid;place-items:center;font-family:var(--m);font-style:normal;font-size:12px;justify-self:end;transition:background .4s,color .4s}
+.team li:hover i{background:var(--ink);color:var(--paper)}
+
+/* contact */
+.contact{border-top:1px solid var(--ink);padding-top:30px}
+.contact__big{grid-column:1/-1;font-size:clamp(46px,9vw,170px);font-weight:200;letter-spacing:-.065em;line-height:.9;margin:30px 0 60px;display:inline-block}
+.contact__big a{display:inline-flex;align-items:baseline;gap:.2em;position:relative}
+.contact__big a::after{content:"";position:absolute;left:0;right:0;bottom:.02em;height:2px;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform 1s var(--io)}
+.contact__big a:hover::after{transform:scaleX(1)}
+.contact__big svg{width:.6em;height:.6em;transition:transform .8s var(--io)}
+.contact__big a:hover svg{transform:rotate(45deg);color:var(--blue)}
+.contact__cols{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.contact__cols div{color:var(--ink-2);font-size:15px}
+.contact__cols .m{display:block;color:var(--mute);margin-bottom:8px}
+.foot{padding:30px var(--pad);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--mute);border-top:1px solid var(--hair);margin-top:100px}
+
+@media (max-width:1000px){
+  .top__in{display:flex;justify-content:space-between}
+  .logo{white-space:nowrap}
+  .cta{white-space:nowrap}
+  .hero__meta{flex-wrap:wrap;gap:4px 16px}
+  .top nav{display:none}
+  .top__r .gbtn{display:none}
+  .hero__title,.hero__draw{grid-column:1/-1}
+  .hero__title{padding-bottom:0}
+  .hero__foot{grid-template-columns:1fr 1fr}
+  .statement,.principles,.nums,.team{grid-column:1/-1}
+  .sec__no{grid-column:1/-1}
+  .principles{grid-template-columns:1fr}
+  .nums{grid-template-columns:1fr 1fr}
+  .work{height:auto}
+  .work__pin{position:relative;height:auto;padding:100px 0}
+  .track{flex-direction:column;transform:none !important}
+  .proj{width:100%;grid-template-columns:1fr}
+  .build{height:auto}
+  .build__pin{position:relative;height:auto;grid-template-columns:1fr;padding:100px var(--pad)}
+  .build__txt,.build__stage{grid-column:1}
+  .build__stage{height:60vh}
+  .phases li p{max-height:none;opacity:.75}
+  .team li{grid-template-columns:1fr auto}
+  .team li span:not(.m),.team .m{display:none}
+  .contact__cols{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition-duration:.01ms !important;transition-delay:0s !important}}
+
+.lr-badge{position:fixed;left:16px;bottom:16px;z-index:95;display:inline-flex;align-items:center;gap:8px;padding:10px 14px 10px 12px;border-radius:99px;background:#0C0C0B;color:#EFEBE3;font:500 13px/1 system-ui,sans-serif;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);transition:transform .4s}
+.lr-badge:hover{transform:translateY(-3px)}
+.lr-badge i{width:8px;height:8px;border-radius:50%;background:#FF4F1A}
+.lr-wipe{position:fixed;inset:0;z-index:999;background:#FF4F1A;pointer-events:none;animation:lrOut .9s cubic-bezier(.65,0,.35,1) .05s forwards}
+@keyframes lrOut{to{transform:translateY(-101%)}}
+.shot .lr-badge,.shot .lr-wipe{display:none}
+</style>
+</head>
+<body>
+<div class="lr-wipe" aria-hidden="true"></div>
+<a class="lr-badge" href="../../index.html#work"><i></i>Concept by <b>LRWeb</b></a>
+<div class="cols" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="xh" aria-hidden="true"><div class="xh__v"></div><div class="xh__h"></div><div class="xh__box"></div><div class="xh__lbl"></div></div>
+
+<header class="top">
+  <div class="top__in">
+    <a href="#" class="logo" aria-label="Form &amp; Field home"><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="14" height="24" fill="none" stroke="#111" stroke-width="1.5"/><rect x="10" y="11" width="15" height="14" fill="#1F3FD1"/></svg>Form &amp; Field</a>
+    <nav aria-label="Main"><a href="#work">Projects<sup>04</sup></a><a href="#approach">Approach</a><a href="#studio">Studio</a><a href="#contact">Contact</a></nav>
+    <div class="top__r"><button class="gbtn" id="gbtn" aria-pressed="false" title="Toggle layout grid (G)">Grid [G]</button><a href="#contact" class="cta">Start a project <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 11L11 3M5 3h6v6"/></svg></a></div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="hero__meta m"><span>Architects — Edinburgh</span><span id="coords">55.9533° N, 3.1883° W</span><span>Est. 2009</span></div>
+  <div class="hero__title">
+    <h1><span class="ln"><span>Form <b>&amp;</b></span></span><span class="ln"><span>Field</span></span></h1>
+    <p class="hero__lede">An architecture practice designing homes, workplaces and public buildings that sit quietly in their place — and make a real difference to the people inside them.</p>
+  </div>
+  <div class="hero__draw draw" id="heroDraw" aria-hidden="true"></div>
+  <div class="hero__foot m">
+    <div>Currently<b>6 projects on site</b></div>
+    <div>Specialism<b>Low-energy, timber &amp; reuse</b></div>
+    <div>Recent<b>Leith Boathouse, 2025</b></div>
+    <div>Scroll<b>Drawings below ↓</b></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="grid12">
+    <p class="sec__no m">(01) Practice</p>
+    <p class="statement" data-split>We believe the best buildings feel <em>inevitable</em> — as if they could only ever have been there. So we start with the site, the light and the people, and let the form follow.</p>
+  </div>
+</section>
+
+<section class="work" id="work">
+  <div class="work__pin">
+    <div class="work__head">
+      <div><p class="m" style="margin-bottom:12px">(02) Selected projects</p><h2>Four recent buildings</h2></div>
+      <div class="work__count"><span id="pNow">01</span><i><b id="pBar"></b></i><span>04</span></div>
+    </div>
+    <div class="track" id="track">
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="boathouse" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="proj__info"><div><span class="proj__no">P—01</span><h3 style="margin-top:10px">Leith Boathouse</h3></div><p>A timber-clad community rowing club on the Water of Leith, with a gallery that opens the boat store to the street.</p><dl><dt>Year</dt><dd>2025</dd><dt>Type</dt><dd>Community</dd><dt>Area</dt><dd>640 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="house" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="proj__info"><div><span class="proj__no">P—02</span><h3 style="margin-top:10px">Pentland House</h3></div><p>Three stepped concrete volumes tucked into a hillside, each framing a different view of the Pentland Hills.</p><dl><dt>Year</dt><dd>2024</dd><dt>Type</dt><dd>Residential</dd><dt>Area</dt><dd>310 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="library" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="proj__info"><div><span class="proj__no">P—03</span><h3 style="margin-top:10px">Canongate Reading Room</h3></div><p>The retrofit of a Victorian tram depot into a neighbourhood library, keeping every arch and adding a timber reading loft.</p><dl><dt>Year</dt><dd>2023</dd><dt>Type</dt><dd>Public / reuse</dd><dt>Area</dt><dd>1,180 m²</dd><dt>Status</dt><dd>Complete</dd></dl></div></article>
+      <article class="proj"><div class="proj__img"><div class="tint"></div><svg class="draw" data-kind="terrace" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="proj__info"><div><span class="proj__no">P—04</span><h3 style="margin-top:10px">Moray Row</h3></div><p>Five Passivhaus terraced homes for a housing co-operative, each with its own gable, garden and roof terrace.</p><dl><dt>Year</dt><dd>2026</dd><dt>Type</dt><dd>Housing</dd><dt>Area</dt><dd>5 × 120 m²</dd><dt>Status</dt><dd>On site</dd></dl></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="build" id="approach">
+  <div class="build__pin">
+    <div class="build__txt">
+      <p class="m">(03) How a building comes together</p>
+      <h2>Designed from the ground up.</h2>
+      <ol class="phases" id="phases">
+        <li class="on"><span>01</span><div><b>Site</b><p>We spend time on site before we draw a line — the ground, the trees, the neighbours, the wind.</p></div></li>
+        <li><span>02</span><div><b>Structure</b><p>Honest structure, usually timber, sized to use as little carbon as possible.</p></div></li>
+        <li><span>03</span><div><b>Envelope</b><p>Airtight, well insulated and wrapped in materials that age gracefully.</p></div></li>
+        <li><span>04</span><div><b>Light</b><p>Windows placed for views and daylight first, heat loss second — then balanced.</p></div></li>
+      </ol>
+    </div>
+    <div class="build__stage"><svg id="iso" viewBox="-420 -360 840 640" aria-label="Isometric model of a building assembling"></svg></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="grid12">
+    <p class="sec__no m">(04) Principles</p>
+    <p class="statement" data-split>Good architecture is <em>patient</em>. It uses less, lasts longer and gets better with age.</p>
+    <div class="principles">
+      <div class="pr" data-r style="--d:0"><svg class="draw" viewBox="0 0 64 64"><circle pathLength="1" class="ln-d" cx="32" cy="32" r="26"/><path pathLength="1" class="ln-b" d="M32 6v52M6 32h52"/></svg><h3>Reuse first</h3><p>The greenest building is often the one already standing. We always ask whether we can adapt before we demolish.</p></div>
+      <div class="pr" data-r style="--d:1"><svg class="draw" viewBox="0 0 64 64"><path pathLength="1" class="ln-d" d="M8 56L32 8l24 48z"/><path pathLength="1" class="ln-b" d="M20 40h24"/></svg><h3>Build light</h3><p>Timber frames, lime renders and low-carbon concrete. We measure embodied carbon on every project, from day one.</p></div>
+      <div class="pr" data-r style="--d:2"><svg class="draw" viewBox="0 0 64 64"><rect pathLength="1" class="ln-d" x="8" y="8" width="48" height="48"/><path pathLength="1" class="ln-b" d="M8 56L56 8"/></svg><h3>Design with people</h3><p>Clients, neighbours and the people who’ll use the building are part of the design team, not an afterthought.</p></div>
+    </div>
+    <div class="nums">
+      <div data-r style="--d:0"><b data-count="37">0</b><span>Buildings completed</span></div>
+      <div data-r style="--d:1"><b data-count="12">0</b><span>People in the studio</span></div>
+      <div data-r style="--d:2"><b data-count="64">0</b><span>% average carbon saving vs. new build</span></div>
+      <div data-r style="--d:3"><b data-count="17">0</b><span>Years in Edinburgh</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="studio" style="padding-top:0">
+  <div class="grid12">
+    <p class="sec__no m">(05) Studio</p>
+    <p class="statement" data-split>A small studio of architects, <em>makers</em> and one very good dog.</p>
+    <ul class="team">
+      <li data-r><b>Isla Fraser</b><span>Founding director</span><span class="m">ARB / RIAS</span><i>IF</i></li>
+      <li data-r><b>Callum Reid</b><span>Director, housing</span><span class="m">Passivhaus designer</span><i>CR</i></li>
+      <li data-r><b>Amara Osei</b><span>Associate, reuse &amp; heritage</span><span class="m">Conservation</span><i>AO</i></li>
+      <li data-r><b>Finn Larsen</b><span>Architect, timber</span><span class="m">Workshop lead</span><i>FL</i></li>
+      <li data-r><b>Bramble</b><span>Head of morale</span><span class="m">Border terrier</span><i>BR</i></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec contact" id="contact">
+  <div class="grid12">
+    <p class="sec__no m">(06) Contact</p>
+    <p class="contact__big"><a href="mailto:studio@formandfield.studio">Start a conversation <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1"><path d="M4 16L16 4M7 4h9v9"/></svg></a></p>
+    <div class="contact__cols">
+      <div><span class="m">Studio</span>Studio 3, 21 Ropemaker Wynd<br>Edinburgh EH6</div>
+      <div><span class="m">Email</span>studio@formandfield.studio</div>
+      <div><span class="m">Phone</span>0131 000 0000</div>
+      <div><span class="m">Local time</span><span id="ltime">--:--</span> in Edinburgh</div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="foot m"><span>© 2026 Form &amp; Field Architects Ltd</span><span>Press G to see the grid</span></footer>
+
+<script>
+(() => {
+const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, t) => a + (b - a) * t;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+if (/shot/.test(location.search)) document.documentElement.classList.add('shot');
+setTimeout(() => document.documentElement.classList.add('go'), 250);
+
+/* ---------- drawing generators ---------- */
+let li = 0;
+const L = (d, cls = 'ln-d') => `<path pathLength="1" class="${cls}" style="--i:${li++ % 60}" d="${d}"/>`;
+const R = (x, y, w, h, cls = 'ln-d') => L(`M${x} ${y}h${w}v${h}h${-w}Z`, cls);
+const dim = (x1, y1, x2, y2, label, off = 0) => { const v = x1 === x2; const mx = (x1 + x2) / 2, my = (y1 + y2) / 2; return `<g class="dim">${L(`M${x1} ${y1}L${x2} ${y2}`, 'ln-b')}${L(v ? `M${x1 - 5} ${y1}h10M${x2 - 5} ${y2}h10` : `M${x1} ${y1 - 5}v10M${x2} ${y2 - 5}v10`, 'ln-b')}<text x="${v ? mx + 8 : mx}" y="${v ? my : my - 7 + off}" text-anchor="${v ? 'start' : 'middle'}">${label}</text></g>`; };
+const hatch = (x, y, w, h, gap = 8, cls = 'ln-t') => { let s = ''; for (let i = gap; i < w + h; i += gap) { const x1 = x + Math.max(0, i - h), y1 = y + Math.min(i, h), x2 = x + Math.min(i, w), y2 = y + Math.max(0, i - w); s += `M${x1} ${y1}L${x2} ${y2}`; } return L(s, cls); };
+const person = (x, y, s = 1) => L(`M${x} ${y - 30 * s}a${4 * s} ${4 * s} 0 1 0 .1 0M${x} ${y - 22 * s}v${12 * s}M${x - 5 * s} ${y}l${5 * s} ${-10 * s} ${5 * s} ${10 * s}M${x - 6 * s} ${y - 18 * s}h${12 * s}`, 'ln-t');
+const tree = (x, y, r) => L(`M${x} ${y}v${-r * 1.2}`) + L(`M${x + r} ${y - r * 2}a${r} ${r} 0 1 0 ${-2 * r} 0a${r} ${r} 0 1 0 ${2 * r} 0`, 'ln-t');
+
+const KINDS = {
+  boathouse() {
+    let s = L('M40 400H760') + hatch(40, 404, 720, 40, 14);
+    s += L('M150 400V230L330 110L510 230V400') + L('M510 400V250H690V400');
+    for (let x = 166; x < 500; x += 16) { const top = x < 330 ? 230 - (x - 150) * 0.667 : 230 - (510 - x) * 0.667; s += L(`M${x} 400V${Math.max(top + 6, 120)}`, 'ln-t'); }
+    s += `<rect class="fill" x="250" y="280" width="160" height="120" fill="rgba(31,63,209,.1)"/>` + R(250, 280, 160, 120) + L('M330 280V400M250 340H410', 'ln-t');
+    s += R(540, 280, 120, 50) + L('M580 280v50M620 280v50', 'ln-t');
+    s += person(470, 400, 1) + person(600, 400, .95);
+    s += L('M60 460c40-8 80 8 120 0s80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0', 'ln-b');
+    s += dim(150, 440, 690, 440, '28 400', 16) + dim(720, 110, 720, 400, '12 800');
+    s += `<text class="lbl" x="40" y="40">ELEVATION A — SOUTH</text><text class="lbl" x="40" y="54">SCALE 1:100</text>`;
+    return s;
+  },
+  house() {
+    let s = L('M40 380C200 360 300 330 420 320S650 300 760 290');
+    s += `<rect class="fill" x="120" y="250" width="260" height="110" fill="rgba(31,63,209,.08)"/>` + R(120, 250, 260, 110) + R(300, 170, 250, 80) + R(470, 110, 210, 60);
+    s += L('M140 290H360', 'ln-t') + R(150, 300, 180, 40, 'ln-d') + L('M210 300v40M270 300v40', 'ln-t');
+    s += R(320, 190, 200, 36) + L('M390 190v36M455 190v36', 'ln-t') + R(490, 125, 160, 24) + hatch(120, 250, 260, 30, 10);
+    s += tree(80, 372, 16) + tree(720, 292, 20) + tree(640, 300, 12);
+    s += person(560, 326, .9);
+    s += dim(120, 410, 550, 410, '18 600') + dim(700, 110, 700, 360, '9 750');
+    s += `<text class="lbl" x="40" y="40">SECTION B—B</text><text class="lbl" x="40" y="54">SCALE 1:100</text>`;
+    return s;
+  },
+  library() {
+    let s = L('M40 400H760') + R(80, 150, 640, 250) + L('M80 170H720M80 150V130H720V150');
+    for (let i = 0; i < 6; i++) { const x = 110 + i * 100; s += L(`M${x} 400V260a40 40 0 0 1 80 0V400`) + L(`M${x + 40} 220V400M${x} 330H${x + 80}`, 'ln-t'); if (i % 2 === 0) s += `<rect class="fill" x="${x}" y="260" width="80" height="140" fill="rgba(31,63,209,.1)"/>`; }
+    s += L('M110 240H690', 'ln-b') + `<text class="lbl" x="700" y="244">NEW LOFT +4.200</text>`;
+    s += person(250, 400) + person(262, 400, .9) + person(520, 400, 1.05);
+    s += dim(80, 440, 720, 440, '42 000') + dim(740, 130, 740, 400, '11 200');
+    s += `<text class="lbl" x="40" y="40">ELEVATION — CANONGATE</text><text class="lbl" x="40" y="54">EXISTING ARCHES RETAINED</text>`;
+    return s;
+  },
+  terrace() {
+    let s = L('M40 400H760');
+    const H = [[100, 210], [220, 190], [340, 220], [460, 200], [580, 185]];
+    H.forEach(([x, h], i) => {
+      const top = 400 - h;
+      s += L(`M${x} 400V${top}L${x + 60} ${top - 60}L${x + 120} ${top}V400`);
+      s += R(x + 20, top + 20, 30, 40, 'ln-t') + R(x + 70, top + 20, 30, 40, 'ln-t') + R(x + 20, top + 90, 80, 40) + R(x + 45, 340, 30, 60);
+      if (i % 2) s += `<rect class="fill" x="${x + 20}" y="${top + 90}" width="80" height="40" fill="rgba(31,63,209,.1)"/>`;
+      s += L(`M${x + 84} ${top - 26}v-26h14v38`, 'ln-t');
+    });
+    s += tree(60, 400, 14) + tree(740, 400, 18) + person(330, 400, .9);
+    s += dim(100, 440, 700, 440, '30 000') + dim(730, 155, 730, 400, '12 250');
+    s += `<text class="lbl" x="40" y="40">STREET ELEVATION</text><text class="lbl" x="40" y="54">5 × PASSIVHAUS TERRACE</text>`;
+    return s;
+  }
+};
+$$('svg[data-kind]').forEach(svg => { li = 0; svg.innerHTML = KINDS[svg.dataset.kind](); });
+// hero: large drawing with grid lines and north arrow
+(() => {
+  li = 0;
+  const svg = `<svg viewBox="0 0 800 520">${L('M0 20H800M0 500H800', 'ln-t')}${KINDS.boathouse()}
+    <g transform="translate(730 60)">${L('M0 -24L10 16L0 8L-10 16Z')}<text class="lbl" x="-4" y="34">N</text></g></svg>`;
+  $('#heroDraw').innerHTML = svg;
+})();
+setTimeout(() => $('#heroDraw').classList.add('in'), 500);
+
+/* ---------- reveal ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -12% 0px' });
+$$('[data-r],.draw:not(#heroDraw),[data-split]').forEach(el => io.observe(el));
+$$('[data-split]').forEach(el => {
+  let i = 0;
+  const walk = n => [...n.childNodes].forEach(c => {
+    if (c.nodeType === 3) {
+      const f = document.createDocumentFragment();
+      c.textContent.split(/(\s+)/).forEach(t => { if (!t) return; if (/^\s+$/.test(t)) return f.append(t); const w = document.createElement('span'); w.className = 'w'; w.innerHTML = `<span style="--i:${i++}">${t}</span>`; f.append(w); });
+      c.replaceWith(f);
+    } else { const w = document.createElement('span'); w.className = 'w'; c.replaceWith(w); const inner = document.createElement('span'); inner.style.setProperty('--i', i++); inner.append(c); w.append(inner); }
+  });
+  walk(el);
+});
+
+/* ---------- counters ---------- */
+const cio = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; cio.unobserve(e.target); const el = e.target, to = +el.dataset.count, t0 = performance.now(); const f = n => { const t = clamp((n - t0) / 1800, 0, 1); el.textContent = Math.round(to * (1 - Math.pow(1 - t, 4))); if (t < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }), { threshold: .6 });
+$$('[data-count]').forEach(el => cio.observe(el));
+
+/* ---------- grid toggle ---------- */
+const gbtn = $('#gbtn');
+const toggleGrid = () => { const on = document.documentElement.classList.toggle('show-cols'); gbtn.setAttribute('aria-pressed', on); };
+gbtn.addEventListener('click', toggleGrid);
+addEventListener('keydown', e => { if (e.key.toLowerCase() === 'g' && !/input|textarea/i.test(e.target.tagName) && !e.metaKey && !e.ctrlKey) toggleGrid(); });
+
+/* ---------- crosshair ---------- */
+const xh = $('.xh'), xv = $('.xh__v'), xhh = $('.xh__h'), xb = $('.xh__box'), xl = $('.xh__lbl');
+let mx = -100, my = -100, cx = -100, cy = -100;
+if (fine && !reduce) {
+  document.documentElement.classList.add('has-cross');
+  addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; });
+  document.addEventListener('pointerover', e => xh.classList.toggle('on-link', !!e.target.closest('a,button,.proj')));
+}
+
+/* ---------- isometric model ---------- */
+const iso = $('#iso');
+const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);
+const P = (x, y, z) => [(x - y) * C, (x + y) * S - z];
+const poly = pts => pts.map(p => P(...p).map(v => v.toFixed(1)).join(',')).join(' ');
+function box(x, y, z, w, d, h, t = '') {
+  const top = [[x, y, z + h], [x + w, y, z + h], [x + w, y + d, z + h], [x, y + d, z + h]];
+  const left = [[x, y + d, z], [x + w, y + d, z], [x + w, y + d, z + h], [x, y + d, z + h]];
+  const right = [[x + w, y, z], [x + w, y + d, z], [x + w, y + d, z + h], [x + w, y, z + h]];
+  return `<polygon class="iso-top${t && '-' + t}" points="${poly(top)}"/><polygon class="iso-l${t && '-' + t}" points="${poly(left)}"/><polygon class="iso-r${t && '-' + t}" points="${poly(right)}"/><polygon class="iso-edge" points="${poly(top)}"/><polygon class="iso-edge" points="${poly(left)}"/><polygon class="iso-edge" points="${poly(right)}"/>`;
+}
+function glass(x, y, z, w, d, h) { // glazing strips on the two visible faces
+  const l = [[x, y + d + .5, z], [x + w, y + d + .5, z], [x + w, y + d + .5, z + h], [x, y + d + .5, z + h]];
+  const r = [[x + w + .5, y, z], [x + w + .5, y + d, z], [x + w + .5, y + d, z + h], [x + w + .5, y, z + h]];
+  return `<polygon class="iso-glass-l" points="${poly(l)}"/><polygon class="iso-glass-r" points="${poly(r)}"/>`;
+}
+// blocks: [phase, svg]
+const blocks = [];
+blocks.push([0, `<g>${box(-220, -220, -24, 440, 440, 24, 'grass')}</g>`]);
+blocks.push([0, `<g>${box(-150, -150, 0, 300, 280, 10)}</g>`]);
+// structure columns
+let cols = ''; for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) cols += box(-140 + i * 90, -140 + j * 125, 10, 8, 8, 90);
+blocks.push([1, `<g>${cols}</g>`]);
+blocks.push([1, `<g>${box(-150, -150, 100, 300, 280, 10)}</g>`]);
+let cols2 = ''; for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) cols2 += box(-140 + i * 90, -140 + j * 125, 110, 8, 8, 80);
+blocks.push([1, `<g>${cols2}</g>`]);
+blocks.push([2, `<g>${box(-150, -150, 10, 300, 280, 90)}${glass(-120, -150, 30, 220, 280, 50)}</g>`]);
+blocks.push([2, `<g>${box(-150, -150, 110, 200, 250, 80)}${glass(-130, -150, 125, 150, 250, 45)}</g>`]);
+blocks.push([3, `<g>${box(-150, -150, 190, 200, 250, 10)}${box(-110, -110, 200, 110, 110, 14, 'grass')}</g>`]);
+blocks.push([3, `<g>${box(80, 60, 110, 60, 60, 8)}</g>`]);
+const sun = `<g id="sun" opacity="0"><circle cx="300" cy="-300" r="26" fill="#F2C94C"/>${[0, 1, 2].map(i => `<line class="sun-ray" style="opacity:1" x1="${280 - i * 10}" y1="${-280 + i * 10}" x2="${40 - i * 60}" y2="${-60 + i * 50}"/>`).join('')}</g>`;
+iso.innerHTML = sun + blocks.map((b, i) => `<g class="blk" data-i="${i}" data-ph="${b[0]}">${b[1]}</g>`).join('') + `<g transform="translate(-400 250)"><text class="lbl" style="fill:#8d8a82">AXONOMETRIC — NOT TO SCALE</text></g>`;
+const blkEls = $$('.blk', iso), phases = $$('#phases li'), sunEl = $('#sun'), build = $('.build');
+function buildFrame() {
+  if (innerWidth <= 1000) { blkEls.forEach(b => { b.style.transform = ''; b.style.opacity = 1; }); sunEl.setAttribute('opacity', 1); phases.forEach(p => p.classList.add('on')); return; }
+  const r = build.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight), 0, 1);
+  const n = blkEls.length;
+  blkEls.forEach((b, i) => {
+    const s = i / n * .82, t = clamp((p - s) / .12, 0, 1), e = 1 - Math.pow(1 - t, 3);
+    b.style.transform = `translateY(${(1 - e) * -260}px)`; b.style.opacity = e;
+  });
+  sunEl.setAttribute('opacity', clamp((p - .8) / .15, 0, 1));
+  const ph = Math.min(3, Math.floor(p * 4.2));
+  phases.forEach((li, i) => li.classList.toggle('on', i === ph));
+}
+
+/* ---------- horizontal projects ---------- */
+const work = $('.work'), track = $('#track'), pNow = $('#pNow'), pBar = $('#pBar');
+function workFrame() {
+  if (innerWidth <= 1000) return;
+  const r = work.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight), 0, 1);
+  const dist = track.scrollWidth - innerWidth;
+  track.style.transform = `translate3d(${-p * dist}px,0,0)`;
+  pBar.style.transform = `scaleX(${p})`; pNow.textContent = String(Math.min(4, 1 + Math.floor(p * 3.999))).padStart(2, '0');
+}
+
+/* ---------- header + loop ---------- */
+const top = $('.top'); let ly = 0;
+const lt = $('#ltime');
+const tick = () => lt.textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+tick(); setInterval(tick, 30000);
+function loop() {
+  const y = scrollY;
+  if (Math.abs(y - ly) > 5) { top.classList.toggle('hide', y > ly && y > 300); ly = y; }
+  if (fine && !reduce) {
+    cx = lerp(cx, mx, .25); cy = lerp(cy, my, .25);
+    xv.style.transform = `translateX(${cx}px)`; xhh.style.transform = `translateY(${cy}px)`;
+    xb.style.transform = `translate(${cx}px,${cy}px)`; xl.style.transform = `translate(${cx + 14}px,${cy + 14}px)`;
+    xl.textContent = `X ${String(Math.round(cx)).padStart(4, '0')}  Y ${String(Math.round(cy + y)).padStart(5, '0')}`;
+  }
+  workFrame(); buildFrame();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

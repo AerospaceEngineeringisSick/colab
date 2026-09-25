@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>LRWeb Promo</title>
+<link rel="stylesheet" href="../lrweb/assets/css/fonts.css">
+<style>
+:root{
+  --night:#070824; --night-2:#0B0D30; --night-3:#10124A; --navy:#12018D;
+  --indigo:#3F4DE6; --indigo-soft:#8B95F7; --blue:#0B86EA; --green:#3DB88D; --green-bright:#6FE0B4;
+  --base:#F5F8FA; --ink:#16203A; --muted:#5A6478; --muted-d:#A7AEC8; --red:#FF5C6C; --amber:#FFB547;
+  --grad:linear-gradient(90deg,#3DB88D 0%,#0B86EA 55%,#3F4DE6 100%);
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Instrument Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:var(--body);color:var(--base);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--night);transform-origin:50% 50%}
+.layer{position:absolute;inset:0}
+.abs{position:absolute}
+.center{position:absolute;left:0;right:0;text-align:center}
+canvas{position:absolute;inset:0}
+.gtext{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.display{font-family:var(--display);font-weight:800;letter-spacing:-.028em;line-height:.98}
+.mono{font-family:var(--mono)}
+.kicker{display:inline-flex;align-items:center;gap:14px;font-weight:600;font-size:26px;color:var(--green-bright);letter-spacing:.01em}
+.kicker::before{content:"";width:14px;height:14px;border-radius:50%;background:linear-gradient(35deg,#3DB88D,#0B86EA 55%,#3F4DE6);box-shadow:0 0 0 6px rgba(11,134,234,.18)}
+.kicker.dark{color:#0A6FC2}
+
+/* ---- s1 night ---- */
+#s1 .clock{top:300px;font-size:34px;color:var(--muted-d);letter-spacing:.3em}
+#s1 .l1{top:370px;font-size:170px}
+#s1 .l2{top:600px;font-size:64px;font-weight:600;letter-spacing:-.02em;color:#DCE1F5;font-family:var(--display)}
+.caret{display:inline-block;width:.07em;height:.9em;background:var(--green);vertical-align:-.08em;margin-left:.06em;border-radius:2px}
+
+/* ---- s2 alerts ---- */
+.alert{position:absolute;width:520px;padding:22px 26px;border-radius:20px;background:rgba(16,18,54,.82);border:1.5px solid rgba(255,92,108,.45);
+  box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset,0 0 60px rgba(255,92,108,.12);display:flex;gap:18px;align-items:center;backdrop-filter:blur(8px)}
+.alert .ic{flex:none;width:58px;height:58px;border-radius:16px;background:rgba(255,92,108,.16);color:var(--red);display:grid;place-items:center;font-size:30px;font-weight:700}
+.alert b{display:block;font-family:var(--display);font-size:27px;font-weight:700;letter-spacing:-.01em;line-height:1.15;color:#fff}
+.alert small{display:block;font-family:var(--mono);font-size:17px;color:#FF9AA5;margin-top:6px}
+#s2 .who{top:410px;font-size:170px}
+.glitch{position:relative}
+
+/* ---- curtain ---- */
+#curtain{display:flex;z-index:50}
+#curtain i{flex:1;transform:scaleY(0)}
+#curtain i:nth-child(1){background:var(--green)}#curtain i:nth-child(2){background:var(--blue)}
+#curtain i:nth-child(3){background:var(--indigo)}#curtain i:nth-child(4){background:var(--navy)}
+#curtain .mk{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px}
+
+/* ---- s3 logo / handled ---- */
+#s3 .logo{left:50%;top:50%;width:1000px;height:220px;margin:-110px 0 0 -500px}
+#s3 .hl{top:360px;font-size:210px}
+#s3 .slot{display:block;height:1.08em;overflow:hidden;position:relative}
+#s3 .slot span{position:absolute;left:0;right:0;top:0;display:block;line-height:1.02;padding-bottom:.1em}
+#s3 .sub{top:880px;font-size:30px;color:var(--muted-d);letter-spacing:.02em}
+.underline{height:14px;border-radius:14px;background:var(--grad);transform-origin:left}
+
+/* ---- s4 overnight ---- */
+#s4 .clk{left:150px;top:250px}
+#s4 .clk .big{font-family:var(--mono);font-weight:500;font-size:230px;letter-spacing:-.04em;line-height:1;color:#fff}
+#s4 .clk .cap{font-size:30px;color:var(--muted-d);margin-top:14px}
+.log{position:absolute;left:1000px;top:170px;width:780px;padding:34px 36px 20px;border-radius:28px;background:rgba(10,12,44,.62);border:1.5px solid rgba(245,248,250,.12);
+  box-shadow:0 40px 100px rgba(0,0,0,.45);backdrop-filter:blur(10px)}
+.log h4{font-family:var(--mono);font-weight:500;font-size:20px;color:var(--muted-d);letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px;display:flex;justify-content:space-between}
+.log h4 em{font-style:normal;color:var(--green-bright)}
+.row{display:flex;align-items:center;gap:22px;padding:17px 0;border-top:1px solid rgba(245,248,250,.09)}
+.row .tm{font-family:var(--mono);font-size:22px;color:var(--indigo-soft);width:80px}
+.row .tx{flex:1;font-size:28px;font-weight:600;color:#EEF1FB}
+.row .ck{width:44px;height:44px;border-radius:50%;background:var(--green);display:grid;place-items:center;box-shadow:0 0 30px rgba(61,184,141,.6)}
+.row .ck svg{width:24px;height:24px}
+#s4 .slept{top:250px;font-size:190px;text-shadow:0 20px 80px rgba(7,8,36,.6)}
+.sun{position:absolute;left:50%;width:1300px;height:650px;margin-left:-650px;overflow:hidden}
+.sun .disc{position:absolute;left:0;top:0;width:1300px;height:1300px;border-radius:50%;background:linear-gradient(35deg,#3DB88D 0%,#0B86EA 55%,#3F4DE6 100%);box-shadow:0 0 200px 40px rgba(11,134,234,.35)}
+.horizon{position:absolute;left:50%;height:18px;border-radius:18px;background:#F5F8FA;box-shadow:0 0 50px rgba(255,255,255,.5)}
+
+/* ---- s5 showcase ---- */
+#s5{perspective:2600px;background:radial-gradient(1400px 700px at 50% 110%,rgba(63,77,230,.45),transparent 70%),linear-gradient(#070824,#0B0D30)}
+.floor{position:absolute;left:-1000px;right:-1000px;top:600px;height:1400px;transform-origin:50% 0;transform:rotateX(78deg);
+  background-image:linear-gradient(rgba(11,134,234,.55) 2px,transparent 2px),linear-gradient(90deg,rgba(61,184,141,.45) 2px,transparent 2px);background-size:120px 120px;
+  -webkit-mask-image:linear-gradient(transparent,#000 20%,#000 60%,transparent);mask-image:linear-gradient(#000 0%,transparent 75%)}
+#s5 .title{top:70px}
+#s5 .title .display{font-size:92px;margin-top:10px}
+.ring{position:absolute;left:50%;top:515px;transform-style:preserve-3d}
+.win{position:absolute;left:-430px;top:-270px;width:860px;height:540px;border-radius:22px;overflow:hidden;background:#fff;
+  box-shadow:0 60px 120px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.1);backface-visibility:hidden}
+.win .bar{height:52px;background:#EDEFF4;display:flex;align-items:center;gap:10px;padding:0 20px}
+.win .bar i{width:14px;height:14px;border-radius:50%;background:#FF5F57}.win .bar i:nth-child(2){background:#FEBC2E}.win .bar i:nth-child(3){background:#28C840}
+.win .bar .url{margin-left:24px;flex:1;height:32px;border-radius:10px;background:#fff;font-family:var(--mono);font-size:17px;color:#5A6478;display:flex;align-items:center;padding:0 16px;gap:10px}
+.win .bar .url::before{content:"🔒";font-size:14px}
+.win .shot{position:absolute;left:0;right:0;top:52px;bottom:0;background-size:100% auto;background-repeat:no-repeat}
+.win .shade{position:absolute;inset:0;background:#070824;pointer-events:none}
+#s5 .kind{top:895px}
+#s5 .kind .display{font-size:76px}
+#s5 .kind .n{font-family:var(--mono);font-size:24px;color:var(--muted-d);margin-bottom:8px;letter-spacing:.1em}
+
+/* ---- s6 2009 ---- */
+#s6{background:#008080}
+.ie{position:absolute;left:60px;top:40px;right:60px;bottom:40px;background:#C0C0C0;border:3px solid;border-color:#fff #404040 #404040 #fff;box-shadow:6px 6px 0 rgba(0,0,0,.4)}
+.ie .tb{height:44px;background:linear-gradient(90deg,#000080,#1084D0);color:#fff;font:bold 24px 'Liberation Sans',Arial,sans-serif;display:flex;align-items:center;padding:0 12px;gap:12px}
+.ie .tb .x{margin-left:auto;display:flex;gap:6px}.ie .tb .x i{width:32px;height:28px;background:#C0C0C0;border:2px solid;border-color:#fff #404040 #404040 #fff;color:#000;font:bold 18px Arial;font-style:normal;display:grid;place-items:center}
+.ie .addr{height:44px;display:flex;align-items:center;gap:10px;padding:0 12px;font:20px 'Liberation Sans',Arial,sans-serif;color:#000}
+.ie .addr span{flex:1;height:32px;background:#fff;border:2px solid;border-color:#404040 #fff #fff #404040;display:flex;align-items:center;padding:0 8px}
+.old{position:absolute;left:12px;right:12px;top:100px;bottom:12px;overflow:hidden;border:2px solid;border-color:#404040 #fff #fff #404040;
+  background:#FFFFCC repeating-linear-gradient(45deg,rgba(255,0,255,.06) 0 20px,transparent 20px 40px);font-family:'Liberation Serif','Times New Roman',serif;color:#000}
+.old h1{font:bold 64px 'Liberation Serif',serif;color:#FF0000;text-align:center;margin-top:20px;text-shadow:3px 3px 0 #FFFF00}
+.old .nav9{text-align:center;font-size:30px;margin:10px 0;color:#0000EE;text-decoration:underline}
+.old marquee,.old .mq{display:block;white-space:nowrap;font-size:34px;color:#800080;background:#00FFFF;padding:6px 0}
+.old p{font-size:30px;margin:18px 60px;line-height:1.3}
+.old .uc{margin:18px auto;width:720px;padding:14px;text-align:center;font:bold 40px Arial;background:repeating-linear-gradient(-45deg,#FFD800 0 30px,#000 30px 60px);color:#fff;text-shadow:2px 2px 0 #000,-2px -2px 0 #000}
+.old .ft{font-size:22px;text-align:center;color:#444;margin-top:14px}
+.old .cnt{display:inline-block;background:#000;color:#0F0;font:bold 26px 'Liberation Mono',monospace;padding:2px 8px;letter-spacing:.2em}
+#after{position:absolute;inset:0;background:#fff center/cover no-repeat}
+.handle{position:absolute;top:0;bottom:0;width:6px;margin-left:-3px;background:#fff;box-shadow:0 0 30px rgba(0,0,0,.4)}
+.handle b{position:absolute;top:50%;left:50%;width:96px;height:96px;margin:-48px;border-radius:50%;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.35);display:grid;place-items:center;font:700 34px var(--display);color:var(--ink)}
+.tag{position:absolute;padding:14px 28px;border-radius:999px;font:700 30px var(--display);letter-spacing:-.01em}
+.scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 5px);mix-blend-mode:multiply}
+.pill{display:inline-block;padding:22px 44px;border-radius:999px;background:rgba(7,8,36,.9);color:#fff;font:800 76px var(--display);letter-spacing:-.03em;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+
+/* ---- s7 after ---- */
+#s7{background:radial-gradient(900px 700px at 20% 10%,rgba(61,184,141,.22),transparent 60%),radial-gradient(900px 700px at 90% 90%,rgba(63,77,230,.2),transparent 60%),#F5F8FA}
+.laptop{position:absolute;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 50px 120px rgba(18,1,141,.25),0 0 0 1px rgba(22,32,58,.08)}
+.laptop .img{position:absolute;left:0;right:0;top:48px;bottom:0;background:center top/cover no-repeat}
+.laptop .bar{height:48px;background:#EDEFF4;display:flex;align-items:center;gap:9px;padding:0 18px}
+.laptop .bar i{width:13px;height:13px;border-radius:50%;background:#FF5F57}.laptop .bar i:nth-child(2){background:#FEBC2E}.laptop .bar i:nth-child(3){background:#28C840}
+.phone{position:absolute;width:330px;height:680px;border-radius:52px;background:#0B0D30;padding:14px;box-shadow:0 50px 100px rgba(18,1,141,.35)}
+.phone .img{width:100%;height:100%;border-radius:40px;background:center top/cover no-repeat}
+#s7 .cap{position:absolute;left:120px;top:150px;color:var(--ink)}
+#s7 .cap .display{font-size:100px}
+
+/* ---- s8 pricing ---- */
+#s8{background:radial-gradient(1000px 800px at 85% 20%,rgba(11,134,234,.14),transparent 60%),radial-gradient(900px 700px at 10% 100%,rgba(61,184,141,.18),transparent 60%),#F5F8FA;color:var(--ink)}
+#s8 .left{position:absolute;left:130px;top:170px}
+#s8 .price{display:flex;align-items:flex-start;margin-top:10px}
+#s8 .price .cur{font:800 150px var(--display);letter-spacing:-.05em;margin-top:60px}
+#s8 .digits{display:flex;height:400px;overflow:hidden}
+#s8 .digit{height:400px;overflow:hidden;width:.62em;font:800 400px/1 var(--display);letter-spacing:-.06em}
+#s8 .digit .col{display:flex;flex-direction:column}
+#s8 .digit .col span{height:400px;display:block}
+#s8 .per{font:700 60px var(--display);color:var(--muted);align-self:flex-end;margin-bottom:40px;margin-left:10px}
+.sticker{position:absolute;width:300px;height:300px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;text-align:center;
+  font:800 58px/1 var(--display);letter-spacing:-.03em;box-shadow:0 30px 60px rgba(31,122,92,.35),inset 0 0 0 10px rgba(255,255,255,.2)}
+.sticker small{display:block;font:600 26px var(--body);letter-spacing:0;margin-top:8px;opacity:.9}
+.printer{position:absolute;left:1180px;top:110px;width:600px}
+.printer .slot{height:26px;border-radius:14px;background:linear-gradient(#262a52,#070824);box-shadow:inset 0 4px 8px rgba(0,0,0,.7),0 14px 30px rgba(18,1,141,.25);position:relative;z-index:2}
+.printer .feed{overflow:hidden;margin:-13px 20px 0;height:0}
+.paper{position:relative;background:#fff;padding:44px 40px 36px;font-family:var(--mono);color:var(--ink);box-shadow:0 30px 60px rgba(18,1,141,.14)}
+.paper .hd{text-align:center;font-size:22px;letter-spacing:.2em;color:var(--muted);margin-bottom:22px}
+.paper .ln{display:flex;justify-content:space-between;font-size:24px;padding:9px 0;border-bottom:1px dashed rgba(22,32,58,.14)}
+.paper .ln b{color:var(--green);font-weight:600}
+.paper .tot{display:flex;justify-content:space-between;font-size:34px;font-weight:600;padding-top:20px}
+.paper .nb{font-size:19px;color:var(--muted);margin-top:14px;text-align:center}
+.badge{position:absolute;padding:26px 40px;border-radius:26px;background:var(--night);color:#fff;box-shadow:0 30px 70px rgba(7,8,36,.35)}
+.badge .display{font-size:66px}
+.badge small{display:block;font:500 24px var(--mono);color:var(--green-bright);margin-bottom:6px;letter-spacing:.06em}
+
+/* ---- s9 humans ---- */
+#s9{background:radial-gradient(1200px 800px at 50% 120%,rgba(63,77,230,.35),transparent 70%),var(--night)}
+#s9 .h{top:110px;font-size:120px}
+.pinl{position:absolute;display:flex;align-items:center;gap:18px}
+.pinl .dot{width:30px;height:30px;border-radius:50%;background:var(--green);box-shadow:0 0 0 12px rgba(61,184,141,.2),0 0 40px rgba(61,184,141,.8)}
+.pinl .av{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font:800 44px var(--display);color:#fff}
+.pinl .nm{font:800 44px var(--display);letter-spacing:-.02em}
+.pinl .pl{font:500 22px var(--mono);color:var(--muted-d)}
+.bubble{position:absolute;max-width:700px;padding:26px 32px;border-radius:30px;font-size:32px;font-weight:600;line-height:1.3;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.bubble.q{background:#fff;color:var(--ink);border-bottom-left-radius:8px}
+.bubble.a{background:linear-gradient(35deg,#1F7A5C,#0B86EA 60%,#3F4DE6);color:#fff;border-bottom-right-radius:8px}
+.bubble small{display:block;font:500 20px var(--mono);opacity:.7;margin-bottom:6px}
+.typing{display:flex;gap:10px;padding:26px 32px}
+.typing i{width:14px;height:14px;border-radius:50%;background:#fff}
+
+/* ---- s10 end ---- */
+#s10 .logo{left:50%;top:330px;width:1100px;height:242px;margin-left:-550px}
+#s10 .tag{position:absolute;left:0;right:0;top:620px;text-align:center;font:700 64px var(--display);letter-spacing:-.03em;color:#fff;padding:0}
+#s10 .url{position:absolute;left:0;right:0;top:740px;text-align:center}
+#s10 .url span{display:inline-block;padding:20px 54px;border-radius:999px;background:#fff;color:var(--night);font:800 60px var(--display);letter-spacing:-.03em;box-shadow:0 20px 70px rgba(11,134,234,.45)}
+#s10 .fine{position:absolute;left:0;right:0;top:880px;text-align:center;font:500 28px var(--mono);color:#DCE1F5;letter-spacing:.02em}
+
+/* ---- overlays ---- */
+#flash{background:#fff;opacity:0;z-index:80;mix-blend-mode:screen}
+#vignette{z-index:90;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.45) 100%);pointer-events:none}
+#grain{z-index:91;opacity:.07;mix-blend-mode:overlay;pointer-events:none}
+#black{background:#000;opacity:0;z-index:95}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="sky" width="1920" height="1080"></canvas>
+
+  <!-- s1: 11pm -->
+  <div id="s1" class="layer">
+    <div class="center clock mono">23:00 · TUESDAY</div>
+    <div class="center l1 display"><span id="t1"></span><span class="caret" id="c1"></span></div>
+    <div class="center l2"><span id="t2"></span><span class="caret" id="c2"></span></div>
+  </div>
+
+  <!-- s2: alerts -->
+  <div id="s2" class="layer">
+    <div id="alerts"></div>
+    <div class="center who display"><span class="glitch" id="who">Who’s looking<br>after it?</span></div>
+  </div>
+
+  <!-- s3: logo + handled -->
+  <div id="s3" class="layer">
+    <svg class="abs logo" id="logo3" viewBox="0 0 520 110"></svg>
+    <div class="center hl display">
+      <div id="yw">Your website,</div>
+      <div class="slot" id="slot"></div>
+      <div style="display:flex;justify-content:center"><div class="underline" id="ul" style="width:720px"></div></div>
+    </div>
+    <div class="center sub mono" id="sub3">MANAGED WEBSITES FOR SMALL UK BUSINESSES</div>
+  </div>
+
+  <!-- s4: overnight -->
+  <div id="s4" class="layer">
+    <div class="sun" id="sun4"><div class="disc"></div></div>
+    <div class="horizon" id="hor4"></div>
+    <div class="abs clk" id="clk4">
+      <div class="kicker">One night of looking after your site</div>
+      <div class="big" id="clock4">23:00</div>
+      <div class="cap">Most of it happens while you sleep.</div>
+    </div>
+    <div class="log" id="log4"><h4><span>Care log</span><em>● live</em></h4><div id="rows"></div></div>
+    <div class="center slept display" id="slept"><span style="color:#A7AEC8">You slept.</span><br>We didn’t.</div>
+  </div>
+
+  <!-- s5: showcase -->
+  <div id="s5" class="layer">
+    <div class="floor" id="floor"></div>
+    <div class="center title" id="title5"><div class="kicker">Example sites</div><div class="display">Built for businesses like yours.</div></div>
+    <div class="ring" id="ring"></div>
+    <div class="center kind" id="kind5"><div class="n" id="kindn">01 / 06</div><div class="display" id="kindt"></div></div>
+  </div>
+
+  <!-- s6: 2009 -> after -->
+  <div id="s6" class="layer">
+    <div class="ie" id="ie">
+      <div class="tb"><span>🌐</span>J Smith and Sons - Home Page - Microsoft Internet Explorer<span class="x"><i>_</i><i>□</i><i>×</i></span></div>
+      <div class="addr">Address <span>http://www.jsmithandsons.co.uk/index_new2_FINAL.htm</span> Go</div>
+      <div class="old" id="old">
+        <h1>~*~ J SMITH &amp; SONS ~*~</h1>
+        <div class="nav9">Home | About_Us | Services | Gallery (broken) | Contact!!</div>
+        <div class="mq"><span id="mq">★ WELCOME TO OUR WEBSITE ★ PLUMBING &amp; HEATING ★ CALL NOW ★ WELCOME TO OUR WEBSITE ★ PLUMBING &amp; HEATING ★ CALL NOW ★</span></div>
+        <p>Welcome to the offical home page of J Smith and Sons. We are a family run busines serving the local area. Please bare with us while the site is under construction.</p>
+        <div class="uc">🚧 UNDER CONSTRUCTION 🚧</div>
+        <p style="color:#0000EE;text-decoration:underline">Click here to download our price list (Word 97 document, 14MB)</p>
+        <div class="ft">Best viewed in Internet Explorer 6 · Last updated March 2014 · Visitors: <span class="cnt">000042</span></div>
+      </div>
+    </div>
+    <div class="scan" id="scan6"></div>
+    <div id="after" style="background-image:url(../lrweb/assets/work/smith-and-sons-hero.jpg)"></div>
+    <div class="handle" id="handle"><b>⟷</b></div>
+    <div class="tag" id="tagB" style="left:100px;top:960px;background:#FFFFCC;color:#000;border:3px solid #000">Before</div>
+    <div class="tag" id="tagA" style="right:100px;top:960px;background:var(--green);color:#fff">After</div>
+    <div class="center" id="stuck" style="top:430px"><span class="pill">Still stuck in <span style="color:#FF5C6C">2009</span>?</span></div>
+  </div>
+
+  <!-- s7: after -->
+  <div id="s7" class="layer">
+    <div class="laptop" id="lap"><div class="bar"><i></i><i></i><i></i></div><div class="img" style="background-image:url(../lrweb/assets/work/smith-and-sons-hero.jpg)"></div></div>
+    <div class="phone" id="phone"><div class="img" style="background-image:url(../lrweb/assets/work/smith-and-sons-mobile.jpg)"></div></div>
+    <div class="cap" id="cap7"><div class="kicker dark">The rescue</div><div class="display">Same family<br>business.</div><div class="display gtext" id="cap7b" style="font-size:64px;margin-top:22px;letter-spacing:-.03em">A website they’re<br>proud to share.</div></div>
+  </div>
+
+  <!-- s8: pricing -->
+  <div id="s8" class="layer">
+    <div class="left" id="left8">
+      <div class="kicker dark">Care plans from</div>
+      <div class="price"><div class="cur gtext">£</div><div class="digits" id="digits"></div><div class="per">/month</div></div>
+      <div id="noc" style="font:600 36px var(--body);color:var(--muted);margin-top:14px">No contract. No VAT to add. Leave any time.</div>
+    </div>
+    <div class="sticker" id="sticker" style="left:810px;top:120px"><div>≈95p<small>a day</small></div></div>
+    <div class="printer" id="printer"><div class="slot"></div><div class="feed"><div class="paper" id="paper">
+      <div class="hd">LRWEB · CARE PLAN</div><div id="lines"></div>
+      <div class="tot" id="tot"><span>TOTAL / MONTH</span><span>£29.00</span></div>
+      <div class="nb" id="nb">Everything above. One flat price.</div>
+    </div></div></div>
+    <div class="badge" id="badge" style="left:130px;top:790px"><small>ONE-OFF BUILD · FIXED PRICE</small><div class="display">Websites from <span class="gtext">£299</span></div></div>
+  </div>
+
+  <!-- s9: humans -->
+  <div id="s9" class="layer">
+    <canvas id="map" width="1920" height="1080"></canvas>
+    <div class="center h display" id="h9a">No call centre. No chatbot.</div>
+    <div class="center h display" id="h9b">Just <span class="gtext">Luke &amp; Ralph.</span></div>
+    <div class="center h display" id="h9c">Two humans. <span class="gtext">Zero drama.</span></div>
+    <div class="pinl" id="pinR" style="left:300px;top:560px"><div class="av" style="background:linear-gradient(35deg,#3DB88D,#0B86EA)">R</div><div><div class="nm">Ralph</div><div class="pl">Hungerford &amp; Kintbury</div></div></div>
+    <div class="pinl" id="pinL" style="left:1330px;top:470px"><div class="av" style="background:linear-gradient(35deg,#0B86EA,#3F4DE6)">L</div><div><div class="nm">Luke</div><div class="pl">Wokingham</div></div></div>
+    <div class="bubble q" id="bq" style="left:300px;top:760px"><small>client · 09:02</small>Can you change our Saturday hours to 9 till 1?</div>
+    <div class="bubble a typing" id="bt" style="right:260px;top:900px"><i></i><i></i><i></i></div>
+    <div class="bubble a" id="ba" style="right:260px;top:880px"><small>Luke · 09:06</small>Done! It’s live now. Anything else?</div>
+  </div>
+
+  <!-- s10: end -->
+  <div id="s10" class="layer">
+    <div class="sun" id="sun10"><div class="disc"></div></div>
+    <div class="horizon" id="hor10"></div>
+    <canvas id="parts" width="1920" height="1080"></canvas>
+    <svg class="abs logo" id="logo10" viewBox="0 0 520 110"></svg>
+    <div class="tag" id="tag10">We build it. Then we look after it.</div>
+    <div class="url" id="url10"><span>lrweb.uk</span></div>
+    <div class="fine" id="fine10">Websites from £299 · Care from £29/mo · hello@lrweb.uk</div>
+  </div>
+
+  <div id="curtain" class="layer"><i></i><i></i><i></i><i></i><svg class="mk" id="mk" viewBox="0 0 64 64"></svg></div>
+  <div id="flash" class="layer"></div>
+  <div id="vignette" class="layer"></div>
+  <div id="grain" class="layer"></div>
+  <div id="black" class="layer"></div>
+</div>
+
+<script src="timeline.js"></script>
+<script>
+(() => {
+const T = window.TL, S = T.sections;
+const $ = (s) => document.querySelector(s);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const E = {
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  out5: (x) => 1 - Math.pow(1 - x, 5),
+  inOut: (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  in: (x) => x * x * x,
+  expo: (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x)),
+  back: (x) => { const c1 = 2.2, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); },
+  elastic: (x) => (x <= 0 ? 0 : x >= 1 ? 1 : Math.pow(2, -10 * x) * Math.sin((x * 10 - .75) * (2 * Math.PI / 3)) + 1),
+};
+// deterministic noise
+const hash = (n) => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+const noise1 = (x) => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return lerp(hash(i), hash(i + 1), u) * 2 - 1; };
+const set = (el, css) => { for (const k in css) el.style[k] = css[k]; };
+const show = (el, on) => { el.style.display = on ? '' : 'none'; };
+const fade = (el, o, tf = '') => { el.style.opacity = o; el.style.transform = tf; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; };
+
+// beat pulse (decays after each kick)
+const pulse = (t, tau = .14) => { let v = 0; for (const k of T.kicks) { if (k > t) break; const d = t - k; if (d < .6) v = Math.max(v, Math.exp(-d / tau)); } return v; };
+
+// ------------------------------------------------------------ logo (traced from the LRWeb mark)
+const MARK = `<path d="M17 1.5H34L24.5 49.5H69L84.5 65H4Z" fill="#0A74C9"/>
+<path d="M44 1.5H95Q110 1.5 110 16V27Q110 36 97 43L119 65H96L62.5 29.5H89Q95 29.5 95 23V21Q95 15 89 15H58L51 43H34Z" fill="#3CB88C"/>`;
+const logoSVG = (fill) => `<g transform="translate(0,20) scale(1.07)">${MARK}</g><text x="150" y="88" font-family="Bricolage Grotesque" font-weight="800" font-size="104" letter-spacing="-4" fill="${fill}">LRWeb</text>`;
+$('#logo3').innerHTML = logoSVG('#F5F8FA');
+$('#logo10').innerHTML = logoSVG('#fff');
+$('#mk').innerHTML = `<defs><linearGradient id="fg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#3DB88D"/><stop offset=".55" stop-color="#0B86EA"/><stop offset="1" stop-color="#3F4DE6"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="#070824"/><path d="M15 41a17 17 0 0 1 34 0Z" fill="url(#fg)"/><rect x="11" y="41" width="42" height="4" rx="2" fill="#F5F8FA"/>
+<circle cx="20" cy="18" r="1.4" fill="#F5F8FA" opacity=".7"/><circle cx="46" cy="14" r="1" fill="#F5F8FA" opacity=".5"/><circle cx="52" cy="24" r="1.2" fill="#F5F8FA" opacity=".6"/>`;
+
+// ------------------------------------------------------------ build DOM for lists
+const alertEls = T.alerts.map((a) => {
+  const d = document.createElement('div'); d.className = 'alert';
+  d.innerHTML = `<div class="ic">${a.icon}</div><div><b>${a.text}</b><small>${a.sub}</small></div>`;
+  set(d, { left: a.x + 'px', top: a.y + 'px' }); $('#alerts').appendChild(d); return d;
+});
+const wordEls = T.words.map((w, i) => { const s = document.createElement('span'); s.className = 'gtext'; s.textContent = w.w; $('#slot').appendChild(s); return s; });
+const CK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>';
+const rowEls = T.careLog.map((c) => { const r = document.createElement('div'); r.className = 'row'; r.innerHTML = `<div class="tm">${c.time}</div><div class="tx">${c.text}</div><div class="ck">${CK}</div>`; $('#rows').appendChild(r); return r; });
+const winEls = T.sites.map((s) => {
+  const w = document.createElement('div'); w.className = 'win';
+  w.innerHTML = `<div class="bar"><i></i><i></i><i></i><div class="url">${s.url}</div></div><div class="shot" style="background-image:url(../lrweb/assets/work/${s.img}.jpg)"></div><div class="shade"></div>`;
+  $('#ring').appendChild(w); return w;
+});
+const lineEls = T.receipt.map((r) => { const d = document.createElement('div'); d.className = 'ln'; d.innerHTML = `<span>${r.text}</span><b>✓</b>`; $('#lines').appendChild(d); return d; });
+// price digits: slot-machine columns
+const digitCols = ['2', '9'].map((target, i) => {
+  const d = document.createElement('div'); d.className = 'digit gtext';
+  const col = document.createElement('div'); col.className = 'col';
+  const seq = []; for (let k = 0; k < 10 + i * 6; k++) seq.push(String(k % 10)); seq.push(target);
+  col.innerHTML = seq.map((c) => `<span class="gtext">${c}</span>`).join('');
+  d.appendChild(col); $('#digits').appendChild(d); return { col, n: seq.length };
+});
+
+// ------------------------------------------------------------ sky canvas
+const sky = $('#sky'), sctx = sky.getContext('2d');
+const lo = document.createElement('canvas'); lo.width = 480; lo.height = 270; const lctx = lo.getContext('2d');
+const blo = document.createElement('canvas'); blo.width = 480; blo.height = 270; const bctx = blo.getContext('2d');
+const STARS = Array.from({ length: 420 }, (_, i) => ({ x: hash(i) * 1920, y: Math.pow(hash(i + 999), 1.4) * 1000, r: .5 + hash(i + 55) * 1.6, p: hash(i + 7) * 6.28, s: .5 + hash(i + 3) * 2 }));
+const mix = (a, b, x) => a.map((v, i) => Math.round(lerp(v, b[i], x)));
+const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function drawSky(t, o) {
+  const { dawn = 0, aurora = .6, stars = 1, alert = 0, drift = 0 } = o;
+  const top = mix(mix([4, 5, 26], [16, 18, 74], dawn), [60, 8, 20], alert * .6);
+  const mid = mix(mix([11, 13, 48], [30, 40, 150], dawn), [70, 10, 30], alert * .5);
+  const bot = mix(mix([16, 18, 74], [40, 150, 190], dawn), [110, 20, 40], alert * .5);
+  const g = lctx.createLinearGradient(0, 0, 0, 270);
+  g.addColorStop(0, rgb(top)); g.addColorStop(.6, rgb(mid)); g.addColorStop(1, rgb(bot));
+  lctx.globalCompositeOperation = 'source-over'; lctx.fillStyle = g; lctx.fillRect(0, 0, 480, 270);
+  // aurora ribbons
+  lctx.globalCompositeOperation = 'lighter';
+  const cols = [[61, 184, 141], [11, 134, 234], [63, 77, 230]];
+  for (let r = 0; r < 3; r++) {
+    for (let x = -4; x < 484; x += 3) {
+      const X = x + drift;
+      const y = 70 + r * 22 + Math.sin(X * .011 + t * .35 + r * 2.1) * 26 + Math.sin(X * .029 - t * .55 + r) * 11;
+      const a = aurora * (.18 + .14 * Math.sin(X * .045 + t * 1.3 + r * 1.7)) * (1 - r * .15);
+      if (a <= 0) continue;
+      const h = 70 + 30 * Math.sin(X * .02 + r + t * .4);
+      const gg = lctx.createLinearGradient(0, y - h, 0, y + 8);
+      gg.addColorStop(0, rgb(cols[r], 0)); gg.addColorStop(.85, rgb(cols[r], a)); gg.addColorStop(1, rgb(cols[r], 0));
+      lctx.fillStyle = gg; lctx.fillRect(x, y - h, 3.2, h + 8);
+    }
+  }
+  sctx.imageSmoothingEnabled = true; sctx.imageSmoothingQuality = 'high';
+  sctx.globalCompositeOperation = 'source-over';
+  bctx.filter = 'blur(2px)'; bctx.clearRect(0, 0, 480, 270); bctx.drawImage(lo, 0, 0); bctx.filter = 'none';
+  sctx.drawImage(blo, -8, -8, 1936, 1096);
+  if (stars > 0) {
+    for (const s of STARS) {
+      const tw = .55 + .45 * Math.sin(t * s.s + s.p);
+      const a = stars * tw * (1 - s.y / 1150) * (1 - dawn * .85);
+      if (a < .02) continue;
+      sctx.fillStyle = `rgba(245,248,250,${a})`;
+      sctx.beginPath(); sctx.arc((s.x - drift * 4 * s.r + 1920) % 1920, s.y, s.r, 0, 6.283); sctx.fill();
+    }
+  }
+}
+
+// ------------------------------------------------------------ Berkshire dot map (s9)
+const map = $('#map'), mctx = map.getContext('2d');
+const RALPH = [360, 560], LUKE = [1350, 470];
+function drawMap(t, o) {
+  mctx.clearRect(0, 0, 1920, 1080);
+  // dotted county blob
+  for (let y = 300; y < 1000; y += 26) for (let x = 120; x < 1800; x += 26) {
+    const nx = (x - 960) / 820, ny = (y - 600) / 300;
+    const edge = 1 + .22 * noise1(x * .006 + 3) + .18 * noise1(y * .01 + 9);
+    const d = nx * nx + ny * ny * 1.4;
+    if (d > edge) continue;
+    const k = hash(x * 3.1 + y * 7.7);
+    const a = o.a * (.12 + .18 * k) * (1 - d / edge * .6);
+    mctx.fillStyle = `rgba(139,149,247,${a})`;
+    mctx.beginPath(); mctx.arc(x, y, 3.2, 0, 6.283); mctx.fill();
+  }
+  // arc between Luke and Ralph
+  if (o.arc > 0) {
+    const cx = (RALPH[0] + LUKE[0]) / 2, cy = Math.min(RALPH[1], LUKE[1]) - 260;
+    const g = mctx.createLinearGradient(RALPH[0], 0, LUKE[0], 0);
+    g.addColorStop(0, '#3DB88D'); g.addColorStop(.55, '#0B86EA'); g.addColorStop(1, '#3F4DE6');
+    mctx.strokeStyle = g; mctx.lineWidth = 7; mctx.lineCap = 'round';
+    mctx.setLineDash([2, 18]); mctx.lineDashOffset = -t * 60;
+    mctx.beginPath();
+    const steps = 80, n = Math.floor(steps * o.arc);
+    for (let i = 0; i <= n; i++) {
+      const u = i / steps, x = (1 - u) * (1 - u) * RALPH[0] + 2 * (1 - u) * u * cx + u * u * LUKE[0], y = (1 - u) * (1 - u) * RALPH[1] + 2 * (1 - u) * u * cy + u * u * LUKE[1];
+      i ? mctx.lineTo(x + 48, y + 48) : mctx.moveTo(x + 48, y + 48);
+    }
+    mctx.stroke(); mctx.setLineDash([]);
+  }
+}
+
+// ------------------------------------------------------------ particles (s10)
+const parts = $('#parts'), pctx = parts.getContext('2d');
+const PARTS = Array.from({ length: 160 }, (_, i) => ({ x: hash(i * 3.3) * 1920, v: 30 + hash(i * 1.7) * 90, r: 1 + hash(i * 9.1) * 3.2, c: i % 3, ph: hash(i) * 6.28 }));
+function drawParts(t, a) {
+  pctx.clearRect(0, 0, 1920, 1080);
+  const cols = ['61,184,141', '11,134,234', '139,149,247'];
+  for (const p of PARTS) {
+    const y = 1100 - ((t * p.v + p.ph * 200) % 1250);
+    const x = p.x + Math.sin(t * .8 + p.ph) * 30;
+    pctx.fillStyle = `rgba(${cols[p.c]},${a * (.35 + .4 * Math.sin(t * 2 + p.ph))})`;
+    pctx.beginPath(); pctx.arc(x, y, p.r, 0, 6.283); pctx.fill();
+  }
+}
+
+// ------------------------------------------------------------ grain
+const grainTiles = [0, 1, 2, 3].map((k) => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const d = x.createImageData(256, 256);
+  for (let i = 0; i < d.data.length; i += 4) { const v = hash(i * .37 + k * 1000) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); return c.toDataURL(); });
+
+// ------------------------------------------------------------ scenes
+const stage = $('#stage');
+const L = { s1: $('#s1'), s2: $('#s2'), s3: $('#s3'), s4: $('#s4'), s5: $('#s5'), s6: $('#s6'), s7: $('#s7'), s8: $('#s8'), s9: $('#s9'), s10: $('#s10') };
+
+function typed(o, t) { const n = clamp(Math.floor((t - o.t0) * o.cps) + 1, 0, o.text.length); return t < o.t0 ? '' : o.text.slice(0, n); }
+
+function curtain(t, tIn, tOut, markOn = true) {
+  // columns rise from the bottom (in), then leave through the top (out) — like lrweb.uk
+  const cols = [...$('#curtain').children].filter((e) => e.tagName === 'I');
+  let any = false;
+  cols.forEach((c, i) => {
+    const pin = E.inOut(P(t, tIn + i * .05, tIn + i * .05 + .32));
+    const pout = E.inOut(P(t, tOut + i * .06, tOut + i * .06 + .45));
+    if (pout > 0) { c.style.transformOrigin = 'top'; c.style.transform = `scaleY(${1 - pout})`; }
+    else { c.style.transformOrigin = 'bottom'; c.style.transform = `scaleY(${pin})`; }
+    if (pin > 0 && pout < 1) any = true;
+  });
+  const m = $('#mk');
+  const mo = markOn ? clamp(P(t, tIn + .2, tIn + .35) - P(t, tOut, tOut + .15)) : 0;
+  fade(m, mo, `scale(${lerp(.7, 1, E.back(P(t, tIn + .2, tIn + .45)))})`);
+  return any;
+}
+
+function render(t) {
+  const on = (a, b) => t >= a && t < b;
+  let shake = 0, zoom = 1, flash = 0, sky = null, filter = '';
+
+  // ---------------- s1: 11pm (0-4)
+  show(L.s1, on(0, 4.2));
+  if (on(0, 4.2)) {
+    sky = { dawn: 0, aurora: lerp(.15, .55, P(t, 0, 4)), stars: P(t, 0, 1.2), drift: t * 6 };
+    fade($('#s1 .clock'), P(t, .2, .8) * (1 - P(t, 3.6, 4)), `translateY(${-30 * E.in(P(t, 3.6, 4))}px)`);
+    $('#t1').textContent = typed(T.typing1, t);
+    $('#t2').textContent = typed(T.typing2, t);
+    const blink = (t * 2.2) % 1 < .55 ? 1 : 0;
+    $('#c1').style.opacity = t < T.typing2.t0 ? (t > .3 ? blink : 0) : 0;
+    $('#c2').style.opacity = t >= T.typing2.t0 ? blink : 0;
+    const out = E.in(P(t, 3.6, 4));
+    fade($('#s1 .l1'), 1 - out, `translateY(${-60 * out}px) scale(${1 + .04 * P(t, 0, 4)})`);
+    fade($('#s1 .l2'), 1 - out, `translateY(${-40 * out}px)`);
+    zoom = 1 + .03 * P(t, 0, 4);
+  }
+
+  // ---------------- s2: alerts (4-8)
+  show(L.s2, on(3.9, 8.1));
+  if (on(3.9, 8.1)) {
+    const tension = P(t, 4, 7.75);
+    sky = { dawn: 0, aurora: .35 * (1 - tension), stars: 1 - tension * .5, alert: E.in(tension), drift: t * 6 };
+    const black = t >= 7.5;
+    T.alerts.forEach((a, i) => {
+      const p = P(t, a.t, a.t + .35), s = E.back(p);
+      const jit = tension * tension * 9;
+      const jx = noise1(t * 22 + i * 10) * jit, jy = noise1(t * 19 + i * 20) * jit;
+      fade(alertEls[i], black ? 0 : clamp(p * 3), `translate(${jx}px,${jy}px) rotate(${a.r + noise1(t * 8 + i) * tension * 2}deg) scale(${lerp(.4, 1, s)})`);
+    });
+    const wp = P(t, 6.0, 6.3);
+    const who = $('#who');
+    const g = P(t, 6.0, 7.9) * 14 + (t > 7.5 ? 10 : 0);
+    const gx = noise1(t * 30) * g, gy = noise1(t * 27 + 5) * g * .3;
+    who.style.textShadow = `${gx}px ${gy}px 0 rgba(255,92,108,.85), ${-gx}px ${-gy}px 0 rgba(11,134,234,.85)`;
+    const slice = (hash(Math.floor(t * 20)) > .7 && t > 6.5) ? noise1(t * 40) * 30 : 0;
+    fade($('#s2 .who'), E.out(wp), `translateX(${slice}px) scale(${lerp(1.4, 1, E.out5(wp)) + .06 * E.in(P(t, 6.3, 8))})`);
+    shake = tension * tension * 6 + (t > 7.5 ? 4 : 0);
+  }
+
+  // ---------------- curtain around the drop: in 7.6 -> covered -> out at 8.0
+  const cur1 = t > 7.45 && t < 8.7, cur2 = t > 35.45 && t < 36.7;
+  show($('#curtain'), cur1 || cur2);
+  if (cur1) curtain(t, 7.5, 7.86); else if (cur2) curtain(t, 35.52, 35.88);
+
+  // ---------------- s3: logo + handled (8-12.3)
+  show(L.s3, on(7.95, 12.12));
+  if (on(7.95, 12.12)) {
+    sky = { dawn: 0, aurora: 1 + .6 * pulse(t, .2), stars: 1, drift: t * 14 };
+    const lp = E.out5(P(t, 8.05, 8.8));
+    const lup = E.inOut(P(t, 8.75, 9.1));
+    const logo = $('#logo3');
+    fade(logo, lp * (1 - lup), `scale(${lerp(1.5, 1, lp) + .03 * pulse(t)})`);
+    logo.style.filter = `blur(${(1 - lp) * 18}px) drop-shadow(0 0 ${40 + 60 * pulse(t)}px rgba(11,134,234,.55))`;
+    const hp = E.out5(P(t, 8.95, 9.35));
+    const yw = $('#yw');
+    fade(yw, hp, `translateY(${(1 - hp) * 80}px)`);
+    // rotating word
+    const cur = T.words.reduce((k, w, i) => (t >= w.t ? i : k), -1);
+    wordEls.forEach((el, i) => {
+      const w = T.words[i];
+      const pin = E.out5(P(t, w.t, w.t + .22));
+      const nx = T.words[i + 1];
+      const pout = nx ? E.inOut(P(t, nx.t, nx.t + .18)) : 0;
+      const y = t < w.t ? 110 : (pout > 0 ? -110 * pout : 110 * (1 - pin));
+      fade(el, (t >= w.t && pout < 1) ? 1 : 0, `translateY(${y}%)`);
+    });
+    const up = E.out5(P(t, 11.5, 11.85));
+    const ul = $('#ul'); ul.style.transform = `scaleX(${up})`; ul.style.opacity = up;
+    fade($('#sub3'), P(t, 9.6, 10) , `translateY(${(1 - E.out(P(t, 9.6, 10))) * 20}px)`);
+    const hl = $('#s3 .hl');
+    const ex = E.in(P(t, 11.92, 12.12));
+    fade(hl, 1 - ex, `scale(${1 + .025 * pulse(t) + ex * 1.6})`);
+    $('#sub3').style.opacity = (1 - ex) * P(t, 9.6, 10);
+    flash = Math.max(flash, .55 * (1 - P(t, 8.0, 8.4)));
+    shake = 18 * Math.exp(-(t - 8) / .12) * (t >= 8 ? 1 : 0) + 3 * pulse(t);
+    zoom = 1 + .015 * pulse(t);
+  }
+
+  // ---------------- s4: overnight (12-16.2)
+  show(L.s4, on(12.06, 16.25));
+  if (on(12.06, 16.25)) {
+    const dawn = E.inOut(P(t, 12.2, 15.2));
+    sky = { dawn, aurora: .9 * (1 - dawn * .7) + .4 * pulse(t, .2), stars: 1, drift: t * 14 };
+    // clock 23:00 -> 08:00
+    const mins = Math.floor(lerp(23 * 60, 32 * 60, E.inOut(P(t, 12.1, 15.0))));
+    const hh = String(Math.floor(mins / 60) % 24).padStart(2, '0'), mm = String(mins % 60).padStart(2, '0');
+    $('#clock4').textContent = `${hh}:${mm}`;
+    const ci = E.out5(P(t, 12.08, 12.45)), co = E.in(P(t, 14.85, 15.15));
+    fade($('#clk4'), ci * (1 - co), `translateX(${(1 - ci) * -140 - co * 200}px)`);
+    const li = E.out5(P(t, 12.15, 12.55));
+    fade($('#log4'), li * (1 - co), `translateX(${(1 - li) * 200 + co * 200}px) rotateY(${(1 - li) * -12}deg)`);
+    T.careLog.forEach((c, i) => {
+      const p = P(t, c.t - .12, c.t + .18);
+      fade(rowEls[i], clamp(p * 2), `translateX(${(1 - E.out5(p)) * 60}px)`);
+      const ck = rowEls[i].querySelector('.ck');
+      const cp = P(t, c.t, c.t + .35);
+      ck.style.transform = `scale(${t < c.t ? 0 : E.back(cp)})`;
+      ck.style.background = t < c.t ? '#333' : '';
+    });
+    // sun rises behind: the LRWeb sunrise (favicon motif)
+    const sunUp = E.out(P(t, 12.3, 15.4));
+    const sun = $('#sun4'); 
+    sun.querySelector('.disc').style.transform = `translateY(${lerp(650, 120, sunUp)}px)`;
+    const hor = $('#hor4'); set(hor, { top: '990px', width: lerp(600, 1500, E.out(P(t, 12.2, 13))) + 'px', marginLeft: -lerp(600, 1500, E.out(P(t, 12.2, 13))) / 2 + 'px' });
+    sun.style.top = '350px';
+    const sp = E.out5(P(t, 15.0, 15.4));
+    fade($('#slept'), sp * (1 - E.in(P(t, 15.9, 16.2))), `scale(${lerp(.8, 1, sp) + .02 * pulse(t)})`);
+    const fo = E.in(P(t, 15.85, 16.2));
+    L.s4.style.opacity = 1 - fo;
+    shake = 3 * pulse(t);
+    zoom = 1 + .012 * pulse(t);
+  }
+
+  // ---------------- s5: showcase (16-22)
+  show(L.s5, on(15.85, 22.02));
+  if (on(15.85, 22.02)) {
+    sky = null;
+    L.s5.style.opacity = E.out(P(t, 15.85, 16.15));
+    $('#floor').style.backgroundPosition = `0 ${t * 240}px`;
+    // tape stop slow-down: local time freezes from 21.5
+    const tl = t < S.tapestop ? t : S.tapestop + (t - S.tapestop) * (1 - P(t, S.tapestop, S.lofi)) * .5;
+    const ti = E.out5(P(t, 16.0, 16.4));
+    fade($('#title5'), ti, `translateY(${(1 - ti) * -60}px)`);
+    // ring rotation: snap to each site on its beat
+    const n = T.sites.length, step = 360 / n;
+    let ang = 0;
+    T.sites.forEach((s, i) => { if (i > 0) ang += step * E.back(P(tl, s.t - .02, s.t + .45)); });
+    const R = 1250;
+    const ring = $('#ring');
+    ring.style.transform = `translateZ(${-R + 150 - 80 * pulse(t)}px) rotateX(-4deg) rotateY(${-ang - 8 * Math.sin(tl * .9)}deg)`;
+    const ringIn = E.out5(P(t, 15.9, 16.5));
+    ring.style.opacity = ringIn;
+    winEls.forEach((w, i) => {
+      w.style.transform = `rotateY(${i * step}deg) translateZ(${R}px)`;
+      const rel = ((i * step - ang) % 360 + 540) % 360 - 180;
+      const front = 1 - clamp(Math.abs(rel) / step);
+      w.querySelector('.shade').style.opacity = .72 * (1 - front);
+      const s = T.sites[i];
+      const scrollP = E.inOut(P(tl, s.t + .1, s.t + 1.1));
+      w.querySelector('.shot').style.backgroundPosition = `0 ${-scrollP * 420}px`;
+    });
+    const cur = T.sites.reduce((k, s, i) => (tl >= s.t - .05 ? i : k), 0);
+    $('#kindt').textContent = T.sites[cur].kind + '.';
+    $('#kindn').textContent = `0${cur + 1} / 0${n}`;
+    const kp = E.out5(P(tl, T.sites[cur].t, T.sites[cur].t + .3));
+    fade($('#kind5'), ringIn * kp, `translateY(${(1 - kp) * 40}px)`);
+    shake = 3 * pulse(t);
+    zoom = 1 + .012 * pulse(t);
+    // CRT power-off with the tape stop
+    if (t >= S.tapestop) {
+      const p = P(t, S.tapestop, S.lofi);
+      const sy = p < .7 ? lerp(1, .006, E.in(p / .7)) : .006;
+      const sx = p < .7 ? 1 : lerp(1, 0, E.in((p - .7) / .3));
+      L.s5.style.transform = `scale(${sx},${sy})`;
+      L.s5.style.filter = `brightness(${1 + 3 * p}) saturate(${1 - p})`;
+    } else { L.s5.style.transform = ''; L.s5.style.filter = ''; }
+  }
+
+  // ---------------- s6: 2009 + slider (22-24.3)
+  show(L.s6, on(22, 24.35));
+  if (on(22, 24.35)) {
+    sky = null;
+    // CRT power-on
+    const on6 = P(t, 22, 22.18);
+    L.s6.style.transform = `scale(1,${lerp(.01, 1, E.out5(on6))})`;
+    L.s6.style.filter = `brightness(${lerp(3, 1, on6)}) contrast(1.1)`;
+    $('#mq').style.transform = `translateX(${-((t - 22) * 260) % 900}px)`;
+    const sp = E.back(P(t, 22.4, 22.7));
+    fade($('#stuck'), P(t, 22.4, 22.5) * (1 - P(t, 23.2, 23.35)), `rotate(-3deg) scale(${lerp(.3, 1, sp)})`);
+    $('#ie').style.transform = `translate(${noise1(t * 15) * 4}px, ${noise1(t * 13 + 3) * 3}px)`;
+    const hp = P(t, 23.2, 23.3);
+    const drag = E.inOut(P(t, 23.3, 24.0));
+    const x = lerp(1880, 0, drag);
+    const af = $('#after'); af.style.clipPath = `inset(0 0 0 ${x}px)`;
+    const h = $('#handle'); h.style.left = x + 'px'; h.style.opacity = hp * (1 - P(t, 23.95, 24.05));
+    fade($('#tagB'), hp * (1 - P(t, 23.8, 23.95)));
+    fade($('#tagA'), hp * (1 - P(t, 24.1, 24.3)));
+    $('#scan6').style.opacity = 1 - drag;
+    shake = t < 23.3 ? 1.5 : 0;
+  }
+
+  // ---------------- s7: after (24-26.2)
+  show(L.s7, on(24, 26.3));
+  if (on(24, 26.3)) {
+    sky = null;
+    // full-bleed hero shrinks into a browser window
+    const z = E.inOut(P(t, 24.0, 24.55));
+    const lap = $('#lap');
+    const W = lerp(1920, 1080, z), H = lerp(1080 + 48, 700, z), X = lerp(0, 760, z), Y = lerp(-48, 250, z);
+    set(lap, { width: W + 'px', height: H + 'px', left: X + 'px', top: Y + 'px', borderRadius: lerp(0, 24, z) + 'px' });
+    lap.style.transform = `scale(${1 + .01 * pulse(t)}) translateY(${-(t - 24.5) * 6}px)`;
+    const pp = E.out5(P(t, 24.5, 24.9));
+    const ph = $('#phone'); set(ph, { left: '1480px', top: '330px' });
+    fade(ph, pp, `translateY(${(1 - pp) * 300 - (t - 24.5) * 14}px) rotate(${lerp(12, 4, pp)}deg)`);
+    const cp = E.out5(P(t, 24.35, 24.75));
+    fade($('#cap7'), cp, `translateX(${(1 - cp) * -80}px)`);
+    const cb = E.out5(P(t, 25.0, 25.35));
+    fade($('#cap7b'), cb, `translateY(${(1 - cb) * 30}px)`);
+    const ex = E.inOut(P(t, 25.85, 26.15));
+    L.s7.style.transform = `translateX(${-ex * 1920}px)`;
+    flash = Math.max(flash, .6 * (1 - P(t, 24.0, 24.35)));
+    shake = 3 * pulse(t) + 10 * Math.exp(-(t - 24) / .1) * (t >= 24 ? 1 : 0);
+    zoom = 1 + .012 * pulse(t);
+  }
+
+  // ---------------- s8: pricing (26-32.2)
+  show(L.s8, on(25.85, 32.25));
+  if (on(25.85, 32.25)) {
+    sky = null;
+    const inn = E.inOut(P(t, 25.85, 26.15));
+    const ex = E.inOut(P(t, 31.85, 32.15));
+    L.s8.style.transform = `translateX(${(1 - inn) * 1920 - ex * 1920}px)`;
+    const lp = E.out5(P(t, 26.0, 26.3));
+    fade($('#left8'), lp, `translateY(${(1 - lp) * 50}px)`);
+    digitCols.forEach((d, i) => {
+      const p = E.out5(P(t, 26.0, 26.7 + i * .15));
+      d.col.style.transform = `translateY(${-(d.n - 1) * 400 * p}px)`;
+    });
+    const nc = E.out5(P(t, 26.5, 26.8));
+    fade($('#noc'), nc, `translateY(${(1 - nc) * 20}px)`);
+    const st = P(t, 27.0, 27.3);
+    fade($('#sticker'), t >= 26.92 ? 1 : 0, `rotate(${lerp(-30, -10, E.out(st))}deg) scale(${t < 26.92 ? 0 : lerp(2.4, 1, E.back(st)) + .03 * pulse(t)})`);
+    // receipt prints down
+    const pr = E.out(P(t, 27.6, 28.1));
+    fade($('#printer'), pr, `translateY(${(1 - pr) * -60}px)`);
+    const printed = T.receipt.reduce((k, r, i) => (t >= r.t ? i + 1 : k), 0);
+    lineEls.forEach((l, i) => { const p = P(t, T.receipt[i].t, T.receipt[i].t + .15); l.style.opacity = p; });
+    const totP = P(t, 30.0, 30.15);
+    $('#tot').style.opacity = totP; $('#nb').style.opacity = P(t, 30.2, 30.4);
+    const paper = $('#paper'), feed = paper.parentElement;
+    const lastLine = printed ? lineEls[printed - 1] : null;
+    let want = printed ? lastLine.offsetTop + lastLine.offsetHeight + 24 : 90;
+    if (totP > 0) want = paper.offsetHeight + 12;
+    // ease towards the target so each line "feeds" out
+    const prevT = printed ? T.receipt[printed - 1].t : 27.6;
+    const feedP = totP > 0 ? E.out(P(t, 30.0, 30.2)) : E.out(P(t, prevT, prevT + .12));
+    const prevWant = printed > 1 ? lineEls[printed - 2].offsetTop + lineEls[printed - 2].offsetHeight + 24 : (printed === 1 ? 90 : 0);
+    const base = totP > 0 ? (lastLine.offsetTop + lastLine.offsetHeight + 24) : prevWant;
+    feed.style.height = lerp(base, want, feedP) * pr + 'px';
+    const bp = P(t, 30.0, 30.3);
+    fade($('#badge'), t >= 29.95 ? 1 : 0, `rotate(${lerp(8, -2, E.out(bp))}deg) scale(${t < 29.95 ? 0 : lerp(2, 1, E.back(bp))})`);
+    shake = 3 * pulse(t) + (t > 27 ? 14 * Math.exp(-(t - 27) / .1) : 0) + (t > 30 ? 14 * Math.exp(-(t - 30) / .1) : 0);
+    zoom = 1 + .01 * pulse(t);
+  }
+
+  // ---------------- s9: humans (32-36)
+  show(L.s9, on(31.85, 36.05));
+  if (on(31.85, 36.05)) {
+    sky = null;
+    const inn = E.inOut(P(t, 31.85, 32.15));
+    L.s9.style.transform = `translateX(${(1 - inn) * 1920}px)`;
+    drawMap(t, { a: E.out(P(t, 32.0, 32.8)), arc: E.inOut(P(t, 32.8, 33.6)) });
+    const h = [['#h9a', 32.05, 32.9], ['#h9b', 32.95, 34.9], ['#h9c', 34.95, 36.2]];
+    h.forEach(([id, a, b]) => { const pi = E.out5(P(t, a, a + .3)), po = E.in(P(t, b - .15, b)); fade($(id), pi * (1 - po), `translateY(${(1 - pi) * 60 - po * 40}px)`); });
+    ['#pinR', '#pinL'].forEach((id, i) => { const p = E.back(P(t, 32.6 + i * .2, 32.95 + i * .2)); fade($(id), clamp(p), `scale(${p})`); });
+    const q = E.back(P(t, 33.5, 33.8)); fade($('#bq'), clamp(q * 2), `translateY(${(1 - q) * 40}px) scale(${lerp(.8, 1, q)})`);
+    const typing = t > 34.0 && t < 34.6;
+    show($('#bt'), typing);
+    [...$('#bt').children].forEach((d, i) => { d.style.transform = `translateY(${-8 * Math.max(0, Math.sin(t * 12 - i * .8))}px)`; });
+    const a = E.back(P(t, 34.6, 34.9)); fade($('#ba'), clamp(a * 2), `translateY(${(1 - a) * 40}px) scale(${lerp(.8, 1, a)})`);
+    // build: push in toward the final hit
+    const b = E.in(P(t, 35.0, 36.0));
+    zoom = 1 + .1 * b;
+    L.s9.style.filter = `brightness(${1 + b * .6})`;
+    shake = b * b * 5;
+  }
+
+  // ---------------- s10: end card (36-42)
+  show(L.s10, t >= 35.95);
+  if (t >= 35.95) {
+    sky = { dawn: 1, aurora: .8, stars: 1, drift: t * 10 };
+    const sunUp = E.out5(P(t, 36.0, 37.4));
+    const sun = $('#sun10'); set(sun, { top: '350px' });
+    sun.querySelector('.disc').style.transform = `translateY(${lerp(650, 250, sunUp)}px)`;
+    sun.style.opacity = .95;
+    const hw = lerp(200, 1500, E.out5(P(t, 36.0, 36.8)));
+    set($('#hor10'), { top: '990px', width: hw + 'px', marginLeft: -hw / 2 + 'px' });
+    drawParts(t, P(t, 36.0, 37));
+    const lg = E.out5(P(t, 36.05, 36.8));
+    const logo = $('#logo10');
+    fade(logo, lg, `scale(${lerp(1.6, 1, lg) + .01 * Math.sin(t * 2)})`);
+    logo.style.filter = `blur(${(1 - lg) * 20}px) drop-shadow(0 20px 60px rgba(7,8,36,.55))`;
+    const tg = E.out5(P(t, 36.75, 37.15)); fade($('#tag10'), tg, `translateY(${(1 - tg) * 40}px)`);
+    const u = E.back(P(t, 37.4, 37.8)); fade($('#url10'), clamp(u * 2), `scale(${lerp(.6, 1, u)})`);
+    const f = E.out5(P(t, 37.9, 38.3)); fade($('#fine10'), f, `translateY(${(1 - f) * 20}px)`);
+    flash = Math.max(flash, .55 * (1 - P(t, 36.0, 36.45)));
+    shake = 20 * Math.exp(-(t - 36) / .13) * (t >= 36 ? 1 : 0);
+    zoom = 1 + .03 * P(t, 36, 42);
+  }
+
+  // ---------------- global
+  if (sky) { sctx.globalAlpha = 1; drawSky(t, sky); show(sky_, true); } else show(sky_, false);
+  const sx = noise1(t * 35) * shake, sy = noise1(t * 31 + 7) * shake;
+  stage.style.transform = `translate(${sx}px,${sy}px) scale(${zoom})`;
+  $('#flash').style.opacity = flash;
+  $('#black').style.opacity = Math.max(1 - P(t, 0, .5), P(t, 41.3, 42));
+  const g = $('#grain'); const fi = Math.floor(t * 60);
+  g.style.backgroundImage = `url(${grainTiles[fi % 4]})`; g.style.backgroundPosition = `${Math.floor(hash(fi) * 256)}px ${Math.floor(hash(fi + .5) * 256)}px`;
+}
+const sky_ = $('#sky');
+
+window.seek = (t) => { render(t); return true; };
+window.ready = Promise.all([document.fonts.ready, ...[...document.querySelectorAll('img')].map((i) => i.decode().catch(() => 0))]).then(async () => {
+  // preload background images
+  const urls = [...T.sites.map((s) => `../lrweb/assets/work/${s.img}.jpg`), '../lrweb/assets/work/smith-and-sons-hero.jpg', '../lrweb/assets/work/smith-and-sons-mobile.jpg'];
+  await Promise.all(urls.map((u) => new Promise((r) => { const i = new Image(); i.onload = i.onerror = r; i.src = u; })));
+  await document.fonts.load('800 100px "Bricolage Grotesque"'); await document.fonts.load('500 20px "IBM Plex Mono"'); await document.fonts.load('600 20px "Instrument Sans"');
+  render(0); return true;
+});
+
+// live preview: ?play plays in real time with the soundtrack (click to start)
+if (location.search.includes('play')) {
+  const a = new Audio('soundtrack.wav');
+  document.addEventListener('click', () => { a.currentTime = 0; a.play(); const loop = () => { render(a.currentTime); if (!a.paused) requestAnimationFrame(loop); }; loop(); });
+}
+const m = location.search.match(/t=([\d.]+)/); if (m) window.ready.then(() => render(+m[1]));
+})();
+</script>
+</body>
+</html>

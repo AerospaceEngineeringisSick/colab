@@ -7,3 +7,4 @@ samples/*.mp3
 captures/.fontcache/
 frames/
 samples/orch/
+*-share-preview.mp4

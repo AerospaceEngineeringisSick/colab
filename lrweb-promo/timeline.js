@@ -34,7 +34,7 @@
     ['SSL', 'Renewed automatically', 'lock'],
     ['Speed', 'Pages load in 0.8s', 'bolt'],
   ];
-  const SITES = [ // the showcase: [capture, industry, address]
+  const SITES = [ // example sites (demo designs, not clients) flown past in the tunnel: [capture, kind, placeholder]
     ['northside-barber', 'Barber', 'northsidebarber.co.uk'], ['petal-and-stem', 'Florist', 'petalandstem.co.uk'], ['volt-strength', 'Gym', 'voltstrength.co.uk'],
     ['tidewater', 'Restaurant', 'tidewater.co.uk'], ['smith-and-sons', 'Plumber', 'smithandsons.co.uk'], ['form-and-field', 'Architects', 'formandfield.studio'],
   ];
@@ -52,8 +52,8 @@
     ['storm', 4, 4, { words: seq(0, .5, 6), pops: seq(0, .25, 9), dialogs: seq(.75, .25, 6), rush: seq(2.25, .0625, 8), who: 3.0, gap: 3.75 }],
     ['drop', 8, 2, { ours: 0, mark: .625, word: 1.0, tag: 1.25 }],
     ['two', 10, 1, { split: 0, a: .125, b: .25, grow: .75 }],
-    ['build', 11, 5, { before: 0, explode: 1.0, design: 1.75, rebuild: 2.0, chrome: 2.0, morph: 3.0, cap: 3.25 }],
-    ['showcase', 16, 3, { cuts: [0, .375, .75, 1.0, 1.375, 1.75], grid: 2.0, cap: 2.125, flip: 2.75 }],   // match-cut montage of the example sites
+    ['build', 11, 5, { before: 0, explode: .75, design: 1.625, rebuild: 2.0, morph: 3.0, cap: 3.25 }],
+    ['showcase', 16, 3, { cuts: [0, .375, .75, 1.0, 1.375, 1.75], warp: 2.0, cap: 2.125, flip: 2.75 }],   // fly through a tunnel of site screens
     ['care', 19, 4, { title: 0, cards: seq(.25, .125, 6), focus: 2.25, run: 3.0, runB: 3.25 }],
     ['pricing', 23, 4, { hero: 0, plans: [.5, .625, .75], split: 1.25, day: 2.0, build: 3.0 }],
     ['humans', 27, 2, { lines: [0, .375, .75], smash: 1.125, hit: 1.25, web: 1.375, collapse: 1.75 }],
@@ -79,7 +79,7 @@
     o = S.drop.o; add(at('drop', 0), 'drop'); add(at('drop', o.mark), 'snap'); add(at('drop', o.word), 'swipe', .5);
     o = S.two.o; add(at('two', 0) - .25, 'iris', .7); add(at('two', o.split), 'swipe', .7); add(at('two', o.grow), 'whoosh');
     o = S.build.o; add(at('build', o.explode), 'whoosh', .8); add(at('build', o.design), 'swipe', .6); add(at('build', o.rebuild), 'reveal'); add(at('build', o.morph), 'morph');
-    o = S.showcase.o; o.cuts.forEach((b, i) => add(at('showcase', b), 'cut', 1, { i })); add(at('showcase', o.grid), 'hit', .6); add(at('showcase', o.flip), 'flip');
+    o = S.showcase.o; o.cuts.forEach((b, i) => add(at('showcase', b), 'cut', 1, { i })); add(at('showcase', o.warp), 'hit', .8); add(at('showcase', o.flip), 'flip');
     o = S.care.o; o.cards.forEach((b, i) => add(at('care', b), 'blip', 1, { i })); add(at('care', o.focus), 'whoosh', .6); add(at('care', o.run), 'swipe', .5);
     o = S.pricing.o; add(at('pricing', 0), 'drop2'); o.plans.forEach((b, i) => add(at('pricing', b), 'deal', 1, { i })); add(at('pricing', o.split), 'tiles'); add(at('pricing', o.day) - .125, 'fall'); add(at('pricing', o.day), 'hit', .6); add(at('pricing', o.build), 'swing'); add(at('pricing', o.plans[0]) - .125, 'whoosh', .7);
     o = S.humans.o; add(at('humans', 0), 'swipe', .6); o.lines.slice(0, 2).forEach((b, i) => add(at('humans', b + .25), 'strike', 1, { i })); add(at('humans', o.smash), 'whoosh', .8); add(at('humans', o.hit), 'smash'); add(at('humans', o.web), 'snap'); add(at('humans', o.collapse), 'suck');

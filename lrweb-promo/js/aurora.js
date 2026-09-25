@@ -110,7 +110,7 @@ void main(){
   // ridges (row 4): far ridge (r), near ridge (g)
   float far = C(v.x + cam.x / 1.4, 4.).r * mountains, near = C(v.x + cam.x * 1.25, 4.).g * mountains;
   if (y >= 0.) {
-    c = sky(v) + aurora(v, 0.) + (starcol(v) * starfield(v) + vec3(.85, 1., .95) * meteors(v)) * stars * (1. - dawn) * smoothstep(0., .2, y);
+    c = sky(v) + aurora(v, 0.) + (starcol(v) * starfield(v) * stars * (1. - dawn) + vec3(.85, 1., .95) * meteors(v) * max(stars, .8) * (1. + .6 * dawn)) * smoothstep(0., .2, y);
     // sun (brand gradient disc) at dawn
     vec2 sp = v - vec2(0., horizon + sunY);
     float R = .15, ds = length(sp);

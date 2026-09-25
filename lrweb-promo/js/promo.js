@@ -505,9 +505,9 @@ const builders = {
     const xp = add(win, `<div class="xp"><div class="tb"><div class="ie"></div><div class="ttl">Crumb &amp; Kiln Bakery - Microsoft Internet Explorer</div><div class="bt">_</div><div class="bt">□</div><div class="bt x">×</div></div>
       <div class="mb"><span>File</span><span>Edit</span><span>View</span><span>Favorites</span><span>Tools</span><span>Help</span></div>
       <div class="tlb"><div class="ar">‹</div>Back<div class="ar off">›</div><span>✖ Stop</span><span>⟳ Refresh</span><span>⌂ Home</span><span>☆ Favorites</span></div>
-      <div class="adr">Address<div class="f">🌐 http://www.crumbandkiln.co.uk/index.htm</div><div class="go">Go</div></div></div>`, { width: px(ww) });
+      <div class="adr">Address<div class="f">📁 file:///C:/My%20Documents/Bakery%20Website/index.htm</div><div class="go">Go</div></div></div>`, { width: px(ww) });
     const stb = add(win, '<div class="xp"><div class="stb"><span>✔ Done</span><span>🌐 Internet</span></div></div>', { top: px(wh - SB - 4), width: px(ww) });
-    const mod = add(win, '<div class="mod"><i></i><i></i><i></i><div class="url">🔒 crumbandkiln.co.uk</div></div>', { width: px(ww) });
+    const mod = add(win, '<div class="mod"><i></i><i></i><i></i><div class="url">🔒 Crumb &amp; Kiln</div></div>', { width: px(ww) });
     // the 2003 page, one layer per block, sitting exactly on the body
     const bh = wh - XP - SB - 4, TW = 780, tx = (bw - TW) / 2;
     const old = add(win, '<div class="old"></div>', { left: '4px', top: px(XP), width: px(bw), height: px(bh) });
@@ -563,6 +563,7 @@ const builders = {
     sc.update = (ls, G) => {
       const Bl = (b) => B(b);
       // the canvas grows out of the split screen's top panel; blueprint mode while we take the old site apart
+      bgc.style.backgroundPosition = `${(-ls * 14).toFixed(1)}px ${(-ls * 8).toFixed(1)}px`; bgp.style.backgroundPosition = `${(ls * 22).toFixed(1)}px ${(ls * 12).toFixed(1)}px`;
       const gr = E.inOut5(P(ls, -.5, .1)); bgc.style.clipPath = gr >= 1 ? 'none' : `inset(0 0 ${((1 - gr) * 50).toFixed(2)}% 0)`; setVis(bgc, ls >= -.5);
       const bpm = E.inOut(P(ls, Bl(o.explode) - .1, Bl(o.explode) + .35)) * (1 - E.inOut(P(ls, Bl(o.rebuild) + .1, Bl(o.rebuild) + .6)));
       set(bgp, { o: bpm }); bgp.style.clipPath = `circle(${(Math.hypot(W, H) * E.out(P(ls, Bl(o.explode) - .1, Bl(o.explode) + .45))).toFixed(0)}px at 50% 55%)`;
@@ -577,15 +578,15 @@ const builders = {
       if ((mo > 0 && mo < 1) || (inP > 0 && inP < 1) || (ls > a0 && ls < a0 + 1.0)) G.mb = Math.max(G.mb, 4);
       // explode: every block lifts off the page, then flies away
       old.style.visibility = ls < Bl(o.design) - .25 ? 'visible' : 'hidden';
-      layers.forEach((l, i) => { const a = aud.find((q) => q.li === i); if ((a && ls >= a0 + .15 + a.k * .07) || ls >= Bl(o.design) - .25) hide(l); else set(l, {}); });
+      layers.forEach((l, i) => { const a = aud.find((q) => q.li === i); if ((a && ls >= a0 + .12 + a.k * .05) || ls >= Bl(o.design) - .25) hide(l); else set(l, {}); });
       aud.forEach((a) => {
-        const d = ls - a0 - .15 - a.k * .07, sw = E.in(P(ls, Bl(o.design) - .5 + a.k * .03, Bl(o.design) - .15 + a.k * .03));
+        const d = ls - a0 - .12 - a.k * .05, sw = E.in(P(ls, Bl(o.design) - .38 + a.k * .025, Bl(o.design) - .08 + a.k * .025));
         if (d < 0 || sw >= 1 || !a.rc) { hide(a.cl); hide(a.lab); return; }
-        const sp = spring(d, 1.25, .62), sx = a.rc.left + a.rc.width / 2, sy = a.rc.top + a.rc.height / 2;
+        const sp = spring(d, 1.6, .62), sx = a.rc.left + a.rc.width / 2, sy = a.rc.top + a.rc.height / 2;
         a.cl.style.boxShadow = `0 0 0 ${(22 * sp / a.sc).toFixed(1)}px #FFF7DC, 0 ${(30 * sp).toFixed(0)}px 70px rgba(0,0,20,${(.45 * sp).toFixed(2)})`;
         set(a.cl, { x: (TGT[a.k][0] - sx) * sp, y: (TGT[a.k][1] - sy) * sp + sw * 500, s: lerp(1, a.sc, sp) * (1 - .5 * sw), r: a.rot * sp + sw * 30 * (a.k % 2 ? 1 : -1), o: 1 - sw });
-        a.st.style.transform = `scaleX(${E.out4(P(d, .45, .65)).toFixed(3)})`; a.st.style.transformOrigin = '0 50%';
-        const lp = E.out(P(d, .5, .75)); set(a.lab, { o: lp * (1 - sw), y: (1 - lp) * 16 });
+        a.st.style.transform = `scaleX(${E.out4(P(d, .3, .48)).toFixed(3)})`; a.st.style.transformOrigin = '0 50%';
+        const lp = E.out(P(d, .3, .5)); set(a.lab, { o: lp * (1 - sw), y: (1 - lp) * 16 });
       });
       mqi.style.transform = `translateX(${(-((ls * 180) % 800)).toFixed(1)}px)`;
       old.querySelector('.new').style.visibility = Math.floor(ls / .25) % 2 ? 'hidden' : 'visible';
@@ -600,7 +601,7 @@ const builders = {
       body.style.top = px(lerp(XP, MOD, ch)); body.style.height = px(lerp(wh - XP - SB - 4, wh - MOD - 4, ch));
       fr.style.visibility = ls >= Bl(o.rebuild) - .05 ? 'visible' : 'hidden';
       buildSite(fr.contentDocument, ls - Bl(o.rebuild) - .15, 1.3, (wh - MOD) / sclD);
-      const tb = E.out(P(ls, Bl(o.before) + .5, Bl(o.before) + .9)) * (1 - E.out(P(ls, Bl(o.explode), Bl(o.explode) + .2)));
+      const tb = E.out(P(ls, Bl(o.before) + .35, Bl(o.before) + .7)) * (1 - E.out(P(ls, Bl(o.explode) + .1, Bl(o.explode) + .3)));
       set(tagB, { o: tb, y: (1 - tb) * 12 }); const ta = E.out(P(ls, Bl(o.rebuild) + .9, Bl(o.rebuild) + 1.2)) * (1 - E.out(P(ls, Bl(o.morph) + .3, Bl(o.morph) + .55))); set(tagA, { o: ta });
       // desktop -> phone: a copy peels off the window and becomes the phone
       if (mo <= 0) hide(phone); else {
@@ -618,69 +619,61 @@ const builders = {
     sc.sky = (ls) => ({ inten: .7, stars: .7, meteor: .15, cam: { tilt: .12, zoom: 1, pan: .35 + ls * .01 } });
   },
 
-  // ================================================================ SHOWCASE: match cut from the new Crumb & Kiln into a montage of six sites; then a mosaic
+  // ================================================================ SHOWCASE: fly through the bakery's screen into a spiralling tunnel of site screens
   showcase(sc) {
     const r = (sc.root = mkRoot()), o = sc.o; sc.post = .02;
-    add(r, '<div class="bg bg-canvas"></div>');
-    const ww = L(1240, 1000), wh = L(760, 780), wx = (W - ww) / 2, wy = L(190, 330);            // the build scene's window...
-    const fcx = wx + ww / 2 + L(-270, 0), fcy = wy + wh / 2 + L(0, -170), fw = ww * .8;          // ...where it ends up
-    const MW = L(1100, 960), bwM = MW - 8, bhM = Math.round(bwM * 900 / 1440), MH = 46 + bhM + 4, mx = L(150, 60), my = L(210, 330);
-    const win = add(r, '<div class="win"></div>', { left: px(mx), top: px(my), width: px(MW), height: px(MH) });
-    add(win, '<div class="frame" style="border-radius:12px"></div>');
-    const mod = add(win, '<div class="mod"><i></i><i></i><i></i><div class="url">🔒 <span>crumbandkiln.co.uk</span></div></div>', { width: px(MW) });
-    const body = add(win, '<div class="body"></div>', { top: '46px', height: px(bhM) });
-    const shots = [['crumb-and-kiln', 'Bakery', 'crumbandkiln.co.uk'], ...TL.SITES].map(([img]) => add(body, `<img src="captures/${img}-hero.jpg" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:top">`));
-    const lx = L(mx + MW + 70, 0), ly0 = L(330, my + MH + 70);
-    const counter = add(r, '<div class="kick" style="color:#3F4DE6">01 / 06</div>', V ? { left: 0, right: 0, textAlign: 'center', top: px(ly0) } : { left: px(lx), top: px(ly0) });
-    const labs = TL.SITES.map(([, kind, url]) => {
-      const t = T(r, [kind], V ? { top: px(ly0 + 50), fontSize: px(120) } : { left: px(lx), top: px(ly0 + 50), fontSize: px(104) }, V ? 't c dark' : 't dark');
-      const u = add(r, `<div class="kick" style="color:#2A3570;text-transform:none;letter-spacing:.04em">${url}</div>`, V ? { left: 0, right: 0, textAlign: 'center', top: px(ly0 + 200) } : { left: px(lx), top: px(ly0 + 180) });
-      return { t, u };
+    const bgC = add(r, '<div class="bg bg-canvas"></div>');
+    const bgD = add(r, '<div class="bg" style="background:radial-gradient(closest-side,#3B3FC4 0%,#161A6E 40%,#070824 100%)"></div>');
+    const PER = 1200;
+    const world = add(r, `<div class="world" style="perspective:${PER}px;perspective-origin:50% 50%"><div class="rig"></div></div>`); const rig = world.firstChild;
+    // every example design, desktop and phone, on a golden-angle helix down the tunnel (pure texture: no names)
+    const list = []; TL.SITES.forEach(([img]) => { list.push([img, 'hero']); list.push([img, 'mhero']); }); list.push(...list, ...list.slice(0, 6));
+    const cards = list.map(([img, kind], i) => {
+      const mob = kind === 'mhero', w = mob ? 300 : 760, h = mob ? 650 : 475;
+      const c = add(rig, `<div class="card" style="padding:0;border:0;overflow:hidden;border-radius:${mob ? 32 : 16}px"><img src="captures/${img}-${kind}.jpg" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top"></div>`,
+        { left: px(CX - w / 2), top: px(CY - h / 2), width: px(w), height: px(h) });
+      const a = i * 2.39996 + .6, R = L(900, 560) * (.8 + .4 * hash(i * 3.7));
+      c.p = { x: Math.cos(a) * R * L(1.15, .85), y: Math.sin(a) * R * L(.75, 1.3), z: -600 - i * 450, r: (hash(i * 1.9) - .5) * 16 }; hide(c); return c;
     });
-    // the mosaic
-    const cols = V ? 2 : 3, cwG = L(520, 470), chG = Math.round(cwG * 900 / 1440), gap = L(34, 30), gx = (W - (cols * cwG + (cols - 1) * gap)) / 2, gy = L(215, 560);
-    const cells = TL.SITES.map((s, i) => ({ x: gx + (i % cols) * (cwG + gap), y: gy + Math.floor(i / cols) * (chG + gap) }));
-    const tiles = TL.SITES.map(([img, kind], i) => add(r, `<div class="card" style="padding:0;border:0;overflow:hidden;border-radius:18px"><img src="captures/${img}-hero.jpg" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top"><div class="chip" style="left:14px;bottom:14px;font-size:${L(22, 24)}px;background:rgba(255,255,255,.92);color:#0B1240;border:0">${kind}</div></div>`,
-      { left: px(cells[i].x), top: px(cells[i].y), width: px(cwG), height: px(chG) }));
-    const cap = T(r, V ? ['Built for real', '*local businesses.*'] : ['Built for real *local businesses.*'], { top: px(L(955, 1520)), fontSize: px(L(66, 80)) }, 't c dark');
-    const wipe = (k, p) => [`inset(0 0 0 ${((1 - p) * 100).toFixed(2)}%)`, `circle(${(p * 75).toFixed(2)}% at 50% 50%)`,
-      `polygon(0 0,${(p * 140).toFixed(1)}% 0,${(p * 140 - 40).toFixed(1)}% 100%,0 100%)`, `inset(${((1 - p) * 100).toFixed(2)}% 0 0 0)`,
-      `circle(${(p * 150).toFixed(2)}% at 100% 0)`, `inset(0 ${((1 - p) * 50).toFixed(2)}% 0 ${((1 - p) * 50).toFixed(2)}%)`][k];
+    // the Crumb & Kiln window the build scene ended on is the tunnel's mouth (a match cut)
+    const ww = L(1240, 1000), wh = L(760, 780), wx = (W - ww) / 2, wy = L(190, 330);
+    const fw = ww * .8, fh = wh * .8, fx0 = wx + ww / 2 + L(-270, 0) - CX, fy0 = wy + wh / 2 + L(0, -170) - CY;
+    const mouth = add(rig, `<div class="card" style="padding:0;border:0;overflow:hidden;border-radius:12px;background:#F3EADB"><div class="mod" style="height:${(46 * .8).toFixed(0)}px"><i></i><i></i><i></i><div class="url">🔒 Crumb &amp; Kiln</div></div><img src="captures/crumb-and-kiln-hero.jpg" style="position:absolute;left:0;top:${(46 * .8).toFixed(0)}px;width:100%;height:calc(100% - ${(46 * .8).toFixed(0)}px);object-fit:cover;object-position:top"></div>`,
+      { left: px(CX - fw / 2), top: px(CY - fh / 2), width: px(fw), height: px(fh) });
+    const cap = T(r, V ? ['Any business.', '*Beautifully built.*'] : ['Any business. *Beautifully built.*'], { top: px(L(450, 820)), fontSize: px(L(116, 112)) });
+    const cutT = o.cuts.map((b) => B(b)), wT = B(o.warp);
+    const dist = (ls) => { let D = Math.max(0, ls) * 110; cutT.forEach((t) => { D += 1400 * E.inOut5(P(ls, t, t + .5)); }); return D + 2600 * E.inOut5(P(ls, wT, wT + .7)); };
+    // hyperspace streaks, strongest while the camera surges
+    const t0 = B(sc.s);
+    FX.push({ k: 'draw', fn: (t) => {
+      const ls = t - t0; if (ls < 0 || ls > B(sc.len)) return;
+      const v = (dist(ls) - dist(ls - .03)) / .03, a = clamp((v - 400) / 4500) * (1 - P(ls, B(o.flip) - .3, B(o.flip)));
+      if (a <= .01) return;
+      fx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 90; i++) {
+        const ang = hash(i * 1.37) * 6.283, sp = .6 + hash(i * 2.9), r0 = ((hash(i * 5.1) * 1400 + ls * 2600 * sp) % 1400) + 120, len = 60 + 360 * a * sp;
+        const c = Math.cos(ang), s = Math.sin(ang), g = fx.createLinearGradient(CX + c * r0, CY + s * r0, CX + c * (r0 + len), CY + s * (r0 + len));
+        g.addColorStop(0, 'rgba(200,255,235,0)'); g.addColorStop(1, `rgba(200,255,235,${(.55 * a * clamp(r0 / 500)).toFixed(3)})`);
+        fx.strokeStyle = g; fx.lineWidth = 1.5 + 1.5 * hash(i); fx.beginPath(); fx.moveTo(CX + c * r0, CY + s * r0); fx.lineTo(CX + c * (r0 + len), CY + s * (r0 + len)); fx.stroke();
+      }
+      fx.globalCompositeOperation = 'source-over';
+    } });
     sc.update = (ls, G) => {
-      const cutT = o.cuts.map((b) => B(b)), gT = B(o.grid);
-      // the match cut: start exactly where the build scene's window ended, then settle into the montage frame
-      const m = E.inOut5(P(ls, 0, .5)), s0 = fw / MW, sNow = lerp(s0, 1, m);
-      const dx = (fcx - (mx + MW / 2)) * (1 - m), dy = (fcy - (my + MH / 2)) * (1 - m);
-      let cur = -1; cutT.forEach((t, i) => { if (ls >= t) cur = i; });
-      const punch = cur >= 0 ? .03 * Math.exp(-(ls - cutT[cur]) / .12) : 0;
-      // into the mosaic: the window becomes the Architects tile
-      const g = E.inOut5(P(ls, gT - .1, gT + .45)), c5 = cells[5];
-      const gs = lerp(1, cwG / bwM, g), gdx = (c5.x + cwG / 2 - (mx + MW / 2)) * g, gdy = (c5.y + chG / 2 - (my + 46 + bhM / 2)) * g;
-      set(win, { x: dx + gdx, y: dy + gdy, s: sNow * (1 + punch) * gs, o: 1 - P(ls, gT + .35, gT + .45) });
-      set(mod, { o: 1 - g });
-      shots.forEach((im, j) => {
-        if (j === 0) { im.style.clipPath = ''; im.style.transform = ''; return; }
-        const t0 = cutT[j - 1], p = E.inOut(P(ls, t0, t0 + .28));
-        if (ls < t0) { im.style.visibility = 'hidden'; return; }
-        im.style.visibility = 'visible'; im.style.clipPath = p >= 1 ? '' : wipe(j - 1, p); im.style.transform = `scale(${(1 + .08 * (1 - E.out(P(ls, t0, t0 + .9)))).toFixed(4)})`;
-      });
-      if (cur >= 0) mod.querySelector('span').textContent = TL.SITES[cur][2];
-      counter.textContent = `${String(Math.max(1, cur + 1)).padStart(2, '0')} / 06`;
-      set(counter, { o: E.out(P(ls, 0, .3)) * (1 - E.in(P(ls, gT - .2, gT))) });
-      labs.forEach(({ t, u }, i) => {
-        const d = ls - cutT[i], nxt = i < 5 ? cutT[i + 1] - cutT[i] : gT - cutT[i];
-        type(t, d, { units: 'chars', st: .025, dur: .35, y: .3, blur: 6, ex: nxt - .12, exDur: .1, exSt: .005 });
-        hide(u); // the address is in the browser bar; a 0.5s caption would be unreadable
-      });
-      tiles.forEach((tl, i) => {
-        if (i === 5) { set(tl, { o: P(ls, gT + .35, gT + .45) }); return; }
-        const d = ls - gT - .05 * i, sp = spring(d, 1.4, .6);
-        if (d < 0) return hide(tl);
-        const fromX = (i % cols < cols / 2 ? -1 : 1) * W * .6, fromY = (i < cols ? -1 : 1) * H * .4;
-        set(tl, { o: clamp(d / .1), x: fromX * (1 - sp), y: fromY * (1 - sp), r: (1 - sp) * (i % 2 ? 8 : -8), s: lerp(.7, 1, sp) });
-      });
-      type(cap, ls - B(o.cap), { st: .09, dur: .6 });
-      if (m > 0 && m < 1 || (g > 0 && g < 1) || punch > .01) G.mb = Math.max(G.mb, 4);
+      const D = dist(ls), v = (D - dist(ls - .03)) / .03;
+      set(bgD, { o: E.inOut(P(ls, .1, .7)) });
+      bgC.style.backgroundPosition = `${(-ls * 30).toFixed(1)}px ${(-ls * 18).toFixed(1)}px`;
+      rig.style.transform = `rotateZ(${(ls * 6 + 5 * Math.sin(ls * .9)).toFixed(2)}deg)`;
+      const place3 = (c, p, extraB = 0) => {
+        const z = p.z + D; if (z > PER * .82 || z < -9000) return hide(c);
+        const op = clamp((z + 6200) / 2600) * (1 - P(z, PER * .45, PER * .82));
+        set(c, { x: p.x, y: p.y, z, r: p.r, o: op * (1 - .12 * extraB), b: Math.max(0, (z - PER * .2) * .025) + extraB });
+      };
+      const capOn = E.out(P(ls, B(o.cap), B(o.cap) + .4));
+      place3(mouth, { x: fx0, y: fy0, z: 0, r: 0 });
+      cards.forEach((c) => place3(c, c.p, capOn * 5));
+      type(cap, ls - B(o.cap), { st: .12, dur: .6 });
+      if (v > 900) G.mb = Math.max(G.mb, 6); else if (v > 300) G.mb = Math.max(G.mb, 3);
+      if (ls > wT && ls < wT + .25) G.flash = Math.max(G.flash, .18 * (1 - (ls - wT) / .25));
     };
     tileWipe(B(sc.s + o.flip), B(sc.s + o.flip) + .45, B(sc.s + o.flip) + .95);
     sc.sky = () => ({ inten: .8, stars: .6, meteor: .1, cam: { tilt: .1, zoom: 1, pan: .5 } });
@@ -689,7 +682,7 @@ const builders = {
   // ================================================================ CARE: a live dashboard on deep navy; one card gets the spotlight
   care(sc) {
     const r = (sc.root = mkRoot()), o = sc.o; sc.pre = .02;
-    add(r, '<div class="bg bg-navy"><div class="bg bg-grid"></div></div>');
+    const cgrid = add(r, '<div class="bg bg-navy"><div class="bg bg-grid"></div></div>').firstChild;
     const glA = add(r, '<div class="glow"></div>', { width: '900px', height: '900px', background: 'rgba(11,134,234,.32)' });
     const glB = add(r, '<div class="glow"></div>', { width: '760px', height: '760px', background: 'rgba(63,77,230,.3)' });
     const chip = add(r, '<div class="chip"><b>02</b>We look after it</div>', { left: px(L(70, 60)), top: px(L(56, 190)) });
@@ -713,6 +706,7 @@ const builders = {
     sc.update = (ls, G) => {
       const out = E.inOut(P(ls, B(o.run) - .25, B(o.run) + .2));
       const fo = E.inOut5(P(ls, B(o.focus), B(o.focus) + .55)) * (1 - E.inOut(P(ls, B(o.run) - .45, B(o.run) - .1)));
+      cgrid.style.backgroundPosition = `0 ${(ls * 20).toFixed(1)}px`;
       const dawn = E.inOut(P(ls, .5, B(o.run)));
       set(glA, { x: CX - 450 + Math.sin(ls * .5) * L(420, 200), y: L(500, 1100) + Math.cos(ls * .4) * 120 });
       set(glB, { x: CX - 380 + Math.cos(ls * .45) * L(520, 260), y: L(-200, 100) + Math.sin(ls * .35) * 140 });
@@ -935,7 +929,7 @@ const builders = {
       G.flash = Math.max(G.flash, .5 * Math.exp(-Math.max(0, ls) / .15) * (ls >= 0 ? 1 : 0));
       if (ls < .5) G.mb = Math.max(G.mb, 4);
     };
-    sc.sky = (ls) => ({ dawn: lerp(.35, 1, E.inOut(P(ls, 0, 2.5))), sunY: lerp(-.26, .02, E.out(P(ls, 0, 6))), inten: .8, speed: .6, stars: .5, meteor: 0,
+    sc.sky = (ls) => ({ dawn: lerp(.35, 1, E.inOut(P(ls, 0, 2.5))), sunY: lerp(-.26, .02, E.out(P(ls, 0, 6))), inten: .8, speed: .6, stars: .5, meteor: 0, m1: [L(.78, .26), .5, B(sc.s) + 4.6, -1],
       cam: { tilt: lerp(.1, -.05, E.inOut(P(ls, 0, 8))), zoom: lerp(1.08, 1, E.out(P(ls, 0, 8))), pan: 1.2 } });
   },
 };

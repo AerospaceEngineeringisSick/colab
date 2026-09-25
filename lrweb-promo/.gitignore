@@ -1,2 +1,4 @@
 stills/
 *.draft.mp4
+samples/*.wav
+samples/*.mp3

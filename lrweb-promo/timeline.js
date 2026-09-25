@@ -1,77 +1,108 @@
-// Single source of truth for timing. The scene reads it in the browser;
-// `node timeline.js` writes events.json, which music.py uses to place every hit.
+// LRWeb promo v2: one timeline, two edits (16:9 landscape and a native 9:16 vertical cut).
+// Everything is in BARS (150 BPM, 1 bar = 1.6 s). The scene reads this in the browser; `node timeline.js`
+// writes events.json, which music.py turns into the arrangement and places every sound effect.
 (function () {
-  const BPM = 120, BEAT = 60 / BPM, BAR = BEAT * 4;
-  const range = (a, b, step) => { const o = []; for (let t = a; t < b - 1e-9; t += step) o.push(+t.toFixed(4)); return o; };
+  const BPM = 150, BEAT = 60 / BPM, BAR = BEAT * 4;
 
-  const sections = { drop1: 8, tapestop: 21.5, lofi: 22, drop2: 24, breakdown: 32, final: 36 };
-
-  const LINE1 = "It's 11pm.", LINE2 = 'Do you know what your website is doing?';
-  const typing1 = { t0: 0.7, cps: 1 / 0.075, text: LINE1 };
-  const typing2 = { t0: 2.0, cps: 1 / 0.034, text: LINE2 };
-  const typeTimes = (o) => [...o.text].map((c, i) => (c === ' ' ? null : +(o.t0 + i / o.cps).toFixed(4))).filter((x) => x !== null);
-
-  const alerts = [
-    { t: 4.0,  icon: '!', text: '14 updates available', sub: 'Plugins · theme · core', x: 250, y: 220, r: -4 },
-    { t: 4.5,  icon: '🔓', text: 'SSL certificate expires in 2 days', sub: 'Visitors will see “Not secure”', x: 1330, y: 180, r: 3 },
-    { t: 5.0,  icon: '⟲', text: 'Last backup: never', sub: 'No restore point found', x: 190, y: 760, r: 3 },
-    { t: 5.5,  icon: '⚠', text: '37 suspicious logins blocked… maybe', sub: 'wp-admin · 03:12', x: 1300, y: 780, r: -3 },
-    { t: 6.25, icon: '⏱', text: 'Page load: 9.4s', sub: 'Visitors gave up', x: 760, y: 90, r: -2 },
-    { t: 6.75, icon: '✕', text: 'Site down? Nobody checked.', sub: 'Uptime monitor: none', x: 700, y: 870, r: 2 },
-    { t: 7.0,  icon: '!', text: 'PHP 5.6 is end of life', sub: 'Since 2018', x: 60, y: 470, r: -5 },
-    { t: 7.25, icon: '✉', text: '“Is your website broken?”', sub: 'from a customer', x: 1480, y: 480, r: 4 },
+  // copy shared by both edits
+  const ERRORS = [
+    ['14 updates available', 'Plugins · theme · core'],
+    ['SSL certificate expires in 2 days', 'Visitors will see “Not secure”'],
+    ['Last backup: never', 'No restore point found'],
+    ['Page load: 9.4s', '53% of visitors already gave up'],
+    ['37 suspicious logins', 'wp-admin · 03:12'],
+    ['Site down?', 'Nobody is checking'],
+    ['PHP 5.6 is end of life', 'Since 2018'],
+    ['“Is your website broken?”', 'Email from a customer'],
+    ['Disk 98% full', 'Hosting account'],
+    ['Contact form not sending', '12 enquiries lost'],
   ];
-
-  const words = [ // the rotating word in "Your website, ___"
-    { t: 9.0, w: 'handled.' }, { t: 9.5, w: 'monitored.' }, { t: 10.0, w: 'backed up.' },
-    { t: 10.5, w: 'updated.' }, { t: 11.0, w: 'secured.' }, { t: 11.5, w: 'handled.' },
+  const WORDS = ['HOSTED.', 'UPDATED.', 'BACKED UP.', 'SECURED.', 'MONITORED.', 'SPEEDY.', 'SUPPORTED.', 'HANDLED.'];
+  const CARE = [
+    ['00:12', 'Backup saved off-site'], ['01:40', 'Updates tested, then applied'], ['02:58', 'Security scan: clear'],
+    ['04:05', 'SSL padlock renewed'], ['06:30', 'Pages cached · 0.8s'], ['07:59', '540 uptime checks ✓'],
   ];
-
-  const careLog = [
-    { t: 12.5, time: '00:12', text: 'Daily backup saved off-site' },
-    { t: 13.0, time: '01:40', text: 'Updates tested on a copy, then applied' },
-    { t: 13.5, time: '02:58', text: 'Security scan: all clear' },
-    { t: 14.0, time: '04:05', text: 'Padlock (SSL) renewed' },
-    { t: 14.5, time: '06:30', text: 'Pages cached, loading in 0.8s' },
-    { t: 15.0, time: '07:59', text: '540 uptime checks. All green.' },
+  const SITES = [
+    ['crumb-and-kiln', 'crumbandkiln.co.uk', 'BAKERY'], ['northside-barber', 'northsidebarber.co.uk', 'BARBER'],
+    ['petal-and-stem', 'petalandstem.co.uk', 'FLORIST'], ['volt-strength', 'voltstrength.co.uk', 'GYM'],
+    ['tidewater', 'tidewater.co.uk', 'RESTAURANT'], ['form-and-field', 'formandfield.studio', 'ARCHITECTS'],
   ];
+  const RECEIPT = ['Managed hosting', 'Software updates', 'Daily backups', 'Security monitoring', 'Uptime checks', 'SSL padlock', 'Small edits', 'Luke & Ralph'];
 
-  const sites = [
-    { t: 16.0, img: 'crumb-and-kiln', url: 'crumbandkiln.co.uk', kind: 'Bakery & café' },
-    { t: 17.0, img: 'northside-barber', url: 'northsidebarber.co.uk', kind: 'Barbershop' },
-    { t: 18.0, img: 'petal-and-stem', url: 'petalandstem.co.uk', kind: 'Florist' },
-    { t: 19.0, img: 'volt-strength', url: 'voltstrength.co.uk', kind: 'Independent gym' },
-    { t: 20.0, img: 'tidewater', url: 'tidewater.co.uk', kind: 'Seafood restaurant' },
-    { t: 21.0, img: 'form-and-field', url: 'formandfield.studio', kind: 'Architects' },
-  ];
+  const seq = (a, step, n) => Array.from({ length: n }, (_, i) => +(a + i * step).toFixed(4));
 
-  const receipt = [
-    'Managed hosting', 'Software updates', 'Daily backups', 'Security monitoring',
-    'Uptime checks, every minute', 'SSL padlock', 'Small content edits', 'Real humans: Luke & Ralph',
-  ].map((text, i) => ({ t: 28.0 + i * 0.25, text }));
-
-  const kicks = [...range(sections.drop1, sections.tapestop, BEAT), ...range(sections.drop2, sections.breakdown, BEAT)];
-
-  const TL = {
-    BPM, BEAT, BAR, DUR: 42, FPS: 60, W: 1920, H: 1080,
-    sections, typing1, typing2, alerts, words, careLog, sites, receipt, kicks,
-    events: {
-      sections,
-      typing: [...typeTimes(typing1), ...typeTimes(typing2)],
-      errors: alerts.map((a) => a.t),
-      chimes: careLog.map((c) => c.t),
-      whooshes: [12.0, ...sites.slice(1).map((s) => s.t), 26.0, 32.0],
-      ticks: receipt.map((r) => r.t),
-      stamps: [27.0, 30.0],
-      bloops: [33.5, 34.6],
-      slider: 23.6,
-    },
+  // ---------------------------------------------------------------- edits
+  // scenes: [name, startBar, lengthBars, options]; cue times inside options are LOCAL bars.
+  // music: [section, startBar, lengthBars]
+  const landscape = {
+    name: 'landscape', W: 1920, H: 1080, bars: 25, end: 40.0,
+    music: [['intro', 0, 2], ['build', 2, 2], ['drop', 4, 7.5], ['tapestop', 11.5, 0.5], ['lofi', 12, 2], ['drop2', 14, 6], ['build2', 20, 1], ['outro', 21, 4]],
+    scenes: [
+      ['night', 0, 2, { lines: [[0, 'IT’S', '11PM.'], [1.0, 'YOUR WEBSITE IS', 'HOME ALONE.']] }],
+      ['errors', 2, 2, { spawn: [...seq(0, .25, 4), ...seq(1, .125, 6)], who: [1.0, 1.25, 1.5], gap: 1.75 }],
+      ['logo', 4, 1, {}],
+      ['words', 5, 2, { at: seq(0, .25, 8) }],
+      ['overnight', 7, 2, { ticks: seq(.25, .25, 6), slept: [1.5, 1.75] }],
+      ['showcase', 9, 3, { at: seq(0, .45, 6), stop: 2.5 }],
+      ['old', 12, 2, { stuck: .25, mosh: 1.5 }],
+      ['rescue', 14, 1.5, { cap: [.25, .75] }],
+      ['price', 15.5, 3, { from: 0, slam: .25, sticker: 1.0, receipt: seq(1.25, .125, 8), build: 2.5 }],
+      ['humans', 18.5, 1.5, { lines: [0, .25, .5], q: .75, a: 1.125 }],
+      ['build', 20, 1, { lines: [0, .5], gap: .75 }],
+      ['end', 21, 4, { tag: .5, url: 1.0, fine: 1.25 }],
+    ],
   };
+
+  const vertical = {
+    name: 'vertical', W: 1080, H: 1920, bars: 19, end: 30.4,
+    music: [['hook', 0, 1], ['build', 1, 2], ['drop', 3, 5.5], ['tapestop', 8.5, 0.5], ['lofi', 9, 1], ['drop2', 10, 4.5], ['build2', 14.5, 1], ['outro', 15.5, 3.5]],
+    scenes: [
+      ['night', 0, 1, { lines: [[0, 'IT’S', '11PM.'], [.5, 'YOUR WEBSITE IS', 'HOME ALONE.']] }],
+      ['errors', 1, 2, { spawn: [...seq(0, .25, 4), ...seq(1, .125, 4)], who: [1.5, 1.625, 1.75], gap: 1.875 }],
+      ['logo', 3, 1, {}],
+      ['words', 4, 1, { at: seq(0, .125, 8) }],
+      ['overnight', 5, 1.5, { ticks: seq(.125, .125, 6), slept: [1.0, 1.25] }],
+      ['showcase', 6.5, 2.5, { at: seq(0, .35, 6), stop: 2.0 }],
+      ['old', 9, 1, { stuck: .125, mosh: .625 }],
+      ['rescue', 10, 1, { cap: [.125, .5] }],
+      ['price', 11, 2, { from: 0, slam: .125, sticker: .75, receipt: seq(1.0, .0625, 8), build: 1.5 }],
+      ['humans', 13, 1.5, { lines: [0, .25, .5], q: .75, a: 1.125 }],
+      ['build', 14.5, 1, { lines: [0, .5], gap: .75 }],
+      ['end', 15.5, 3.5, { tag: .5, url: 1.0, fine: 1.25 }],
+    ],
+  };
+
+  // ---------------------------------------------------------------- sound effects from scene cues
+  function sfx(edit) {
+    const ev = [];
+    const add = (bar, kind, gain = 1, opt = {}) => ev.push({ t: +(bar * BAR).toFixed(4), kind, gain, ...opt });
+    for (const [name, s, len, o] of edit.scenes) {
+      const at = (lb) => s + lb;
+      if (name === 'night') { add(s, 'hook'); o.lines.forEach(([b], i) => i && add(at(b), 'slam', .8)); }
+      if (name === 'errors') { o.spawn.forEach((b, i) => add(at(b), 'error', .55 + .35 * (i / o.spawn.length), { i })); o.who.forEach((b, i) => add(at(b), 'glitch', .8, { i })); add(at(o.gap), 'revcrash'); }
+      if (name === 'logo') add(s, 'drop');
+      if (name === 'words') o.at.forEach((b, i) => i && add(at(b), 'snap', .5, { i }));
+      if (name === 'overnight') { add(s, 'whoosh'); o.ticks.forEach((b, i) => add(at(b), 'tick', .6, { i })); add(at(o.slept[0]), 'slam', .7); }
+      if (name === 'showcase') { o.at.forEach((b, i) => add(at(b), 'pass', .6, { i })); }
+      if (name === 'old') { add(at(o.stuck), 'stamp', .9); add(at(o.mosh), 'mosh'); }
+      if (name === 'rescue') { add(s, 'drop2'); }
+      if (name === 'price') { add(at(o.slam), 'cash', .8); add(at(o.sticker), 'stamp', .9); o.receipt.forEach((b, i) => add(at(b), 'tick', .45, { i })); add(at(o.build), 'slam', 1); }
+      if (name === 'humans') { add(s, 'whoosh'); add(at(o.q), 'msg_in', .8); add(at(o.a), 'msg_out', .8); }
+      if (name === 'build') { add(at(o.gap), 'revcrash'); }
+      if (name === 'end') add(s, 'final');
+    }
+    return ev.sort((a, b) => a.t - b.t);
+  }
+
+  const EDITS = { landscape, vertical };
+  const TL = { BPM, BEAT, BAR, FPS: 60, ERRORS, WORDS, CARE, SITES, RECEIPT, EDITS, sfx };
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = TL;
     if (require.main === module) {
-      require('fs').writeFileSync(require('path').join(__dirname, 'events.json'), JSON.stringify(TL.events, null, 1));
+      const out = {};
+      for (const k in EDITS) out[k] = { bpm: BPM, bars: EDITS[k].bars, end: EDITS[k].end, music: EDITS[k].music, sfx: sfx(EDITS[k]) };
+      require('fs').writeFileSync(require('path').join(__dirname, 'events.json'), JSON.stringify(out, null, 1));
       console.log('wrote events.json');
     }
   } else {

@@ -1,113 +1,84 @@
-// LRWeb promo v3: one timeline, two edits (16:9 landscape and a native 9:16 vertical cut).
-// Everything is in BARS (120 BPM, 1 bar = 2 s). The scene reads this in the browser; `node timeline.js`
-// writes events.json, which music.py turns into the arrangement and uses to place every sound, on the grid.
+// LRWeb promo v4, "Websites, handled.": a 60-second motion-design showreel.
+// One timeline drives both edits (16:9 landscape and a native 9:16 vertical cut share timing and score).
+// Everything is in BARS (120 BPM, 1 bar = 2 s, 1 beat = 0.5 s = 30 frames). The scene reads this in the browser;
+// `node timeline.js` writes events.json, which music.py turns into the score and uses to place every sound on the grid.
 (function () {
   const BPM = 120, BEAT = 60 / BPM, BAR = BEAT * 4;
   const seq = (a, step, n) => Array.from({ length: n }, (_, i) => +(a + i * step).toFixed(4));
 
   // ---------------------------------------------------------------- copy
-  const POPS = [ // modern notification banners: [app, title, body]
+  const POPS = [ // notification banners: [app, title, body]
     ['Website', '14 updates available', 'Plugins, theme and core'],
-    ['Security', 'SSL certificate expires in 2 days', 'Visitors will see “Not secure”'],
-    ['Backups', 'Last backup: 94 days ago', 'No restore point this month'],
+    ['Security', 'SSL expires in 2 days', 'Visitors will see “Not secure”'],
+    ['Backups', 'Last backup: 94 days ago', 'No restore point'],
     ['Speed', 'Page load: 9.4 seconds', 'Most visitors leave after 3'],
-    ['Inbox', 'Contact form isn’t sending', '6 enquiries didn’t arrive'],
-    ['Security', '37 suspicious login attempts', 'wp-admin · last night'],
-    ['Hosting', 'Renewal payment failed', 'Site goes offline in 5 days'],
-    ['Website', 'PHP 7.4 has reached end of life', 'Upgrade required'],
+    ['Inbox', 'Contact form isn’t sending', '6 enquiries lost'],
+    ['Security', '37 failed logins', 'wp-admin · last night'],
+    ['Hosting', 'Renewal payment failed', 'Site offline in 5 days'],
+    ['Website', 'PHP 7.4 end of life', 'Upgrade required'],
     ['Uptime', 'Is your website down?', 'A customer just asked'],
-    ['Website', 'Plugin conflict detected', 'Checkout page not loading'],
-  ];
-  const DIALOGS = [
-    ['Update failed', 'Could not update theme. Try again later.'],
-    ['Warning', 'Your disk is 98% full.'],
-    ['Error 500', 'Internal server error.'],
-    ['Security alert', 'Unknown admin user created.'],
-    ['Error', 'Database connection lost.'],
-    ['Warning', 'Mixed content blocked on 12 pages.'],
+    ['Website', 'Plugin conflict', 'Checkout not loading'],
+    ['Backups', 'Backup failed', 'Disk quota exceeded'],
+    ['Speed', 'Images not optimised', '38 MB homepage'],
   ];
   const JOBS = ['Updates.', 'Backups.', 'Security.', 'Hosting.', 'Fixes.', 'Speed.'];
-  const SYSTEMS = [ // job two: what the systems and the humans do
+  const SYSTEMS = [ // job two, as a live dashboard: [title, detail, icon]
     ['Uptime', 'Checked every minute', 'uptime'],
-    ['Backups', 'Saved every night, off-site', 'backup'],
+    ['Backups', 'Every night, off-site', 'backup'],
     ['Updates', 'Tested on a copy first', 'update'],
     ['Security', 'Scanned daily', 'shield'],
-    ['SSL padlock', 'Renewed automatically', 'lock'],
+    ['SSL', 'Renewed automatically', 'lock'],
     ['Speed', 'Pages load in 0.8s', 'bolt'],
   ];
-  const SITES = [ // showcase (Crumb & Kiln stars in the before/after)
-    ['northside-barber', 'Barber', 'northsidebarber.co.uk'], ['petal-and-stem', 'Florist', 'petalandstem.co.uk'],
-    ['volt-strength', 'Gym', 'voltstrength.co.uk'], ['tidewater', 'Restaurant', 'tidewater.co.uk'],
-    ['smith-and-sons', 'Plumber', 'smithandsons.co.uk'], ['form-and-field', 'Architects', 'formandfield.studio'],
-  ];
   const PLANS = [
-    ['Essential', 29, 'For brochure sites that need to just work', '95p a day'],
-    ['Plus', 49, 'Monthly content edits included', '£1.61 a day'],
-    ['Pro', 89, 'Shops, bookings and busier sites', '£2.93 a day'],
+    ['Essential', 29, 'Brochure sites'],
+    ['Plus', 49, 'Monthly edits'],
+    ['Pro', 89, 'Shops & bookings'],
   ];
 
-  // ---------------------------------------------------------------- edits
-  // scenes: [name, startBar, lengthBars, cues]; cue times are LOCAL bars (0.25 = one beat).
-  // music:  [section, startBar, lengthBars]
-  const landscape = {
-    name: 'landscape', W: 1920, H: 1080, bars: 29, end: 58.5,
-    music: [['intro', 0, 4], ['build', 4, 4], ['drop', 8, 8], ['break', 16, 4], ['drop2', 20, 7], ['outro', 27, 2]],
-    scenes: [
-      ['hook', 0, 4, { head: .5, pops: seq(1.5, .25, 10) }],
-      ['storm', 4, 4, { jobs: seq(0, .5, 6).map((b) => b * .5 + 0), pops: [...seq(0, .125, 16), ...seq(2, .0625, 8)], dialogs: seq(.75, .25, 6), who: 2.5, gap: 3.75 }],
-      ['drop', 8, 2, { ours: 0, logo: .5, word: 1.0, tag: 1.25 }],
-      ['jobs', 10, 1, { a: 0, b: .5 }],
-      ['build', 11, 5, { title: 0, before: .5, scan: 1.5, scanEnd: 3.0, pull: 3.25, show: 4.0 }],
-      ['care', 16, 4, { title: 0, cards: seq(.75, .25, 6), human: 2.25, run: 3.0, runB: 3.25 }],
-      ['pricing', 20, 5, { gap: 0, left: .25, right: .75, land: 1.25, plans: [1.875, 2.0, 2.125], day: 3.0, build: 3.875 }],
-      ['humans', 25, 2, { lines: [0, .25, .5], q: 1.0, a: 1.5 }],
-      ['end', 27, 2, { logo: 0, tag: .5, url: .75, fine: 1.0 }],
-    ],
-  };
+  // ---------------------------------------------------------------- the edit
+  // scenes: [name, startBar, lengthBars, cues]; cue times are LOCAL bars (0.25 = one beat, 0.125 = an 8th).
+  const scenes = [
+    ['open', 0, 2, { dot: .25, line: .5, cursor: 1.0, type: 1.0 }],                          // a dot of light becomes a cursor
+    ['jobs', 2, 2, { l2: 0, l3: .5, iris: 1.0, pops: seq(1.25, .25, 3) }],                 // "comes with jobs." → iris through the o
+    ['storm', 4, 4, { words: seq(0, .5, 6), pops: seq(0, .25, 9), rush: seq(2.25, .0625, 8), who: 3.0, gap: 3.75 }],
+    ['drop', 8, 2, { ours: 0, mark: .625, word: 1.0, tag: 1.25 }],
+    ['two', 10, 1, { split: 0, a: .125, b: .25, grow: .75 }],
+    ['build', 11, 5, { before: 0, explode: 1.0, rebuild: 2.0, chrome: 2.0, morph: 3.0, cap: 3.25, flip: 4.75 }],
+    ['care', 16, 4, { title: 0, cards: seq(.25, .125, 6), run: 3.0, runB: 3.25 }],
+    ['pricing', 20, 4, { plans: [0, .125, .25], split: 1.5, day: 2.0, build: 3.0 }],
+    ['humans', 24, 2, { lines: [0, .5, 1.0], people: 1.25, collapse: 1.75 }],
+    ['end', 26, 4, { sun: 0, mark: .25, word: .625, tag: 1.0, url: 1.5, fine: 2.0 }],
+  ];
+  const music = [['intro', 0, 4], ['build', 4, 4], ['themeA', 8, 8], ['break', 16, 4], ['themeB', 20, 6], ['outro', 26, 4]];
+  const landscape = { name: 'landscape', W: 1920, H: 1080, bars: 30, end: 60, music, scenes };
+  const vertical = { name: 'vertical', W: 1080, H: 1920, bars: 30, end: 60, music, scenes };
 
-  const vertical = {
-    name: 'vertical', W: 1080, H: 1920, bars: 23, end: 46.5,
-    music: [['intro', 0, 2], ['build', 2, 2], ['drop', 4, 7], ['break', 11, 3], ['drop2', 14, 6], ['outro', 20, 3]],
-    scenes: [
-      ['hook', 0, 2, { head: .125, pops: seq(0, .25, 8) }],
-      ['storm', 2, 2, { jobs: seq(0, .25, 4), pops: [...seq(0, .125, 8), ...seq(1, .0625, 8)], dialogs: seq(.25, .25, 4), who: 1.125, gap: 1.75 }],
-      ['drop', 4, 2, { ours: 0, logo: .5, word: 1.0, tag: 1.25 }],
-      ['jobs', 6, 1, { a: 0, b: .5 }],
-      ['build', 7, 4, { title: 0, before: .125, scan: .75, scanEnd: 1.75, pull: 1.875, show: 3.0 }],
-      ['care', 11, 3, { title: 0, cards: seq(.375, .1875, 6), human: 1.5, run: 2.125, runB: 2.375 }],
-      ['pricing', 14, 4, { gap: 0, left: .25, right: .5, land: 1.0, plans: [1.5, 1.625, 1.75], day: 2.375, build: 3.0 }],
-      ['humans', 18, 2, { lines: [0, .25, .5], q: 1.0, a: 1.5 }],
-      ['end', 20, 3, { logo: 0, tag: .5, url: 1.0, fine: 1.25 }],
-    ],
-  };
-
-  // ---------------------------------------------------------------- sound effects from cues (all on the grid)
-  // Notification dings are tuned notes (Ab major pentatonic), so the pop-ups play part of the melody.
-  const DING = ['C6', 'Eb6', 'F6', 'Ab6', 'F6', 'Eb6', 'C6', 'Eb6', 'Ab6', 'C7'];
+  // ---------------------------------------------------------------- sound design from cues (all on the grid)
   function sfx(edit) {
     const ev = [];
     const add = (bar, kind, gain = 1, opt = {}) => ev.push({ t: +(bar * BAR).toFixed(4), bar: +bar.toFixed(4), kind, gain, ...opt });
-    for (const [name, s, len, o] of edit.scenes) {
-      const at = (lb) => s + lb;
-      if (name === 'hook') { o.pops.forEach((b, i) => add(at(b), 'ding', .9, { note: DING[i % DING.length], i })); }
-      if (name === 'storm') {
-        o.pops.forEach((b, i) => add(at(b), 'ding', .35 + .35 * (i / o.pops.length), { note: DING[(i * 3) % DING.length], i, soft: 1 }));
-        o.jobs.forEach((b, i) => add(at(b), 'thud', .7, { i }));
-        o.dialogs.forEach((b, i) => add(at(b), 'error', .45, { i }));
-        add(at(o.gap), 'suck');
-      }
-      if (name === 'drop') { add(s, 'drop'); add(at(o.logo), 'shimmer'); }
-      if (name === 'build') { add(at(o.scan), 'scan', 1, { len: (o.scanEnd - o.scan) * BAR }); add(at(o.pull), 'whoosh'); add(at(o.show), 'whoosh', .7); }
-      if (name === 'care') o.cards.forEach((b, i) => add(at(b), 'check', .8, { i }));
-      if (name === 'pricing') { add(at(o.left), 'whoosh', .6); add(at(o.land), 'land'); o.plans.forEach((b, i) => add(at(b), 'card', .8, { i })); add(at(o.day), 'chime'); add(at(o.build), 'land', .8); }
-      if (name === 'humans') { add(at(o.q), 'msg_in'); add(at(o.a), 'msg_out'); }
-      if (name === 'end') add(s, 'final');
-    }
+    const S = Object.fromEntries(edit.scenes.map(([n, s, l, o]) => [n, { s, l, o }]));
+    const at = (n, lb) => S[n].s + lb;
+    let o;
+    o = S.open.o; add(at('open', o.dot), 'dot'); add(at('open', o.line), 'swipe', .6);
+    for (let i = 0; i < 13; i++) add(at('open', o.type + i * .0625 + .0625), 'type', 1, { i });
+    o = S.jobs.o; add(at('jobs', o.l3), 'hit', .7); add(at('jobs', o.iris), 'iris'); o.pops.forEach((b, i) => add(at('jobs', b), 'pop', 1, { i }));
+    o = S.storm.o; o.words.forEach((b, i) => add(at('storm', b), 'slam', 1, { i }));
+    o.pops.forEach((b, i) => add(at('storm', b + .125), 'pop', .8, { i: i + 3 })); o.rush.forEach((b, i) => add(at('storm', b), 'tick', .5 + i / 16, { i }));
+    add(at('storm', o.who), 'who'); add(at('storm', o.gap), 'suck');
+    o = S.drop.o; add(at('drop', 0), 'drop'); add(at('drop', o.mark), 'snap'); add(at('drop', o.word), 'swipe', .5);
+    o = S.two.o; add(at('two', o.split), 'swipe', .7); add(at('two', o.grow), 'whoosh');
+    o = S.build.o; add(at('build', o.explode), 'whoosh', .8); add(at('build', o.rebuild), 'reveal'); add(at('build', o.morph), 'morph'); add(at('build', o.flip), 'flip');
+    o = S.care.o; o.cards.forEach((b, i) => add(at('care', b), 'blip', 1, { i })); add(at('care', o.run), 'swipe', .5);
+    o = S.pricing.o; add(at('pricing', 0), 'drop2'); o.plans.forEach((b, i) => add(at('pricing', b), 'deal', 1, { i })); add(at('pricing', o.split), 'tiles'); add(at('pricing', o.day), 'hit', .6); add(at('pricing', o.build), 'hit', .8);
+    o = S.humans.o; o.lines.slice(0, 2).forEach((b, i) => add(at('humans', b + .25), 'strike', 1, { i })); add(at('humans', o.people), 'pop', .8, { i: 0 }); add(at('humans', o.collapse), 'suck');
+    add(at('end', 0), 'final'); add(at('end', S.end.o.url), 'pop', .6, { i: 1 });
     return ev.sort((a, b) => a.t - b.t);
   }
 
   const EDITS = { landscape, vertical };
-  const TL = { BPM, BEAT, BAR, FPS: 60, POPS, DIALOGS, JOBS, SYSTEMS, SITES, PLANS, EDITS, sfx };
+  const TL = { BPM, BEAT, BAR, FPS: 60, POPS, JOBS, SYSTEMS, PLANS, EDITS, sfx };
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = TL;

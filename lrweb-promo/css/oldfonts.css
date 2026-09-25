@@ -1,0 +1,7 @@
+/* Period fonts for the 2003 bakery site (bundled so renders match on every machine). Comic Neue (OFL), Arimo and Tinos (Apache 2.0). */
+@font-face{font-family:'Arimo';font-style:normal;font-weight:400;src:url(../fonts/Arimo-400.woff2) format('woff2')}
+@font-face{font-family:'Arimo';font-style:normal;font-weight:700;src:url(../fonts/Arimo-700.woff2) format('woff2')}
+@font-face{font-family:'Comic Neue';font-style:normal;font-weight:700;src:url(../fonts/ComicNeue-700.woff2) format('woff2')}
+@font-face{font-family:'Tinos';font-style:italic;font-weight:400;src:url(../fonts/Tinos-400i.woff2) format('woff2')}
+@font-face{font-family:'Tinos';font-style:normal;font-weight:400;src:url(../fonts/Tinos-400.woff2) format('woff2')}
+@font-face{font-family:'Tinos';font-style:normal;font-weight:700;src:url(../fonts/Tinos-700.woff2) format('woff2')}

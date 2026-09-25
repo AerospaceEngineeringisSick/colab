@@ -1,0 +1,549 @@
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#0_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#0_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#1_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#1_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#2_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#2_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#3_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#3_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#4_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#4_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#5_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#5_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#6_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_A#6_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C1_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C1_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C2_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C2_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C3_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C3_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C4_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C4_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C5_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C5_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C6_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C6_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C7_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_C7_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D1_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D1_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D2_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D2_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D3_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D3_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D4_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D4_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D5_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D5_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D6_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D6_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D7_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_D7_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E1_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E1_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E2_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E2_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E3_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E3_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E4_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E4_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E5_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E5_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E6_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E6_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E7_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_E7_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#1_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#1_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#2_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#2_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#3_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#3_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#4_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#4_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#5_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#5_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#6_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#6_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#7_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_F#7_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#1_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#1_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#2_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#2_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#3_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#3_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#4_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#4_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#5_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#5_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#6_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#6_vl3_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#7_vl2_rr1.wav
+VCSL	Chordophones/Zithers/Grand Piano, Steinway B/Sus/JHPiano_Sus_Close_G#7_vl3_rr1.wav
+VCSL	Idiophones/Struck Idiophones/Clash Cymbals 1/cymbal_crash1_ff2.wav
+VCSL	Idiophones/Struck Idiophones/Clash Cymbals 1/cymbal_crash1_ff3.wav
+VCSL	Idiophones/Struck Idiophones/Clash Cymbals 1/cymbal_crash1_mf1.wav
+VCSL	Idiophones/Struck Idiophones/Gong 1/gong_f.wav
+VCSL	Idiophones/Struck Idiophones/Gong 1/gong_fff.wav
+VCSL	Idiophones/Struck Idiophones/Suspended Cymbal 1/susCymb1_cresc_2s.wav
+VCSL	Idiophones/Struck Idiophones/Suspended Cymbal 1/susCymb1_cresc_4s.wav
+VCSL	Idiophones/Struck Idiophones/Suspended Cymbal 1/susCymb1_cresc_7.5s.wav
+VCSL	Idiophones/Struck Idiophones/Suspended Cymbal 1/susCymb1_hit_fff1.wav
+VCSL	Idiophones/Struck Idiophones/Suspended Cymbal 1/susCymb1_roll_ff2_nloop.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 1/BDrumNew_hit_v5_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 1/BDrumNew_hit_v5_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 1/BDrumNew_hit_v7_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 1/BDrumNew_hit_v7_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_cresc_med.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_cresc_short.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_hit_f.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_hit_ff.wav
+VCSL	Membranophones/Struck Membranophones/Bass Drum 2/bassdrum_roll_ff.wav
+VCSL	Membranophones/Struck Membranophones/Frame Drum/HDrumL_Hit_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Frame Drum/HDrumL_Hit_v3_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_HitSN_v5_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_HitSN_v5_rr2_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_HitSN_v7_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_HitSN_v7_rr2_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_HitSN_v9_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_HitSN_v9_rr2_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_rollSN_v4_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Snare Drum, Modern 1/Snare2_rollSN_v5_rr2_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani1_Hit_v3_rr3_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani1_Hit_v3_rr4_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani1_Hit_v4_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani1_Hit_v4_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani2_Hit_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani2_Hit_v3_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani2_Hit_v4_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani2_Hit_v4_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani3_Hit_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani3_Hit_v3_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani3_Hit_v4_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani3_Hit_v4_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani4_Hit_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani4_Hit_v3_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani4_Hit_v4_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani4_Hit_v4_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani5_Hit_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani5_Hit_v3_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani5_Hit_v4_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Hit/Timpani5_Hit_v4_rr2_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani1_Roll_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani1_Roll_v5_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani2_Roll_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani2_Roll_v5_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani3_Roll_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani3_Roll_v5_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani4_Roll_v3_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Timpani 1/Roll/Timpani4_Roll_v5_rr1_Sum.wav
+VCSL	Membranophones/Struck Membranophones/Tom 1/Mallet/TomH_HitM_v3_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Tom 1/Mallet/TomH_HitM_v3_rr2_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Tom 1/Mallet/TomH_HitM_v4_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Tom 1/Mallet/TomH_HitM_v4_rr2_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Tom 2/Mallet/TomL_HitM_v3_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Tom 2/Mallet/TomL_HitM_v3_rr2_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Tom 2/Mallet/TomL_HitM_v4_rr1_Mid.wav
+VCSL	Membranophones/Struck Membranophones/Tom 2/Mallet/TomL_HitM_v4_rr2_Mid.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_A#1_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_A#1_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_A#1_v3_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_A0_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_A2_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_A2_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_A2_v3_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_C1_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_C1_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_C1_v3_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_C3_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_C3_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_C3_v3_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_C3_v4_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D#1_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D#1_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D#1_v3_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D2_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D2_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D2_v3_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D2_v4_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_D4_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_F2_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_F2_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_F2_v3_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_F4_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_G1_v1_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_G1_v2_1.wav
+VSCO-2-CE	Brass/F Horn/sus/MOHorn_sus_G1_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_A#0_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_A#0_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_A#1_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_A#1_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_A#1_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C#1_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C#1_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C#3_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C#3_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C#3_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C3_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C3_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_C3_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D#1_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D#1_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D#1_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D#3_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D#3_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D#3_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D2_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D2_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_D2_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F1_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F1_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F1_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F2_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F2_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F2_v3_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F3_v1_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F3_v2_1.wav
+VSCO-2-CE	Brass/Tenor Trombone/sus/tenortbn_sus_F3_v3_1.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#0_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#0_v2_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#0_v3_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#1_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#1_v2_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#1_v3_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#2_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#2_v2_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_A#2_v3_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_D#1_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_D#1_v2_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_D#1_v3_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_D2_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_D2_v2_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_D2_v3_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_D3_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_F0_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_F1_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_F1_v2_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_F1_v3_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_F2_v1_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_F2_v2_rr1_Mid.wav
+VSCO-2-CE	Brass/Tuba/sus/Tuba3_sus_F2_v3_rr1_Mid.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_A2_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_A2_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_A2_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_A2_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B1_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B1_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B3_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B3_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_B3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C1_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C1_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C3_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C3_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_C3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D2_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D2_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D2_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D2_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D4_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D4_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D4_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_D4_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E1_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E1_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E3_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E3_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_E3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F2_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F2_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F2_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F2_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F4_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F4_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F4_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_F4_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G1_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G1_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G3_v1_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G3_v1_RR2.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/pizzT/pizzT_G3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_A2_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_A2_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_B1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_B1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_B3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_B3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_C1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_C1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_C3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_C3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_D2_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_D2_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_D4_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_D4_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_E1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_E1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_E3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_E3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_F2_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_F2_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_F4_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_F4_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_G1_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_G1_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_G3_v2_RR1.wav
+VSCO-2-CE	Strings/Cello Section/spic/spic_G3_v2_RR2.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_A2_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_A2_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_B1_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_B1_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_B3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_B3_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_C1_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_C1_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_C3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_C3_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_D2_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_D2_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_D4_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_D4_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_E1_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_E1_v1_2.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_E1_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_E3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_E3_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_F2_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_F2_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_F4_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_F4_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_G1_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_G1_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_G3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/susvib/susvib_G3_v3_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_A2_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_A2_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_B1_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_B2_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_B3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_B3_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_C1_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_C3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_C3_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_D2_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_D2_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_D4_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_D4_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_E1_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_E1_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_E3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_E3_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_F2_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_F2_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_F4_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_F4_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_G1_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_G1_v2_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_G3_v1_1.wav
+VSCO-2-CE	Strings/Cello Section/trem/trem_G3_v2_1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_A#0_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_A#0_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_A1_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_A1_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_B2_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_B2_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_C#2_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_C#2_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_C1_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_C1_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_D1_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_D1_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E1_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E1_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E2_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E2_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_F#0_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_F#0_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_F#1_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_F#1_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G#1_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G#1_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G#2_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G#2_v3_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G0_v1_rr1.wav
+VSCO-2-CE	Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G0_v3_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_A3_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_A3_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_A3_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_A3_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B2_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B2_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B4_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B4_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_B4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C2_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C2_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C4_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C4_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_C4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_D3_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_D3_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_D3_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_D3_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_D5_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_D5_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E2_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E2_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E4_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E4_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_E4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_F3_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_F3_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_F3_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_F3_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G2_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G2_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G4_v1_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G4_v1_rr2.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/pizz/ViolaEns_pizz_G4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_A3_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_A3_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_B2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_B2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_B4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_B4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_C2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_C2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_C4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_C4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_D3_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_D3_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_D5_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_D5_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_E2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_E2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_E4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_E4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_F3_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_F3_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_G2_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_G2_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_G4_v2_rr1.wav
+VSCO-2-CE	Strings/Viola Section/spic/Violas_spic_G4_v2_rr2.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_A3_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_A3_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_B2_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_B2_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_B4_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_B4_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_C2_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_C2_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_C4_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_C4_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_D2_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_D2_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_D3_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_D3_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_D5_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_D5_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_E2_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_E2_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_E4_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_E4_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_F3_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_F3_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_G2_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_G2_v2_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_G4_v1_1.wav
+VSCO-2-CE	Strings/Viola Section/susvib/ViolaEns_susvib_G4_v2_1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_A2_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_A2_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_A3_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_A3_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_B2_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_B2_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_B4_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_B4_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_C4_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_C4_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_D3_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_D3_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_D5_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_D5_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_E4_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_E4_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_F#3_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_F#3_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_G2_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_G2_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_G4_v2_rr1.wav
+VSCO-2-CE	Strings/Violin Section/Spic/VlnEns_Spic_G4_v2_rr2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_A2_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_A2_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_A3_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_A3_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_B2_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_B2_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_B4_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_B4_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_C4_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_C4_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_D3_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_D3_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_D5_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_D5_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_E4_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_E4_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_F#3_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_G2_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_G2_v2.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_G4_v1.wav
+VSCO-2-CE	Strings/Violin Section/Trem/VlnEns_Trem_G4_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_A2_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_A2_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_A3_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_A3_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_B2_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_B2_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_B4_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_B4_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_C4_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_C4_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_D3_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_D3_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_D5_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_D5_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_E4_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_E4_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_F#3_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_F#3_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_G2_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_G2_v2.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_G4_v1.wav
+VSCO-2-CE	Strings/Violin Section/susVib/VlnEns_susVib_G4_v2.wav

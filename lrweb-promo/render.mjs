@@ -119,6 +119,42 @@ if (has('gpu-check')) {
   await b.close(); process.exit(0);
 }
 
+// ------------------------------------------------------------------ text QA: is every line big enough, inside the frame and on screen long enough to read?
+if (has('qa')) {
+  const server = serve(); const b = await launch(); const page = await open(b, server.address().port);
+  const MIN = E.W > E.H ? 24 : 28, step = .1, seen = new Map();
+  for (let t = 0; t < E.end; t += step) {
+    const rows = await page.evaluate((t) => {
+      window.seek(t);
+      const out = [], vw = innerWidth, vh = innerHeight;
+      const op = (el) => { let o = 1; for (let e = el; e && e !== document.body; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden') return 0; o *= +cs.opacity; } return o; };
+      const blocks = document.querySelectorAll('.t, .sub, .kick, .fine, .pill, .chip, .tag, .note .nt, .card b, .card small, .plan .nm, .plan p, .av b, .av small, .lab, .stat');
+      for (const el of blocks) {
+        const text = el.innerText.replace(/\s+/g, ' ').trim(); if (!text) continue;
+        const o = op(el); if (o < .6) continue;
+        const r = el.getBoundingClientRect(); if (r.width < 2) continue;
+        const fsz = parseFloat(getComputedStyle(el.classList.contains('t') ? (el.querySelector('.ch') || el) : el).fontSize);
+        const inner = el.classList.contains('t') ? [...el.querySelectorAll('.ch')] : [el];
+        let sc = 1, cut = false; if (inner.length) { const ir = inner[0].getBoundingClientRect(); const lh = inner[0].offsetHeight || 1; sc = ir.height / lh; }
+        for (const c of inner) { const cr = c.getBoundingClientRect(); if (+getComputedStyle(c).opacity > .5 && (cr.left < -2 || cr.right > vw + 2 || cr.top < -2 || cr.bottom > vh + 2)) cut = true; }
+        out.push({ text: text.slice(0, 60), px: fsz * sc, cut });
+      }
+      return out;
+    }, t);
+    for (const r of rows) { const k = r.text; if (/^[\d.:%s£ ]+$/.test(k)) continue; const s0 = seen.get(k) || { first: t, frames: 0, minPx: 0, cut: 0 }; s0.frames++; s0.minPx = Math.max(s0.minPx, r.px); if (r.cut) s0.cut++; seen.set(k, s0); }
+  }
+  let bad = 0;
+  console.log(`text QA (${EDIT}): ${seen.size} text blocks`);
+  for (const [k, v] of seen) {
+    const secs = v.frames * step, words = k.split(' ').length, need = .45 + .22 * words, issues = [];
+    if (v.minPx < MIN) issues.push(`small (${v.minPx.toFixed(0)}px)`);
+    if (secs < need) issues.push(`short (${secs.toFixed(1)}s < ${need.toFixed(1)}s)`);
+    if (v.cut > 2) issues.push(`cut off (${(v.cut * step).toFixed(1)}s)`);
+    if (issues.length) { bad++; console.log(`  ${v.first.toFixed(1).padStart(5)}s  "${k}"  ${issues.join(', ')}`); }
+  }
+  console.log(bad ? `${bad} to check` : 'all text passes'); await b.close(); server.close(); process.exit(0);
+}
+
 // ------------------------------------------------------------------ stills
 if (STILLS) {
   const server = serve(); const b = await launch(); const page = await open(b, server.address().port);

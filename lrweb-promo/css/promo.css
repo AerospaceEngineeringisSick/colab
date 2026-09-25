@@ -74,6 +74,7 @@ body{font-family:var(--body);color:#fff;-webkit-font-smoothing:antialiased;text-
 .chip b{display:grid;place-items:center;width:1.9em;height:1.9em;border-radius:50%;background:linear-gradient(135deg,#3DB88D,#0B86EA 60%,#3F4DE6);color:#fff;font-weight:600;letter-spacing:0}
 .chip svg{width:58%;height:58%}
 .V .chip{font-size:30px}
+.V .kick{font-size:32px}.V .av small{font-size:30px}
 
 /* browser windows: XP-era and modern chrome */
 .win{position:absolute;transform-style:preserve-3d;transform-origin:50% 50%}
@@ -100,8 +101,8 @@ body{font-family:var(--body);color:#fff;-webkit-font-smoothing:antialiased;text-
 .phone{position:absolute;border-radius:52px;background:#0B0D1C;box-shadow:0 60px 120px rgba(0,0,0,.6),inset 0 0 0 2px rgba(255,255,255,.16)}
 .phone .scr{position:absolute;inset:12px;border-radius:40px;overflow:hidden;background:#F3EADB}
 .phone .isl{position:absolute;left:50%;top:12px;width:92px;height:26px;margin-left:-46px;border-radius:14px;background:#000;z-index:4}
-.tag{position:absolute;padding:.36em .9em;border-radius:999px;font:600 22px var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
-.V .tag{font-size:26px}
+.tag{position:absolute;padding:.36em .9em;border-radius:999px;font:600 26px var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.V .tag{font-size:30px}
 
 /* the 2003 bakery (every block is its own layer, so it can explode in 3D) */
 .old{position:absolute;transform-style:preserve-3d}
@@ -140,18 +141,18 @@ body{font-family:var(--body);color:#fff;-webkit-font-smoothing:antialiased;text-
 .card .ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(61,184,141,.35),rgba(11,134,234,.35));border:1px solid rgba(255,255,255,.18)}
 .card .ic svg{width:30px;height:30px}
 .card b{display:block;font:700 30px var(--display);letter-spacing:-.02em}
-.card small{display:block;font:500 21px var(--body);color:#CBD1EC;margin-top:2px}
+.card small{display:block;font:500 25px var(--body);color:#CBD1EC;margin-top:2px}
 .card .ok{margin-left:auto;width:40px;height:40px;border-radius:50%;background:#3DB88D;display:grid;place-items:center;box-shadow:0 0 26px rgba(61,184,141,.85)}
 .card .ok svg{width:24px;height:24px}
 .card .viz{position:relative;margin-top:18px;height:74px}
 .card .stat{font:800 48px/1 var(--display);letter-spacing:-.03em}
-.V .card b{font-size:34px}.V .card small{font-size:24px}
+.V .card b{font-size:34px}.V .card small{font-size:28px}
 
 /* pricing */
 .plan{position:absolute;padding:34px 34px 30px;border-radius:30px;background:linear-gradient(160deg,rgba(30,34,84,.9),rgba(14,16,48,.92));border:1px solid rgba(255,255,255,.18);
   box-shadow:0 50px 110px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14);transform-origin:50% 100%}
 .plan.hi{background:linear-gradient(160deg,rgba(61,184,141,.5),rgba(11,134,234,.42) 50%,rgba(63,77,230,.5));border-color:rgba(140,240,200,.7)}
-.plan .nm{font:600 24px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#D6FFEE}
+.plan .nm{font:600 26px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#D6FFEE}
 .plan .pr{display:flex;align-items:flex-start;font:800 128px/1 var(--display);letter-spacing:-.05em;margin:16px 0 6px}
 .plan .pr .cur{font-size:.55em;margin:.12em .04em 0 0}
 .plan .pr small{font:600 28px var(--body);letter-spacing:0;color:#D5DAF2;align-self:flex-end;margin:0 0 .5em .3em}
@@ -166,7 +167,7 @@ body{font-family:var(--body);color:#fff;-webkit-font-smoothing:antialiased;text-
 .av{position:absolute;display:flex;align-items:center;gap:20px}
 .av .c{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;font:800 50px var(--display);color:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.12),0 0 60px rgba(11,134,234,.6)}
 .av b{display:block;font:800 44px var(--display);letter-spacing:-.02em}
-.av small{display:block;font:500 22px var(--mono);color:#C3C9E6;letter-spacing:.05em;margin-top:4px}
+.av small{display:block;font:500 26px var(--mono);color:#C3C9E6;letter-spacing:.05em;margin-top:4px}
 
 /* end */
 .pill{position:absolute;display:inline-block;padding:.28em .95em;border-radius:999px;background:#fff;color:var(--night);font-family:var(--display);font-weight:800;letter-spacing:-.03em;white-space:nowrap;box-shadow:0 20px 70px rgba(11,134,234,.5)}

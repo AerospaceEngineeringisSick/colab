@@ -46,7 +46,7 @@
     ['two', 10, 1, { split: 0, a: .125, b: .25, grow: .75 }],
     ['build', 11, 5, { before: 0, explode: 1.0, rebuild: 2.0, chrome: 2.0, morph: 3.0, cap: 3.25, flip: 4.75 }],
     ['care', 16, 4, { title: 0, cards: seq(.25, .125, 6), run: 3.0, runB: 3.25 }],
-    ['pricing', 20, 4, { plans: [0, .125, .25], split: 1.5, day: 2.0, build: 3.0 }],
+    ['pricing', 20, 4, { plans: [0, .125, .25], split: 1.25, day: 2.0, build: 3.0 }],
     ['humans', 24, 2, { lines: [0, .5, 1.0], people: 1.25, collapse: 1.75 }],
     ['end', 26, 4, { sun: 0, mark: .25, word: .625, tag: 1.0, url: 1.5, fine: 2.0 }],
   ];

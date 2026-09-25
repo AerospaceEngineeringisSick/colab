@@ -20,6 +20,7 @@ in vec2 uv; out vec4 o;
 uniform sampler2D col;
 uniform float aspect, t, inten, storm, dawn, waveX, waveA, stars, pulse, sunY, horizon, xmin, xmax, lake, mountains, dpr;
 uniform vec4 cam; // pan, tilt, zoom, roll
+uniform float meteor; uniform vec4 m1; // random shooting-star density; one scripted meteor (x, y, t0, direction)
 float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 vec4 C(float x, float row){ return texture(col, vec2((x - xmin) / (xmax - xmin), (row + .5) / 5.)); }
 vec3 grad(float k, float hue){ // bottom green -> blue -> indigo/violet, with storm tint
@@ -63,12 +64,41 @@ float starfield(vec2 v){
   vec2 p = (v + vec2(cam.x / 3., 0.)) * 180.;
   vec2 i = floor(p), f = fract(p) - .5;
   float h = h21(i);
-  if (h < .965) return 0.;
+  if (h < .962) return 0.;
   vec2 off = vec2(h21(i + 3.1), h21(i + 7.7)) - .5;
-  float r = length(f - off * .6);
-  float s = smoothstep(.13 * (1. + h * 2.) / dpr, 0., r);
-  float tw = .55 + .45 * sin(t * (1. + h * 4.) + h * 60.);
-  return s * tw * (h - .965) / .035;
+  vec2 d = f - off * .6;
+  float r = length(d), k = (h - .962) / .038;
+  float s = smoothstep(.12 * (1. + k * 1.6) / dpr, 0., r);
+  // scintillation: fast irregular flicker (two beating tones) plus a rare sparkle
+  float ph = h * 91.7, fq = 5. + h21(i + 1.3) * 9.;
+  float tw = .55 + .45 * sin(t * fq + ph) * sin(t * (fq * .61 + 2.3) + ph * 1.7);
+  tw = mix(tw, 1.4, pow(max(0., sin(t * (1.3 + h * 2.) + ph * 3.)), 40.));
+  float glint = k > .8 ? (exp(-abs(d.x) * 60.) * exp(-d.y * d.y * 900.) + exp(-abs(d.y) * 60.) * exp(-d.x * d.x * 900.)) * .3 * tw : 0.;
+  return s * tw * (.35 + .65 * k) + glint;
+}
+vec3 starcol(vec2 v){ float c = h21(floor((v + vec2(cam.x / 3., 0.)) * 180.) + 11.); return c < .33 ? vec3(.8, .88, 1.) : c < .66 ? vec3(1.) : vec3(1., .92, .8); }
+float segd(vec2 p, vec2 a, vec2 b, out float u){ vec2 ab = b - a; u = clamp(dot(p - a, ab) / dot(ab, ab), 0., 1.); return length(p - a - ab * u); }
+float meteorAt(vec2 v, vec2 p0, float ang, float age, float dur, float len){
+  if (age < 0. || age > dur) return 0.;
+  vec2 dir = vec2(cos(ang), -sin(ang));
+  vec2 head = p0 + dir * age * .9, tail = head - dir * len * min(1., age / (dur * .35));
+  float u; float d = segd(v, tail, head, u);
+  float e = sin(3.14159 * age / dur);
+  return (exp(-d * d * 6e4 * dpr) * u * u + exp(-dot(v - head, v - head) * 1.2e4) * .6) * e;
+}
+float meteors(vec2 v){
+  float acc = 0.;
+  for (int k = 0; k < 2; k++) {
+    float slot = floor(t / 2.3) - float(k), h = h21(vec2(slot, 4.2));
+    if (h > meteor) continue;
+    float t0 = slot * 2.3 + h21(vec2(slot, 1.7)) * 1.2;
+    float sgn = h21(vec2(slot, 9.1)) > .5 ? 1. : -1.;
+    vec2 p0 = vec2((h21(vec2(slot, 2.9)) - .5) * aspect * .8, horizon + .5 + h21(vec2(slot, 5.3)) * .25);
+    float ang = sgn > 0. ? .35 + h * .3 : 3.14159 - .35 - h * .3;
+    acc += meteorAt(v, p0, ang, t - t0, .55 + h21(vec2(slot, 8.8)) * .35, .2);
+  }
+  if (m1.w != 0.) acc += meteorAt(v, m1.xy, m1.w > 0. ? .42 : 3.14159 - .42, t - m1.z, .9, .32) * 1.4;
+  return acc;
 }
 void main(){
   vec2 v = (uv - .5) * vec2(aspect, 1.);
@@ -80,7 +110,7 @@ void main(){
   // ridges (row 4): far ridge (r), near ridge (g)
   float far = C(v.x + cam.x / 1.4, 4.).r * mountains, near = C(v.x + cam.x * 1.25, 4.).g * mountains;
   if (y >= 0.) {
-    c = sky(v) + aurora(v, 0.) + vec3(starfield(v)) * stars * (1. - dawn) * smoothstep(0., .25, y);
+    c = sky(v) + aurora(v, 0.) + (starcol(v) * starfield(v) + vec3(.85, 1., .95) * meteors(v)) * stars * (1. - dawn) * smoothstep(0., .2, y);
     // sun (brand gradient disc) at dawn
     vec2 sp = v - vec2(0., horizon + sunY);
     float R = .15, ds = length(sp);
@@ -127,7 +157,7 @@ export class Aurora {
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(p, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    this.u = {}; for (const k of ['col', 'aspect', 't', 'inten', 'storm', 'dawn', 'waveX', 'waveA', 'stars', 'pulse', 'sunY', 'horizon', 'xmin', 'xmax', 'lake', 'mountains', 'cam', 'dpr']) this.u[k] = gl.getUniformLocation(p, k);
+    this.u = {}; for (const k of ['col', 'aspect', 't', 'inten', 'storm', 'dawn', 'waveX', 'waveA', 'stars', 'pulse', 'sunY', 'horizon', 'xmin', 'xmax', 'lake', 'mountains', 'cam', 'dpr', 'meteor', 'm1']) this.u[k] = gl.getUniformLocation(p, k);
     this.tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -179,6 +209,7 @@ export class Aurora {
     gl.uniform1f(u.waveX, s.waveX ?? -9); gl.uniform1f(u.waveA, s.waveA ?? 0); gl.uniform1f(u.stars, s.stars ?? 1);
     gl.uniform1f(u.pulse, s.pulse ?? 0); gl.uniform1f(u.sunY, s.sunY ?? -.5); gl.uniform1f(u.horizon, s.horizon ?? -.28);
     gl.uniform1f(u.xmin, XMIN); gl.uniform1f(u.xmax, XMAX); gl.uniform1f(u.lake, s.lake ?? 1); gl.uniform1f(u.mountains, s.mountains ?? 1);
+    gl.uniform1f(u.meteor, s.meteor ?? .35); const m = s.m1 || [0, 0, 0, 0]; gl.uniform4f(u.m1, m[0], m[1], m[2], m[3]);
     const c = s.cam || {}; gl.uniform4f(u.cam, c.pan ?? 0, c.tilt ?? 0, c.zoom ?? 1, c.roll ?? 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.finish();

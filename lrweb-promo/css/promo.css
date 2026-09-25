@@ -61,9 +61,9 @@ body{font-family:var(--body);color:#fff;-webkit-font-smoothing:antialiased;text-
 .streak{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,rgba(200,255,235,.9))}
 
 /* logo */
-.lockup{position:absolute;display:flex;align-items:center;gap:.26em}
+.lockup{position:absolute;display:flex;align-items:center;gap:.34em}
 .lockup svg{height:1em;width:auto;overflow:visible}
-.lockup .wm{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:1;display:inline-flex;overflow:hidden;padding:.1em .04em .12em}
+.lockup .wm{font-family:var(--display);font-weight:800;letter-spacing:-.012em;line-height:1;display:inline-flex;overflow:hidden;padding:.1em .04em .12em}
 .lockup .wm span{display:inline-block}
 
 /* split screen */
@@ -132,7 +132,7 @@ body{font-family:var(--body);color:#fff;-webkit-font-smoothing:antialiased;text-
 .bp{position:absolute;pointer-events:none}
 .bp .gl{position:absolute;background:rgba(120,210,255,.5)}
 .bp .lab{position:absolute;font:500 20px var(--mono);color:#A9E2FF;letter-spacing:.06em;white-space:nowrap;background:rgba(6,10,40,.8);padding:2px 8px;border-radius:6px}
-.wf{position:absolute;border:2px solid rgba(160,230,255,.95);border-radius:8px;background:rgba(120,210,255,.08)}
+.wf{position:absolute;border:3px solid #fff;border-radius:8px;background:rgba(255,255,255,.1);box-shadow:0 0 18px rgba(160,230,255,.5)}
 
 /* dashboard */
 .card{position:absolute;padding:24px 26px;border-radius:26px;background:linear-gradient(160deg,rgba(30,34,84,.88),rgba(14,16,48,.9));border:1px solid rgba(255,255,255,.16);
@@ -177,3 +177,27 @@ body{font-family:var(--body);color:#fff;-webkit-font-smoothing:antialiased;text-
 /* overlays */
 #flash{position:absolute;inset:0;background:#EFFFF8;opacity:0;pointer-events:none}
 #black{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+
+/* v4.1: designed backdrops for the middle of the film */
+.bg{position:absolute;inset:0;z-index:0}
+.bg-canvas{background-color:#EEF1F7;background-image:radial-gradient(rgba(18,24,80,.16) 1.6px,transparent 1.8px);background-size:36px 36px}
+.bg-print{background-color:#0B2A86;background-image:linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:120px 120px,120px 120px,24px 24px,24px 24px}
+.bg-navy{background:radial-gradient(1200px 700px at 50% 110%,rgba(11,134,234,.28),transparent 70%),linear-gradient(180deg,#0B0E36,#060720)}
+.bg-grid{background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:80px 80px}
+.bg-brand{background:linear-gradient(135deg,#0B86EA 0%,#3F4DE6 55%,#1A0E9E 100%)}
+.bg-paper{background:#F4F6FA}
+.glow{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.t.dark{color:#0B1240}
+.t.dark .gr{background-image:linear-gradient(90deg,#0A74C9,#1F9C73 55%,#0A74C9)}
+.t.dark .scrim{display:none}
+.giant{position:absolute;font:800 520px/1 var(--display);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:3px rgba(11,18,64,.14);white-space:nowrap}
+.giant.lt{-webkit-text-stroke:3px rgba(255,255,255,.16)}
+.step{position:absolute;left:0;right:0;text-align:center;font:600 44px var(--mono);letter-spacing:.04em;color:#0B1240;white-space:nowrap}
+.step b{display:inline-grid;place-items:center;width:1.5em;height:1.5em;margin-right:.45em;border-radius:50%;background:linear-gradient(135deg,#3DB88D,#0B86EA);color:#fff;font-weight:600;font-size:.8em;vertical-align:.08em}
+.step.lt{color:#fff}
+.V .step{font-size:46px}
+.smash{position:absolute;left:0;top:0;font:800 230px/1 var(--display);letter-spacing:-.02em;color:#0B1240;white-space:nowrap}
+.V .smash{font-size:200px}
+.smash.gone{color:#8A93B8}
+.tile .f{position:absolute;inset:0;display:grid;place-items:center;border-radius:inherit;backface-visibility:hidden}
+.plan .pr{overflow:hidden}

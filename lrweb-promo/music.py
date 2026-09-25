@@ -283,9 +283,12 @@ VOICE = {
     'Gm': ['G1', 'G2', 'D3', 'Bb3', 'D4', 'G4'], 'A': ['A1', 'A2', 'E3', 'C#4', 'E4', 'A4'], 'D': ['D2', 'D3', 'A3', 'F#4', 'A4', 'D5'],
     'A/C#': ['C#2', 'C#3', 'A3', 'E4', 'A4', 'C#5'], 'Bm': ['B1', 'B2', 'F#3', 'D4', 'F#4', 'B4'], 'G': ['G1', 'G2', 'D3', 'B3', 'D4', 'G4'],
     'Em7': ['E2', 'E3', 'B3', 'D4', 'G4', 'B4'], 'G/D': ['D2', 'D3', 'B3', 'D4', 'G4', 'B4'],
+    # the lift: theme B and the ending sit a whole step up, in E major
+    'E': ['E2', 'E3', 'B3', 'G#4', 'B4', 'E5'], 'B/D#': ['D#2', 'D#3', 'B3', 'F#4', 'B4', 'D#5'], 'C#m': ['C#2', 'C#3', 'G#3', 'E4', 'G#4', 'C#5'],
+    'F#m7': ['F#2', 'F#3', 'C#4', 'E4', 'A4', 'C#5'], 'B': ['B1', 'B2', 'F#3', 'D#4', 'F#4', 'B4'], 'A/E': ['E2', 'E3', 'A3', 'C#4', 'E4', 'A4'],
 }
 PROG = ['Dm', 'Dm', 'Bb', 'C', 'Dm', 'Bb', 'Gm', 'A', 'D', 'A/C#', 'Bm', 'G', 'D', 'A/C#', 'G', 'A',
-        'Bm', 'G', 'D', 'A', 'D', 'A/C#', 'Bm', 'G', 'Em7', 'A', 'D', 'G/D', 'D', 'D']
+        'Bm', 'G', 'D', 'B', 'E', 'B/D#', 'C#m', 'A', 'F#m7', 'B', 'E', 'A/E', 'E', 'E']
 ch = lambda bar: VOICE[PROG[min(len(PROG) - 1, int(bar))]]
 root = lambda bar, octv=0: m(ch(bar)[0]) + 12 * octv
 # the theme, as (beat, note, beats) from the start of a phrase
@@ -343,7 +346,8 @@ def drums(b0, b1, style='full', vel=1.):
     PAT = {'full': {'bd': (0, 6, 10), 'sn': (8,), 'tl': (3, 7, 14, 15), 'th': (11, 12), 'tp': (0,)},
            'half': {'bd': (0,), 'sn': (8,), 'tl': (14,), 'th': (), 'tp': (0,)},
            'pulse': {'bd': (0, 8), 'sn': (), 'tl': (), 'th': (), 'tp': ()},
-           'toms': {'bd': (0, 8), 'sn': (), 'tl': (0, 3, 6, 8, 11, 14), 'th': (4, 12), 'tp': (0,)}}[style]
+           'toms': {'bd': (0, 8), 'sn': (), 'tl': (0, 3, 6, 8, 11, 14), 'th': (4, 12), 'tp': (0,)},
+           'drive': {'bd': (0, 6, 10), 'sn': (4, 12), 'tl': (14, 15), 'th': (7,), 'tp': (0,)}}[style]
     for bar in range(int(b0), int(np.ceil(b1))):
         for k in range(16):
             t = B(bar) + k * S16
@@ -405,13 +409,13 @@ def big_hit(t, bar, g=1.):
     brass_chord(t, bar, B(1.5), .95 * g, cres=(1.1, .55))
     pad(bar, bar + 1, .8 * g, att=0., cres=lambda b: (1.2, .7))
     place(bus['perc'], GONG, t, .45 * g); place(bus['perc'], CRASH, t, .45 * g); place(bus['perc'], BD2[1], t, 1.0 * g)
-    timp(bus['perc'], t, 'D3', 1., .9 * g); sub_boom(bus['hyb'], t, 'D1', .4 * g); ekick(bus['hyb'], t, .3 * g, 140, 38, .6)
+    timp(bus['perc'], t, root(bar, 1) if root(bar) < 43 else root(bar), 1., .9 * g); sub_boom(bus['hyb'], t, root(bar) % 12 + 24, .4 * g); ekick(bus['hyb'], t, .3 * g, 140, 38, .6)
 big_hit(B(8), 8)
 melody(8, PH1, HN, .85, gain=1.1)
 melody(8, PH1, VLN, .6, octv=0, bus_='str', gain=.5)
 pad(9, 11, .62, att=.15)
 ostinato(8, 11, .8, div=8, insts=('vc', 'vla'))
-drums(8, 10, 'full', .95); drums(10, 11, 'half', .8)
+drums(8, 10, 'full', .85); drums(10, 11, 'half', .75)
 arp(8, 11, .45)
 synth_pulse(8, 11, .13, 900)
 place(bus['perc'], CRASH_M, B(10), .35)
@@ -427,44 +431,62 @@ big_hit(B(13), 13, .8)
 melody(12, PH2, HN, .85, gain=1.05); melody(12, PH2, VLN, .7, octv=12, bus_='str', gain=.6)
 pad(14, 16, .7, att=.1)
 ostinato(13, 15.75, .85, insts=('vc', 'vla', 'vln'))
-drums(13, 15.5, 'full', .9); arp(13, 15.75, .5)
+drums(13, 15.5, 'full', .82); arp(13, 15.75, .5)
 synth_pulse(13, 15.75, .13, 1000)
 for k in range(8): place(bus['perc'], panned(TOML[k % len(TOML)] if k % 2 else TOMH[k % len(TOMH)], (k % 3 - 1) * .3), B(15.5) + k * S16, .3 + .05 * k)
 
-# BREAK (16-20): the dashboard. Piano, soft strings, a heartbeat; build into drop 2
-melody(16, BREAK, PNO, .55, bus_='pno', rel=.8)
+# BREAK (16-20): the dashboard. It keeps a pulse: piano melody, pizzicato ostinato, a soft half-time beat; then a D -> B pivot
+def stabs(b0, b1, vel, pos=(0, 3, 6, 10, 12)):
+    """The theme-B hook: syncopated spiccato chord stabs across the whole string section."""
+    for bar in range(int(b0), int(np.ceil(b1))):
+        v = ch(bar)
+        for k in pos:
+            t = B(bar) + k * S16
+            if t < B(b0) - 1e-6 or t >= B(b1) - 1e-6: continue
+            a = 1 if k in (0, 6) else .78
+            for n in v[2:5]: VLA_SP.play(bus['spic'], t, m(n) if m(n) < 74 else m(n) - 12, S16 * 1.6, vel * a, rel=.1, gain=.9)
+            VLN_SP.play(bus['spic'], t, m(v[5]), S16 * 1.6, vel * a, rel=.1, gain=.85)
+            VC_SP.play(bus['spic'], t, root(bar, 1) if root(bar) < 45 else root(bar), S16 * 1.6, vel * a, rel=.1, gain=1.0)
+melody(16, BREAK, PNO, .58, bus_='pno', rel=.8)
 arp(16, 19, .3, octv=-1, pattern=(0, 1, 2, 1))
-pad(16, 20, .38, att=.6, sections=('cb', 'vc', 'vla', 'vln'))
-ostinato(16, 19, .4, div=8, insts=('vc',))
-for b in range(16, 19): place(bus['perc'], BD2[0], B(b), .3); ekick(bus['hyb'], B(b), .1)
-synth_pulse(17, 19, .07, 600)
-# riser into drop 2
-ostinato(19, 19.875, .65, rise=.6, insts=('vc', 'vla', 'vln'))
-brass_chord(B(19), 19, B(.875), .6, att=.8, cres=(.3, 1.2))
-VLN_TR.play(bus['str'], B(19), 'E5', B(.875), .6, att=.5, cres=(.3, 1.25)); VLN_TR.play(bus['str'], B(19), 'C#6', B(.875), .5, att=.5, cres=(.3, 1.25))
-timp_roll(bus['perc'], B(19), B(19.875), 'A2', .05, 1., .9); swell_into(bus['perc'], B(19.875), '2s', .5)
-place(bus['perc'], SNR_ROLL[:int(B(.75) * SR)] * np.geomspace(.05, 1, int(B(.75) * SR))[:, None], B(19.125), .4)
+pad(16, 20, .4, att=.6, sections=('cb', 'vc', 'vla', 'vln'))
+ostinato(16, 19, .45, div=8, insts=('vc',))
+for k in range(24):  # pizzicato ostinato: root, fifth, octave, fifth
+    bar = 16 + k / 8; r0 = root(bar, 1) if root(bar) < 45 else root(bar)
+    VC_PZ.play(bus['fx'], B(16) + k * BAR / 8, r0 + [0, 7, 12, 7][k % 4], .3, .5 + .15 * (k % 4 == 0), rel=.2, gain=.45)
+drums(16, 19, 'half', .5)
+synth_pulse(16, 19, .09, 700)
+# riser into drop 2, pivoting to B (the dominant of E)
+ostinato(19, 19.875, .7, rise=.6, insts=('vc', 'vla', 'vln'))
+brass_chord(B(19), 19, B(.875), .65, att=.8, cres=(.3, 1.25))
+VLN_TR.play(bus['str'], B(19), 'F#5', B(.875), .6, att=.5, cres=(.3, 1.25)); VLN_TR.play(bus['str'], B(19), 'D#6', B(.875), .5, att=.5, cres=(.3, 1.25))
+timp_roll(bus['perc'], B(19), B(19.875), 'B2', .05, 1., .9); swell_into(bus['perc'], B(19.875), '2s', .5)
+place(bus['perc'], SNR_ROLL[:int(B(.75) * SR)] * np.geomspace(.05, 1, int(B(.75) * SR))[:, None], B(19.125), .45)
 
-# THEME B (20-26): pricing and the humans. Everything, then the collapse
-big_hit(B(20), 20, 1.0)
-melody(20, PH1, HN, .95, gain=1.1); melody(20, PH1, VLN, .75, octv=12, bus_='str', gain=.65)
-melody(24, PH_END, HN, .9, gain=1.05); melody(24, PH_END, VLN, .75, octv=12, bus_='str', gain=.65)
-pad(21, 26, .72, att=.12)
-ostinato(20, 24, .9, insts=('vc', 'vla', 'vln')); ostinato(24, 25.75, .85, insts=('vc', 'vla'), rise=.3)
-drums(20, 24, 'full', 1.0); drums(24, 25, 'half', .85); drums(25, 25.75, 'toms', .95)
-arp(20, 25.75, .55); synth_pulse(20, 25.75, .14, 1100)
-place(bus['perc'], CRASH_M, B(22), .4); place(bus['perc'], CRASH_M, B(24), .45)
-brass_chord(B(25), 25, B(.75), .7, att=.3, cres=(.5, 1.2))
+# THEME B (20-26): up a whole step. Violins sing the theme an octave up, horns double it, trombones hold a counter-line,
+# the strings stab a new syncopated hook, and the drums finally play a real backbeat
+big_hit(B(20), 20, 1.05)
+melody(20, PH1, VLN, .82, octv=14, bus_='str', gain=.75); melody(20, PH1, HN, .88, octv=2, gain=.95)
+melody(24, PH_END, VLN, .8, octv=14, bus_='str', gain=.75); melody(24, PH_END, HN, .85, octv=2, gain=.9)
+for bar in range(20, 26):
+    n = m(ch(bar)[2]); TBN.play(bus['brass'], B(bar), n if n >= 40 else n + 12, BAR * 1.02, .6, rel=.4, gain=.7)
+pad(21, 26, .7, att=.12)
+stabs(20, 24, .85); stabs(24, 25, .7, pos=(0, 6)); ostinato(25, 25.75, .85, insts=('vc', 'vla', 'vln'), rise=.4)
+drums(20, 24, 'drive', 1.0); drums(24, 25, 'half', .8); drums(25, 25.75, 'toms', .95)
+arp(20, 24, .5, octv=0); synth_pulse(20, 25.75, .13, 1200)
+for b in (20, 22, 24): place(bus['perc'], CRASH_M if b > 20 else CRASH, B(b), .4)
+brass_chord(B(25.25), 25, B(.5), .8, att=.15, cres=(.7, 1.2))
 swell_into(bus['perc'], B(25.75), '2s', .45)
 
-# OUTRO (26-30): the sun, the logo, the address. Final hit and a long, warm ring-out
+# OUTRO (26-30): the dawn, the logo, the address. Final hit in E and a long, warm ring-out
 big_hit(B(26), 26, 1.05)
-HN.play(bus['brass'], B(26), 'F#4', B(2), .8, rel=1.5, cres=(1.1, .5)); VLN.play(bus['str'], B(26), 'F#5', B(3.5), .6, rel=2, cres=(1.0, .4))
+HN.play(bus['brass'], B(26), 'G#4', B(2), .8, rel=1.5, cres=(1.1, .5)); VLN.play(bus['str'], B(26), 'G#5', B(3.5), .6, rel=2, cres=(1.0, .4))
+VLN.play(bus['str'], B(26), 'E6', B(3), .45, rel=2, cres=(.9, .3))
 pad(27, 29.6, .45, att=.8, rel=2.5, cres=lambda b: (.8, .5))
-for k, n in enumerate(['D3', 'A3', 'D4', 'F#4', 'A4', 'D5', 'E5', 'F#5']):
+for k, n in enumerate(['E3', 'B3', 'E4', 'G#4', 'B4', 'E5', 'F#5', 'G#5']):
     PNO.play(bus['pno'], B(27) + k * BEAT * .5, n, 4.0, .38 - .02 * k, rel=2.5)
-PNO.play(bus['pno'], B(28.5), 'D4', 5.0, .3, rel=3); PNO.play(bus['pno'], B(28.5), 'A4', 5.0, .28, rel=3); PNO.play(bus['pno'], B(28.5), 'F#5', 5.0, .26, rel=3)
-sub_boom(bus['hyb'], B(27.5), 'D1', .15, 3)
+PNO.play(bus['pno'], B(28.5), 'E4', 5.0, .3, rel=3); PNO.play(bus['pno'], B(28.5), 'B4', 5.0, .28, rel=3); PNO.play(bus['pno'], B(28.5), 'G#5', 5.0, .26, rel=3)
+sub_boom(bus['hyb'], B(27.5), 'E1', .15, 3)
 
 
 # ================================================================ sound design, on the cues
@@ -515,6 +537,12 @@ for e in EV['sfx']:
     elif k == 'strike':
         whoosh(bus['fx'], t + .05, .3, .14, 1200, 6000, 2500); place(bus['perc'], panned(SNR[i % len(SNR)], 0), t, .35)
     elif k == 'final': whoosh(bus['fx'], t, .8, .2, 200, 4000, 500)
+    elif k == 'smash':  # LUKE + RALPH collide
+        place(bus['perc'], BD2[1], t, .9); place(bus['perc'], CRASH, t, .4); place(bus['perc'], panned(SNR[0], 0), t, .6)
+        timp(bus['perc'], t, root(bar, 1) if root(bar) < 43 else root(bar), 1., .8); ekick(bus['hyb'], t, .3, 150, 40, .5)
+        brass_chord(t, bar, .45, .95, cres=(1.2, .6))
+    elif k == 'fall':  # the other 29 days tumble away
+        for j in range(8): VLA_PZ.play(bus['fx'], t + j * S16 * .5, m(ch(bar)[5]) - [0, 3, 5, 7, 10, 12, 15, 17][j], .3, .45, rel=.2, pan=-.6 + .17 * j, gain=.5)
 
 
 # ================================================================ mix

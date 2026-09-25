@@ -449,32 +449,39 @@ const builders = {
       cam: { tilt: .12 - .05 * P(ls, 0, 4), zoom: 1.1 - .1 * E.out(P(ls, 0, 2.5)), pan: .1 } });
   },
 
-  // ================================================================ TWO: a split screen, 01 / 02
+  // ================================================================ TWO: a split screen, 01 / 02 (navy irises in over the aurora)
   two(sc) {
-    const r = (sc.root = mkRoot()), o = sc.o; sc.post = .45;
-    const top = add(r, '<div class="panel" style="top:0;background:linear-gradient(180deg,rgba(61,184,141,.14),rgba(61,184,141,.04))"></div>', { height: px(H / 2) });
-    const bot = add(r, '<div class="panel" style="background:linear-gradient(0deg,rgba(11,134,234,.16),rgba(11,134,234,.04))"></div>', { top: px(H / 2), height: px(H / 2) });
-    const line = add(r, '<div class="divider"></div>', { left: 0, width: px(W), top: px(H / 2 - 2), height: '4px' });
-    const k1 = add(top, '<div class="kick c">01 · Job one</div>', { top: px(L(170, 390)) });
-    const a = T(top, ['We *build* it.'], { top: px(L(220, 440)), fontSize: px(L(130, 120)) });
-    const k2 = add(bot, '<div class="kick c">02 · Job two</div>', { top: px(L(170, 390)) });
-    const b = T(bot, ['We *look after* it.'], { top: px(L(220, 440)), fontSize: px(L(130, 104)) });
+    const r = (sc.root = mkRoot()), o = sc.o; sc.pre = .5; sc.post = .62;
+    const bg = add(r, '<div class="bg bg-navy"></div>');
+    const top = add(r, '<div class="panel bg-canvas"></div>', { top: 0, height: px(H / 2) });
+    const bot = add(r, '<div class="panel bg-brand"></div>', { top: px(H / 2), height: px(H / 2) });
+    const g1 = add(top, '<div class="giant">01</div>', { right: px(L(40, -40)), top: px(L(-40, 300)), fontSize: px(L(520, 460)) });
+    const g2 = add(bot, '<div class="giant lt">02</div>', { left: px(L(40, -40)), top: px(L(-40, 300)), fontSize: px(L(520, 460)) });
+    const k1 = add(top, '<div class="kick c" style="color:#2A3570">01 · Job one</div>', { top: px(L(160, 440)) });
+    const a = T(top, ['We *build* it.'], { top: px(L(210, 500)), fontSize: px(L(140, 124)) }, 't c dark');
+    const k2 = add(bot, '<div class="kick c">02 · Job two</div>', { top: px(L(160, 440)) });
+    const b = T(bot, ['We *look after* it.'], { top: px(L(210, 500)), fontSize: px(L(140, 104)) });
+    const hyp = Math.hypot(W, H) / 2;
     sc.update = (ls, G) => {
-      const lp = E.expo(P(ls, B(o.split), B(o.split) + .4)); set(line, { sx: lp, o: 1 - P(ls, B(o.grow), B(o.grow) + .3) });
+      bg.style.clipPath = `circle(${(hyp * E.inOut(P(ls, -.5, -.02))).toFixed(1)}px at 50% 50%)`;
+      const pt = E.expo(P(ls, B(o.split), B(o.split) + .55)), pb = E.expo(P(ls, B(o.split) + .08, B(o.split) + .63));
       const g = E.inOut5(P(ls, B(o.grow), B(o.grow) + .6));
-      [k1, k2].forEach((k, i) => { const a0 = B(o.split) + i * .12; set(k, { o: E.out(P(ls, a0, a0 + .35)) * (1 - g), y: (1 - E.out(P(ls, a0, a0 + .35))) * 20 }); });
-      type(a, ls - B(o.a), { st: .1, dur: .6 }); type(b, ls - B(o.b), { st: .1, dur: .6 });
-      set(top, { o: 1, y: 0, s: 1 + .5 * g, b: g * 14 }); top.style.opacity = 1 - g;
-      set(bot, { y: g * H * .6, o: 1 - g, b: g * 8 });
-      if (g > 0 && g < 1) G.mb = Math.max(G.mb, 5);
+      set(top, { x: -W * (1 - pt) }); top.style.height = px(lerp(H / 2, H, g));
+      set(bot, { x: W * (1 - pb), y: g * H / 2 });
+      set(g1, { x: -30 * ls, o: .9 }); set(g2, { x: 30 * ls, o: .9 });
+      [k1, k2].forEach((k, i) => { const a0 = B(o.split) + .02 + i * .08; set(k, { o: E.out(P(ls, a0, a0 + .35)) * (1 - P(ls, B(o.grow) - .3, B(o.grow) - .05)), y: (1 - E.out(P(ls, a0, a0 + .35))) * 20 }); });
+      type(a, ls - B(o.a) - .1, { st: .1, dur: .6, ex: B(o.grow - o.a) - .45, exDur: .25 }); type(b, ls - B(o.b) - .1, { st: .1, dur: .6 });
+      if ((pt > 0 && pt < 1) || (g > 0 && g < 1) || (ls > -.5 && ls < 0)) G.mb = Math.max(G.mb, 5);
     };
-    sc.sky = (ls) => ({ inten: .8, stars: .7, meteor: .2, cam: { tilt: .1, zoom: 1, pan: .25 } });
+    sc.sky = (ls) => ({ inten: .9, stars: .7, meteor: .2, cam: { tilt: .1, zoom: 1, pan: .25 } });
   },
 
   // ================================================================ BUILD: 2003 page -> exploded view -> wireframe -> rebuilt -> desktop + phone
   build(sc) {
-    const r = (sc.root = mkRoot()), o = sc.o; sc.post = .02;
+    const r = (sc.root = mkRoot()), o = sc.o; sc.post = .02; sc.pre = .6;
+    const bgc = add(r, '<div class="bg bg-canvas"></div>'), bgp = add(r, '<div class="bg bg-print"></div>');
     const chip = add(r, '<div class="chip"><b>01</b>We build it</div>', { left: px(L(70, 60)), top: px(L(56, 190)) });
+    const steps = ['<b>1</b>Strip it back', '<b>2</b>Design it', '<b>3</b>Build it'].map((h) => add(r, `<div class="step">${h}</div>`, { top: px(L(965, 1640)) }));
     const world = add(r, '<div class="world"><div class="rig"></div></div>'); const rig = world.firstChild;
     const ww = L(1240, 1000), wh = L(760, 780), wx = (W - ww) / 2, wy = L(190, 330);
     const XP = 128, SB = 24, MOD = 46, bw = ww - 8;
@@ -512,7 +519,7 @@ const builders = {
     layers[7].querySelector('.pic').style.height = '172px';
     const mqi = old.querySelector('.mqi');
     // blueprint grid + wireframe of the new layout, on the base plane
-    const bp = add(win, '<div class="bp"></div>', { left: '4px', top: px(XP), width: px(bw), height: px(bh), background: 'linear-gradient(160deg,#0B1A5C,#070F3A)', boxShadow: '0 0 0 2px rgba(120,210,255,.5)' });
+    const bp = add(win, '<div class="bp"></div>', { left: '4px', top: px(XP), width: px(bw), height: px(bh), background: '#0B2A86', boxShadow: '0 0 0 3px rgba(255,255,255,.6)' });
     for (let c = 0; c <= 12; c++) add(bp, '<div class="gl"></div>', { left: px(40 + c * (bw - 80) / 12), top: 0, width: '1px', height: '100%' });
     for (let y = 0; y < bh; y += 48) add(bp, '<div class="gl"></div>', { left: 0, top: px(y), height: '1px', width: '100%', opacity: .5 });
     const wf = [[0, 0, bw, 58], [60, 120, bw * .42, 70], [60, 206, bw * .36, 70], [60, 300, bw * .3, 22], [60, 332, bw * .26, 22], [60, 392, 150, 52], [226, 392, 150, 52], [bw * .56, 96, bw * .36, bw * .36 * .8]]
@@ -525,12 +532,17 @@ const builders = {
     const phone = add(r, '<div class="phone"><div class="scr"><div class="isl"></div></div></div>');
     const scr = phone.querySelector('.scr');
     const mf = add(scr, '<iframe src="../lrweb/work/crumb-and-kiln/?shot" scrolling="no"></iframe>', { width: '390px', height: '1000px' });
-    const cap = T(r, V ? ['Same bakery.', '*Brand new website.*'] : ['Same bakery. *Brand new website.*'], { top: px(L(962, 1620)), fontSize: px(L(64, 80)) });
+    const cap = T(r, V ? ['Same bakery.', '*Brand new website.*'] : ['Same bakery. *Brand new website.*'], { top: px(L(962, 1620)), fontSize: px(L(64, 80)) }, 't c dark');
     shared.frames = [fr, mf]; sc.fr = fr;
     const PH = V ? { x: 610, y: 800, w: 360, h: 720 } : { x: 1420, y: 250, w: 330, h: 680 };
     sc.update = (ls, G) => {
       const Bl = (b) => B(b);
-      set(chip, { o: E.out(P(ls, -.3, .3)) * (1 - P(ls, B(sc.len) - .4, B(sc.len) - .1)), y: (1 - E.out(P(ls, -.3, .3))) * -16 });
+      // the canvas grows out of the split screen's top panel; blueprint mode while we take the old site apart
+      const gr = E.inOut5(P(ls, -.5, .1)); bgc.style.clipPath = gr >= 1 ? 'none' : `inset(0 0 ${((1 - gr) * 50).toFixed(2)}% 0)`; setVis(bgc, ls >= -.5);
+      const bpm = E.inOut(P(ls, Bl(o.explode) - .1, Bl(o.explode) + .35)) * (1 - E.inOut(P(ls, Bl(o.rebuild) + .1, Bl(o.rebuild) + .6)));
+      set(bgp, { o: bpm }); bgp.style.clipPath = `circle(${(Math.hypot(W, H) * E.out(P(ls, Bl(o.explode) - .1, Bl(o.explode) + .45))).toFixed(0)}px at 50% 55%)`;
+      const stT = [Bl(o.explode) + .15, Bl(o.design), Bl(o.rebuild) + .2, Bl(o.cap) - .35];
+      steps.forEach((st, i) => { const a0 = stT[i], a1 = stT[i + 1]; const pin = E.out4(P(ls, a0, a0 + .3)), pout = E.in(P(ls, a1 - .2, a1)); set(st, { o: pin * (1 - pout), y: (1 - pin) * 30 - pout * 30 }); st.classList.toggle('lt', i < 2 || bpm > .5); });      set(chip, { o: E.out(P(ls, -.3, .3)) * (1 - P(ls, B(sc.len) - .4, B(sc.len) - .1)), y: (1 - E.out(P(ls, -.3, .3))) * -16 });
       // window entrance, explode, rebuild, shift for the phone
       const inP = E.out4(P(ls, Bl(o.before), Bl(o.before) + .8));
       const ex = E.inOut5(P(ls, Bl(o.explode), Bl(o.explode) + .7)), back = E.inOut5(P(ls, Bl(o.rebuild), Bl(o.rebuild) + .75)), tilt = ex * (1 - back);
@@ -539,16 +551,16 @@ const builders = {
       set(win, { o: inP, y: (1 - inP) * 90 + shiftY, x: shiftX, z: (1 - inP) * -500, rx: (1 - inP) * 14 + tilt * 52, r: tilt * L(-28, -22), s: sc2 * lerp(1, L(.74, .78), tilt) });
       if ((ex > 0 && ex < 1) || (back > 0 && back < 1) || (mo > 0 && mo < 1) || (inP > 0 && inP < 1)) G.mb = Math.max(G.mb, 4);
       // explode: every block lifts off the page, then flies away
-      const fly = (i) => E.in(P(ls, Bl(o.explode) + .9 + (layers.length - i) * .03, Bl(o.explode) + 1.35 + (layers.length - i) * .03));
+      const fly = (i) => E.inOut(P(ls, Bl(o.explode) + .8 + (layers.length - 1 - i) * .05, Bl(o.explode) + 1.25 + (layers.length - 1 - i) * .05));
       const showOld = ls < Bl(o.rebuild);
       old.style.visibility = showOld ? 'visible' : 'hidden';
-      layers.forEach((l, i) => { const f = fly(i); set(l, { z: i * 58 * ex + f * 900, y: -f * 200, o: 1 - f }); });
+      layers.forEach((l, i) => { const f = fly(i); set(l, { z: i * 60 * ex + f * 120, x: f * 1500, o: 1 - P(f, .6, 1) }); });
       mqi.style.transform = `translateX(${(-((ls * 180) % 800)).toFixed(1)}px)`;
       old.querySelector('.new').style.visibility = Math.floor(ls / .25) % 2 ? 'hidden' : 'visible';
       // blueprint + wireframe
       const bpo = E.out(P(ls, Bl(o.explode) + .3, Bl(o.explode) + .8)) * (1 - E.out(P(ls, Bl(o.rebuild), Bl(o.rebuild) + .5)));
       set(bp, { o: bpo, z: 2 });
-      wf.forEach((w, i) => { const p = E.out4(P(ls, Bl(o.explode) + 1.0 + i * .09, Bl(o.explode) + 1.4 + i * .09)); w.style.transform = `scaleX(${p.toFixed(3)})`; w.style.opacity = p; });
+      wf.forEach((w, i) => { const p = E.out4(P(ls, Bl(o.design) + i * .07, Bl(o.design) + .35 + i * .07)); w.style.transform = `scaleX(${p.toFixed(3)})`; w.style.opacity = p; });
       labels.forEach((lb, i) => { const d = ls - Bl(o.explode) - .3 - i * .18; set(lb, { o: clamp(d / .2) * (1 - P(ls, Bl(o.rebuild) - .2, Bl(o.rebuild) + .1)), y: (1 - E.out(clamp(d / .4))) * 20 }); });
       // chrome: XP collapses, the modern bar arrives; the body grows into the space
       const ch = E.inOut(P(ls, Bl(o.chrome), Bl(o.chrome) + .5));
@@ -574,17 +586,19 @@ const builders = {
     sc.sky = (ls) => ({ inten: .7, stars: .7, meteor: .15, cam: { tilt: .12, zoom: 1, pan: .35 + ls * .01 } });
   },
 
-  // ================================================================ CARE: a live dashboard; the night turns to dawn
+  // ================================================================ CARE: a live dashboard on deep navy; one card gets the spotlight
   care(sc) {
     const r = (sc.root = mkRoot()), o = sc.o; sc.pre = .02;
+    add(r, '<div class="bg bg-navy"><div class="bg bg-grid"></div></div>');
+    const glA = add(r, '<div class="glow"></div>', { width: '900px', height: '900px', background: 'rgba(11,134,234,.32)' });
+    const glB = add(r, '<div class="glow"></div>', { width: '760px', height: '760px', background: 'rgba(63,77,230,.3)' });
     const chip = add(r, '<div class="chip"><b>02</b>We look after it</div>', { left: px(L(70, 60)), top: px(L(56, 190)) });
     const clock = add(r, `<div class="chip"><b>${icon('moon')}</b><span>23:00</span></div>`, V ? { right: px(60), top: px(190) } : { right: px(70), top: px(56) });
-    const head = T(r, V ? ['Then we', '*look after it.*'] : ['Then we *look after it.*'], { top: px(L(150, 330)), fontSize: px(L(104, 112)) });
-    const world = add(r, '<div class="world" style="perspective:2000px"><div class="rig"></div></div>'); const rig = world.firstChild;
-    const cols = V ? 2 : 3, cw = L(520, 480), chh = L(236, 290), gap = L(34, 30);
-    const x0 = (W - (cols * cw + (cols - 1) * gap)) / 2, y0 = L(360, 640);
-    const cards = TL.SYSTEMS.map(([tt, s, ic], i) => add(rig, `<div class="card"><div class="hd"><div class="ic">${icon(ic)}</div><div><b>${tt}</b><small>${s}</small></div><div class="ok">${icon('check', '#fff', 3)}</div></div><div class="viz"></div></div>`,
-      { width: px(cw), height: px(chh), left: px(x0 + (i % cols) * (cw + gap)), top: px(y0 + Math.floor(i / cols) * (chh + gap)) }));
+    const head = T(r, V ? ['Then we', '*look after it.*'] : ['Then we *look after it.*'], { top: px(L(140, 330)), fontSize: px(L(104, 112)) });
+    const cols = V ? 2 : 3, cw = L(548, 480), chh = L(246, 290), gap = L(36, 30);
+    const x0 = (W - (cols * cw + (cols - 1) * gap)) / 2, y0 = L(350, 640);
+    const cards = TL.SYSTEMS.map(([tt, s, ic], i) => { const c = add(r, `<div class="card"><div class="hd"><div class="ic">${icon(ic)}</div><div><b>${tt}</b><small>${s}</small></div><div class="ok">${icon('check', '#fff', 3)}</div></div><div class="viz"></div></div>`,
+      { width: px(cw), height: px(chh), left: px(x0 + (i % cols) * (cw + gap)), top: px(y0 + Math.floor(i / cols) * (chh + gap)) }); c.cx = x0 + (i % cols) * (cw + gap) + cw / 2; c.cy = y0 + Math.floor(i / cols) * (chh + gap) + chh / 2; return c; });
     const viz = cards.map((c) => c.querySelector('.viz'));
     const stat = (s) => `<div class="stat" style="position:absolute;left:0;bottom:0">${s}</div>`;
     viz[0].innerHTML = stat('<span class="n">99.9</span>%') + '<svg style="position:absolute;right:0;bottom:6px;width:52%;height:60px" viewBox="0 0 260 60" preserveAspectRatio="none"><polyline fill="none" stroke="#6FE0B4" stroke-width="3.5" stroke-linejoin="round"/></svg>';
@@ -593,21 +607,31 @@ const builders = {
     viz[3].innerHTML = stat('0 threats') + '<div style="position:absolute;right:0;bottom:10px;width:40%;height:44px;border-radius:12px;background:rgba(255,255,255,.07);overflow:hidden"><div class="scan" style="position:absolute;top:0;bottom:0;width:60px;background:linear-gradient(90deg,transparent,rgba(111,224,180,.7),transparent)"></div></div>';
     viz[4].innerHTML = stat('https://') + `<svg style="position:absolute;right:10px;bottom:0;width:60px;height:70px;overflow:visible" viewBox="0 0 24 28" fill="none" stroke="#6FE0B4" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="13" width="18" height="13" rx="3" fill="rgba(111,224,180,.18)"/><path class="sh" d="M7 13V9a5 5 0 0 1 10 0v4"/></svg>`;
     viz[5].innerHTML = stat('<span class="n">9.4</span>s') + '<svg style="position:absolute;right:0;bottom:0;width:120px;height:70px;overflow:visible" viewBox="0 0 120 70"><path d="M10 64a50 50 0 0 1 100 0" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="10" stroke-linecap="round"/><path class="arc" d="M10 64a50 50 0 0 1 100 0" fill="none" stroke="url(#spg)" stroke-width="10" stroke-linecap="round" pathLength="1" stroke-dasharray="1"/><defs><linearGradient id="spg"><stop offset="0" stop-color="#6FE0B4"/><stop offset="1" stop-color="#0B86EA"/></linearGradient></defs><line class="nd" x1="60" y1="64" x2="60" y2="22" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>';
+    const spot = add(r, '<div class="kick c">Under a second</div>', { top: px(L(900, 1480)) });
     const run1 = T(r, V ? ['You run', 'your business.'] : ['You run your business.'], { top: px(L(370, 700)), fontSize: px(L(120, 116)) });
     const run2 = T(r, V ? ['We run', 'your *website.*'] : ['We run your *website.*'], { top: px(L(530, 990)), fontSize: px(L(120, 116)) });
     sc.update = (ls, G) => {
-      const out = E.inOut(P(ls, B(o.run) - .2, B(o.run) + .3));
-      set(chip, { o: E.out(P(ls, .1, .5)) }); set(clock, { o: E.out(P(ls, .3, .7)) });
-      const mins = Math.floor(lerp(23 * 60, 31 * 60, E.inOut(P(ls, .5, B(o.run)))));
+      const out = E.inOut(P(ls, B(o.run) - .25, B(o.run) + .2));
+      const fo = E.inOut5(P(ls, B(o.focus), B(o.focus) + .55)) * (1 - E.inOut(P(ls, B(o.run) - .45, B(o.run) - .1)));
+      const dawn = E.inOut(P(ls, .5, B(o.run)));
+      set(glA, { x: CX - 450 + Math.sin(ls * .5) * L(420, 200), y: L(500, 1100) + Math.cos(ls * .4) * 120 });
+      set(glB, { x: CX - 380 + Math.cos(ls * .45) * L(520, 260), y: L(-200, 100) + Math.sin(ls * .35) * 140 });
+      glB.style.background = `rgba(${lerp(63, 61, dawn).toFixed(0)},${lerp(77, 184, dawn).toFixed(0)},${lerp(230, 141, dawn).toFixed(0)},.28)`;
+      set(chip, { o: E.out(P(ls, .1, .5)) * (1 - out) }); set(clock, { o: E.out(P(ls, .3, .7)) * (1 - out) });
+      const mins = Math.floor(lerp(23 * 60, 31 * 60, dawn));
       clock.querySelector('span').textContent = `${String(Math.floor(mins / 60) % 24).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`;
-      type(head, ls - B(o.title) - .1, { st: .09, dur: .6, ex: B(o.run) - .5, exDur: .35 });
-      rig.style.transform = `translateZ(${(-60 - 60 * out).toFixed(1)}px) rotateX(${L(12, 10)}deg) rotateY(${(noise(ls * .2) * 5).toFixed(2)}deg) scale(${(1 - .06 * out).toFixed(3)})`;
+      type(head, ls - B(o.title) - .1, { st: .09, dur: .6, ex: B(o.focus) - .45, exDur: .3 });
       cards.forEach((c, i) => {
         const d = ls - B(o.cards[i]); if (d < 0) return hide(c);
-        const sp = spring(d, 1.4, .55);
-        set(c, { o: clamp(d / .12) * (1 - .78 * out), y: (1 - sp) * 80, z: (1 - sp) * -300, rx: (1 - sp) * 25, b: out * 9 });
-        const ok = c.querySelector('.ok'); ok.style.transform = `scale(${E.back(P(d, .3, .6), 3).toFixed(3)})`;
+        const sp = spring(d, 1.5, .55), isF = i === 5;
+        const pulse = P(d, .3, .9), ring = pulse > 0 && pulse < 1 ? `,0 0 0 ${(2 + 10 * pulse).toFixed(1)}px rgba(111,224,180,${(.55 * (1 - pulse)).toFixed(2)})` : '';
+        c.style.boxShadow = `0 40px 90px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.12)${ring}`;
+        const tx = isF ? (CX - c.cx) * fo : 0, ty = isF ? (L(560, 960) - c.cy) * fo : 0;
+        set(c, { o: clamp(d / .1) * (1 - out) * (isF ? 1 : 1 - .82 * fo), x: tx, y: (1 - sp) * 60 + ty, s: lerp(.86, 1, sp) * (isF ? 1 + L(.7, .55) * fo : 1 - .06 * fo), b: isF ? 0 : fo * 5 });
+        c.style.zIndex = isF ? 5 : 1;
+        c.querySelector('.ok').style.transform = `scale(${E.back(P(d, .3, .6), 3).toFixed(3)})`;
       });
+      set(spot, { o: fo, y: (1 - fo) * 20 });
       const d = (i) => ls - B(o.cards[i]);
       viz[0].querySelector('polyline').setAttribute('points', Array.from({ length: 52 }, (_, k) => { const ph = (k + Math.floor(ls * 16)) % 18; const y = ph === 8 ? 8 : ph === 9 ? 52 : ph === 10 ? 22 : 34; return `${(k * 260 / 51).toFixed(1)},${(k / 51 < E.inOut(P(d(0), 0, .8)) ? y : 34)}`; }).join(' '));
       viz[0].querySelector('.n').textContent = (99 + .99 * E.out(P(d(0), .1, 1.2))).toFixed(2).replace(/0$/, '');
@@ -615,76 +639,142 @@ const builders = {
       const up = E.inOut(P(d(2), .15, 1.3)); viz[2].querySelector('.bar').style.width = `${(100 * up).toFixed(1)}%`; viz[2].querySelector('.n').textContent = Math.round(100 * up);
       viz[3].querySelector('.scan').style.left = `${(((ls * .9) % 1.3) - .2) * 100}%`;
       viz[4].querySelector('.sh').style.transform = `translateY(${(-4 * (1 - E.back(P(d(4), .3, .6), 3))).toFixed(2)}px)`;
-      const sp = E.inOut(P(d(5), .15, 1.3)); viz[5].querySelector('.n').textContent = lerp(9.4, .8, sp).toFixed(1);
+      const sp = E.inOut(P(ls, B(o.focus) + .35, B(o.focus) + 1.5)); viz[5].querySelector('.n').textContent = lerp(9.4, .8, sp).toFixed(1);
       viz[5].querySelector('.arc').style.strokeDashoffset = (1 - sp * .92).toFixed(3); viz[5].querySelector('.nd').setAttribute('transform', `rotate(${(-80 + 150 * sp).toFixed(1)} 60 64)`);
       type(run1, ls - B(o.run), { st: .1, dur: .6 }); type(run2, ls - B(o.runB), { st: .1, dur: .6 });
+      if (fo > 0 && fo < 1) G.mb = Math.max(G.mb, 4);
     };
-    sc.sky = (ls) => { const dw = E.inOut(P(ls, .5, 7.5)); return { inten: .9, dawn: dw * .6, sunY: lerp(-.4, -.14, dw), stars: .7, meteor: .15, speed: .8, cam: { tilt: .07, zoom: 1, pan: .6 + ls * .01 } }; };
+    sc.sky = (ls) => ({ inten: .9, dawn: .3, sunY: -.3, stars: .6, meteor: .1, cam: { tilt: .07, zoom: 1, pan: .6 } });
   },
 
-  // ================================================================ PRICING: cards dealt, odometers, 30 tiles = a month, 95p a day, £299
+  // ================================================================ PRICING: a brand-gradient burst; cards dealt; £29 bursts into a month of tiles; 95p; £299
   pricing(sc) {
-    const r = (sc.root = mkRoot()), o = sc.o; sc.post = .35;
-    const kick = add(r, '<div class="kick c">LRWeb care plans · monthly</div>', { top: px(L(190, 300)) });
+    const r = (sc.root = mkRoot()), o = sc.o; sc.pre = .02; sc.post = .35;
+    const bg = add(r, '<div class="bg bg-brand"></div>');
+    const kick = add(r, '<div class="kick c" style="color:#E6FFF6">LRWeb care plans · monthly</div>', { top: px(L(190, 300)) });
     const odo = (n) => `<span class="cur">£</span>${[...String(n)].map((dg) => `<span class="odo" data-d="${dg}"><span>${'0123456789'.split('').join('</span><span>')}</span></span>`).join('')}<small>/month</small>`;
     const cards = TL.PLANS.map(([nm, pr, ds], i) => add(r, `<div class="plan${i === 0 ? ' hi' : ''}"><div class="nm">${nm}</div><div class="pr">${odo(pr)}</div><p>${ds}</p></div>`,
       V ? { left: px(110), top: px(400 + i * 350), width: px(860), height: px(310) } : { left: px(CX - 220 + (i - 1) * 480), top: px(280), width: px(440), height: px(430) }));
-    const cols = 6, ts = L(84, 128), tg = L(12, 16), gw = cols * ts + (cols - 1) * tg, gx = (W - gw) / 2, gy = L(300, 620);
-    const month = add(r, '<div class="kick c">£29 ÷ 30 days</div>', { top: px(gy - L(70, 90)) });
-    const tiles = Array.from({ length: 30 }, (_, i) => add(r, `<div class="tile">${i + 1}</div>`, { left: px(gx + (i % cols) * (ts + tg)), top: px(gy + Math.floor(i / cols) * (ts + tg)), width: px(ts), height: px(ts), fontSize: px(L(20, 28)) }));
-    const day = T(r, V ? ['About *95p*', 'a day.'] : ['About *95p* a day.'], { top: px(L(420, 760)), fontSize: px(L(170, 170)) });
+    const c0 = V ? { x: CX, y: 555 } : { x: CX - 480, y: 495 };
+    const cols = 6, ts = L(100, 140), tg = L(14, 18), gw = cols * ts + (cols - 1) * tg, gx = (W - gw) / 2, gy = L(300, 600);
+    const month = add(r, '<div class="kick c" style="color:#E6FFF6">£29 ÷ 30 days</div>', { top: px(gy - L(70, 90)) });
+    const tiles = Array.from({ length: 30 }, (_, i) => { const tl = add(r, `<div class="tile">${i + 1}</div>`, { left: px(gx + (i % cols) * (ts + tg)), top: px(gy + Math.floor(i / cols) * (ts + tg)), width: px(ts), height: px(ts), fontSize: px(L(24, 32)) });
+      tl.cx = gx + (i % cols) * (ts + tg) + ts / 2; tl.cy = gy + Math.floor(i / cols) * (ts + tg) + ts / 2; return tl; });
+    const day = T(r, V ? ['About *95p*', 'a day.'] : ['About *95p* a day.'], { top: px(L(470, 820)), fontSize: px(L(160, 160)) });
     const b1 = T(r, V ? ['Websites', 'from *£299.*'] : ['Websites from *£299.*'], { top: px(L(380, 740)), fontSize: px(L(150, 150)) });
     const b2 = add(r, '<div class="sub c">Fixed price. Agreed up front.</div>', { top: px(L(590, 1120)), fontSize: px(L(46, 52)) });
-    const t0 = B(sc.s); burst(t0, CX, CY, 260, 1000, 5.5, 1.3); rings(t0, CX, CY, 2, 1000);
+    const t0 = B(sc.s); burst(t0, CX, CY, 260, 1100, 5.5, 1.3); rings(t0, CX, CY, 2, 1100);
+    const hyp = Math.hypot(W, H) / 2;
     sc.update = (ls, G) => {
-      const split = E.inOut5(P(ls, B(o.split), B(o.split) + .5));
-      set(kick, { o: E.out(P(ls, .1, .5)) * (1 - split) });
+      bg.style.clipPath = `circle(${(hyp * E.out4(P(ls, 0, .35))).toFixed(1)}px at 50% 50%)`;
+      const split = E.inOut5(P(ls, B(o.split), B(o.split) + .45));
+      set(kick, { o: E.out(P(ls, .2, .6)) * (1 - split) });
       cards.forEach((c, i) => {
         const d = ls - B(o.plans[i]); if (d < 0) return hide(c);
-        const p = E.out4(clamp(d / .6)), sp = spring(d, 1.3, .6);
-        const away = i ? split : 0, fade = i === 0 ? E.in(P(ls, B(o.split), B(o.split) + .35)) : 0;
-        set(c, { o: clamp(d / .1) * (1 - away) * (1 - fade), y: (1 - p) * H * .8 + (i ? away * H * .3 : 0), x: away * (i === 1 ? -1 : 1) * W * .7, rx: (1 - sp) * 60, r: (1 - p) * (i - 1) * 14 + away * (i === 1 ? -20 : 20), s: lerp(.8, 1, sp) * (i === 0 && !V ? 1.04 : 1) });
-        c.querySelectorAll('.odo').forEach((od, k) => { const dg = +od.dataset.d, q = E.inOut(P(d, .15 + k * .08, .95 + k * .08)); od.firstChild.style.marginTop = `${(-(dg + 10 * (1 - q) * 0) * q).toFixed(3)}em`; });
-        if (d < .6) G.mb = Math.max(G.mb, 5);
+        const p = E.out4(clamp(d / .55)), sp = spring(d, 1.3, .6);
+        const away = i ? split : 0, fade = i === 0 ? E.in(P(ls, B(o.split), B(o.split) + .3)) : 0;
+        set(c, { o: clamp(d / .1) * (1 - away) * (1 - fade), y: (1 - p) * H * .8 + (i ? away * H * .3 : 0), x: away * (i === 1 ? -1 : 1) * W * .7, rx: (1 - sp) * 60, r: (1 - p) * (i - 1) * 14 + away * (i === 1 ? -20 : 20), s: lerp(.8, 1, sp) * (1 - .6 * fade) });
+        c.querySelectorAll('.odo').forEach((od, k) => { const dg = +od.dataset.d, q = E.out4(P(d, .1 + k * .06, .6 + k * .06)); od.firstChild.style.marginTop = `${(-dg * q).toFixed(3)}em`; });
+        if (d < .6 || (away > 0 && away < 1)) G.mb = Math.max(G.mb, 5);
       });
-      // the month as 30 tiles
-      const dayIn = E.inOut(P(ls, B(o.day) - .1, B(o.day) + .4)), gOut = E.in(P(ls, B(o.build) - .35, B(o.build)));
-      set(month, { o: E.out(P(ls, B(o.split) + .05, B(o.split) + .3)) * (1 - E.in(P(ls, B(o.day) - .45, B(o.day) - .2))) });
+      // £29 bursts into the 30 days of a month; the rest fall away; day one flips to 95p
+      const dayIn = E.inOut5(P(ls, B(o.day) - .3, B(o.day) + .25)), gOut = E.in(P(ls, B(o.build) - .35, B(o.build)));
+      set(month, { o: E.out(P(ls, B(o.split) + .15, B(o.split) + .4)) * (1 - E.in(P(ls, B(o.day) - .3, B(o.day) - .1))) });
       tiles.forEach((tl, i) => {
-        const k = ((i % cols) + Math.floor(i / cols)) / 10, d = ls - B(o.split) - .15 - k * .45; if (d < 0) return hide(tl);
-        const p = E.back(clamp(d / .35), 2.2); tl.classList.toggle('on', i === 0 && ls > B(o.day) - .2);
-        const focus = i === 0 ? 1 : 0, fz = focus * E.inOut5(P(ls, B(o.day) - .35, B(o.day) + .15));
-        if (focus) tl.textContent = fz > .5 ? '95p' : '1';
-        const tx = fz * (CX - ts * .5 - parseFloat(tl.style.left)), ty = fz * (L(250, 560) - parseFloat(tl.style.top));
-        set(tl, { o: clamp(d / .1) * (1 - gOut) * (focus ? 1 : 1 - .85 * dayIn), x: tx, y: ty, s: p * (1 + fz * L(.9, .5)), b: (1 - focus) * dayIn * 6 + gOut * 8 });
+        const d = ls - B(o.split) - .1 - i * .018; if (d < 0) return hide(tl);
+        const sp = spring(d, 1.4, .6), bx = (c0.x - tl.cx) * (1 - sp), by = (c0.y - tl.cy) * (1 - sp);
+        if (i === 0) {
+          const fl = P(ls, B(o.day) - .3, B(o.day) - .05), ang = 180 * E.inOut(fl);
+          tl.textContent = ang > 90 ? '95p' : '1'; tl.classList.toggle('on', ang > 90);
+          const tx = dayIn * (CX - tl.cx), ty = dayIn * (L(270, 590) - tl.cy);
+          set(tl, { o: clamp(d / .08) * (1 - gOut), x: bx + tx, y: by + ty, ry: ang > 90 ? ang - 180 : ang, s: lerp(.3, 1, sp) * (1 + dayIn * L(1.1, .7)) * (1 - gOut), b: gOut * 8 });
+          tl.style.zIndex = 3;
+        } else {
+          const f = ls - (B(o.day) - .35) - hash(i * 3.1) * .15, fall = f > 0 ? f : 0;
+          set(tl, { o: clamp(d / .08) * (1 - P(fall, .2, .55)), x: bx + fall * (hash(i * 7.7) - .5) * 400, y: by + 1800 * fall * fall - 120 * fall, r: fall * (hash(i * 5.1) - .5) * 400, s: lerp(.3, 1, sp) });
+        }
       });
+      if (ls > B(o.split) && ls < B(o.split) + .7) G.mb = Math.max(G.mb, 4);
       type(day, ls - B(o.day), { st: .1, dur: .6, ex: B(o.build - o.day) - .4, exDur: .3 });
       type(b1, ls - B(o.build), { units: 'chars', st: .03, dur: .5, y: .2 });
       const bp = E.out(P(ls, B(o.build) + .6, B(o.build) + 1.0)); set(b2, { o: bp, y: (1 - bp) * 16 });
       G.flash = Math.max(G.flash, .45 * Math.exp(-Math.max(0, ls) / .12) * (ls >= 0 ? 1 : 0));
     };
-    sc.sky = (ls) => ({ inten: 1.05 + .5 * Math.exp(-ls / .7), pulse: Math.exp(-ls / .4), dawn: .2, sunY: -.35, stars: .6, meteor: .1, cam: { tilt: .08, zoom: 1.04 - .04 * E.out(P(ls, 0, 2)), pan: .8 + ls * .01 } });
+    sc.sky = (ls) => ({ inten: 1, dawn: .3, sunY: -.3, stars: .6, meteor: .1, cam: { tilt: .08, zoom: 1, pan: .8 } });
   },
 
-  // ================================================================ HUMANS: strike-throughs, then two real people; everything collapses to a dot
+  // ================================================================ HUMANS: on warm paper; strike-throughs; LUKE + RALPH smash into LRWeb; iris out to the dawn
   humans(sc) {
-    const r = (sc.root = mkRoot()), o = sc.o;
+    const r = (sc.root = mkRoot()), o = sc.o; sc.pre = .3;
+    const bg = add(r, '<div class="bg bg-paper"></div>');
     const lines = (V ? [['No call centre.'], ['No chatbot.'], ['Just', '*Luke & Ralph.*']] : [['No call centre.'], ['No chatbot.'], ['Just *Luke & Ralph.*']]).map((ln, i) =>
-      T(r, ln, V ? { top: px([420, 590, 790][i]), fontSize: px(i === 2 ? 128 : 116) } : { left: px(140), top: px([170, 330, 510][i]), fontSize: px(i === 2 ? 138 : 118) }, V ? 't c' : 't'));
+      T(r, ln, V ? { top: px([500, 670, 870][i]), fontSize: px(i === 2 ? 128 : 116) } : { left: px(140), top: px([220, 380, 560][i]), fontSize: px(i === 2 ? 138 : 118) }, V ? 't c dark' : 't dark'));
     const strikes = lines.slice(0, 2).map((l) => { const ln = l.querySelector('.ln'); Object.assign(ln.style, { display: 'inline-block', position: 'relative' }); return add(ln, '<div class="strike"></div>'); });
-    const av = [['R', 'Ralph', 'HUNGERFORD & KINTBURY', '#3DB88D,#0B86EA'], ['L', 'Luke', 'WOKINGHAM', '#0B86EA,#3F4DE6']].map(([c, n, s, g], i) =>
-      add(r, `<div class="av"><div class="c" style="background:linear-gradient(135deg,${g})">${c}</div><div><b>${n}</b><small>${s}</small></div></div>`, V ? { left: px([100, 560][i]), top: px(1180) } : { left: px([150, 700][i]), top: px(740) }));
-    const t0 = B(sc.s);
-    converge(t0 + B(o.collapse), t0 + B(sc.len), CX, CY, 260, 12.7);
-    sc.update = (ls, G) => {
-      lines.forEach((l, i) => type(l, ls - B(o.lines[i]), { st: .08, dur: .55 }));
-      strikes.forEach((s, i) => { const d = ls - B(o.lines[i]) - B(.25); s.style.transform = `scaleX(${E.out4(clamp(d / .22)).toFixed(3)})`; if (d > 0) lines[i].style.opacity = lerp(1, .45, clamp(d / .3)); else lines[i].style.opacity = 1; });
-      av.forEach((a, i) => { const d = ls - B(o.people) - i * .12, p = spring(d, 1.6, .5); if (d < 0) return hide(a); set(a, { o: clamp(d / .1), s: lerp(.6, 1, p), y: (1 - p) * 30 }); });
-      const c = E.in(P(ls, B(o.collapse), B(sc.len)));
-      r.style.transformOrigin = `${CX}px ${CY}px`; r.style.transform = c > 0 ? `scale(${(1 - c).toFixed(4)})` : ''; r.style.filter = c > 0 ? `blur(${(c * 12).toFixed(1)}px)` : ''; r.style.opacity = 1 - c * .6;
-      if (c > 0 && c < 1) G.mb = Math.max(G.mb, 6);
+    // the name smash
+    const FS = L(230, 200), COL = { L: '#0A74C9', R: '#2FA97F' };
+    const mk = (c, col) => add(r, `<div class="smash">${c}</div>`, { color: col || '#0B1240' });
+    const luke = [...'Luke'].map((c, i) => mk(c, i === 0 ? COL.L : null)), ralph = [...'Ralph'].map((c, i) => mk(c, i === 0 ? COL.R : null)), web = [...'Web'].map((c) => mk(c));
+    const all = [...luke, ...ralph, ...web];
+    sc.measure = () => {
+      const cv = document.createElement('canvas').getContext('2d'); cv.font = `800 ${FS}px Brico`;
+      const w = (s) => cv.measureText(s).width - .02 * FS * s.length;
+      const adv = (arr, s) => { let x = 0; return [...s].map((c) => { const v = x; x += w(c); return v; }); };
+      sc.lk = { w: w('Luke'), off: adv(luke, 'Luke') }; sc.rp = { w: w('Ralph'), off: adv(ralph, 'Ralph') };
+      const fin = adv(null, 'LRWeb'), fw = w('LRWeb'); sc.fin = fin.map((x) => CX - fw / 2 + x);
     };
-    sc.sky = (ls) => ({ inten: .9, dawn: .3, sunY: -.28, stars: .5, meteor: .1, cam: { tilt: .05, zoom: 1 + .08 * E.in(P(ls, 3.5, 4)), pan: 1.0 + ls * .01 } });
+    const top = CY - FS * .55;
+    const t0 = B(sc.s);
+    FX.push({ k: 'draw', fn: (t) => { // dark confetti on the paper at the impact
+      const dt = t - (t0 + B(o.hit)); if (dt < 0 || dt > 1.2 || t > t0 + B(o.collapse)) return;
+      const cols = ['11,134,234', '47,169,127', '63,77,230', '11,18,64'];
+      for (let i = 0; i < 90; i++) {
+        const a = hash(i * 1.7 + 3) * 6.283, v = 900 * (.3 + hash(i * 2.9) ** .6), dr = (1 - Math.exp(-3.2 * dt)) / 3.2;
+        const x = CX + Math.cos(a) * v * dr, y = CY + Math.sin(a) * v * dr * .7 + 300 * dt * dt, life = clamp(1 - dt / (.5 + .6 * hash(i * 4.4)));
+        fx.fillStyle = `rgba(${cols[i % 4]},${(life * .9).toFixed(2)})`; fx.save(); fx.translate(x, y); fx.rotate(dt * 8 * (hash(i) - .5)); fx.fillRect(-5, -2.5, 10, 5); fx.restore();
+      }
+    } });
+    const hyp = Math.hypot(W, H) / 2;
+    sc.update = (ls, G) => {
+      // paper wipes in on a diagonal
+      const wp = E.inOut5(P(ls, -.3, .15)), e0 = lerp(-.4, 1.2, wp) * W;
+      bg.style.clipPath = wp >= 1 ? 'none' : `polygon(0 0,${e0.toFixed(0)}px 0,${(e0 - .4 * W).toFixed(0)}px 100%,0 100%)`;
+      const exT = B(o.smash) - .1;
+      lines.forEach((l, i) => type(l, ls - B(o.lines[i]), { st: .08, dur: .55, ex: exT - B(o.lines[i]), exDur: .25 }));
+      strikes.forEach((s, i) => { const d = ls - B(o.lines[i]) - B(.25); s.style.transform = `scaleX(${E.out4(clamp(d / .22)).toFixed(3)})`; });
+      lines.slice(0, 2).forEach((l, i) => { const d = ls - B(o.lines[i]) - B(.25); l.style.opacity = d > 0 ? lerp(1, .4, clamp(d / .3)) : 1; });
+      // LUKE ->  <- RALPH ... BANG: L and R stay, the rest flies off, "Web" slides out of the R
+      const ap = E.in2(P(ls, B(o.smash), B(o.hit))), hd = ls - B(o.hit), wd = ls - B(o.web);
+      if (ls < B(o.smash) || !sc.fin) all.forEach(hide); else {
+        const lx = CX - sc.lk.w - (1 - ap) * W * .75, rx = CX + (1 - ap) * W * .75;
+        const shake = hd > 0 ? Math.exp(-hd / .08) * 14 : 0, sy = noise(ls * 40) * shake;
+        luke.forEach((el, i) => {
+          let x = lx + sc.lk.off[i], y = top + sy, rot = 0, op = 1;
+          if (hd > 0) {
+            if (i === 0) x = lerp(CX - sc.lk.w, sc.fin[0], E.out4(P(hd, .02, .3)));
+            else { x += hd * (-300 - 500 * hash(i)); y += -700 * hd + 2600 * hd * hd; rot = -hd * 500 * (.5 + hash(i * 3)); op = 1 - P(hd, .2, .5); }
+          }
+          set(el, { x, y, r: rot, o: op, skx: hd < 0 ? -12 * ap : 0 });
+        });
+        ralph.forEach((el, i) => {
+          let x = rx + sc.rp.off[i], y = top + sy, rot = 0, op = 1;
+          if (hd > 0) {
+            if (i === 0) x = lerp(CX, sc.fin[1], E.out4(P(hd, .02, .3)));
+            else { x += hd * (300 + 500 * hash(i * 1.3)); y += -800 * hd + 2600 * hd * hd; rot = hd * 500 * (.5 + hash(i * 5)); op = 1 - P(hd, .2, .5); }
+          }
+          set(el, { x, y, r: rot, o: op, skx: hd < 0 ? 12 * ap : 0 });
+        });
+        web.forEach((el, i) => { const p = E.out4(P(wd, i * .05, .35 + i * .05)); set(el, { x: lerp(sc.fin[1], sc.fin[2 + i], p), y: top + sy, o: wd > 0 ? P(wd, i * .05, .1 + i * .05) : 0 }); el.style.zIndex = 1; });
+        [luke[0], ralph[0]].forEach((el) => { el.style.zIndex = 2; });
+        if (ap > 0 && ap < 1) G.mb = Math.max(G.mb, 6);
+        if (hd > 0 && hd < .3) { G.mb = Math.max(G.mb, 4); G.flash = Math.max(G.flash, .25 * Math.exp(-hd / .08)); }
+      }
+      // iris out: the paper closes into the dot that becomes the dawn
+      const c = E.in(P(ls, B(o.collapse), B(sc.len)));
+      r.style.clipPath = c > 0 ? `circle(${Math.max(0, hyp * (1 - c)).toFixed(1)}px at ${CX}px ${CY}px)` : '';
+      r.style.transformOrigin = `${CX}px ${CY}px`; r.style.transform = c > 0 ? `scale(${(1 - .5 * c).toFixed(4)})` : '';
+      if (c > 0 && c < 1) G.mb = Math.max(G.mb, 5);
+    };
+    sc.sky = (ls) => ({ dawn: .35, sunY: -.26, inten: .8, speed: .6, stars: .5, meteor: 0, cam: { tilt: .1, zoom: 1.08, pan: 1.2 } });
   },
 
   // ================================================================ END: the dot becomes the sun; logo, line, address
@@ -716,6 +806,8 @@ const builders = {
 
 for (const [name, s, len, o] of EDIT.scenes) S[name] = { name, s, len, o };
 for (const [name] of EDIT.scenes) { const sc = S[name]; sc.pre = 0; sc.post = 0; scenes.push(sc); builders[name](sc); }
+// the soft legibility scrims are only for text over the aurora; the designed middle backdrops don't need them
+for (const n of ['two', 'care', 'pricing', 'humans']) S[n].root.querySelectorAll('.scrim').forEach((e) => e.remove());
 
 // ------------------------------------------------------------------ Crumb & Kiln building itself (inside the iframe)
 let crumbEls = null;

@@ -44,10 +44,10 @@
     ['storm', 4, 4, { words: seq(0, .5, 6), pops: seq(0, .25, 9), rush: seq(2.25, .0625, 8), who: 3.0, gap: 3.75 }],
     ['drop', 8, 2, { ours: 0, mark: .625, word: 1.0, tag: 1.25 }],
     ['two', 10, 1, { split: 0, a: .125, b: .25, grow: .75 }],
-    ['build', 11, 5, { before: 0, explode: 1.0, rebuild: 2.0, chrome: 2.0, morph: 3.0, cap: 3.25, flip: 4.75 }],
-    ['care', 16, 4, { title: 0, cards: seq(.25, .125, 6), run: 3.0, runB: 3.25 }],
+    ['build', 11, 5, { before: 0, explode: 1.0, design: 1.75, rebuild: 2.0, chrome: 2.0, morph: 3.0, cap: 3.25, flip: 4.75 }],
+    ['care', 16, 4, { title: 0, cards: seq(.25, .125, 6), focus: 2.25, run: 3.0, runB: 3.25 }],
     ['pricing', 20, 4, { plans: [0, .125, .25], split: 1.25, day: 2.0, build: 3.0 }],
-    ['humans', 24, 2, { lines: [0, .5, 1.0], people: 1.25, collapse: 1.75 }],
+    ['humans', 24, 2, { lines: [0, .375, .75], smash: 1.125, hit: 1.25, web: 1.375, collapse: 1.75 }],
     ['end', 26, 4, { sun: 0, mark: .25, word: .625, tag: 1.0, url: 1.5, fine: 2.0 }],
   ];
   const music = [['intro', 0, 4], ['build', 4, 4], ['themeA', 8, 8], ['break', 16, 4], ['themeB', 20, 6], ['outro', 26, 4]];
@@ -68,11 +68,11 @@
     o.pops.forEach((b, i) => add(at('storm', b + .125), 'pop', .8, { i: i + 3 })); o.rush.forEach((b, i) => add(at('storm', b), 'tick', .5 + i / 16, { i }));
     add(at('storm', o.who), 'who'); add(at('storm', o.gap), 'suck');
     o = S.drop.o; add(at('drop', 0), 'drop'); add(at('drop', o.mark), 'snap'); add(at('drop', o.word), 'swipe', .5);
-    o = S.two.o; add(at('two', o.split), 'swipe', .7); add(at('two', o.grow), 'whoosh');
-    o = S.build.o; add(at('build', o.explode), 'whoosh', .8); add(at('build', o.rebuild), 'reveal'); add(at('build', o.morph), 'morph'); add(at('build', o.flip), 'flip');
-    o = S.care.o; o.cards.forEach((b, i) => add(at('care', b), 'blip', 1, { i })); add(at('care', o.run), 'swipe', .5);
-    o = S.pricing.o; add(at('pricing', 0), 'drop2'); o.plans.forEach((b, i) => add(at('pricing', b), 'deal', 1, { i })); add(at('pricing', o.split), 'tiles'); add(at('pricing', o.day), 'hit', .6); add(at('pricing', o.build), 'hit', .8);
-    o = S.humans.o; o.lines.slice(0, 2).forEach((b, i) => add(at('humans', b + .25), 'strike', 1, { i })); add(at('humans', o.people), 'pop', .8, { i: 0 }); add(at('humans', o.collapse), 'suck');
+    o = S.two.o; add(at('two', 0) - .25, 'iris', .7); add(at('two', o.split), 'swipe', .7); add(at('two', o.grow), 'whoosh');
+    o = S.build.o; add(at('build', o.explode), 'whoosh', .8); add(at('build', o.design), 'swipe', .6); add(at('build', o.rebuild), 'reveal'); add(at('build', o.morph), 'morph'); add(at('build', o.flip), 'flip');
+    o = S.care.o; o.cards.forEach((b, i) => add(at('care', b), 'blip', 1, { i })); add(at('care', o.focus), 'whoosh', .6); add(at('care', o.run), 'swipe', .5);
+    o = S.pricing.o; add(at('pricing', 0), 'drop2'); o.plans.forEach((b, i) => add(at('pricing', b), 'deal', 1, { i })); add(at('pricing', o.split), 'tiles'); add(at('pricing', o.day) - .125, 'fall'); add(at('pricing', o.day), 'hit', .6); add(at('pricing', o.build), 'hit', .8);
+    o = S.humans.o; add(at('humans', 0), 'swipe', .6); o.lines.slice(0, 2).forEach((b, i) => add(at('humans', b + .25), 'strike', 1, { i })); add(at('humans', o.smash), 'whoosh', .8); add(at('humans', o.hit), 'smash'); add(at('humans', o.web), 'snap'); add(at('humans', o.collapse), 'suck');
     add(at('end', 0), 'final'); add(at('end', S.end.o.url), 'pop', .6, { i: 1 });
     return ev.sort((a, b) => a.t - b.t);
   }

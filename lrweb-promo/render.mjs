@@ -8,7 +8,7 @@
 //   node render.mjs --edit landscape --preview         -> quick 1080p/30fps check, no motion blur
 //   node render.mjs --edit vertical --stills 1,12.5    -> PNG stills in stills/
 // Options: --workers N (parallel browsers), --cpu (software rendering), --headed (visible windows, a GPU fallback),
-//          --angle d3d11|metal|gl|vulkan, --from/--to (seconds), --crf 19, --no-blur, --keep-dir <dir> (resumable)
+//          --browser msedge|chrome|chromium, --angle d3d11|metal|gl|vulkan, --from/--to (seconds), --crf 19, --no-blur, --keep-dir <dir> (resumable)
 import { createRequire } from 'node:module';
 import { spawn, execSync, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -80,8 +80,18 @@ function launch() {
   const args = ['--force-color-profile=srgb', '--font-render-hinting=none', '--disable-lcd-text', '--ignore-gpu-blocklist', '--hide-scrollbars'];
   if (CPU) args.push('--enable-unsafe-swiftshader');
   else { args.push('--enable-gpu', '--enable-gpu-rasterization', '--enable-zero-copy'); if (ANGLE) args.push(`--use-angle=${ANGLE}`); }
-  // channel 'chromium' = full Chromium in the new headless mode, which can use the GPU
-  return chromium.launch({ headless: !HEADED, channel: CPU ? undefined : 'chromium', args });
+  // channel 'chromium' = Playwright's full Chromium in the new headless mode, which can use the GPU.
+  // If that was never downloaded, fall back to the Edge or Chrome already installed (--browser msedge|chrome forces one).
+  const want = arg('browser', '');
+  const tries = want ? [want] : CPU ? [undefined, 'msedge', 'chrome'] : ['chromium', 'msedge', 'chrome'];
+  return (async () => {
+    let err;
+    for (const channel of tries) {
+      try { const b = await chromium.launch({ headless: !HEADED, channel, args }); if (!launch.said) { launch.said = 1; console.log('browser:', channel || 'chromium-headless-shell', b.version()); } return b; }
+      catch (e) { err = e; }
+    }
+    console.error('No browser found. Install Microsoft Edge or Google Chrome, or run: npx playwright install chromium'); throw err;
+  })();
 }
 async function open(browser, port) {
   const ctx = await browser.newContext({ viewport: { width: E.W, height: E.H }, deviceScaleFactor: SCALE });

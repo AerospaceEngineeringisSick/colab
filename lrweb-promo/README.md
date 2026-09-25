@@ -42,7 +42,7 @@ You need **Node.js 18+** (20 LTS recommended) and a GPU. ffmpeg is installed aut
 git pull
 cd lrweb-promo
 npm install          # playwright, sharp, ffmpeg-static
-npm run setup        # downloads Playwright's Chromium (once)
+npm run setup        # optional: downloads Playwright's Chromium; skip it and Edge/Chrome is used instead
 npm run gpu-check    # should name your GPU, not "SwiftShader"
 npm run preview      # quick 1080p/30fps check of both cuts, no motion blur
 npm run render       # the real thing: both cuts at 1440p60 with motion blur

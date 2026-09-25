@@ -9,7 +9,7 @@ All samples are from [freesound.org](https://freesound.org) and released under *
 | `kick_808deep` | [808 Deep kick](https://freesound.org/people/EKVelika/sounds/208447/) | EKVelika | CC0 1.0 |
 | `snare_trap` | [snare trap.wav](https://freesound.org/people/dflee4/sounds/278983/) | dflee4 | CC0 1.0 |
 | `snare_trap1` | [Trap Snare 1](https://freesound.org/people/nbmusic098/sounds/399747/) | nbmusic098 | CC0 1.0 |
-| `snare_phonk` | [Distorted Phonk Snare edited](https://freesound.org/people/REALMANE_ASTRVL_Official/sounds/791993/) | REALMANE_ASTRVL_Official | CC0 1.0 |
+| `snare_phonk` | [Distorted Phonk Snare edited by REALMANE/ASTRVL](https://freesound.org/people/REALMANE_ASTRVL_Official/sounds/791993/) | REALMANE_ASTRVL_Official | CC0 1.0 |
 | `clap_fat` | [Fat clap](https://freesound.org/people/deleted_user_2906614/sounds/239906/) | deleted_user_2906614 | CC0 1.0 |
 | `clap_snare` | [Clap Snare](https://freesound.org/people/eryps/sounds/355065/) | eryps | CC0 1.0 |
 | `hat_clean` | [Hi-Hat Closed Hit - Clean](https://freesound.org/people/TheEndOfACycle/sounds/674296/) | TheEndOfACycle | CC0 1.0 |
@@ -52,6 +52,12 @@ All samples are from [freesound.org](https://freesound.org) and released under *
 | `msg_out` | [Message Sent](https://freesound.org/people/Froey_/sounds/760370/) | Froey_ | CC0 1.0 |
 | `popup` | [Pop-up/notification.wav](https://freesound.org/people/GabrielAraujo/sounds/242502/) | GabrielAraujo | CC0 1.0 |
 | `typing` | [Keyboard typing sounds: modded Omnikey 101](https://freesound.org/people/zrrion/sounds/685984/) | zrrion | CC0 1.0 |
+| `kick_house` | [House/trance kick](https://freesound.org/people/Rodrigo%20The%20Mad/sounds/137722/) | Rodrigo%20The%20Mad | CC0 1.0 |
+| `kick_bigroom` | [BIG ROOM KICK [PUNCHY].wav](https://freesound.org/people/xKPL_Klawz/sounds/265328/) | xKPL_Klawz | CC0 1.0 |
+| `snare_edm` | [Electronic Snare Drum #2](https://freesound.org/people/IanStarGem/sounds/270276/) | IanStarGem | CC0 1.0 |
+| `snare_wide` | [Brostep - Wide Punchy Snare](https://freesound.org/people/Hybrid_V/sounds/319613/) | Hybrid_V | CC0 1.0 |
+| `boom` | [boom.wav](https://freesound.org/people/Snapper4298/sounds/157245/) | Snapper4298 | CC0 1.0 |
+| `notif` | [Message Notification 4](https://freesound.org/people/AnthonyRox/sounds/740423/) | AnthonyRox | CC0 1.0 |
 | `shutter` | [Camera Shutter Click](https://freesound.org/people/Kodack/sounds/271010/) | Kodack | CC0 1.0 |
 | `cowbell_1shot` | [Cowbell2.wav](https://freesound.org/people/Neotone/sounds/75339/) | Neotone | CC0 1.0 |
 | `cowbell_phonk` | [cowbell](https://freesound.org/people/6rzyb/sounds/468208/) | 6rzyb | CC0 1.0 |

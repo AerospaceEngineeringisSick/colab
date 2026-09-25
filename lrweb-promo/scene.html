@@ -5,16 +5,14 @@
 <title>LRWeb Promo</title>
 <link rel="stylesheet" href="../lrweb/assets/css/fonts.css">
 <link rel="stylesheet" href="css/promo.css">
-<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
 <body>
 <div id="stage">
-  <canvas id="gl"></canvas>
-  <div id="dom"></div>
-  <div id="leaks" class="fill"></div>
-  <div id="flash" class="fill"></div>
-  <div id="grain" class="fill"></div>
-  <div id="black" class="fill"></div>
+  <canvas id="sky"></canvas>
+  <div id="dom" class="layer"></div>
+  <canvas id="fx"></canvas>
+  <div id="flash"></div>
+  <div id="black"></div>
 </div>
 <script src="timeline.js"></script>
 <script type="module" src="js/promo.js"></script>

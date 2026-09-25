@@ -20,7 +20,8 @@ SAMPLES = {  # name: freesound id
     'glitch_2': 424374, 'glitch_sfx': 673773, 'glitch_1': 441966, 'glitch_allpass': 662734,
     'vinyl': 493122, 'error_1': 572936, 'error_2': 558121, 'error_mm': 699923,
     'cash': 209578, 'stamp': 362622, 'msg_in': 760369, 'msg_out': 760370, 'popup': 242502,
-    'typing': 685984, 'shutter': 271010, 'cowbell_1shot': 75339, 'cowbell_phonk': 468208, 'cowbell_phonk2': 830213,
+    'typing': 685984,
+    'kick_house': 137722, 'kick_bigroom': 265328, 'snare_edm': 270276, 'snare_wide': 319613, 'boom': 157245, 'notif': 740423, 'shutter': 271010, 'cowbell_1shot': 75339, 'cowbell_phonk': 468208, 'cowbell_phonk2': 830213,
 }
 UA = {'User-Agent': 'Mozilla/5.0'}
 rows = []

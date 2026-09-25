@@ -1,0 +1,21 @@
+{
+  "name": "lrweb-promo",
+  "private": true,
+  "description": "LRWeb promo videos: an HTML/WebGL scene rendered frame by frame to MP4",
+  "scripts": {
+    "setup": "npx playwright install chromium",
+    "gpu-check": "node render.mjs --gpu-check",
+    "render": "node render.mjs --edit landscape && node render.mjs --edit vertical",
+    "render:landscape": "node render.mjs --edit landscape",
+    "render:vertical": "node render.mjs --edit vertical",
+    "preview": "node render.mjs --edit landscape --preview && node render.mjs --edit vertical --preview",
+    "music": "node timeline.js && python music.py landscape && python music.py vertical"
+  },
+  "dependencies": {
+    "playwright": "1.56.1",
+    "sharp": "^0.34.4"
+  },
+  "optionalDependencies": {
+    "ffmpeg-static": "^5.2.0"
+  }
+}

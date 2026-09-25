@@ -1,4 +1,8 @@
+node_modules/
 stills/
 *.draft.mp4
+*-preview.mp4
 samples/*.wav
 samples/*.mp3
+captures/.fontcache/
+frames/

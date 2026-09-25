@@ -1030,14 +1030,14 @@ def notfound():
 import re as _re
 LEGAL_SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'legal')
 def _undash(h):
-    h = h.replace('</b> — ', '</b>: ')
-    h = _re.sub(r' — ([^—<]{2,140}?) — ', r' (\1) ', h)
-    for a, b in [('LRWeb — a trading', 'LRWeb, a trading'), ('we will — but', 'we will, but'), ('permission — except', 'permission, except')]:
+    h = h.replace('</b> \u2014 ', '</b>: ')
+    h = _re.sub(r' \u2014 ([^\u2014<]{2,140}?) \u2014 ', r' (\1) ', h)
+    for a, b in [('LRWeb \u2014 a trading', 'LRWeb, a trading'), ('we will \u2014 but', 'we will, but'), ('permission \u2014 except', 'permission, except')]:
         h = h.replace(a, b)
     h = h.replace('youth group) tell us', 'youth group), tell us')
-    return h.replace(' — ', ': ').replace('—', ',')
+    return h.replace(' \u2014 ', ': ').replace('\u2014', ',')
 def legal(slug, title, crumb, lead):
-    body = open(os.path.join(LEGAL_SRC, slug + '.html')).read()
+    body = open(os.path.join(LEGAL_SRC, slug + '.html'), encoding='utf-8').read()
     body = _undash(body).replace('href="/privacy"', 'href="privacy.html"').replace('href="/terms"', 'href="terms.html"')
     body = body.replace(' class="reveal"', '').replace(' reveal"', '"')
     body = _re.sub(r'<button type="button" onclick="window.print\(\)"[^>]*>Print</button>', '<button type="button" class="legal__print" data-print>Print or save as PDF</button>', body)
@@ -1065,6 +1065,6 @@ PAGES = {'404.html': notfound, 'index.html': home, 'services.html': services, 'p
          'privacy.html': lambda: legal('privacy', 'Privacy policy', 'Privacy', 'The plain-English version of how we handle your data. Short, because we don’t collect much.'),
          'terms.html': lambda: legal('terms', 'Terms of service', 'Terms', 'The ground rules for working with us, without the legalese fog.')}
 for name, fn in PAGES.items():
-    with open(os.path.join(OUT, name), 'w') as f:
+    with open(os.path.join(OUT, name), 'w', encoding='utf-8', newline='\n') as f:
         f.write(fn())
     print('wrote', name)

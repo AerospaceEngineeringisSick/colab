@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 _src/build.py)",
+      "Bash(python _src/build.py)",
+      "Bash(py _src/build.py)",
+      "Bash(npm run check)",
+      "Bash(npm run check:full)",
+      "Bash(npm run check -- :*)",
+      "Bash(npm run previews)",
+      "Bash(npm run previews -- :*)",
+      "Bash(npm run serve)"
+    ]
+  }
+}

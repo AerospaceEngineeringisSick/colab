@@ -1,0 +1,17 @@
+{
+  "name": "lrweb-tools",
+  "private": true,
+  "type": "module",
+  "description": "Local preview server, site checks and preview-image generator for the LRWeb site",
+  "scripts": {
+    "serve": "node serve.mjs",
+    "check": "node check.mjs",
+    "check:full": "node check.mjs --full",
+    "previews": "node previews.mjs",
+    "setup": "npx playwright install chromium"
+  },
+  "devDependencies": {
+    "playwright": "1.56.0",
+    "pngjs": "7.0.0"
+  }
+}

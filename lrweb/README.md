@@ -16,6 +16,8 @@ lrweb/
 ├── 404.html          Not-found page (absolute links, so it works at any path)
 ├── robots.txt, sitemap.xml, site.webmanifest
 ├── _src/             build.py (generates the pages above) + legal/ source text
+├── tools/            local preview server, site checks, screenshot generator (Node)
+├── CLAUDE.md         project notes and house rules for Claude
 ├── assets/
 │   ├── css/fonts.css, css/site.css
 │   ├── js/site.js, js/sky.js (WebGL sky), js/vendor/ (GSAP, ScrollTrigger, Lenis)
@@ -32,7 +34,19 @@ lrweb/
     └── form-and-field/     architecture practice
 ```
 
-To preview, serve the folder (`python3 -m http.server` inside `lrweb/`) and open `http://localhost:8000`. To change shared content (prices, plans, people, footer), edit `_src/build.py` and run `python3 lrweb/_src/build.py`. The £299 Launch price lives in one constant, `LAUNCH`, near the top.
+## Working locally
+
+You need Python 3 and Node.js 18 or newer.
+
+```bash
+python3 _src/build.py                       # rebuild the LRWeb pages (Windows: py _src/build.py)
+cd tools && npm install && npm run setup    # one-time: installs Playwright and Chromium
+npm run serve                               # preview at http://localhost:8000
+npm run check                               # errors, broken links, phone layout, blank screens, em dashes
+npm run previews                            # refresh example-site screenshots after editing one
+```
+
+The LRWeb pages are generated: edit `_src/build.py` (shared content, prices, page sections), not the `.html` files. CSS, JS and the example sites are edited directly. `CLAUDE.md` has the full map and house rules.
 
 ## What's on the LRWeb site
 

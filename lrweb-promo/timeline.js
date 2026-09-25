@@ -7,6 +7,10 @@
   const seq = (a, step, n) => Array.from({ length: n }, (_, i) => +(a + i * step).toFixed(4));
 
   // ---------------------------------------------------------------- copy
+  const DIALOGS = [
+    ['Update failed', 'Could not update theme. Try again later.'], ['Warning', 'Your disk is 98% full.'], ['Error 500', 'Internal server error.'],
+    ['Security alert', 'Unknown admin user created.'], ['Error', 'Database connection lost.'], ['Warning', 'Mixed content blocked on 12 pages.'],
+  ];
   const POPS = [ // notification banners: [app, title, body]
     ['Website', '14 updates available', 'Plugins, theme and core'],
     ['Security', 'SSL expires in 2 days', 'Visitors will see “Not secure”'],
@@ -30,6 +34,10 @@
     ['SSL', 'Renewed automatically', 'lock'],
     ['Speed', 'Pages load in 0.8s', 'bolt'],
   ];
+  const SITES = [ // the showcase: [capture, industry, address]
+    ['northside-barber', 'Barber', 'northsidebarber.co.uk'], ['petal-and-stem', 'Florist', 'petalandstem.co.uk'], ['volt-strength', 'Gym', 'voltstrength.co.uk'],
+    ['tidewater', 'Restaurant', 'tidewater.co.uk'], ['smith-and-sons', 'Plumber', 'smithandsons.co.uk'], ['form-and-field', 'Architects', 'formandfield.studio'],
+  ];
   const PLANS = [
     ['Essential', 29, 'Brochure sites'],
     ['Plus', 49, 'Monthly edits'],
@@ -41,18 +49,19 @@
   const scenes = [
     ['open', 0, 2, { dot: .25, line: .5, cursor: 1.0, type: 1.0 }],                          // a dot of light becomes a cursor
     ['jobs', 2, 2, { l2: 0, l3: .5, iris: 1.0, pops: seq(1.25, .25, 3) }],                 // "comes with jobs." → iris through the o
-    ['storm', 4, 4, { words: seq(0, .5, 6), pops: seq(0, .25, 9), rush: seq(2.25, .0625, 8), who: 3.0, gap: 3.75 }],
+    ['storm', 4, 4, { words: seq(0, .5, 6), pops: seq(0, .25, 9), dialogs: seq(.75, .25, 6), rush: seq(2.25, .0625, 8), who: 3.0, gap: 3.75 }],
     ['drop', 8, 2, { ours: 0, mark: .625, word: 1.0, tag: 1.25 }],
     ['two', 10, 1, { split: 0, a: .125, b: .25, grow: .75 }],
-    ['build', 11, 5, { before: 0, explode: 1.0, design: 1.75, rebuild: 2.0, chrome: 2.0, morph: 3.0, cap: 3.25, flip: 4.75 }],
-    ['care', 16, 4, { title: 0, cards: seq(.25, .125, 6), focus: 2.25, run: 3.0, runB: 3.25 }],
-    ['pricing', 20, 4, { plans: [0, .125, .25], split: 1.25, day: 2.0, build: 3.0 }],
-    ['humans', 24, 2, { lines: [0, .375, .75], smash: 1.125, hit: 1.25, web: 1.375, collapse: 1.75 }],
-    ['end', 26, 4, { sun: 0, mark: .25, word: .625, tag: 1.0, url: 1.5, fine: 2.0 }],
+    ['build', 11, 5, { before: 0, explode: 1.0, design: 1.75, rebuild: 2.0, chrome: 2.0, morph: 3.0, cap: 3.25 }],
+    ['showcase', 16, 3, { cuts: [0, .375, .75, 1.0, 1.375, 1.75], grid: 2.0, cap: 2.125, flip: 2.75 }],   // match-cut montage of the example sites
+    ['care', 19, 4, { title: 0, cards: seq(.25, .125, 6), focus: 2.25, run: 3.0, runB: 3.25 }],
+    ['pricing', 23, 4, { hero: 0, plans: [.5, .625, .75], split: 1.25, day: 2.0, build: 3.0 }],
+    ['humans', 27, 2, { lines: [0, .375, .75], smash: 1.125, hit: 1.25, web: 1.375, collapse: 1.75 }],
+    ['end', 29, 4, { sun: 0, mark: .25, word: .625, tag: 1.0, url: 1.5, fine: 2.0 }],
   ];
-  const music = [['intro', 0, 4], ['build', 4, 4], ['themeA', 8, 8], ['break', 16, 4], ['themeB', 20, 6], ['outro', 26, 4]];
-  const landscape = { name: 'landscape', W: 1920, H: 1080, bars: 30, end: 60, music, scenes };
-  const vertical = { name: 'vertical', W: 1080, H: 1920, bars: 30, end: 60, music, scenes };
+  const music = [['intro', 0, 4], ['build', 4, 4], ['themeA', 8, 8], ['showcase', 16, 3], ['break', 19, 4], ['themeB', 23, 6], ['outro', 29, 4]];
+  const landscape = { name: 'landscape', W: 1920, H: 1080, bars: 33, end: 66, music, scenes };
+  const vertical = { name: 'vertical', W: 1080, H: 1920, bars: 33, end: 66, music, scenes };
 
   // ---------------------------------------------------------------- sound design from cues (all on the grid)
   function sfx(edit) {
@@ -66,19 +75,20 @@
     o = S.jobs.o; add(at('jobs', o.l3), 'hit', .7); add(at('jobs', o.iris), 'iris'); o.pops.forEach((b, i) => add(at('jobs', b), 'pop', 1, { i }));
     o = S.storm.o; o.words.forEach((b, i) => add(at('storm', b), 'slam', 1, { i }));
     o.pops.forEach((b, i) => add(at('storm', b + .125), 'pop', .8, { i: i + 3 })); o.rush.forEach((b, i) => add(at('storm', b), 'tick', .5 + i / 16, { i }));
-    add(at('storm', o.who), 'who'); add(at('storm', o.gap), 'suck');
+    o.dialogs.forEach((b, i) => add(at('storm', b + .125), 'error', 1, { i })); add(at('storm', o.who), 'who'); add(at('storm', o.gap), 'suck');
     o = S.drop.o; add(at('drop', 0), 'drop'); add(at('drop', o.mark), 'snap'); add(at('drop', o.word), 'swipe', .5);
     o = S.two.o; add(at('two', 0) - .25, 'iris', .7); add(at('two', o.split), 'swipe', .7); add(at('two', o.grow), 'whoosh');
-    o = S.build.o; add(at('build', o.explode), 'whoosh', .8); add(at('build', o.design), 'swipe', .6); add(at('build', o.rebuild), 'reveal'); add(at('build', o.morph), 'morph'); add(at('build', o.flip), 'flip');
+    o = S.build.o; add(at('build', o.explode), 'whoosh', .8); add(at('build', o.design), 'swipe', .6); add(at('build', o.rebuild), 'reveal'); add(at('build', o.morph), 'morph');
+    o = S.showcase.o; o.cuts.forEach((b, i) => add(at('showcase', b), 'cut', 1, { i })); add(at('showcase', o.grid), 'hit', .6); add(at('showcase', o.flip), 'flip');
     o = S.care.o; o.cards.forEach((b, i) => add(at('care', b), 'blip', 1, { i })); add(at('care', o.focus), 'whoosh', .6); add(at('care', o.run), 'swipe', .5);
-    o = S.pricing.o; add(at('pricing', 0), 'drop2'); o.plans.forEach((b, i) => add(at('pricing', b), 'deal', 1, { i })); add(at('pricing', o.split), 'tiles'); add(at('pricing', o.day) - .125, 'fall'); add(at('pricing', o.day), 'hit', .6); add(at('pricing', o.build), 'hit', .8);
+    o = S.pricing.o; add(at('pricing', 0), 'drop2'); o.plans.forEach((b, i) => add(at('pricing', b), 'deal', 1, { i })); add(at('pricing', o.split), 'tiles'); add(at('pricing', o.day) - .125, 'fall'); add(at('pricing', o.day), 'hit', .6); add(at('pricing', o.build), 'swing'); add(at('pricing', o.plans[0]) - .125, 'whoosh', .7);
     o = S.humans.o; add(at('humans', 0), 'swipe', .6); o.lines.slice(0, 2).forEach((b, i) => add(at('humans', b + .25), 'strike', 1, { i })); add(at('humans', o.smash), 'whoosh', .8); add(at('humans', o.hit), 'smash'); add(at('humans', o.web), 'snap'); add(at('humans', o.collapse), 'suck');
     add(at('end', 0), 'final'); add(at('end', S.end.o.url), 'pop', .6, { i: 1 });
     return ev.sort((a, b) => a.t - b.t);
   }
 
   const EDITS = { landscape, vertical };
-  const TL = { BPM, BEAT, BAR, FPS: 60, POPS, JOBS, SYSTEMS, PLANS, EDITS, sfx };
+  const TL = { BPM, BEAT, BAR, FPS: 60, POPS, DIALOGS, SITES, JOBS, SYSTEMS, PLANS, EDITS, sfx };
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = TL;

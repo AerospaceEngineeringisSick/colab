@@ -279,6 +279,13 @@ const builders = {
     }
     const notes = times.map((t0, i) => { const n = add(rig, noteHTML(TL.POPS[i % TL.POPS.length])); Object.assign(n.style, { left: px(pos[i].x), top: px(pos[i].y) }); n.t0 = t0; n.p = pos[i]; return n; });
     shared.notes = notes;
+    // classic Windows error dialogs cascade through the wall, one per beat (landing on the 8th after each beat)
+    const dlgs = St.dialogs.map((b, i) => {
+      const [tt, msg] = TL.DIALOGS[i];
+      const d = add(rig, `<div class="dlg"><div class="tb"><span>${tt}</span><b>×</b></div><div class="bd"><div class="x">✕</div><div>${msg}</div></div>${i === 5 ? '<div class="ok">OK</div>' : ''}</div>`);
+      d.p = V ? { x: 40 + i * 64, y: 300 + i * 96, z: 150 } : { x: 110 + i * 118, y: 70 + i * 86, z: 170 }; d.t0 = s0 + B(b + .125);
+      Object.assign(d.style, { left: px(d.p.x), top: px(d.p.y) }); hide(d); return d;
+    });
     // the ring used for the iris (above everything)
     const ringL = add(dom, '<div class="layer" style="pointer-events:none"></div>');
     shared.ring = add(ringL, `<svg class="abs" width="${W}" height="${H}" style="left:0;top:0;overflow:visible;visibility:hidden"><defs><linearGradient id="rg" x1="0" x2="1"><stop offset="0" stop-color="#C9FFE8"/><stop offset="1" stop-color="#8FD8FF"/></linearGradient></defs><path fill="url(#rg)" fill-rule="evenodd"/></svg>`);
@@ -313,6 +320,11 @@ const builders = {
         const p = E.out4(clamp(d / .5)), sp = spring(d, 1.7, .5), q = E.in(suck);
         const x = lerp(0, CX - (n.p.x + L(280, 320)), q), y = lerp((1 - p) * 60, CY - (n.p.y + 60), q);
         set(n, { o: clamp(d / .1) * dim * (1 - q), x, y, z: n.p.z, r: n.p.r * (1 - q), s: lerp(.8, 1, sp) * (1 - .9 * q), b: blur + Math.abs(n.p.z + 80) * .004 + q * 8 });
+      });
+      dlgs.forEach((dg) => {
+        const d = t - dg.t0; if (d < 0) return hide(dg);
+        const p = E.back(clamp(d / .22), 2.2), q = E.in(suck);
+        set(dg, { o: dim * (1 - q), x: (CX - dg.p.x - 250) * q, y: (CY - dg.p.y - 60) * q, z: dg.p.z, s: lerp(.55, 1, p) * (1 - .9 * q), b: (who ? 3 : 0) + q * 8 });
       });
       r.style.filter = gap ? `grayscale(${P(ts, B(St.gap), B(St.gap) + .12).toFixed(2)})` : '';
       if (suck > 0 && suck < 1) G.mb = Math.max(G.mb, 6);
@@ -518,6 +530,19 @@ const builders = {
     layers[0].classList.add('bgt'); layers[1].classList.add('tbl');
     layers[7].querySelector('.pic').style.height = '172px';
     const mqi = old.querySelector('.mqi');
+    // the audit: every dated element is pulled out of the page, crossed out and labelled
+    const AUD = [[2, 'WordArt'], [4, 'Scrolling marquee'], [5, 'Grey buttons'], [6, 'Comic Sans'], [7, 'Blurry photo'], [9, '“Under construction”'], [11, 'Hit counter']];
+    const TGT = V ? [[280, 560], [800, 560], [280, 860], [800, 860], [280, 1160], [800, 1160], [540, 1440]] : [[290, 330], [730, 330], [1190, 330], [1630, 330], [510, 700], [960, 700], [1410, 700]];
+    const CELL = V ? [440, 190] : [380, 200];
+    const audL = add(r, '<div class="old" style="left:0;top:0"></div>');
+    const aud = AUD.map(([li, name], k) => {
+      const cl = layers[li].cloneNode(true); audL.appendChild(cl); hide(cl);
+      const st = add(cl, '<div class="strike" style="top:48%;height:7px;left:-4%;right:-4%"></div>');
+      const lw = add(r, '<div class="abs" style="width:640px;display:flex;justify-content:center"></div>', { left: px(TGT[k][0] - 320), top: px(TGT[k][1] + CELL[1] / 2 + 14) });
+      const lab = add(lw, `<div class="xlab"><b>✕</b>${name}</div>`); hide(lab);
+      return { li, cl, st, lab, k, rot: (hash(k * 3.3) - .5) * 8 };
+    });
+    sc.measure = () => aud.forEach((a) => { const rc = layers[a.li].getBoundingClientRect(); a.rc = rc; a.sc = Math.min(1.35, CELL[0] / rc.width, CELL[1] / rc.height); Object.assign(a.cl.style, { left: px(rc.left), top: px(rc.top), width: px(rc.width), transformOrigin: '50% 50%', background: '#FFF7DC', borderRadius: '10px' }); });
     // blueprint grid + wireframe of the new layout, on the base plane
     const bp = add(win, '<div class="bp"></div>', { left: '4px', top: px(XP), width: px(bw), height: px(bh), background: '#0B2A86', boxShadow: '0 0 0 3px rgba(255,255,255,.6)' });
     for (let c = 0; c <= 12; c++) add(bp, '<div class="gl"></div>', { left: px(40 + c * (bw - 80) / 12), top: 0, width: '1px', height: '100%' });
@@ -534,7 +559,7 @@ const builders = {
     const mf = add(scr, '<iframe src="../lrweb/work/crumb-and-kiln/?shot" scrolling="no"></iframe>', { width: '390px', height: '1000px' });
     const cap = T(r, V ? ['Same bakery.', '*Brand new website.*'] : ['Same bakery. *Brand new website.*'], { top: px(L(962, 1620)), fontSize: px(L(64, 80)) }, 't c dark');
     shared.frames = [fr, mf]; sc.fr = fr;
-    const PH = V ? { x: 610, y: 800, w: 360, h: 720 } : { x: 1420, y: 250, w: 330, h: 680 };
+    const PH = V ? { x: CX - 180, y: 930, w: 360, h: 660 } : { x: 1420, y: 250, w: 330, h: 680 };
     sc.update = (ls, G) => {
       const Bl = (b) => B(b);
       // the canvas grows out of the split screen's top panel; blueprint mode while we take the old site apart
@@ -545,25 +570,32 @@ const builders = {
       steps.forEach((st, i) => { const a0 = stT[i], a1 = stT[i + 1]; const pin = E.out4(P(ls, a0, a0 + .3)), pout = E.in(P(ls, a1 - .2, a1)); set(st, { o: pin * (1 - pout), y: (1 - pin) * 30 - pout * 30 }); st.classList.toggle('lt', i < 2 || bpm > .5); });      set(chip, { o: E.out(P(ls, -.3, .3)) * (1 - P(ls, B(sc.len) - .4, B(sc.len) - .1)), y: (1 - E.out(P(ls, -.3, .3))) * -16 });
       // window entrance, explode, rebuild, shift for the phone
       const inP = E.out4(P(ls, Bl(o.before), Bl(o.before) + .8));
-      const ex = E.inOut5(P(ls, Bl(o.explode), Bl(o.explode) + .7)), back = E.inOut5(P(ls, Bl(o.rebuild), Bl(o.rebuild) + .75)), tilt = ex * (1 - back);
+      const a0 = Bl(o.explode), tilt = 0, winO = clamp(1 - E.inOut(P(ls, a0 + .25, a0 + .7)) + E.inOut(P(ls, Bl(o.design) - .25, Bl(o.design) + .1)));
       const mo = E.inOut5(P(ls, Bl(o.morph), Bl(o.morph) + .8));
-      const shiftX = L(-270, 0) * mo, shiftY = L(0, -90) * mo, sc2 = lerp(1, L(.8, .86), mo);
-      set(win, { o: inP, y: (1 - inP) * 90 + shiftY, x: shiftX, z: (1 - inP) * -500, rx: (1 - inP) * 14 + tilt * 52, r: tilt * L(-28, -22), s: sc2 * lerp(1, L(.74, .78), tilt) });
-      if ((ex > 0 && ex < 1) || (back > 0 && back < 1) || (mo > 0 && mo < 1) || (inP > 0 && inP < 1)) G.mb = Math.max(G.mb, 4);
+      const shiftX = L(-270, 0) * mo, shiftY = L(0, -170) * mo, sc2 = lerp(1, L(.8, .8), mo);
+      set(win, { o: inP * winO, y: (1 - inP) * 90 + shiftY, x: shiftX, z: (1 - inP) * -500, rx: (1 - inP) * 14 + tilt * 52, r: tilt * L(-28, -22), s: sc2 * lerp(1, L(.74, .78), tilt) });
+      if ((mo > 0 && mo < 1) || (inP > 0 && inP < 1) || (ls > a0 && ls < a0 + 1.0)) G.mb = Math.max(G.mb, 4);
       // explode: every block lifts off the page, then flies away
-      const fly = (i) => E.inOut(P(ls, Bl(o.explode) + .8 + (layers.length - 1 - i) * .05, Bl(o.explode) + 1.25 + (layers.length - 1 - i) * .05));
-      const showOld = ls < Bl(o.rebuild);
-      old.style.visibility = showOld ? 'visible' : 'hidden';
-      layers.forEach((l, i) => { const f = fly(i); set(l, { z: i * 60 * ex + f * 120, x: f * 1500, o: 1 - P(f, .6, 1) }); });
+      old.style.visibility = ls < Bl(o.design) - .25 ? 'visible' : 'hidden';
+      layers.forEach((l, i) => { const a = aud.find((q) => q.li === i); if ((a && ls >= a0 + .15 + a.k * .07) || ls >= Bl(o.design) - .25) hide(l); else set(l, {}); });
+      aud.forEach((a) => {
+        const d = ls - a0 - .15 - a.k * .07, sw = E.in(P(ls, Bl(o.design) - .5 + a.k * .03, Bl(o.design) - .15 + a.k * .03));
+        if (d < 0 || sw >= 1 || !a.rc) { hide(a.cl); hide(a.lab); return; }
+        const sp = spring(d, 1.25, .62), sx = a.rc.left + a.rc.width / 2, sy = a.rc.top + a.rc.height / 2;
+        a.cl.style.boxShadow = `0 0 0 ${(22 * sp / a.sc).toFixed(1)}px #FFF7DC, 0 ${(30 * sp).toFixed(0)}px 70px rgba(0,0,20,${(.45 * sp).toFixed(2)})`;
+        set(a.cl, { x: (TGT[a.k][0] - sx) * sp, y: (TGT[a.k][1] - sy) * sp + sw * 500, s: lerp(1, a.sc, sp) * (1 - .5 * sw), r: a.rot * sp + sw * 30 * (a.k % 2 ? 1 : -1), o: 1 - sw });
+        a.st.style.transform = `scaleX(${E.out4(P(d, .45, .65)).toFixed(3)})`; a.st.style.transformOrigin = '0 50%';
+        const lp = E.out(P(d, .5, .75)); set(a.lab, { o: lp * (1 - sw), y: (1 - lp) * 16 });
+      });
       mqi.style.transform = `translateX(${(-((ls * 180) % 800)).toFixed(1)}px)`;
       old.querySelector('.new').style.visibility = Math.floor(ls / .25) % 2 ? 'hidden' : 'visible';
       // blueprint + wireframe
-      const bpo = E.out(P(ls, Bl(o.explode) + .3, Bl(o.explode) + .8)) * (1 - E.out(P(ls, Bl(o.rebuild), Bl(o.rebuild) + .5)));
+      const bpo = E.out(P(ls, Bl(o.design) - .3, Bl(o.design))) * (1 - E.out(P(ls, Bl(o.rebuild), Bl(o.rebuild) + .5)));
       set(bp, { o: bpo, z: 2 });
       wf.forEach((w, i) => { const p = E.out4(P(ls, Bl(o.design) + i * .07, Bl(o.design) + .35 + i * .07)); w.style.transform = `scaleX(${p.toFixed(3)})`; w.style.opacity = p; });
-      labels.forEach((lb, i) => { const d = ls - Bl(o.explode) - .3 - i * .18; set(lb, { o: clamp(d / .2) * (1 - P(ls, Bl(o.rebuild) - .2, Bl(o.rebuild) + .1)), y: (1 - E.out(clamp(d / .4))) * 20 }); });
+      labels.forEach((lb, i) => { hide(lb); return; const d = ls - Bl(o.design) - i * .12; set(lb, { o: clamp(d / .2) * (1 - P(ls, Bl(o.rebuild) - .2, Bl(o.rebuild) + .1)), y: (1 - E.out(clamp(d / .4))) * 20 }); });
       // chrome: XP collapses, the modern bar arrives; the body grows into the space
-      const ch = E.inOut(P(ls, Bl(o.chrome), Bl(o.chrome) + .5));
+      const ch = E.inOut(P(ls, Bl(o.design) - .3, Bl(o.design)));
       set(xp, { sy: 1 - ch, o: 1 - ch }); set(stb, { o: 1 - ch }); set(mod, { o: ch });
       body.style.top = px(lerp(XP, MOD, ch)); body.style.height = px(lerp(wh - XP - SB - 4, wh - MOD - 4, ch));
       fr.style.visibility = ls >= Bl(o.rebuild) - .05 ? 'visible' : 'hidden';
@@ -578,12 +610,80 @@ const builders = {
         set(phone, { o: E.out(P(mo, 0, .2)), r: L(4, 0) * Math.sin(mo * Math.PI) });
         scr.style.inset = px(lerp(4, 12, mo)); scr.style.borderRadius = px(lerp(6, 40, mo));
         const sw = rw - 2 * lerp(4, 12, mo); mf.style.transform = `scale(${(sw / 390).toFixed(4)})`; mf.style.opacity = E.out(P(mo, .3, .8));
-        try { mf.contentWindow.scrollTo(0, Math.round(E.inOut(P(ls, Bl(o.morph) + 1.2, Bl(o.flip))) * 650)); } catch (e) { /* not ready */ }
+        try { mf.contentWindow.scrollTo(0, Math.round(E.inOut(P(ls, Bl(o.morph) + 1.2, B(sc.len))) * 650)); } catch (e) { /* not ready */ }
       }
-      type(cap, ls - Bl(o.cap), { st: .1, dur: .6 });
+      type(cap, ls - Bl(o.cap), { st: .1, dur: .6, ex: B(sc.len - o.cap) - .4, exDur: .3 });
+      if (mo > 0) { const po = E.in(P(ls, B(sc.len) - .4, B(sc.len))); phone.style.opacity = +phone.style.opacity * (1 - po); phone.style.transform += ` translateX(${(po * 500).toFixed(1)}px)`; }
+    };
+    sc.sky = (ls) => ({ inten: .7, stars: .7, meteor: .15, cam: { tilt: .12, zoom: 1, pan: .35 + ls * .01 } });
+  },
+
+  // ================================================================ SHOWCASE: match cut from the new Crumb & Kiln into a montage of six sites; then a mosaic
+  showcase(sc) {
+    const r = (sc.root = mkRoot()), o = sc.o; sc.post = .02;
+    add(r, '<div class="bg bg-canvas"></div>');
+    const ww = L(1240, 1000), wh = L(760, 780), wx = (W - ww) / 2, wy = L(190, 330);            // the build scene's window...
+    const fcx = wx + ww / 2 + L(-270, 0), fcy = wy + wh / 2 + L(0, -170), fw = ww * .8;          // ...where it ends up
+    const MW = L(1100, 960), bwM = MW - 8, bhM = Math.round(bwM * 900 / 1440), MH = 46 + bhM + 4, mx = L(150, 60), my = L(210, 330);
+    const win = add(r, '<div class="win"></div>', { left: px(mx), top: px(my), width: px(MW), height: px(MH) });
+    add(win, '<div class="frame" style="border-radius:12px"></div>');
+    const mod = add(win, '<div class="mod"><i></i><i></i><i></i><div class="url">🔒 <span>crumbandkiln.co.uk</span></div></div>', { width: px(MW) });
+    const body = add(win, '<div class="body"></div>', { top: '46px', height: px(bhM) });
+    const shots = [['crumb-and-kiln', 'Bakery', 'crumbandkiln.co.uk'], ...TL.SITES].map(([img]) => add(body, `<img src="captures/${img}-hero.jpg" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:top">`));
+    const lx = L(mx + MW + 70, 0), ly0 = L(330, my + MH + 70);
+    const counter = add(r, '<div class="kick" style="color:#3F4DE6">01 / 06</div>', V ? { left: 0, right: 0, textAlign: 'center', top: px(ly0) } : { left: px(lx), top: px(ly0) });
+    const labs = TL.SITES.map(([, kind, url]) => {
+      const t = T(r, [kind], V ? { top: px(ly0 + 50), fontSize: px(120) } : { left: px(lx), top: px(ly0 + 50), fontSize: px(104) }, V ? 't c dark' : 't dark');
+      const u = add(r, `<div class="kick" style="color:#2A3570;text-transform:none;letter-spacing:.04em">${url}</div>`, V ? { left: 0, right: 0, textAlign: 'center', top: px(ly0 + 200) } : { left: px(lx), top: px(ly0 + 180) });
+      return { t, u };
+    });
+    // the mosaic
+    const cols = V ? 2 : 3, cwG = L(520, 470), chG = Math.round(cwG * 900 / 1440), gap = L(34, 30), gx = (W - (cols * cwG + (cols - 1) * gap)) / 2, gy = L(215, 560);
+    const cells = TL.SITES.map((s, i) => ({ x: gx + (i % cols) * (cwG + gap), y: gy + Math.floor(i / cols) * (chG + gap) }));
+    const tiles = TL.SITES.map(([img, kind], i) => add(r, `<div class="card" style="padding:0;border:0;overflow:hidden;border-radius:18px"><img src="captures/${img}-hero.jpg" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top"><div class="chip" style="left:14px;bottom:14px;font-size:${L(22, 24)}px;background:rgba(255,255,255,.92);color:#0B1240;border:0">${kind}</div></div>`,
+      { left: px(cells[i].x), top: px(cells[i].y), width: px(cwG), height: px(chG) }));
+    const cap = T(r, V ? ['Built for real', '*local businesses.*'] : ['Built for real *local businesses.*'], { top: px(L(955, 1520)), fontSize: px(L(66, 80)) }, 't c dark');
+    const wipe = (k, p) => [`inset(0 0 0 ${((1 - p) * 100).toFixed(2)}%)`, `circle(${(p * 75).toFixed(2)}% at 50% 50%)`,
+      `polygon(0 0,${(p * 140).toFixed(1)}% 0,${(p * 140 - 40).toFixed(1)}% 100%,0 100%)`, `inset(${((1 - p) * 100).toFixed(2)}% 0 0 0)`,
+      `circle(${(p * 150).toFixed(2)}% at 100% 0)`, `inset(0 ${((1 - p) * 50).toFixed(2)}% 0 ${((1 - p) * 50).toFixed(2)}%)`][k];
+    sc.update = (ls, G) => {
+      const cutT = o.cuts.map((b) => B(b)), gT = B(o.grid);
+      // the match cut: start exactly where the build scene's window ended, then settle into the montage frame
+      const m = E.inOut5(P(ls, 0, .5)), s0 = fw / MW, sNow = lerp(s0, 1, m);
+      const dx = (fcx - (mx + MW / 2)) * (1 - m), dy = (fcy - (my + MH / 2)) * (1 - m);
+      let cur = -1; cutT.forEach((t, i) => { if (ls >= t) cur = i; });
+      const punch = cur >= 0 ? .03 * Math.exp(-(ls - cutT[cur]) / .12) : 0;
+      // into the mosaic: the window becomes the Architects tile
+      const g = E.inOut5(P(ls, gT - .1, gT + .45)), c5 = cells[5];
+      const gs = lerp(1, cwG / bwM, g), gdx = (c5.x + cwG / 2 - (mx + MW / 2)) * g, gdy = (c5.y + chG / 2 - (my + 46 + bhM / 2)) * g;
+      set(win, { x: dx + gdx, y: dy + gdy, s: sNow * (1 + punch) * gs, o: 1 - P(ls, gT + .35, gT + .45) });
+      set(mod, { o: 1 - g });
+      shots.forEach((im, j) => {
+        if (j === 0) { im.style.clipPath = ''; im.style.transform = ''; return; }
+        const t0 = cutT[j - 1], p = E.inOut(P(ls, t0, t0 + .28));
+        if (ls < t0) { im.style.visibility = 'hidden'; return; }
+        im.style.visibility = 'visible'; im.style.clipPath = p >= 1 ? '' : wipe(j - 1, p); im.style.transform = `scale(${(1 + .08 * (1 - E.out(P(ls, t0, t0 + .9)))).toFixed(4)})`;
+      });
+      if (cur >= 0) mod.querySelector('span').textContent = TL.SITES[cur][2];
+      counter.textContent = `${String(Math.max(1, cur + 1)).padStart(2, '0')} / 06`;
+      set(counter, { o: E.out(P(ls, 0, .3)) * (1 - E.in(P(ls, gT - .2, gT))) });
+      labs.forEach(({ t, u }, i) => {
+        const d = ls - cutT[i], nxt = i < 5 ? cutT[i + 1] - cutT[i] : gT - cutT[i];
+        type(t, d, { units: 'chars', st: .025, dur: .35, y: .3, blur: 6, ex: nxt - .12, exDur: .1, exSt: .005 });
+        hide(u); // the address is in the browser bar; a 0.5s caption would be unreadable
+      });
+      tiles.forEach((tl, i) => {
+        if (i === 5) { set(tl, { o: P(ls, gT + .35, gT + .45) }); return; }
+        const d = ls - gT - .05 * i, sp = spring(d, 1.4, .6);
+        if (d < 0) return hide(tl);
+        const fromX = (i % cols < cols / 2 ? -1 : 1) * W * .6, fromY = (i < cols ? -1 : 1) * H * .4;
+        set(tl, { o: clamp(d / .1), x: fromX * (1 - sp), y: fromY * (1 - sp), r: (1 - sp) * (i % 2 ? 8 : -8), s: lerp(.7, 1, sp) });
+      });
+      type(cap, ls - B(o.cap), { st: .09, dur: .6 });
+      if (m > 0 && m < 1 || (g > 0 && g < 1) || punch > .01) G.mb = Math.max(G.mb, 4);
     };
     tileWipe(B(sc.s + o.flip), B(sc.s + o.flip) + .45, B(sc.s + o.flip) + .95);
-    sc.sky = (ls) => ({ inten: .7, stars: .7, meteor: .15, cam: { tilt: .12, zoom: 1, pan: .35 + ls * .01 } });
+    sc.sky = () => ({ inten: .8, stars: .6, meteor: .1, cam: { tilt: .1, zoom: 1, pan: .5 } });
   },
 
   // ================================================================ CARE: a live dashboard on deep navy; one card gets the spotlight
@@ -647,57 +747,93 @@ const builders = {
     sc.sky = (ls) => ({ inten: .9, dawn: .3, sunY: -.3, stars: .6, meteor: .1, cam: { tilt: .07, zoom: 1, pan: .6 } });
   },
 
-  // ================================================================ PRICING: a brand-gradient burst; cards dealt; £29 bursts into a month of tiles; 95p; £299
+  // ================================================================ PRICING: a brand burst; a giant £29; plans on a 3D carousel; £29 -> 30 days -> 95p; a £299 price tag swings in
   pricing(sc) {
     const r = (sc.root = mkRoot()), o = sc.o; sc.pre = .02; sc.post = .35;
     const bg = add(r, '<div class="bg bg-brand"></div>');
-    const kick = add(r, '<div class="kick c" style="color:#E6FFF6">LRWeb care plans · monthly</div>', { top: px(L(190, 300)) });
+    const glA = add(r, '<div class="glow"></div>', { width: '900px', height: '900px', background: 'rgba(111,224,180,.28)' });
+    const glB = add(r, '<div class="glow"></div>', { width: '800px', height: '800px', background: 'rgba(18,1,141,.55)' });
+    const ringsBg = add(r, `<svg class="abs" width="${W}" height="${H}" style="left:0;top:0;opacity:.18">${[1, 2, 3, 4, 5].map((k) => `<circle cx="${CX}" cy="${CY}" r="${k * L(190, 220)}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="${k * 6} ${k * 10}"/>`).join('')}</svg>`);
+    // the hero price
+    const hk = add(r, '<div class="kick c" style="color:#E6FFF6">Care plans from</div>', { top: px(L(250, 610)) });
+    const hero = T(r, ['*£29*'], { top: px(L(300, 660)), fontSize: px(L(420, 380)) });
+    const hm = add(r, '<div class="sub c" style="font-weight:700;font-family:var(--display);letter-spacing:-.02em">a month</div>', { top: px(L(730, 1070)), fontSize: px(L(72, 76)) });
+    // the plans, on a 3D carousel
+    const world = add(r, '<div class="world" style="perspective:1700px"><div class="rig"></div></div>'); const rig = world.firstChild;
+    const ring = add(rig, '<div class="abs" style="left:0;top:0;width:100%;height:100%;transform-style:preserve-3d"></div>');
     const odo = (n) => `<span class="cur">£</span>${[...String(n)].map((dg) => `<span class="odo" data-d="${dg}"><span>${'0123456789'.split('').join('</span><span>')}</span></span>`).join('')}<small>/month</small>`;
-    const cards = TL.PLANS.map(([nm, pr, ds], i) => add(r, `<div class="plan${i === 0 ? ' hi' : ''}"><div class="nm">${nm}</div><div class="pr">${odo(pr)}</div><p>${ds}</p></div>`,
-      V ? { left: px(110), top: px(400 + i * 350), width: px(860), height: px(310) } : { left: px(CX - 220 + (i - 1) * 480), top: px(280), width: px(440), height: px(430) }));
-    const c0 = V ? { x: CX, y: 555 } : { x: CX - 480, y: 495 };
-    const cols = 6, ts = L(100, 140), tg = L(14, 18), gw = cols * ts + (cols - 1) * tg, gx = (W - gw) / 2, gy = L(300, 600);
+    const CW = L(480, 880), CH = L(500, 320), RR = L(820, 600), ANG = L(33, 33);
+    const cards = TL.PLANS.map(([nm, pr, ds], i) => add(ring, `<div class="plan${i === 0 ? ' hi' : ''}"><div class="nm">${nm}</div><div class="pr">${odo(pr)}</div><p>${ds}</p></div>`,
+      { left: px(CX - CW / 2), top: px(L(290, 800)), width: px(CW), height: px(CH), transformOrigin: '50% 50%', backfaceVisibility: 'hidden' }));
+    cards.forEach((c) => { c.querySelector('.pr').style.fontSize = px(L(150, 136)); });
+    const pk = add(r, '<div class="kick c" style="color:#E6FFF6">Three plans · no contract</div>', { top: px(L(170, 300)) });
+    // the month
+    const cols = 6, ts = L(104, 144), tg = L(14, 18), gw = cols * ts + (cols - 1) * tg, gx = (W - gw) / 2, gy = L(300, 600);
     const month = add(r, '<div class="kick c" style="color:#E6FFF6">£29 ÷ 30 days</div>', { top: px(gy - L(70, 90)) });
     const tiles = Array.from({ length: 30 }, (_, i) => { const tl = add(r, `<div class="tile">${i + 1}</div>`, { left: px(gx + (i % cols) * (ts + tg)), top: px(gy + Math.floor(i / cols) * (ts + tg)), width: px(ts), height: px(ts), fontSize: px(L(24, 32)) });
       tl.cx = gx + (i % cols) * (ts + tg) + ts / 2; tl.cy = gy + Math.floor(i / cols) * (ts + tg) + ts / 2; return tl; });
-    const day = T(r, V ? ['About *95p*', 'a day.'] : ['About *95p* a day.'], { top: px(L(470, 820)), fontSize: px(L(160, 160)) });
-    const b1 = T(r, V ? ['Websites', 'from *£299.*'] : ['Websites from *£299.*'], { top: px(L(380, 740)), fontSize: px(L(150, 150)) });
-    const b2 = add(r, '<div class="sub c">Fixed price. Agreed up front.</div>', { top: px(L(590, 1120)), fontSize: px(L(46, 52)) });
+    const day = T(r, V ? ['About *95p*', 'a day.'] : ['About *95p* a day.'], { top: px(L(500, 840)), fontSize: px(L(160, 160)) });
+    // the price tag
+    const TGW = L(640, 700), TGH = L(330, 360), TGY = L(260, 560);
+    const pin = add(r, '<div class="abs" style="width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.25)"></div>', { left: px(CX), top: px(TGY - L(110, 120)) });
+    const tag = add(r, `<div class="ptag"><i></i><div class="k">Websites from</div><div class="p">£299</div><div class="s">one-off · fixed price</div></div>`, { left: px(CX - TGW / 2), top: px(TGY), width: px(TGW), height: px(TGH), transformOrigin: `50% ${-L(110, 120)}px` });
+    const str = add(r, '<div class="abs" style="width:3px;background:rgba(255,255,255,.85);transform-origin:50% 0"></div>', { left: px(CX - 1.5), top: px(TGY - L(110, 120)), height: px(L(110, 120) + 34) });
+    const b2 = add(r, '<div class="sub c">Agreed in writing before we start.</div>', { top: px(TGY + TGH + L(60, 80)), fontSize: px(L(44, 50)) });
     const t0 = B(sc.s); burst(t0, CX, CY, 260, 1100, 5.5, 1.3); rings(t0, CX, CY, 2, 1100);
+    rings(t0 + B(o.day), CX, L(270, 590), 2, 500);
     const hyp = Math.hypot(W, H) / 2;
     sc.update = (ls, G) => {
       bg.style.clipPath = `circle(${(hyp * E.out4(P(ls, 0, .35))).toFixed(1)}px at 50% 50%)`;
-      const split = E.inOut5(P(ls, B(o.split), B(o.split) + .45));
-      set(kick, { o: E.out(P(ls, .2, .6)) * (1 - split) });
+      set(glA, { x: CX - 450 + Math.sin(ls * .6) * L(500, 250), y: L(420, 900) + Math.cos(ls * .5) * 200 });
+      set(glB, { x: CX - 400 + Math.cos(ls * .5) * L(600, 260), y: L(-100, 200) + Math.sin(ls * .45) * 200 });
+      ringsBg.style.transform = `rotate(${(ls * 6).toFixed(2)}deg) scale(${(1 + .05 * Math.sin(ls)).toFixed(3)})`; ringsBg.style.transformOrigin = `${CX}px ${CY}px`;
+      // hero: £29 slams in, then flies into the Essential card
+      const hOut = E.in(P(ls, B(o.plans[0]) - .25, B(o.plans[0]) + .05));
+      set(hk, { o: E.out(P(ls, 0, .25)) * (1 - hOut), y: (1 - E.out(P(ls, 0, .25))) * 20 });
+      type(hero, ls - .05, { units: 'chars', st: .07, dur: .5, y: .15, s0: 1.8, blur: 16 });
+      if (ls > 0) set(hero, { s: (1 + .03 * ls) * (1 - .7 * hOut), y: hOut * L(120, 150), o: 1 - hOut }); hero.style.visibility = ls > 0 && hOut < 1 ? 'visible' : 'hidden';
+      set(hm, { o: E.out(P(ls, .2, .45)) * (1 - hOut), y: (1 - E.out(P(ls, .2, .45))) * 20 });
+      // carousel
+      const spinIn = E.out4(P(ls, B(o.plans[0]), B(o.plans[0]) + 1.1)), spinOut = E.in(P(ls, B(o.split) - .1, B(o.split) + .4));
+      const rot = lerp(-140, 0, spinIn) + 160 * spinOut;
+      ring.style.transform = V ? `translateZ(${-RR}px) rotateX(${rot.toFixed(2)}deg)` : `translateZ(${-RR}px) rotateY(${rot.toFixed(2)}deg)`;
+      set(pk, { o: E.out(P(ls, B(o.plans[0]) + .3, B(o.plans[0]) + .6)) * (1 - spinOut) });
       cards.forEach((c, i) => {
-        const d = ls - B(o.plans[i]); if (d < 0) return hide(c);
-        const p = E.out4(clamp(d / .55)), sp = spring(d, 1.3, .6);
-        const away = i ? split : 0, fade = i === 0 ? E.in(P(ls, B(o.split), B(o.split) + .3)) : 0;
-        set(c, { o: clamp(d / .1) * (1 - away) * (1 - fade), y: (1 - p) * H * .8 + (i ? away * H * .3 : 0), x: away * (i === 1 ? -1 : 1) * W * .7, rx: (1 - sp) * 60, r: (1 - p) * (i - 1) * 14 + away * (i === 1 ? -20 : 20), s: lerp(.8, 1, sp) * (1 - .6 * fade) });
-        c.querySelectorAll('.odo').forEach((od, k) => { const dg = +od.dataset.d, q = E.out4(P(d, .1 + k * .06, .6 + k * .06)); od.firstChild.style.marginTop = `${(-dg * q).toFixed(3)}em`; });
-        if (d < .6 || (away > 0 && away < 1)) G.mb = Math.max(G.mb, 5);
+        const d = ls - B(o.plans[i]); if (d < -.3 || spinOut >= 1) return hide(c);
+        const a = (i - 1) * ANG;
+        c.style.transform = V ? `rotateX(${-a}deg) translateZ(${RR}px)` : `rotateY(${a}deg) translateZ(${RR}px)`;
+        c.style.opacity = clamp((d + .3) / .3) * (1 - spinOut); c.style.visibility = 'visible';
+        c.querySelectorAll('.odo').forEach((od, k) => { const dg = +od.dataset.d, q = E.out4(P(d, .35 + k * .08, .85 + k * .08)); od.firstChild.style.marginTop = `${(-dg * q).toFixed(3)}em`; });
       });
-      // £29 bursts into the 30 days of a month; the rest fall away; day one flips to 95p
+      if ((spinIn > 0 && spinIn < 1) || (spinOut > 0 && spinOut < 1) || (hOut > 0 && hOut < 1)) G.mb = Math.max(G.mb, 5);
+      // £29 bursts into the 30 days of a month; 29 fall away; day one flips to 95p
       const dayIn = E.inOut5(P(ls, B(o.day) - .3, B(o.day) + .25)), gOut = E.in(P(ls, B(o.build) - .35, B(o.build)));
       set(month, { o: E.out(P(ls, B(o.split) + .15, B(o.split) + .4)) * (1 - E.in(P(ls, B(o.day) - .3, B(o.day) - .1))) });
       tiles.forEach((tl, i) => {
         const d = ls - B(o.split) - .1 - i * .018; if (d < 0) return hide(tl);
-        const sp = spring(d, 1.4, .6), bx = (c0.x - tl.cx) * (1 - sp), by = (c0.y - tl.cy) * (1 - sp);
+        const sp = spring(d, 1.4, .6), bx = (CX - tl.cx) * (1 - sp), by = (CY - tl.cy) * (1 - sp);
         if (i === 0) {
           const fl = P(ls, B(o.day) - .3, B(o.day) - .05), ang = 180 * E.inOut(fl);
           tl.textContent = ang > 90 ? '95p' : '1'; tl.classList.toggle('on', ang > 90);
-          const tx = dayIn * (CX - tl.cx), ty = dayIn * (L(270, 590) - tl.cy);
-          set(tl, { o: clamp(d / .08) * (1 - gOut), x: bx + tx, y: by + ty, ry: ang > 90 ? ang - 180 : ang, s: lerp(.3, 1, sp) * (1 + dayIn * L(1.1, .7)) * (1 - gOut), b: gOut * 8 });
-          tl.style.zIndex = 3;
+          const tx = dayIn * (CX - tl.cx), ty = dayIn * (L(270, 590) - tl.cy), glow = Math.exp(-Math.max(0, ls - B(o.day)) / .4) * (ls > B(o.day) ? 1 : 0);
+          set(tl, { o: clamp(d / .08) * (1 - gOut), x: bx + tx, y: by + ty, ry: ang > 90 ? ang - 180 : ang, s: lerp(.3, 1, sp) * (1 + dayIn * L(1.2, .8)) * (1 - gOut), b: gOut * 8 });
+          tl.style.boxShadow = `0 0 ${(40 + 80 * glow).toFixed(0)}px rgba(111,224,180,${(.35 + .5 * glow).toFixed(2)})`; tl.style.zIndex = 3;
         } else {
           const f = ls - (B(o.day) - .35) - hash(i * 3.1) * .15, fall = f > 0 ? f : 0;
-          set(tl, { o: clamp(d / .08) * (1 - P(fall, .2, .55)), x: bx + fall * (hash(i * 7.7) - .5) * 400, y: by + 1800 * fall * fall - 120 * fall, r: fall * (hash(i * 5.1) - .5) * 400, s: lerp(.3, 1, sp) });
+          set(tl, { o: clamp(d / .08) * (1 - P(fall, .2, .55)), x: bx + fall * (hash(i * 7.7) - .5) * 400, y: by + 1800 * fall * fall - 120 * fall, r: fall * (hash(i * 5.1) - .5) * 400, rx: fall * 260, s: lerp(.3, 1, sp) });
         }
       });
       if (ls > B(o.split) && ls < B(o.split) + .7) G.mb = Math.max(G.mb, 4);
       type(day, ls - B(o.day), { st: .1, dur: .6, ex: B(o.build - o.day) - .4, exDur: .3 });
-      type(b1, ls - B(o.build), { units: 'chars', st: .03, dur: .5, y: .2 });
-      const bp = E.out(P(ls, B(o.build) + .6, B(o.build) + 1.0)); set(b2, { o: bp, y: (1 - bp) * 16 });
+      // the £299 tag drops in on its string and swings to rest
+      const td = ls - B(o.build);
+      if (td < 0) { hide(tag); hide(str); hide(pin); } else {
+        const drop = E.out4(clamp(td / .45)), sw = 24 * Math.exp(-td * 2.1) * Math.cos(td * 7.2 + .3) * clamp(td / .15);
+        set(pin, { o: clamp(td / .15) });
+        set(tag, { y: (1 - drop) * -900, r: sw }); set(str, { y: (1 - drop) * -900, r: sw }); str.style.transform += ` scaleY(1)`;
+        if (td < .5) G.mb = Math.max(G.mb, 5);
+      }
+      const bp = E.out(P(td, .5, .9)); set(b2, { o: td > 0 ? bp : 0, y: (1 - bp) * 16 });
       G.flash = Math.max(G.flash, .45 * Math.exp(-Math.max(0, ls) / .12) * (ls >= 0 ? 1 : 0));
     };
     sc.sky = (ls) => ({ inten: 1, dawn: .3, sunY: -.3, stars: .6, meteor: .1, cam: { tilt: .08, zoom: 1, pan: .8 } });
@@ -740,7 +876,7 @@ const builders = {
       bg.style.clipPath = wp >= 1 ? 'none' : `polygon(0 0,${e0.toFixed(0)}px 0,${(e0 - .4 * W).toFixed(0)}px 100%,0 100%)`;
       const exT = B(o.smash) - .1;
       lines.forEach((l, i) => type(l, ls - B(o.lines[i]), { st: .08, dur: .55, ex: exT - B(o.lines[i]), exDur: .25 }));
-      strikes.forEach((s, i) => { const d = ls - B(o.lines[i]) - B(.25); s.style.transform = `scaleX(${E.out4(clamp(d / .22)).toFixed(3)})`; });
+      strikes.forEach((s, i) => { const d = ls - B(o.lines[i]) - B(.25); s.style.transform = `scaleX(${E.out4(clamp(d / .22)).toFixed(3)})`; s.style.opacity = lines[i].words[0].style.opacity || 0; });
       lines.slice(0, 2).forEach((l, i) => { const d = ls - B(o.lines[i]) - B(.25); l.style.opacity = d > 0 ? lerp(1, .4, clamp(d / .3)) : 1; });
       // LUKE ->  <- RALPH ... BANG: L and R stay, the rest flies off, "Web" slides out of the R
       const ap = E.in2(P(ls, B(o.smash), B(o.hit))), hd = ls - B(o.hit), wd = ls - B(o.web);

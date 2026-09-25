@@ -1,11 +1,11 @@
 # LRWeb: "Websites, handled." (v4 showreel)
 
-A 60-second LRWeb ad made as a motion-design showreel, built from the brand, copy, prices and example sites in [`../lrweb`](../lrweb):
+A 66-second LRWeb ad made as a motion-design showreel, built from the brand, copy, prices and example sites in [`../lrweb`](../lrweb):
 
 | Output | Format | Length | For |
 |---|---|---|---|
-| `LRWeb-promo-landscape.mp4` | 2560×1440, 60 fps, motion blur | 60s | YouTube, the website, presentations |
-| `LRWeb-promo-vertical.mp4` | 1440×2560, 60 fps, motion blur | 60s | TikTok, Reels, Shorts, Stories |
+| `LRWeb-promo-landscape.mp4` | 2560×1440, 60 fps, motion blur | 66s | YouTube, the website, presentations |
+| `LRWeb-promo-vertical.mp4` | 1440×2560, 60 fps, motion blur | 66s | TikTok, Reels, Shorts, Stories |
 
 The videos are **rendered on your machine** (see [Render it](#render-it)). Everything they need is in this folder, plus the live Crumb & Kiln site in `../lrweb/work`. Both cuts share one timeline and one score; the vertical cut has its own layouts and bigger type.
 
@@ -15,14 +15,15 @@ The videos are **rendered on your machine** (see [Render it](#render-it)). Every
 |---|---|---|---|
 | 0–4s | A dot of light stretches into a line, becomes a cursor and types **Every website** | shape morph, variable-font weight on every letter, a scripted shooting star | silence, then each letter is a pizzicato note |
 | 4–8s | **comes with *jobs.*** Then the camera flies through the *o* | iris zoom through a letter counter; the aurora wakes up | strings open, timpani, whoosh |
-| 8–16s | *Updates. Backups. Security. Hosting. Fixes. Speed.* on the half-bar, over a wall of pop-ups. **Whose job is that?** Freeze. | split-flap, echo stack, decode, server-rack wipe, slice snap, speed streaks | spiccato ostinato, trailer slams, snare rush, one beat of silence |
+| 8–16s | *Updates. Backups. Security. Hosting. Fixes. Speed.* on the half-bar, over a wall of pop-ups and a cascade of classic Windows error dialogs. **Whose job is that?** Freeze. | split-flap, echo stack, decode, server-rack wipe, slice snap, speed streaks | spiccato ostinato, trailer slams, snare rush, one beat of silence |
 | 16–20s | **Ours.** Shockwave, the LR mark snaps together from its two pieces, *Your website, handled.* | particle burst, rings, light sweep, wordmark reveal | the drop: full orchestra + hybrid drums |
 | 20–22s | A navy iris closes over the aurora; split screen **01 We build it. / 02 We look after it.** with giant outlined numerals | iris wipe, panels sliding in from opposite sides, parallax numerals, the top panel grows into the next scene | theme A |
-| 22–32s | On a design canvas: Crumb & Kiln's **2003** site in Internet Explorer. **① Strip it back**: the canvas turns to blueprint and the page's blocks are dealt off one by one. **② Design it**: a wireframe draws in. **③ Build it**: the real site builds itself and the window peels off into a phone. *Same bakery. Brand new website.* | exploded axonometric view, card-deal teardown, wireframe draw, chrome morph, desktop→phone morph, tile wipe | theme A, reveal hit |
-| 32–40s | On deep navy: **Then we look after it.** A live dashboard (uptime, nightly backups, updates, security, SSL); the Speed card takes the spotlight and drops from 9.4s to 0.8s. *You run your business. We run your website.* | data-viz motion, pulse rings, spotlight focus pull, time-lapse clock | the break keeps a pulse: piano, pizzicato ostinato, half-time beat |
-| 40–48s | A brand-gradient burst. Plan cards dealt with odometer prices; £29 bursts into 30 day-tiles, 29 tumble away, day one flips to **95p**; **Websites from £299.** | circle burst, 3D card deal, rolling digits, tile burst + gravity, card flip | drop 2, a whole step up in E major with a new string-stab hook |
-| 48–52s | On warm paper: ~~No call centre.~~ ~~No chatbot.~~ **Just Luke & Ralph.** Then **LUKE** and **RALPH** smash together: the L and R stay, the rest flies off, **Web** slides out: *LRWeb*. The paper irises out to the dawn. | diagonal wipe, strike-throughs, name collision with confetti, iris out | the smash gets its own hit |
-| 52–60s | The dot becomes the dawn; the LR mark draws, *We build it. Then we look after it.*, **lrweb.uk** | stroke draw, sunrise | final hit, ring-out |
+| 22–32s | On a design canvas: Crumb & Kiln's **2003** site in Internet Explorer. **① Strip it back**: on blueprint, every dated element (WordArt, marquee, grey buttons, Comic Sans, blurry photo, “Under construction”, hit counter) is pulled out onto a design board, crossed out and labelled. **② Design it**: a wireframe draws in. **③ Build it**: the real site builds itself and the window peels off into a phone. *Same bakery. Brand new website.* | design-audit board, wireframe draw, chrome morph, desktop→phone morph, tile wipe | theme A, reveal hit |
+| 32–38s | Match cut: the new Crumb & Kiln window becomes a montage of six example sites (barber, florist, gym, restaurant, plumber, architects) on a 3-3-2 rhythm, each with its own wipe, then a mosaic: *Built for real local businesses.* | match cut, six different wipes, typed labels, fly-in mosaic, tile wipe | theme A continues, a hit on every cut |
+| 38–46s | On deep navy: **Then we look after it.** A live dashboard (uptime, nightly backups, updates, security, SSL); the Speed card takes the spotlight and drops from 9.4s to 0.8s. *You run your business. We run your website.* | data-viz motion, pulse rings, spotlight focus pull, time-lapse clock | the break keeps a pulse: piano, pizzicato ostinato, half-time beat |
+| 46–54s | A brand-gradient burst and a giant **£29**. The three plans spin in on a 3D carousel with rolling prices; £29 bursts into 30 day-tiles, 29 tumble away, day one flips to **95p**; then a **£299** price tag drops in on a string and swings to rest. | circle burst, hero type, 3D carousel, odometers, tile burst + gravity, card flip, pendulum swing | drop 2, a whole step up in E major with a new string-stab hook |
+| 54–58s | On warm paper: ~~No call centre.~~ ~~No chatbot.~~ **Just Luke & Ralph.** Then **LUKE** and **RALPH** smash together: the L and R stay, the rest flies off, **Web** slides out: *LRWeb*. The paper irises out to the dawn. | diagonal wipe, strike-throughs, name collision with confetti, iris out | the smash gets its own hit |
+| 58–66s | The dot becomes the dawn; the LR mark draws, *We build it. Then we look after it.*, **lrweb.uk** | stroke draw, sunrise | final hit, ring-out |
 
 ## How it's made
 

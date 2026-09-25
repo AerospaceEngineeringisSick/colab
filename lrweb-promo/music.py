@@ -29,7 +29,8 @@ ORCH = os.path.join(HERE, 'samples', 'orch')
 V2, VC = os.path.join(ORCH, 'VSCO-2-CE'), os.path.join(ORCH, 'VCSL')
 if not os.path.isdir(V2):
     sys.exit('Orchestral samples missing: run  python tools/fetch_orchestra.py')
-B = lambda bar: bar * BAR  # bars -> seconds
+OFF = 0  # bar offset for the score blocks written against the 30-bar plan (the showcase inserts 3 bars at bar 16)
+B = lambda bar: (bar + OFF) * BAR  # bars -> seconds
 
 
 # ================================================================ dsp
@@ -288,8 +289,9 @@ VOICE = {
     'F#m7': ['F#2', 'F#3', 'C#4', 'E4', 'A4', 'C#5'], 'B': ['B1', 'B2', 'F#3', 'D#4', 'F#4', 'B4'], 'A/E': ['E2', 'E3', 'A3', 'C#4', 'E4', 'A4'],
 }
 PROG = ['Dm', 'Dm', 'Bb', 'C', 'Dm', 'Bb', 'Gm', 'A', 'D', 'A/C#', 'Bm', 'G', 'D', 'A/C#', 'G', 'A',
+        'D', 'A/C#', 'G',  # the showcase
         'Bm', 'G', 'D', 'B', 'E', 'B/D#', 'C#m', 'A', 'F#m7', 'B', 'E', 'A/E', 'E', 'E']
-ch = lambda bar: VOICE[PROG[min(len(PROG) - 1, int(bar))]]
+ch = lambda bar: VOICE[PROG[min(len(PROG) - 1, int(bar + OFF))]]
 root = lambda bar, octv=0: m(ch(bar)[0]) + 12 * octv
 # the theme, as (beat, note, beats) from the start of a phrase
 PH1 = [(0, 'A4', 1.5), (1.5, 'F#4', .5), (2, 'A4', 1), (3, 'D5', 1), (4, 'E5', 2), (6, 'C#5', 1), (7, 'A4', 1),
@@ -435,6 +437,15 @@ drums(13, 15.5, 'full', .82); arp(13, 15.75, .5)
 synth_pulse(13, 15.75, .13, 1000)
 for k in range(8): place(bus['perc'], panned(TOML[k % len(TOML)] if k % 2 else TOMH[k % len(TOMH)], (k % 3 - 1) * .3), B(15.5) + k * S16, .3 + .05 * k)
 
+# SHOWCASE (16-19): six example sites cut on a 3-3-2 rhythm; theme A keeps driving, then eases into the break
+melody(16, PH1[:7], VLN, .78, octv=12, bus_='str', gain=.7); melody(16, PH1[:7], HN, .8, gain=.9)
+pad(16, 19, .66, att=.1)
+ostinato(16, 18, .85, insts=('vc', 'vla', 'vln')); ostinato(18, 19, .6, div=8, insts=('vc',))
+drums(16, 18, 'full', .85); drums(18, 19, 'half', .6)
+arp(16, 19, .5); synth_pulse(16, 18.75, .12, 1000)
+place(bus['perc'], CRASH_M, B(16), .35)
+
+OFF = 3  # everything below was written against bars 16-30 and now plays three bars later
 # BREAK (16-20): the dashboard. It keeps a pulse: piano melody, pizzicato ostinato, a soft half-time beat; then a D -> B pivot
 def stabs(b0, b1, vel, pos=(0, 3, 6, 10, 12)):
     """The theme-B hook: syncopated spiccato chord stabs across the whole string section."""
@@ -489,6 +500,7 @@ PNO.play(bus['pno'], B(28.5), 'E4', 5.0, .3, rel=3); PNO.play(bus['pno'], B(28.5
 sub_boom(bus['hyb'], B(27.5), 'E1', .15, 3)
 
 
+OFF = 0  # sound effects use the real timeline
 # ================================================================ sound design, on the cues
 def pizz_note(t, bar, i, g=1.):
     v = ch(bar); n = [m(v[3]), m(v[4]), m(v[5]), m(v[4])][i % 4]
@@ -537,6 +549,12 @@ for e in EV['sfx']:
     elif k == 'strike':
         whoosh(bus['fx'], t + .05, .3, .14, 1200, 6000, 2500); place(bus['perc'], panned(SNR[i % len(SNR)], 0), t, .35)
     elif k == 'final': whoosh(bus['fx'], t, .8, .2, 200, 4000, 500)
+    elif k == 'error':  # a muted thunk with a sour semitone on top
+        place(bus['perc'], panned(TOML[i % len(TOML)], (i % 2 - .5) * .6), t, .28)
+        VLA_PZ.play(bus['fx'], t, m(ch(bar)[4]) + 1, .3, .5, rel=.2, pan=(i % 2 - .5) * .8, gain=.45)
+    elif k == 'cut':  # each site in the montage lands with a crisp hit
+        place(bus['perc'], panned(TOMH[i % len(TOMH)], (i % 3 - 1) * .4), t, .35); place(bus['perc'], panned(SNR_S[i % len(SNR_S)], 0), t, .18)
+        whoosh(bus['fx'], t, .3, .12, 900, 6000, 1500)
     elif k == 'smash':  # LUKE + RALPH collide
         place(bus['perc'], BD2[1], t, .9); place(bus['perc'], CRASH, t, .4); place(bus['perc'], panned(SNR[0], 0), t, .6)
         timp(bus['perc'], t, root(bar, 1) if root(bar) < 43 else root(bar), 1., .8); ekick(bus['hyb'], t, .3, 150, 40, .5)

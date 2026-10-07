@@ -1,11 +1,13 @@
 // Chat commands.
 import { ITEMS, I } from '../shared/items.js';
 import { MOBS } from './mobs.js';
-import { BIOMES } from '../shared/biomes.js';
+import { B } from '../shared/blocks.js';
+import { WH } from '../shared/constants.js';
 
 const HELP = [
   '/gamemode <survival|creative|spectator>', '/time set <day|noon|night|midnight|ticks>', '/weather <clear|rain|thunder>',
   '/give <item> [count]', '/tp <x> <y> <z>', '/summon <mob>', '/difficulty <peaceful|easy|normal|hard>', '/kill',
+  '/setblock <x> <y> <z> <block>', '/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>',
   '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome',
 ];
 
@@ -15,6 +17,8 @@ export function runCommand(g, text) {
   const cmd = (args.shift() || '').toLowerCase();
   const say = (t, c = '#aaaaaa') => g.message(t, c);
   const err = (t) => g.message(t, '#ff5555');
+  // coordinates: absolute, or ~ / ~n relative to the player
+  const rel = (s, base) => (s && s.startsWith('~') ? base + (parseFloat(s.slice(1)) || 0) : parseFloat(s));
   switch (cmd) {
     case 'help': case '?': for (const h of HELP) say(h); return;
     case 'gamemode': case 'gm': {
@@ -60,7 +64,6 @@ export function runCommand(g, text) {
       return say(`Gave ${n} [${ITEMS[id].display}] to ${g.settings.playerName || 'Player'}`);
     }
     case 'tp': case 'teleport': {
-      const rel = (s, base) => (s && s.startsWith('~') ? base + (parseFloat(s.slice(1)) || 0) : parseFloat(s));
       const x = rel(args[0], p.x), y = rel(args[1], p.y), z = rel(args[2], p.z);
       if ([x, y, z].some((v) => Number.isNaN(v))) return err('Usage: /tp <x> <y> <z>');
       p.x = p.px = x; p.y = p.py = y; p.z = p.pz = z; p.vx = p.vy = p.vz = 0; p.fallDistance = 0;
@@ -86,8 +89,26 @@ export function runCommand(g, text) {
     case 'heal': p.health = p.maxHealth; p.food = 20; p.saturation = 5; return say('Healed');
     case 'xp': case 'experience': { const n = parseInt(args[0], 10) || 0; p.addXp(n); return say(`Gave ${n} experience`); }
     case 'biome': return say(`Biome: ${g.world.biomeAt(Math.floor(p.x), Math.floor(p.z)).name}`);
-    case 'fill': return err('Not supported');
+    case 'setblock': case 'fill': {
+      const n = cmd === 'fill' ? 6 : 3;
+      const c = [];
+      for (let i = 0; i < n; i++) c.push(Math.floor(rel(args[i], [p.x, p.y, p.z][i % 3])));
+      const name = (args[n] || '').replace(/^minecraft:/, '').toLowerCase();
+      const id = name === 'air' ? 0 : B[name];
+      if (c.some((v) => Number.isNaN(v)) || id === undefined) {
+        return err(id === undefined && name ? `Unknown block '${name}'` : cmd === 'fill' ? 'Usage: /fill <x1> <y1> <z1> <x2> <y2> <z2> <block>' : 'Usage: /setblock <x> <y> <z> <block>');
+      }
+      const [x0, y0, z0, x1 = x0, y1 = y0, z1 = z0] = c;
+      const lo = [Math.min(x0, x1), Math.max(0, Math.min(y0, y1)), Math.min(z0, z1)];
+      const hi = [Math.max(x0, x1), Math.min(WH - 1, Math.max(y0, y1)), Math.max(z0, z1)];
+      const vol = (hi[0] - lo[0] + 1) * (hi[1] - lo[1] + 1) * (hi[2] - lo[2] + 1);
+      if (vol > 32768) return err(`Too many blocks in the specified area (${vol} > 32768)`);
+      let changed = 0;
+      for (let y = lo[1]; y <= hi[1]; y++) for (let z = lo[2]; z <= hi[2]; z++) for (let x = lo[0]; x <= hi[0]; x++) {
+        if (g.world.setBlock(x, y, z, id)) changed++;
+      }
+      return changed ? say(cmd === 'fill' ? `Successfully filled ${changed} block(s)` : 'Changed the block') : err('No blocks were changed');
+    }
     default: return err(`Unknown command '${cmd}'. Type /help for a list.`);
   }
 }
-void BIOMES;

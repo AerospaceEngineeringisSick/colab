@@ -7,7 +7,7 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "watch": "node tools/build.mjs --watch",
-    "assets": "node tools/assets.mjs"
+    "assets": "node tools/import-assets.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",

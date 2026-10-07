@@ -4,6 +4,8 @@ A **3D endless runner** for mobile (and desktop) that lives entirely in **one HT
 
 ▶ **Play:** open `index.html` (works from `file://`, offline, and on phones — add it to your home screen for fullscreen play).
 
+> ⛏ **Also in this repo: [BlockCraft](blockcraft/README.md)**, a Minecraft-style survival game with biomes, caves, mobs, crafting and progression, also in a single offline HTML file: `blockcraft/index.html`.
+
 ## How to play
 
 Guide a magical relic orb down a three-lane causeway. Speed keeps climbing — how far can you roll?

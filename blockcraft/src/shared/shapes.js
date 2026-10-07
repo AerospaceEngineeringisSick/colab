@@ -210,6 +210,19 @@ export function blockModel(id, meta, conn = 0) {
         return M([box([1, 0, 1, 15, 14, 15], ['chest_side', 'chest_side', 'chest_top', 'chest_top', 'chest_front', 'chest_side'])], meta & 3);
       }
       if (id === B.enchanting_table) return M([box([0, 0, 0, 16, 12, 16], [t.side, t.side, t.top, t.bottom, t.side, t.side])]);
+      if (id === B.brewing_stand) {
+        // three stone feet, the blaze rod, and three arms (a bottle hangs from each full slot)
+        const T = t.side, arm = (bit) => (meta & bit ? t.bottom : t.top);
+        const stone = [[7, 2, 13, 4], [7, 2, 13, 4], [7, 0, 13, 6], [7, 0, 13, 6], [7, 2, 13, 4], [7, 2, 13, 4]];
+        const L = [0, 0, 8, 16], Rv = [8, 0, 0, 16];
+        return M([
+          box([9, 0, 5, 15, 2, 11], T, { uv: stone }), box([2, 0, 1, 8, 2, 7], T, { uv: stone }), box([2, 0, 9, 8, 2, 15], T, { uv: stone }),
+          box([7, 0, 7, 9, 14, 9], T, { uv: [[5, 0, 7, 14], [5, 0, 7, 14], [5, 0, 7, 2], [5, 0, 7, 2], [5, 0, 7, 14], [5, 0, 7, 14]] }),
+          box([8, 0, 8, 16, 16, 8], [null, null, null, null, arm(1), arm(1)], { uv: [null, null, null, null, Rv, L] }),
+          box([8, 0, 0, 8, 16, 8], [arm(2), arm(2), null, null, null, null], { uv: [Rv, L, null, null, null, null] }),
+          box([8, 0, 8, 8, 16, 16], [arm(4), arm(4), null, null, null, null], { uv: [L, Rv, null, null, null, null] }),
+        ]);
+      }
       if (id === B.anvil) {
         // built facing south with the long top running east-west, then turned
         const base = 'anvil_base';
@@ -265,6 +278,7 @@ export function collisionBoxes(id, meta, conn = 0) {
       if (id === B.farmland || id === B.dirt_path) return [[0, 0, 0, 1, 15 / 16, 1]];
       if (id === B.cake) return [[(1 + Math.min(6, meta) * 2) / 16, 0, 1 / 16, 15 / 16, 0.5, 15 / 16]];
       if (id === B.enchanting_table) return [[0, 0, 0, 1, 0.75, 1]];
+      if (id === B.brewing_stand) return [[0, 0, 0, 1, 2 / 16, 1], [7 / 16, 0, 7 / 16, 9 / 16, 14 / 16, 9 / 16]];
       if (id === B.anvil) return modelBoxes(id, meta, conn);
       return FULL;
     }

@@ -160,7 +160,7 @@ function buildDerived() {
 export function buildBlockArray() {
   const names = blockTextureNames();
   // particle sprites share the array
-  const extra = ['env/smoke', 'env/flame', 'env/bonemeal', 'env/bubble', 'env/lava_particle', 'env/rain', 'env/snowflake', 'env/portal_particle'];
+  const extra = ['env/smoke', 'env/flame', 'env/bonemeal', 'env/bubble', 'env/lava_particle', 'env/rain', 'env/snowflake', 'env/portal_particle', 'env/effect', 'env/instant_effect', 'env/droplet'];
   // enchanting glyphs (6x6) become 16x16 particle sprites at double size
   for (let i = 1; i <= 18; i++) {
     const src = images['gui/glyph_' + i];

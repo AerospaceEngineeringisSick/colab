@@ -29,6 +29,7 @@ import { runCommand } from './commands.js';
 import { U } from '../engine/materials.js';
 import { enchLevel, shelfOffsets } from '../shared/enchant.js';
 import { NetherGen } from '../shared/nethergen.js';
+import { brewResult, EFFECTS } from '../shared/potions.js';
 import { lightPortal, portalCorner, findPortal, buildPortal } from './portals.js';
 
 const TICK = 0.05;
@@ -356,6 +357,7 @@ export class Game {
       time: this.time + a, day: this.day, rain: over ? this.weather.rainAmt : 0, thunder: over ? this.weather.thunderAmt : 0, flash: over ? this.weather.flash : 0,
       underwater: under, dt, time_s: this.clock, clouds: this.settings.clouds, gamma: this.settings.gamma,
       dim: this.dim, fog: over ? undefined : this.biomeAt(p.x, p.z).fog,
+      nightVision: p.effects.night_vision ? (p.effects.night_vision.t > 200 ? 1 : 0.7 + 0.3 * Math.sin(p.effects.night_vision.t * 0.3)) : 0,
     });
     // dim the sky light when standing in a cave so fog isn't glowing
     this.entities.render(a, this.clock);
@@ -672,7 +674,12 @@ export class Game {
         ct.load(t.items);
         t.items = ct;
       }
-      if (t.type === 'furnace' || t.type === 'spawner') this.activeTiles.add(t);
+      if (t.type === 'brewing' && Array.isArray(t.items)) {
+        const ct = new Container(5);
+        ct.load(t.items);
+        t.items = ct;
+      }
+      if (t.type === 'furnace' || t.type === 'spawner' || t.type === 'brewing') this.activeTiles.add(t);
     }
     for (const s of spawns || []) this.spawnMob(s.type, s.x, s.y, s.z, { persistent: true, ...(s.opts || {}) });
     // bring back entities that were saved or parked in this chunk
@@ -829,6 +836,12 @@ export class Game {
     switch (id) {
       case B.crafting_table: this.ui.openCrafting(); return true;
       case B.enchanting_table: this.ui.openEnchanting({ x, y, z }); return true;
+      case B.brewing_stand: {
+        let t = w.getTile(x, y, z);
+        if (!t) { t = { type: 'brewing', items: new Container(5), fuel: 0, brew: 0 }; w.setTile(x, y, z, t); this.activeTiles.add(t); }
+        this.ui.openBrewing(t);
+        return true;
+      }
       case B.anvil: this.ui.openAnvil({ x, y, z }); return true;
       case B.furnace: case B.lit_furnace: {
         let t = w.getTile(x, y, z);
@@ -1005,6 +1018,13 @@ export class Game {
       if (kind) for (let i = 0; i < 3; i++) this.particles.mote(p.x + (Math.random() - 0.5) * 24, p.y + (Math.random() - 0.3) * 12, p.z + (Math.random() - 0.5) * 24, kind, bio.id !== BI.SOUL_SAND_VALLEY);
     }
     if (this.dim === 'nether' && this.tickCount % 40 === 0 && this.netherGen.inFortress(Math.floor(p.x), Math.floor(p.y), Math.floor(p.z))) this.advance('fortress');
+    // swirls of colour around the player while potions are working (seen in third person)
+    if (this.camMode !== 0 || this.tickCount % 4 === 0) {
+      for (const n of Object.keys(p.effects)) {
+        if (n === 'invisibility' || Math.random() > 0.3) continue;
+        this.particles.effectSwirl(p.x + (Math.random() - 0.5) * 0.6, p.y + Math.random() * 1.8, p.z + (Math.random() - 0.5) * 0.6, EFFECTS[n].color, this.camMode === 0 ? 0.35 : 1);
+      }
+    }
     // underwater bubbles from the player
     if (p.eyeInWater && this.tickCount % 10 === 0 && !p.creative) this.particles.bubbles(p.x, p.y + p.eye, p.z, 2);
   }
@@ -1014,6 +1034,7 @@ export class Game {
     for (const t of this.activeTiles) {
       if (t.type === 'furnace') this.furnaceTick(t);
       else if (t.type === 'spawner') this.spawnerTileTick(t);
+      else if (t.type === 'brewing') this.brewingTick(t);
     }
   }
 
@@ -1049,6 +1070,52 @@ export class Game {
         if (id !== want) this.world.setBlock(t.x, t.y, t.z, want | (v & ~1023), { keepTile: true, noUpdate: true });
       }
     }
+  }
+
+  // brewing stand: 0-2 bottles, 3 ingredient, 4 blaze powder. A brew takes 20 seconds and one fuel.
+  brewingTick(t) {
+    const s = t.items.slots;
+    if ((t.fuel || 0) <= 0 && s[4] && s[4].id === I.blaze_powder) {
+      t.fuel = 20;
+      if (--s[4].count <= 0) s[4] = null;
+    }
+    const ing = s[3];
+    const can = !!ing && this.canBrew(s, ing.id);
+    if (t.brew > 0) {
+      t.brew--;
+      if (!can || ing.id !== t.ingId) t.brew = 0;
+      else if (t.brew === 0) this.finishBrew(t);
+    } else if (can && t.fuel > 0) {
+      t.brew = 400; t.ingId = ing.id; t.fuel--;
+    }
+    // the stand shows a bottle on each arm that holds one
+    const bits = (s[0] ? 1 : 0) | (s[1] ? 2 : 0) | (s[2] ? 4 : 0);
+    const v = this.world.getBlock(t.x, t.y, t.z);
+    if ((v & 1023) === B.brewing_stand && (v >>> 10) !== bits) this.world.setBlock(t.x, t.y, t.z, B.brewing_stand | (bits << 10), { keepTile: true, noUpdate: true });
+  }
+  canBrew(s, ingId) {
+    const name = ITEMS[ingId].name;
+    for (let i = 0; i < 3; i++) {
+      const b = s[i];
+      if (!b || (b.id !== I.potion && b.id !== I.splash_potion)) continue;
+      if (name === 'gunpowder') { if (b.id === I.potion) return true; continue; }
+      if (brewResult(b.potion || 'water', name)) return true;
+    }
+    return false;
+  }
+  finishBrew(t) {
+    const s = t.items.slots, ing = s[3];
+    const name = ITEMS[ing.id].name;
+    for (let i = 0; i < 3; i++) {
+      const b = s[i];
+      if (!b || (b.id !== I.potion && b.id !== I.splash_potion)) continue;
+      if (name === 'gunpowder') { if (b.id === I.potion) s[i] = { ...b, id: I.splash_potion }; continue; }
+      const r = brewResult(b.potion || 'water', name);
+      if (r) s[i] = { ...b, potion: r };
+    }
+    if (--ing.count <= 0) s[3] = null;
+    this.sound.play('brewing.done', t.x + 0.5, t.y + 0.5, t.z + 0.5, 0.8);
+    this.advance('brew');
   }
 
   spawnerTileTick(t) {
@@ -1238,7 +1305,7 @@ export class Game {
       explosion: src ? `${name} was blown up by ${src}` : `${name} blew up`, void: `${name} fell out of the world`,
       arrow: `${name} was shot by ${src || 'Skeleton'}`, mob: `${name} was slain by ${src || 'a mob'}`, poison: `${name} died`,
       anvil: `${name} was squashed by a falling anvil`, thorns: `${name} was killed trying to hurt ${src || 'a mob'}`,
-      hot_floor: `${name} discovered the floor was lava`, fireball: `${name} was fireballed by ${src || 'a Ghast'}`, wither: `${name} withered away`,
+      hot_floor: `${name} discovered the floor was lava`, magic: `${name} was killed by magic`, fireball: `${name} was fireballed by ${src || 'a Ghast'}`, wither: `${name} withered away`,
     };
     const msg = msgs[cause] || `${name} died`;
     this.deathMessage = msg;

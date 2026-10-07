@@ -5,6 +5,7 @@ import { images, canvas } from '../engine/textures.js';
 import { iconStyle, iconMask } from './icons.js';
 import { isEnchanted } from '../shared/enchant.js';
 import { stackKey, itemName } from '../game/inventory.js';
+import { EFFECTS, fmtTicks } from '../shared/potions.js';
 import { Screens } from './screens.js';
 import { Menus } from './menus.js';
 import { Touch } from './touch.js';
@@ -34,8 +35,9 @@ export function fmt(text, color) {
 export function slotHTML(stack) {
   if (!stack) return '';
   const it = ITEMS[stack.id];
-  let h = `<div class="icon" style="${iconStyle(stack.id)}"></div>`;
-  if (isEnchanted(stack) || (it && it.glint)) h += `<div class="glint" style="${iconMask(stack.id)}"></div>`;
+  const key = stack.potion ? stack.id + ':' + stack.potion : stack.id;
+  let h = `<div class="icon" style="${iconStyle(key)}"></div>`;
+  if (isEnchanted(stack) || (it && it.glint)) h += `<div class="glint" style="${iconMask(key)}"></div>`;
   if (stack.count > 1) h += `<span class="count">${stack.count}</span>`;
   if (it && it.durability && stack.dmg > 0) {
     const f = 1 - stack.dmg / it.durability;
@@ -103,6 +105,14 @@ export class UI {
       return c.toDataURL();
     };
     const full = (img) => { const c = canvas(9, 9); c.getContext('2d').drawImage(img, 0, 0, 9, 9); return c.toDataURL(); };
+    // a heart recoloured (absorption gold)
+    const tinted = (img, col) => {
+      const c = canvas(9, 9), g = c.getContext('2d');
+      g.drawImage(img, 0, 0, 9, 9);
+      g.globalCompositeOperation = 'source-atop';
+      g.fillStyle = col; g.globalAlpha = 0.75; g.fillRect(0, 0, 9, 9);
+      return c.toDataURL();
+    };
     const heart = images['gui/heart'], food = images['gui/hunger'], bubble = images['gui/bubble'];
     const armorImg = canvas(9, 9);
     {
@@ -123,7 +133,7 @@ export class UI {
     }
     this.hudIcons = {
       heart: full(heart), heartHalf: outline(heart, [40, 40, 40], true), heartEmpty: outline(heart, [40, 40, 40]),
-      heartFlash: outline(heart, [240, 240, 240]),
+      heartFlash: outline(heart, [240, 240, 240]), heartGold: tinted(heart, '#f2c832'),
       food: full(food), foodHalf: outline(food, [40, 40, 40], true), foodEmpty: outline(food, [40, 40, 40]),
       armor: full(armorImg), armorHalf: outline(armorImg, [50, 50, 50], true), armorEmpty: outline(armorImg, [50, 50, 50]),
       bubble: full(bubble),
@@ -166,6 +176,8 @@ export class UI {
       return items;
     };
     this.hearts = row('hearts'); this.armorRow = row('armor'); this.foodRow = row('food'); this.airRow = row('air');
+    this.absorbRow = row('absorb');
+    this.effectsEl = el('div', '', hud); this.effectsEl.id = 'effects';
     const xp = el('div', '', hud); xp.id = 'xp';
     this.xpFill = el('i', '', xp); this.xpLevel = el('b', '', xp);
     this.itemName = el('div', 't', hud); this.itemName.id = 'itemname';
@@ -233,6 +245,7 @@ export class UI {
     this.actionTime = (this.actionTime || 0) - dt;
     this.actionEl.style.opacity = this.actionTime > 0 ? Math.min(1, this.actionTime) : 0;
     if (p.mode === 'survival') this.updateStats(game, dt);
+    this.updateEffects(p);
     // overlays
     this.lowhpEl.style.opacity = p.mode === 'survival' && p.health <= 4 && !p.dead ? 0.6 + Math.sin(game.clock * 6) * 0.2 : 0;
     this.fireEl.style.opacity = p.fire > 0 && !p.creative && !p.inWater ? 0.6 + Math.sin(game.clock * 20) * 0.2 : 0;
@@ -257,6 +270,34 @@ export class UI {
     this.touch.frame(game);
   }
 
+  // active status effects: an icon each with the time left (blinking near the end)
+  updateEffects(p) {
+    const names = Object.keys(p.effects);
+    const key = names.map((n) => n + p.effects[n].amp).join(',');
+    if (key !== this.fxKey) {
+      this.fxKey = key;
+      this.effectsEl.innerHTML = '';
+      this.fxEls = names.map((n) => {
+        const E = EFFECTS[n];
+        const d = el('div', 'fx' + (E.good ? '' : ' bad'), this.effectsEl);
+        const im = images['gui/effect_' + E.icon];
+        if (im) d.style.backgroundImage = `url(${im.toDataURL()})`;
+        d.title = E.name;
+        const s = el('span', '', d);
+        return [n, d, s];
+      });
+    }
+    for (const [n, d, s] of this.fxEls || []) {
+      const e = p.effects[n];
+      if (!e) continue;
+      const lvl = ['', ' II', ' III', ' IV'][e.amp] || '';
+      const txt = fmtTicks(e.t) + lvl;
+      if (s.textContent !== txt) s.textContent = txt;
+      const blink = e.t < 200 && Math.floor(e.t / 5) % 2 === 0;
+      if (d._b !== blink) { d._b = blink; d.classList.toggle('blink', blink); }
+    }
+  }
+
   updateStats(game, dt) {
     const p = game.player, I2 = this.hudIcons;
     const c = game.clock;
@@ -271,6 +312,7 @@ export class UI {
       const e = this.hearts[i];
       const v = hp - i * 2;
       img(e, v >= 2 ? I2.heart : v === 1 ? I2.heartHalf : (flash ? I2.heartFlash : I2.heartEmpty));
+      css(e, 'filter', p.effects.wither ? 'grayscale(1) brightness(0.45)' : p.effects.poison ? 'hue-rotate(95deg) saturate(1.3)' : '');
       let dy = 0;
       if (p.health <= 4) dy = Math.round(Math.sin(c * 30 + i * 7.1) * 1.2);
       if (regenWave === i) dy -= 2;
@@ -283,8 +325,18 @@ export class UI {
       img(e, v >= 2 ? I2.food : v === 1 ? I2.foodHalf : I2.foodEmpty);
       const dy = p.saturation <= 0 && Math.floor(c * 20) % (p.food * 3 + 1) === 0 ? Math.round(Math.random() * 2 - 1) : 0;
       css(e, 'transform', dy ? `translateY(${dy * this.scale}px)` : '');
-      css(e, 'filter', p.hungerEffect > 0 ? 'hue-rotate(60deg) saturate(0.7)' : '');
+      css(e, 'filter', p.effects.hunger ? 'hue-rotate(60deg) saturate(0.7)' : '');
     }
+    // absorption: golden hearts stacked above the health bar
+    const ab = Math.ceil(p.absorb || 0);
+    for (let i = 0; i < 10; i++) {
+      const e = this.absorbRow[i];
+      const v = ab - i * 2;
+      css(e, 'display', v > 0 ? '' : 'none');
+      if (v > 0) img(e, I2.heartGold);
+      css(e, 'clipPath', v === 1 ? 'inset(0 50% 0 0)' : '');
+    }
+    css(this.armorRow[0].parentNode, 'bottom', ab > 0 ? 'calc(20 * var(--s))' : '');
     // armour
     const ap = p.inv.armorPoints();
     for (let i = 0; i < 10; i++) {
@@ -410,6 +462,7 @@ export class UI {
   openInventory() { if (this.game.player.mode === 'creative') this.screens.open('creative'); else this.screens.open('inventory'); this.game.advance('inventory'); }
   openCrafting() { this.screens.open('crafting'); }
   openFurnace(t) { this.openTile = t; this.screens.open('furnace', t); }
+  openBrewing(t) { this.openTile = t; this.screens.open('brewing', t); }
   openEnchanting(pos) { this.openTile = null; this.screens.open('enchant', pos); }
   openAnvil(pos) { this.openTile = null; this.screens.open('anvil', pos); }
   openTrade(villager) { this.openTile = null; this.screens.open('trade', villager); }

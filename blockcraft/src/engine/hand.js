@@ -35,7 +35,7 @@ export class Hand {
 
   setItem(stack) {
     const glint = shines(stack);
-    const key = stack ? stack.id + (glint ? 0.5 : 0) : -1;
+    const key = stack ? stack.id + (glint ? 0.5 : 0) + (stack.potion ? ':' + stack.potion : '') : -1;
     if (key === this.itemId) return;
     if (this.itemObj) {
       this.itemPivot.remove(this.itemObj);
@@ -43,7 +43,7 @@ export class Hand {
       this.itemObj = null;
     }
     this.itemId = key;
-    if (stack) this.itemObj = makeItemObject(stack.id, { depthTest: true, glint });
+    if (stack) this.itemObj = makeItemObject(stack.id, { depthTest: true, glint, potion: stack.potion });
     if (this.itemObj) this.itemPivot.add(this.itemObj);
   }
 
@@ -154,12 +154,12 @@ export class PlayerModel {
   }
   setHeld(stack) {
     const glint = shines(stack);
-    const id = stack ? stack.id + (glint ? 0.5 : 0) : -1;
+    const id = stack ? stack.id + (glint ? 0.5 : 0) + (stack.potion ? ':' + stack.potion : '') : -1;
     if (id === this.heldId) return;
     this.heldId = id;
     if (this.held) { this.model.parts.rightArm.remove(this.held); this.held = null; }
     if (stack) {
-      this.held = makeItemObject(stack.id, { glint });
+      this.held = makeItemObject(stack.id, { glint, potion: stack.potion });
       const block = this.held.userData.block;
       this.held.scale.setScalar(block ? 0.3 : 0.5);
       this.held.position.set(-0.06, -0.62, block ? 0.0 : 0.1);

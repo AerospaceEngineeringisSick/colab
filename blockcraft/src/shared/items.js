@@ -21,6 +21,7 @@ for (const n of ['rail', 'powered_rail', 'detector_rail', 'redstone_torch']) FLA
 FLAT_ICON.lever = 'item/lever';
 FLAT_ICON.repeater = 'item/repeater';
 FLAT_ICON.nether_wart = 'item/nether_wart';
+FLAT_ICON.brewing_stand = 'item/brewing_stand';
 for (const n of ['crimson_fungus', 'warped_fungus', 'crimson_roots', 'warped_roots', 'nether_sprouts', 'weeping_vines', 'twisting_vines']) FLAT_ICON[n] = 'block/' + n;
 for (const f of FLOWERS) FLAT_ICON[f] = 'block/' + f;
 
@@ -81,10 +82,12 @@ ITEMS[I.mushroom_stew].maxStack = 1;
 ITEMS[I.mushroom_stew].food.returns = 'bowl';
 ITEMS[I.carrot].place = 'carrots';
 ITEMS[I.potato].place = 'potatoes';
-ITEMS[I.rotten_flesh].food.effect = { hunger: 0.8 };
-ITEMS[I.spider_eye].food.effect = { poison: 1 };
-ITEMS[I.chicken].food.effect = { hunger: 0.3 };
-ITEMS[I.golden_apple].food.effect = { regen: 1 };
+// food effects: [effect, ticks, amplifier, chance]
+ITEMS[I.rotten_flesh].food.effects = [['hunger', 600, 0, 0.8]];
+ITEMS[I.spider_eye].food.effects = [['poison', 100, 0, 1]];
+ITEMS[I.chicken].food.effects = [['hunger', 600, 0, 0.3]];
+ITEMS[I.golden_apple].food.effects = [['regeneration', 100, 1, 1], ['absorption', 2400, 0, 1]];
+ITEMS[I.golden_apple].food.always = true;
 ITEMS[I.golden_apple].glint = false;
 ITEMS[I.cooked_porkchop].display = 'Cooked Porkchop';
 ITEMS[I.porkchop].display = 'Raw Porkchop';
@@ -176,7 +179,7 @@ for (const [n, h, sat] of [['cod', 2, 0.4], ['cooked_cod', 5, 6], ['salmon', 2, 
 }
 ITEMS[I.cod].display = 'Raw Cod';
 ITEMS[I.salmon].display = 'Raw Salmon';
-ITEMS[I.pufferfish].food.effect = { poison: 3, hunger: 1 };
+ITEMS[I.pufferfish].food.effects = [['poison', 1200, 1, 1], ['hunger', 300, 2, 1]];
 item('saddle', { maxStack: 1 });
 item('name_tag', { use: 'name_tag' });
 
@@ -197,6 +200,16 @@ export const NETHER_EGGS = {
   wither_skeleton: [0x141414, 0x474d4d], slime: [0x51a03e, 0x7ebf6e],
 };
 for (const [mob, col] of Object.entries(NETHER_EGGS)) item(mob + '_spawn_egg', { icon: 'egg', egg: { mob, col }, use: 'spawn_egg' });
+
+// brewing: potions carry their kind in the stack (stack.potion)
+item('glass_bottle', { use: 'bottle' });
+item('potion', { maxStack: 1, use: 'drink_potion', potionIcon: 'item/potion_overlay', icon: 'item/glass_bottle' });
+item('splash_potion', { maxStack: 1, use: 'throw_potion', potionIcon: 'item/splash_overlay' });
+item('fermented_spider_eye');
+item('glistering_melon_slice');
+item('golden_carrot', { food: { hunger: 6, sat: 14.4 } });
+export const POTION_EGGS = { witch: [0x340000, 0x51a03e] };
+for (const [mob, col] of Object.entries(POTION_EGGS)) item(mob + '_spawn_egg', { icon: 'egg', egg: { mob, col }, use: 'spawn_egg' });
 
 // cake & bed & door & sugar cane are block items placed directly
 ITEMS[B.cake].maxStack = 1;

@@ -7,6 +7,7 @@ import { ENCHANTS, enchName, isEnchanted, enchantability, tableOffers, countShel
 import { matchRecipe, RECIPES, SMELT } from '../game/recipes.js';
 import { images, canvas } from '../engine/textures.js';
 import { iconStyle } from './icons.js';
+import { INGREDIENTS, POTIONS, EFFECTS, effectLine } from '../shared/potions.js';
 import { el, slotHTML } from './ui.js';
 
 const S = (n) => `calc(${n} * var(--s))`;
@@ -98,6 +99,7 @@ export class Screens {
     if (kind === 'inventory') this.buildInventory();
     else if (kind === 'crafting') this.buildCrafting();
     else if (kind === 'furnace') this.buildFurnace();
+    else if (kind === 'brewing') this.buildBrewing();
     else if (kind === 'chest') this.buildChest();
     else if (kind === 'creative') this.buildCreative();
     else if (kind === 'enchant') this.buildEnchant();
@@ -224,6 +226,28 @@ export class Screens {
     arrows();
     const ab = el('i', 'arrowf', arrow); ab.style.backgroundImage = `url(${ARROW})`;
     this.arrowFg = el('i', 'arrowf', arrow); this.arrowFg.style.backgroundImage = `url(${ARROW_FILL})`;
+    this.playerSlots(p, 84);
+  }
+
+  // ---------------------------------------------------------------- brewing stand
+  buildBrewing() {
+    const p = this.panel(176, 166, 'Brewing Stand');
+    const t = this.tile;
+    const isBottle = (s) => s.id === I.potion || s.id === I.splash_potion || s.id === I.glass_bottle;
+    this.containerSlot(p, t.items, 4, 17, 17, { brewFuel: true, ghost: 'gui/slot_fuel', accept: (s) => s.id === I.blaze_powder });
+    this.containerSlot(p, t.items, 3, 79, 17, { brewIn: true, accept: (s) => INGREDIENTS.has(ITEMS[s.id].name) });
+    [[56, 51], [79, 58], [102, 51]].forEach(([x, y], i) => this.containerSlot(p, t.items, i, x, y, { bottle: true, max: 1, ghost: 'gui/slot_bottle', accept: isBottle }));
+    // tubes from the ingredient down to the bottles
+    for (const [x, y, w, h] of [[63, 46, 1, 6], [63, 46, 12, 1], [87, 37, 1, 21], [99, 46, 12, 1], [111, 46, 1, 6]]) {
+      const e = el('div', 'tube', p); e.style.left = S(x); e.style.top = S(y); e.style.width = S(w); e.style.height = S(h);
+    }
+    const bub = el('div', 'bubbles', p); bub.style.left = S(65); bub.style.top = S(14); bub.style.width = S(12); bub.style.height = S(28);
+    bub.style.backgroundImage = `url(${images['gui/brew_bubbles'].toDataURL()})`;
+    this.bubbleFg = el('i', '', bub); this.bubbleFg.style.backgroundImage = `url(${images['gui/brew_bubbles_on'].toDataURL()})`;
+    const arrow = el('div', 'brewarrow', p); arrow.style.left = S(97); arrow.style.top = S(16); arrow.style.width = S(9); arrow.style.height = S(28);
+    this.brewFg = el('i', '', arrow);
+    const fuel = el('div', 'brewfuel', p); fuel.style.left = S(60); fuel.style.top = S(44); fuel.style.width = S(18); fuel.style.height = S(4);
+    this.brewFuel = el('i', '', fuel);
     this.playerSlots(p, 84);
   }
 
@@ -616,13 +640,14 @@ export class Screens {
       if (!it || it.hidden || !tab.filter(it)) continue;
       // one enchanted book per enchantment level, like vanilla
       if (it.id === I.enchanted_book) { for (const e of ENCHANTS) for (let l = 1; l <= e.max; l++) items.push({ id: it.id, count: 1, dmg: 0, ench: [[e.id, l]] }); }
+      else if (it.id === I.potion || it.id === I.splash_potion) { for (const k of Object.keys(POTIONS)) items.push({ id: it.id, count: 1, dmg: 0, potion: k }); }
       else items.push({ id: it.id, count: 1, dmg: 0 });
     }
     if (tab.search && this.searchText) {
       const q = this.searchText.toLowerCase();
       items = items.filter((st) => {
         const it = ITEMS[st.id];
-        return it.display.toLowerCase().includes(q) || it.name.includes(q) || (st.ench || []).some((p) => enchName(p).toLowerCase().includes(q));
+        return it.display.toLowerCase().includes(q) || it.name.includes(q) || (st.ench || []).some((p) => enchName(p).toLowerCase().includes(q)) || (st.potion && itemName(st).toLowerCase().includes(q));
       });
     }
     this.creativeItems = items;
@@ -1119,6 +1144,13 @@ export class Screens {
       if (st.count > 0 && s.get()) moveInto(s.group === 'main' ? playerHot : playerMain);
       return;
     }
+    if (this.kind === 'brewing' && s.group) {
+      if (st.id === I.blaze_powder) moveInto(this.slots.filter((t) => t.brewFuel));
+      if (st.count > 0 && s.get() && INGREDIENTS.has(it.name)) moveInto(this.slots.filter((t) => t.brewIn));
+      if (st.count > 0 && s.get() && (st.id === I.potion || st.id === I.splash_potion || st.id === I.glass_bottle)) moveInto(this.slots.filter((t) => t.bottle));
+      if (st.count > 0 && s.get()) moveInto(s.group === 'main' ? playerHot : playerMain);
+      return;
+    }
     if (this.kind === 'furnace') {
       if (SMELT[st.id]) moveInto(this.slots.filter((t) => t.furnaceIn));
       else if (FUEL[st.id]) moveInto(this.slots.filter((t) => t.fuel));
@@ -1149,6 +1181,11 @@ export class Screens {
     const rare = isEnchanted(st) || it.glint || it.id === I.golden_apple || it.id === I.enchanting_table;
     let h = `<div style="color:${rare ? '#55ffff' : it.id === I.diamond || it.id === I.anvil ? '#ffff55' : '#fff'}${st.label ? ';font-style:italic' : ''}">${esc(itemName(st))}</div>`;
     for (const p of st.ench || []) h += `<div class="sub" style="color:${ENCHANTS[p[0]] && ENCHANTS[p[0]].treasure ? '#a8a8ff' : '#a8a8a8'}">${enchName(p)}</div>`;
+    if (st.potion && POTIONS[st.potion]) {
+      const pot = POTIONS[st.potion];
+      if (!pot.effects.length) h += '<div class="sub" style="color:#a8a8a8">No Effects</div>';
+      for (const [e, t, amp] of pot.effects) h += `<div class="sub" style="color:${EFFECTS[e].good ? '#5555ff' : '#ff5555'}">${effectLine(e, t, amp)}</div>`;
+    }
     if (it.food) h += `<div class="sub">Restores ${it.food.hunger / 2} hunger</div>`;
     if (it.damage && it.tool) h += `<div class="sub" style="color:#5555ff"> ${it.damage} Attack Damage</div>`;
     if (it.armor) h += `<div class="sub" style="color:#5555ff">+${it.armor.def} Armor</div>`;
@@ -1190,6 +1227,15 @@ export class Screens {
   frame(game) {
     if (!this.root) return;
     if (this.kind === 'enchant') this.updateEnchant();
+    if (this.kind === 'brewing') {
+      const t = this.tile;
+      const prog = t.brew > 0 ? (400 - t.brew) / 400 : 0;
+      this.brewFg.style.clipPath = `inset(0 0 ${(1 - prog) * 100}% 0)`;
+      // bubbles rise in a loop while brewing
+      const b = t.brew > 0 ? ((400 - t.brew) % 30) / 30 : 0;
+      this.bubbleFg.style.clipPath = `inset(${(1 - b) * 100}% 0 0 0)`;
+      this.brewFuel.style.width = `${(t.fuel || 0) / 20 * 100}%`;
+    }
     if (this.kind === 'furnace') {
       const t = this.tile;
       const f = t.burnMax ? t.burn / t.burnMax : 0;

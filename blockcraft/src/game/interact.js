@@ -8,6 +8,8 @@ import { collisionBoxes, FACING_DIR } from '../shared/shapes.js';
 import { enchLevel, armorLevel } from '../shared/enchant.js';
 import { Boat, Minecart } from './vehicles.js';
 import { Bobber } from './fishing.js';
+import { SplashPotion } from './splash.js';
+import { POTIONS } from '../shared/potions.js';
 import { boxBlocked } from './physics.js';
 
 const boxBlockedAt = (w, x, y, z, wd, h) => boxBlocked(w, x - wd / 2, y, z - wd / 2, x + wd / 2, y + h, z + wd / 2);
@@ -205,6 +207,8 @@ export class Interaction {
     if (smite && e.def.undead) bonus += 2.5 * smite;
     if (bane && e.def.spider) bonus += 2.5 * bane;
     if (bonus) { dmg += bonus; g.particles.crit(e.x, e.y + e.h * 0.7, e.z, 6); }
+    if (p.effects.strength) dmg += 3 * (p.effects.strength.amp + 1);
+    if (p.effects.weakness) dmg = Math.max(0, dmg - 4 * (p.effects.weakness.amp + 1));
     if (g.difficulty === 0 && e.def.hostile) dmg = Math.max(dmg, 4);
     const ok = e.hurt(dmg, p, p.x, p.z, p.sprinting ? 'sprint' : 'player');
     if (ok) {
@@ -244,7 +248,9 @@ export class Interaction {
       if (it.use === 'fish') { if (pressed) this.useRod(); return; }
       if (it.use === 'minecart') { if (pressed && hit && BLOCKS[hit.id].render === R.RAIL) this.placeMinecart(hit); return; }
       if (it.food) { if (pressed) this.startUse(it, 'eat'); return; }
-      if (it.use === 'milk') { if (pressed) this.startUse(it, 'drink'); return; }
+      if (it.use === 'milk' || it.use === 'drink_potion') { if (pressed) this.startUse(it, 'drink'); return; }
+      if (it.use === 'bottle') { if (pressed) this.fillBottle(); return; }
+      if (it.use === 'throw_potion') { if (pressed) this.throwPotion(held); return; }
       if (it.use === 'bow') { if (pressed && (p.creative || p.inv.count(I.arrow) > 0)) this.startUse(it, 'bow'); return; }
       if (it.use === 'throw') { if (pressed) this.throwItem(it); return; }
       if (it.use === 'bucket') { if (pressed) this.useBucket(it); return; }
@@ -312,7 +318,7 @@ export class Interaction {
 
   startUse(it, kind) {
     const p = this.player;
-    if (kind === 'eat' && p.food >= 20 && !p.creative && !(it.food && it.food.effect && it.food.effect.regen)) return;
+    if (kind === 'eat' && p.food >= 20 && !p.creative && !(it.food && it.food.always)) return;
     this.using = { id: it.id, ticks: 0, kind };
     p.usingItem = true;
   }
@@ -336,8 +342,14 @@ export class Interaction {
             else this.consumeHeld(1);
           }
           g.advance('eat');
+        } else if (it.use === 'drink_potion') {
+          const pot = POTIONS[held.potion];
+          if (pot) for (const [e, t, amp] of pot.effects) p.addEffect(e, t, amp);
+          g.sound.play('potion.drink', p.x, p.y, p.z, 0.5);
+          if (!p.creative) this.replaceHeld(I.glass_bottle);
+          g.advance('potion');
         } else {
-          p.poison = 0; p.hungerEffect = 0;
+          p.clearEffects();
           if (!p.creative) this.replaceHeld(I.bucket);
         }
         this.stopUsing(false);
@@ -373,6 +385,31 @@ export class Interaction {
     g.sound.play('bow.shoot', p.x, p.y, p.z, 1, 1 / (Math.random() * 0.4 + 1.2) + f * 0.5);
     if (!p.creative) { if (!infinity) p.inv.remove(I.arrow, 1); g.damageHeld(1); }
     g.advance('bow');
+  }
+
+  // dip a bottle into water: a water bottle
+  fillBottle() {
+    const g = this.game, p = this.player, w = this.world;
+    const eye = g.eyePos(), d = p.lookDir();
+    const hit = raycast(w, eye[0], eye[1], eye[2], d[0], d[1], d[2], this.reach(), 'source');
+    if (!hit || hit.id !== B.water) return;
+    g.sound.play('bottle.fill', hit.x + 0.5, hit.y + 0.5, hit.z + 0.5, 0.7);
+    p.swing = 6;
+    const water = { id: I.potion, count: 1, dmg: 0, potion: 'water' };
+    if (p.creative) { p.inv.add(water); return; }
+    const held = p.inv.held;
+    if (held.count <= 1) p.inv.held = water;
+    else { held.count--; if (p.inv.add(water) > 0) g.dropItem(p.x, p.y + 1, p.z, water); }
+  }
+
+  throwPotion(held) {
+    const g = this.game, p = this.player;
+    const d = p.lookDir();
+    const sp = 0.5;
+    g.entities.add(new SplashPotion(g, p.x + d[0] * 0.3, p.y + p.eye - 0.1, p.z + d[2] * 0.3, d[0] * sp + p.vx, d[1] * sp + 0.1, d[2] * sp + p.vz, held.potion || 'water', p));
+    g.sound.play('throw', p.x, p.y, p.z, 0.5, 0.4);
+    p.swing = 6;
+    if (!p.creative) this.consumeHeld(1);
   }
 
   throwItem(it) {

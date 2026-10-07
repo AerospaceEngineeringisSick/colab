@@ -1,6 +1,7 @@
 // Item stacks and containers.
 import { ITEMS, I, maxStack } from '../shared/items.js';
 import { copyEnch, sameEnch } from '../shared/enchant.js';
+import { potionName } from '../shared/potions.js';
 
 // a stack is { id, count, dmg } plus optional ench (enchantments), label (anvil name) and work (anvil uses)
 export const stack = (id, count = 1, dmg = 0) => ({ id, count, dmg });
@@ -8,10 +9,10 @@ export const cloneStack = (s) => (s ? { ...s, ench: copyEnch(s.ench) } : null);
 // the same stack data with a different count
 export const withCount = (s, n) => ({ ...s, count: n });
 export const same = (a, b) => a && b && a.id === b.id && (a.dmg || 0) === (b.dmg || 0) && !ITEMS[a.id].durability
-  && sameEnch(a.ench, b.ench) && (a.label || '') === (b.label || '') && (a.work || 0) === (b.work || 0);
-export const itemName = (s) => (s ? s.label || ITEMS[s.id].display : '');
+  && sameEnch(a.ench, b.ench) && (a.label || '') === (b.label || '') && (a.work || 0) === (b.work || 0) && (a.potion || '') === (b.potion || '');
+export const itemName = (s) => (s ? s.label || (s.potion ? potionName(s.potion, s.id === I.splash_potion) : ITEMS[s.id].display) : '');
 // key that changes whenever anything visible about a stack changes
-export const stackKey = (s) => (s ? `${s.id}:${s.count}:${s.dmg || 0}:${s.ench ? s.ench.length : 0}:${s.label || ''}` : '');
+export const stackKey = (s) => (s ? `${s.id}:${s.count}:${s.dmg || 0}:${s.ench ? s.ench.length : 0}:${s.label || ''}:${s.potion || ''}` : '');
 
 // saves: [id, count, dmg] with a 4th element { e, l, w } only when there is extra data.
 // Item names are accepted for the id (world generation writes loot that way).
@@ -21,6 +22,7 @@ export function stackToJSON(s) {
   if (s.ench && s.ench.length) x.e = s.ench;
   if (s.label) x.l = s.label;
   if (s.work) x.w = s.work;
+  if (s.potion) x.p = s.potion;
   return Object.keys(x).length ? [s.id, s.count, s.dmg || 0, x] : [s.id, s.count, s.dmg || 0];
 }
 export function stackFromJSON(v) {
@@ -33,6 +35,7 @@ export function stackFromJSON(v) {
     if (x.e && x.e.length) s.ench = copyEnch(x.e);
     if (x.l) s.label = String(x.l);
     if (x.w) s.work = x.w | 0;
+    if (x.p) s.potion = String(x.p);
   }
   return s;
 }

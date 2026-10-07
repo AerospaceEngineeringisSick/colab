@@ -304,6 +304,30 @@ MODELS.zombified_piglin = (() => {
   return m;
 })();
 MODELS.wither_skeleton = { ...MODELS.skeleton, scale: 1.2 };
+// witch (64x128): a villager with a mole and a crooked pointed hat
+MODELS.witch = {
+  tex: [64, 128],
+  parts: {
+    head: {
+      pivot: [0, 24, 0], boxes: [
+        { o: [-4, 0, -4], s: [8, 10, 8], uv: [0, 0] }, { o: [-1, -1, 4], s: [2, 4, 2], uv: [24, 0] },
+        { o: [0, 0, 5.75], s: [1, 1, 1], uv: [0, 0], inflate: -0.25 },
+      ],
+    },
+    hat: { parent: 'head', pivot: [-5, 10.03, 5], boxes: [{ o: [0, -2, -10], s: [10, 2, 10], uv: [0, 64] }] },
+    hat2: { parent: 'hat', pivot: [1.75, 4, -2], rot: [-0.0524, 0, -0.0262], boxes: [{ o: [0, -4, -7], s: [7, 4, 7], uv: [0, 76] }] },
+    hat3: { parent: 'hat2', pivot: [1.75, 4, -2], rot: [-0.1047, 0, -0.0524], boxes: [{ o: [0, -4, -4], s: [4, 4, 4], uv: [0, 87] }] },
+    hat4: { parent: 'hat3', pivot: [1.75, 2, -2], rot: [-0.2094, 0, -0.1047], boxes: [{ o: [0, -2, -1], s: [1, 2, 1], uv: [0, 95], inflate: 0.25 }] },
+    body: { pivot: [0, 24, 0], boxes: [{ o: [-4, -12, -3], s: [8, 12, 6], uv: [16, 20] }, { o: [-4, -20, -3], s: [8, 20, 6], uv: [0, 38], inflate: 0.5 }] },
+    arms: {
+      pivot: [0, 21, 1], rot: [-0.75, 0, 0], boxes: [
+        { o: [-8, -6, -2], s: [4, 8, 4], uv: [44, 22] }, { o: [4, -6, -2], s: [4, 8, 4], uv: [44, 22], mirror: true }, { o: [-4, -6, -2], s: [8, 4, 4], uv: [40, 38] },
+      ],
+    },
+    rightLeg: { pivot: [-2, 12, 0], boxes: [{ o: [-2, -12, -2], s: [4, 12, 4], uv: [0, 22] }] },
+    leftLeg: { pivot: [2, 12, 0], boxes: [{ o: [-2, -12, -2], s: [4, 12, 4], uv: [0, 22], mirror: true }] },
+  },
+};
 
 // instantiate a model as a THREE.Group of part groups
 export function buildModel(def, texName, opts = {}) {

@@ -1,6 +1,7 @@
 // Item icon sprite sheet: 3D block icons rendered once with WebGL, flat items from their PNGs.
 import * as THREE from 'three';
-import { ITEMS } from '../shared/items.js';
+import { ITEMS, I } from '../shared/items.js';
+import { POTIONS } from '../shared/potions.js';
 import { isBlockModel, makeItemObject, iconImage } from '../engine/itemmesh.js';
 import { canvas } from '../engine/textures.js';
 import { U } from '../engine/materials.js';
@@ -13,6 +14,8 @@ let sheetCanvas = null;
 
 export function buildIcons(renderer) {
   const ids = ITEMS.filter(Boolean).map((it) => it.id);
+  // potions get one icon per kind, keyed 'id:kind'
+  for (const pid of [I.potion, I.splash_potion]) for (const k of Object.keys(POTIONS)) ids.push(pid + ':' + k);
   ids.forEach((id, i) => pos.set(id, i));
   const rows = Math.ceil(ids.length / COLS);
   const W = COLS * ICON, H = rows * ICON;
@@ -30,7 +33,7 @@ export function buildIcons(renderer) {
   U.uDaylight.value = 1; U.uFogNear.value = 1e6; U.uFogFar.value = 2e6; U.uGamma.value = 0.5; U.uFlash.value = 0;
   U.uSkyLightColor.value.setRGB(1, 1, 1);
   ids.forEach((id, i) => {
-    if (!isBlockModel(id)) return;
+    if (typeof id === 'string' || !isBlockModel(id)) return;
     const o = makeItemObject(id);
     o.userData.setLight(15, 0);
     const holder = new THREE.Group();
@@ -61,8 +64,8 @@ export function buildIcons(renderer) {
 
   // flat icons
   ids.forEach((id, i) => {
-    if (isBlockModel(id)) return;
-    const im = iconImage(id);
+    if (typeof id === 'number' && isBlockModel(id)) return;
+    const im = typeof id === 'string' ? iconImage(+id.split(':')[0], id.split(':')[1]) : iconImage(id);
     if (!im) return;
     const x = (i % COLS) * ICON, y = Math.floor(i / COLS) * ICON;
     g.drawImage(im, 0, 0, im.width, Math.min(im.height, im.width), x + 4, y + 4, ICON - 8, ICON - 8);

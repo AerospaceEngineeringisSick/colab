@@ -25,9 +25,10 @@ export function fishingLoot(luck) {
   const kind = pickW([['fish', fish], ['junk', junk], ['treasure', treasure]]);
   if (kind === 'fish') return { id: I[pickW([['cod', 60], ['salmon', 25], ['tropical_fish', 2], ['pufferfish', 13]])], count: 1 };
   if (kind === 'junk') {
-    const n = pickW([['leather_boots', 10], ['leather', 10], ['bone', 10], ['potion', 0], ['string', 5], ['fishing_rod', 2], ['bowl', 10],
+    const n = pickW([['leather_boots', 10], ['leather', 10], ['bone', 10], ['potion', 10], ['string', 5], ['fishing_rod', 2], ['bowl', 10],
       ['stick', 5], ['ink_sac', 1], ['rotten_flesh', 10], ['lily_pad', 17]]);
     const s = { id: I[n], count: 1 };
+    if (n === 'potion') s.potion = 'water';
     if (ITEMS[s.id].durability) s.dmg = Math.floor(ITEMS[s.id].durability * (0.1 + Math.random() * 0.8));
     return s;
   }

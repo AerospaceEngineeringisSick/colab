@@ -135,6 +135,12 @@ shapeless('blue_wool', 1, ['#wool', 'lapis_lazuli']);
 shapeless('white_wool', 1, ['#wool', 'bone_meal']);
 shapeless('red_wool', 1, ['#wool', 'redstone']);
 shaped('smooth_stone', 1, ['SS'], { S: 'smooth_stone_slab' }, { hidden: true });
+// brewing
+shaped('brewing_stand', 1, [' B ', 'CCC'], { B: 'blaze_rod', C: '#cobble' });
+shaped('glass_bottle', 3, ['G G', ' G '], { G: 'glass' });
+shapeless('fermented_spider_eye', 1, ['spider_eye', 'brown_mushroom', 'sugar']);
+shaped('glistering_melon_slice', 1, ['NNN', 'NMN', 'NNN'], { N: 'gold_nugget', M: 'melon_slice' });
+shaped('golden_carrot', 1, ['NNN', 'NCN', 'NNN'], { N: 'gold_nugget', C: 'carrot' });
 // the Nether
 shapeless('crimson_planks', 4, ['crimson_stem']);
 shapeless('warped_planks', 4, ['warped_stem']);

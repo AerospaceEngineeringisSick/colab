@@ -5,6 +5,7 @@ import { WH } from '../shared/constants.js';
 import { moveBox, contacts, boxBlocked } from './physics.js';
 import { PlayerInventory } from './inventory.js';
 import { enchLevel, armorLevel } from '../shared/enchant.js';
+import { EFFECTS } from '../shared/potions.js';
 
 export const xpForLevel = (l) => (l < 16 ? 2 * l + 7 : l < 31 ? 5 * l - 38 : 9 * l - 158);
 
@@ -41,7 +42,8 @@ export class Player {
     this.input = { f: 0, s: 0, jump: false, sneak: false, sprint: false, up: false, down: false };
     this.regenTimer = 0;
     this.starveTimer = 0;
-    this.poison = 0; this.hungerEffect = 0; this.regenEffect = 0;
+    this.effects = {}; // name -> { amp, t (ticks left), max }
+    this.absorb = 0; // absorption hearts
     this.sleeping = false;
     this.swing = 0; // arm swing progress
     this.age = 0;
@@ -135,7 +137,8 @@ export class Player {
     const iz = -cos * f - sin * s;
 
     if (this.jumpCooldown > 0) this.jumpCooldown--;
-    const speed = 0.1 * (this.sprinting ? 1.3 : 1);
+    const fx = this.effects;
+    const speed = Math.max(0, 0.1 * (this.sprinting ? 1.3 : 1) * (1 + (fx.speed ? 0.2 * (fx.speed.amp + 1) : 0)) * (1 - (fx.slowness ? 0.15 * (fx.slowness.amp + 1) : 0)));
 
     if (this.flying) {
       const fs = (this.sprinting ? 0.1 : 0.05);
@@ -171,7 +174,7 @@ export class Player {
       this.vx += ix * acc; this.vz += iz * acc;
       // jumping
       if (inp.jump && this.onGround && this.jumpCooldown === 0) {
-        this.vy = 0.42;
+        this.vy = 0.42 + (fx.jump_boost ? 0.1 * (fx.jump_boost.amp + 1) : 0);
         this.jumpCooldown = 10;
         if (this.sprinting) {
           this.vx += -sin * 0.2; this.vz += -cos * 0.2;
@@ -220,7 +223,7 @@ export class Player {
     if (!this.onGround && this.vy < 0 && !this.inWater && !c.ladder) this.fallDistance -= (this.y - this.py);
     if (this.onGround) {
       if (this.fallDistance > 3 && !this.creative) {
-        let dmg = Math.ceil(this.fallDistance - 3);
+        let dmg = Math.ceil(this.fallDistance - 3 - (fx.jump_boost ? fx.jump_boost.amp + 1 : 0));
         if (this.blockUnder() === B.hay_block) dmg = Math.ceil(dmg * 0.2);
         if (dmg > 0) this.damage(dmg, 'fall');
       }
@@ -230,6 +233,7 @@ export class Player {
     if (this.inWater) this.fallDistance = 0;
     this.wasOnGround = this.onGround;
 
+    this.effectTick();
     this.survivalTick(c);
   }
 
@@ -263,7 +267,7 @@ export class Player {
     // drowning (respiration: each level adds a chance to skip losing air)
     if (this.eyeInWater) {
       const resp = armorLevel(this.inv, 'respiration');
-      if (!resp || Math.random() < 1 / (resp + 1)) this.air--;
+      if (!this.effects.water_breathing && (!resp || Math.random() < 1 / (resp + 1))) this.air--;
       if (this.air <= -20) { this.air = 0; this.damage(2, 'drown'); }
     } else this.air = Math.min(300, this.air + 4);
     // lava / fire
@@ -279,10 +283,6 @@ export class Player {
     if (this.onGround && !this.sneaking && this.game.world.getId(Math.floor(this.x), Math.floor(this.y - 0.05), Math.floor(this.z)) === B.magma_block && this.age % 10 === 0) this.damage(1, 'hot_floor');
     // void
     if (this.y < -20) this.damage(4, 'void');
-    // effects
-    if (this.poison > 0) { this.poison--; if (this.poison % 25 === 0 && this.health > 1) this.damage(1, 'poison', true); }
-    if (this.hungerEffect > 0) { this.hungerEffect--; this.addExhaustion(0.025); }
-    if (this.regenEffect > 0) { this.regenEffect--; if (this.regenEffect % 50 === 0) this.heal(1); }
     // hunger
     if (this.exhaustion >= 4) {
       this.exhaustion -= 4;
@@ -307,6 +307,34 @@ export class Player {
 
   heal(n) { if (!this.dead) this.health = Math.min(this.maxHealth, this.health + n); }
 
+  // ---------------------------------------------------------------- status effects
+  addEffect(name, ticks, amp = 0, scale = 1) {
+    const E = EFFECTS[name];
+    if (!E || this.dead) return;
+    if (E.instant) {
+      if (name === 'instant_health') this.heal(Math.floor((4 << amp) * scale));
+      else this.damage(Math.floor((6 << amp) * scale), 'magic', true);
+      return;
+    }
+    const cur = this.effects[name];
+    if (cur && (cur.amp > amp || (cur.amp === amp && cur.t >= ticks))) return;
+    this.effects[name] = { amp, t: ticks, max: ticks };
+    if (name === 'absorption') this.absorb = Math.max(this.absorb, 4 * (amp + 1));
+  }
+  clearEffects() { this.effects = {}; this.absorb = 0; }
+  effectTick() {
+    for (const n of Object.keys(this.effects)) {
+      const e = this.effects[n], a = e.amp;
+      if (!this.creative && this.mode !== 'spectator') {
+        if (n === 'poison' && e.t % Math.max(1, 25 >> a) === 0 && this.health > 1) this.damage(1, 'poison', true);
+        else if (n === 'wither' && e.t % Math.max(1, 40 >> a) === 0) this.damage(1, 'wither', true);
+        else if (n === 'regeneration' && e.t % Math.max(1, 50 >> a) === 0) this.heal(1);
+        else if (n === 'hunger') this.addExhaustion(0.005 * (a + 1));
+      }
+      if (--e.t <= 0) { delete this.effects[n]; if (n === 'absorption') this.absorb = 0; }
+    }
+  }
+
   // returns damage actually taken
   damage(amount, cause = 'generic', bypassArmor = false, source = null) {
     if (this.dead || this.creative || this.mode === 'spectator') return 0;
@@ -319,6 +347,7 @@ export class Player {
       this.lastDamage = amount;
       this.invuln = 20;
     }
+    if (this.effects.fire_resistance && (cause === 'fire' || cause === 'lava' || cause === 'hot_floor' || cause === 'fireball')) return 0;
     const diff = this.game.difficulty;
     if (source && source.hostile) {
       if (diff === 0) return 0;
@@ -337,6 +366,8 @@ export class Player {
       if (epf > 0) amount *= 1 - epf / 25;
     }
     if (source && source.isMob && cause === 'mob') this.thorns(source);
+    // absorption hearts soak up damage first
+    if (this.absorb > 0 && amount > 0) { const k = Math.min(this.absorb, amount); this.absorb -= k; amount -= k; if (amount <= 0) { this.hurtTime = 10; return k; } }
     if (amount <= 0) return 0;
     this.health = Math.max(0, this.health - amount);
     this.hurtTime = 10;
@@ -438,11 +469,7 @@ export class Player {
   eat(food, itemId) {
     this.food = Math.min(20, this.food + food.hunger);
     this.saturation = Math.min(this.food, this.saturation + food.sat);
-    if (food.effect) {
-      if (food.effect.poison) this.poison = 100;
-      if (food.effect.hunger && Math.random() < food.effect.hunger) this.hungerEffect = 600;
-      if (food.effect.regen) this.regenEffect = 100;
-    }
+    for (const [e, t, amp, chance] of food.effects || []) if (Math.random() < chance) this.addEffect(e, t, amp);
     void itemId;
   }
 
@@ -451,7 +478,7 @@ export class Player {
     this.vx = this.vy = this.vz = 0;
     this.health = 20; this.food = 20; this.saturation = 5; this.exhaustion = 0; this.air = 300;
     this.fire = 0; this.fallDistance = 0; this.dead = false; this.hurtTime = 0; this.invuln = 60;
-    this.poison = this.hungerEffect = this.regenEffect = 0;
+    this.clearEffects();
   }
 
   toJSON() {
@@ -459,13 +486,14 @@ export class Player {
       x: this.x, y: this.y, z: this.z, yaw: this.yaw, pitch: this.pitch, health: this.health, food: this.food,
       saturation: this.saturation, exhaustion: this.exhaustion, air: this.air, level: this.level, xp: this.xp, xpTotal: this.xpTotal,
       mode: this.mode, spawn: this.spawn, inv: this.inv.toJSON(), flying: this.flying, fire: this.fire, dead: this.dead,
-      enchSeed: this.enchSeed, riding: this.vehicle ? this.vehicle.type : null,
+      enchSeed: this.enchSeed, riding: this.vehicle ? this.vehicle.type : null, effects: this.effects, absorb: this.absorb,
     };
   }
 
   load(o) {
     if (!o) return;
-    for (const k of ['x', 'y', 'z', 'yaw', 'pitch', 'health', 'food', 'saturation', 'exhaustion', 'air', 'level', 'xp', 'xpTotal', 'mode', 'spawn', 'flying', 'fire', 'enchSeed']) {
+    if (o.effects) this.effects = JSON.parse(JSON.stringify(o.effects));
+    for (const k of ['x', 'y', 'z', 'yaw', 'pitch', 'health', 'food', 'saturation', 'exhaustion', 'air', 'level', 'xp', 'xpTotal', 'mode', 'spawn', 'flying', 'fire', 'enchSeed', 'absorb']) {
       if (o[k] !== undefined) this[k] = o[k];
     }
     this.px = this.x; this.py = this.y; this.pz = this.z;

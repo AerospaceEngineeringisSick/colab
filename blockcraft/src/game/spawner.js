@@ -20,7 +20,7 @@ const pickW = (list) => {
   return list[0];
 };
 
-const HOSTILE = [['zombie', 95], ['skeleton', 100], ['creeper', 100], ['spider', 100], ['enderman', 10]];
+const HOSTILE = [['zombie', 95], ['skeleton', 100], ['creeper', 100], ['spider', 100], ['enderman', 10], ['witch', 5]];
 const totalW = HOSTILE.reduce((s, h) => s + h[1], 0);
 
 export class Spawner {

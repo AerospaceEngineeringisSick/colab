@@ -12,6 +12,8 @@ import { enchLevel } from '../shared/enchant.js';
 import { unlockLevel, restock } from './trading.js';
 import { villagerTexture, imageTexture } from '../engine/textures.js';
 import { Fireball } from './fireball.js';
+import { SplashPotion } from './splash.js';
+import { EFFECTS, POTIONS, potionColor } from '../shared/potions.js';
 
 const r = Math.random;
 const rint = (a, b) => a + Math.floor(r() * (b - a + 1));
@@ -104,6 +106,16 @@ export const MOBS = {
     sounds: { say: 'skeleton.say', hurt: 'skeleton.hurt', death: 'skeleton.death' },
     drops: () => [['coal', rint(0, 1)], ['bone', rint(0, 2)]],
   },
+  witch: {
+    model: 'witch', tex: 'entity/witch', w: 0.6, h: 1.95, eye: 1.62, health: 26, speed: 0.25, hostile: true, witch: true, ranged: true,
+    follow: 16, xp: 5, pitch: 0.75, sounds: { say: 'villager.say', hurt: 'villager.hurt', death: 'villager.hurt' },
+    drops: () => {
+      const pool = ['glowstone_dust', 'sugar', 'redstone', 'spider_eye', 'glass_bottle', 'gunpowder', 'stick', 'stick'];
+      const out = [];
+      for (let i = rint(1, 3); i > 0; i--) out.push([pool[rint(0, pool.length - 1)], rint(0, 2)]);
+      return out;
+    },
+  },
   wolf: {
     model: 'wolf', tex: 'entity/wolf', w: 0.6, h: 0.85, eye: 0.7, health: 8, speed: 0.3, neutral: true, wolf: true, attack: 4, xp: 2,
     follow: 16, sounds: { hurt: 'wolf.hurt', death: 'wolf.death' }, drops: () => [],
@@ -181,6 +193,7 @@ export class Mob extends Entity {
       this.squish = 0; this.psquish = 0;
     }
     if (d.ghast || d.blaze) { this.charge = 0; this.attackStep = 0; this.attackTime = 0; }
+    this.effects = {};
     this.nameTag = null;
   }
 
@@ -231,11 +244,41 @@ export class Mob extends Entity {
     // ambient sounds
     if (--this.sayTimer <= 0) {
       this.sayTimer = rint(160, 500);
-      if (this.def.sounds.say) g.sound.play(this.def.sounds.say, this.x, this.y, this.z, 0.6, this.baby ? 1.4 : 1);
+      if (this.def.sounds.say) g.sound.play(this.def.sounds.say, this.x, this.y, this.z, 0.6, this.baby ? 1.4 : (this.def.pitch || 1));
     }
     this.ai();
     this.move();
     this.environment();
+    this.effectTick();
+  }
+
+  // ---------------------------------------------------------------- status effects
+  addEffect(name, ticks, amp = 0, scale = 1, source = null) {
+    const E = EFFECTS[name];
+    if (!E || this.dead) return;
+    const undead = this.def.undead;
+    if (E.instant) {
+      // healing hurts the undead and harming heals them
+      const harm = (name === 'instant_damage') !== !!undead;
+      if (harm) this.hurt(Math.floor((6 << amp) * scale), source, this.x, this.z, 'magic');
+      else this.health = Math.min(this.maxHealth, this.health + Math.floor((4 << amp) * scale));
+      return;
+    }
+    if (undead && (name === 'poison' || name === 'regeneration')) return;
+    const cur = this.effects[name];
+    if (cur && (cur.amp > amp || (cur.amp === amp && cur.t >= ticks))) return;
+    this.effects[name] = { amp, t: ticks };
+  }
+  effectTick() {
+    const g = this.game;
+    for (const n of Object.keys(this.effects)) {
+      const e = this.effects[n], a = e.amp;
+      if (n === 'poison' && e.t % Math.max(1, 25 >> a) === 0 && this.health > 1) this.hurt(1, null, this.x, this.z, 'magic');
+      else if (n === 'wither' && e.t % Math.max(1, 40 >> a) === 0) this.hurt(1, null, this.x, this.z, 'magic');
+      else if (n === 'regeneration' && e.t % Math.max(1, 50 >> a) === 0) this.health = Math.min(this.maxHealth, this.health + 1);
+      if (r() < 0.15 && !this.effects.invisibility) g.particles.effectSwirl(this.x + (r() - 0.5) * this.w, this.y + r() * this.h, this.z + (r() - 0.5) * this.w, EFFECTS[n].color);
+      if (--e.t <= 0) delete this.effects[n];
+    }
   }
 
   setBaby(b) {
@@ -249,7 +292,7 @@ export class Mob extends Entity {
     const g = this.game;
     const c = contacts(this.world, this.x, this.y, this.z, this.w, this.h);
     this.inWater = c.water; this.inLava = c.lava;
-    const immune = this.def.fireImmune;
+    const immune = this.def.fireImmune || !!this.effects.fire_resistance;
     if (c.lava && !immune) { this.fire = 300; if (this.age % 10 === 0) this.hurt(4, null, this.x, this.z, 'lava'); }
     if (c.fire && !immune) { this.fire = Math.max(this.fire, 160); if (this.age % 10 === 0) this.hurt(1, null, this.x, this.z, 'fire'); }
     if (immune) this.fire = 0;
@@ -295,7 +338,8 @@ export class Mob extends Entity {
         const eff = Math.max(l & 15, (l >> 4) - g.skyDarken());
         hostileNow = eff < 9 || this.angry > 0;
       }
-      if (playerOk && hostileNow && dist < d.follow) {
+      const follow = p.effects && p.effects.invisibility ? d.follow * 0.15 : d.follow;
+      if (playerOk && hostileNow && dist < follow) {
         if (this.target === p || this.canSee(p) || dist < 6) this.target = p;
       } else if (this.target === p) this.target = null;
       if (this.target === p && (!playerOk || dist > d.follow * 1.2)) this.target = null;
@@ -308,6 +352,7 @@ export class Mob extends Entity {
     if (this.target && (this.target.removed || this.target.dead)) this.target = null;
 
     if (d.villager) return this.villagerAI(p, dist);
+    if (d.witch && this.witchDrink()) { this.moveSpeed = 0; return; }
     if (d.ghast) return this.ghastAI();
     if (d.slime) return this.slimeAI();
     if (d.blaze && this.target) return this.blazeAI(this.target);
@@ -599,6 +644,8 @@ export class Mob extends Entity {
     const friction = this.onGround ? 0.546 : 0.91;
     let s = this.moveSpeed;
     if (this.baby && this.def.passive) s *= 1.3;
+    if (this.effects.speed) s *= 1 + 0.2 * (this.effects.speed.amp + 1);
+    if (this.effects.slowness) s *= Math.max(0, 1 - 0.15 * (this.effects.slowness.amp + 1));
     if (s > 0) {
       const acc = this.onGround ? s * s * (0.16277136 / (friction * friction * friction)) : s * 0.1;
       this.vx += this.moveDir[0] * acc;
@@ -700,6 +747,7 @@ export class Mob extends Entity {
 
   shootAt(t) {
     const g = this.game;
+    if (this.def.witch) return this.throwPotionAt(t);
     const ox = this.x, oy = this.y + this.def.eye * this.scale - 0.1, oz = this.z;
     const tx = t.x, ty = t.y + (t.eye ? t.eye * 0.6 : t.h * 0.5), tz = t.z;
     const dx = tx - ox, dz = tz - oz, dh = Math.hypot(dx, dz);
@@ -711,6 +759,42 @@ export class Mob extends Entity {
       (dx / len + (r() - 0.5) * inacc) * sp, (dy / len + (r() - 0.5) * inacc) * sp, (dz / len + (r() - 0.5) * inacc) * sp, this, 2 + g.difficulty * 0.11);
     g.entities.add(a);
     g.sound.play('bow.shoot', this.x, this.y, this.z, 0.8, 1 / (r() * 0.4 + 0.8));
+  }
+
+  // witches pick a nasty potion for the situation, like vanilla's
+  throwPotionAt(t) {
+    const g = this.game;
+    const dist = this.distTo(t.x, t.y, t.z);
+    const fx = t.effects || {};
+    let pot = 'harming';
+    if (dist >= 8 && !fx.slowness) pot = 'slowness';
+    else if ((t.health || 0) >= 8 && !fx.poison) pot = 'poison';
+    else if (dist <= 3 && !fx.weakness && r() < 0.25) pot = 'weakness';
+    const ox = this.x, oy = this.y + this.def.eye - 0.1, oz = this.z;
+    const dx = t.x + (t.vx || 0) - ox, dz = t.z + (t.vz || 0) - oz, dh = Math.hypot(dx, dz);
+    const dy = t.y + (t.h || 1.8) * 0.5 - oy + dh * 0.2;
+    const l = Math.hypot(dx, dy, dz) || 1;
+    g.entities.add(new SplashPotion(g, ox + dx / l * 0.5, oy, oz + dz / l * 0.5, dx / l * 0.75, dy / l * 0.75, dz / l * 0.75, pot, this));
+    g.sound.play('throw', this.x, this.y, this.z, 0.6, 0.8);
+    this.attackCooldown = 60;
+  }
+
+  witchDrink() {
+    if (this.drinking > 0) {
+      if (--this.drinking === 0 && this.drinkPotion) {
+        for (const [e, t, amp] of POTIONS[this.drinkPotion].effects) this.addEffect(e, t, amp);
+        this.drinkPotion = null;
+      }
+      return true;
+    }
+    let pot = null;
+    if (this.fire > 0 && !this.effects.fire_resistance) pot = 'fire_resistance';
+    else if (this.health < this.maxHealth && r() < 0.05) pot = 'healing';
+    else if (this.target && !this.effects.speed && this.distTo(this.target.x, this.target.y, this.target.z) > 11 && r() < 0.01) pot = 'swiftness';
+    if (!pot) return false;
+    this.drinking = 32; this.drinkPotion = pot;
+    this.game.sound.play('potion.drink', this.x, this.y, this.z, 0.6, 0.9);
+    return true;
   }
 
   explodeSelf() {
@@ -976,6 +1060,7 @@ export class Mob extends Entity {
     const m = this.model, P = m.parts, d = this.def;
     const [x, y, z] = this.lerp(a);
     m.root.position.set(x, y, z);
+    m.root.visible = !this.effects.invisibility;
     const by = lerpAngle(this.pbodyYaw, this.bodyYaw, a);
     m.root.rotation.set(0, by + Math.PI, 0);
     this.renderName(x, y, z);

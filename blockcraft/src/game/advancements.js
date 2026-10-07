@@ -42,4 +42,6 @@ export const ADVANCEMENTS = [
   { key: 'blazerod', title: 'Into Fire', desc: 'Relieve a Blaze of its rod', icon: 'blaze_rod' },
   { key: 'return', title: 'Return to Sender', desc: 'Destroy a Ghast with a fireball', icon: 'fire_charge' },
   { key: 'quartz', title: 'Hidden in the Depths', desc: 'Mine some Nether Quartz', icon: 'quartz' },
+  { key: 'brew', title: 'Local Brewery', desc: 'Brew a potion', icon: 'brewing_stand' },
+  { key: 'potion', title: 'A Furious Cocktail', desc: 'Drink a potion', icon: 'glass_bottle' },
 ];

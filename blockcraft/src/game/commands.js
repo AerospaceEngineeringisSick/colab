@@ -5,12 +5,13 @@ import { B } from '../shared/blocks.js';
 import { WH } from '../shared/constants.js';
 import { ENCHANTS, EN, canApply, compatible, enchName } from '../shared/enchant.js';
 import { villagesNear } from '../shared/villages.js';
+import { EFFECTS } from '../shared/potions.js';
 
 const HELP = [
   '/gamemode <survival|creative|spectator>', '/time set <day|noon|night|midnight|ticks>', '/weather <clear|rain|thunder>',
   '/give <item> [count]', '/tp <x> <y> <z>', '/summon <mob>', '/difficulty <peaceful|easy|normal|hard>', '/kill',
   '/setblock <x> <y> <z> <block>', '/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>', '/enchant <enchantment> [level]',
-  '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome', '/dimension <overworld|nether>', '/locate <fortress|village>',
+  '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome', '/dimension <overworld|nether>', '/locate <fortress|village>', '/effect <give|clear> [effect] [seconds] [level]',
 ];
 
 export function runCommand(g, text) {
@@ -91,6 +92,15 @@ export function runCommand(g, text) {
     case 'heal': p.health = p.maxHealth; p.food = 20; p.saturation = 5; return say('Healed');
     case 'xp': case 'experience': { const n = parseInt(args[0], 10) || 0; p.addXp(n); return say(`Gave ${n} experience`); }
     case 'biome': return say(`Biome: ${g.world.biomeAt(Math.floor(p.x), Math.floor(p.z)).name}`);
+    case 'effect': {
+      if (args[0] === 'clear') { p.clearEffects(); return say('Removed every effect'); }
+      const name = (args[0] === 'give' ? args[1] : args[0] || '').toLowerCase();
+      const rest = args[0] === 'give' ? args.slice(2) : args.slice(1);
+      if (!EFFECTS[name]) return err(`Unknown effect. Try: ${Object.keys(EFFECTS).join(', ')}`);
+      const secs = parseInt(rest[0], 10) || 30, lvl = Math.max(1, parseInt(rest[1], 10) || 1);
+      p.addEffect(name, secs * 20, lvl - 1);
+      return say(`Applied ${EFFECTS[name].name} ${lvl > 1 ? lvl + ' ' : ''}for ${secs} seconds`);
+    }
     case 'dimension': case 'dim': {
       const d = { overworld: 'overworld', o: 'overworld', nether: 'nether', n: 'nether', the_nether: 'nether' }[(args[0] || '').toLowerCase()];
       if (!d) return err('Usage: /dimension <overworld|nether>');

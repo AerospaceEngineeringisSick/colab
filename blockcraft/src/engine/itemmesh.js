@@ -5,6 +5,7 @@ import { BLOCKS, R } from '../shared/blocks.js';
 import { Mesher, P, pidx } from '../shared/mesher.js';
 import { images, imageTexture, texInfo, canvas } from './textures.js';
 import { entityMaterial, itemBlockMaterial } from './materials.js';
+import { potionColor } from '../shared/potions.js';
 
 const flatCache = new Map();
 const blockCache = new Map();
@@ -105,8 +106,30 @@ function tintedImage(name, rgb) {
   images[key] = c;
   return c;
 }
-export function iconImage(id) {
+// a potion bottle with its liquid tinted the potion's colour
+function potionImage(id, potion) {
   const it = ITEMS[id];
+  const key = `potion:${id}:${potion}`;
+  if (images[key]) return images[key];
+  const bottle = images[it.icon], over = images[it.potionIcon];
+  const c = canvas(bottle.width, bottle.height), g = c.getContext('2d');
+  const col = potionColor(potion);
+  const t = canvas(over.width, over.height), tg = t.getContext('2d');
+  tg.drawImage(over, 0, 0);
+  tg.globalCompositeOperation = 'multiply';
+  tg.fillStyle = '#' + col.toString(16).padStart(6, '0');
+  tg.fillRect(0, 0, t.width, t.height);
+  tg.globalCompositeOperation = 'destination-in';
+  tg.drawImage(over, 0, 0);
+  g.drawImage(t, 0, 0, bottle.width, bottle.height);
+  g.drawImage(bottle, 0, 0);
+  images[key] = c;
+  return c;
+}
+
+export function iconImage(id, potion) {
+  const it = ITEMS[id];
+  if (potion && it && it.potionIcon) return potionImage(id, potion);
   const name = flatIconName(id);
   if (!name) return null;
   if (name.startsWith('egg:')) return iconCanvas(name);
@@ -114,13 +137,14 @@ export function iconImage(id) {
   return images[name];
 }
 
-export function flatItemGeometry(id) {
-  if (flatCache.has(id)) return flatCache.get(id);
-  const img = iconImage(id) || images['item/stick'];
+export function flatItemGeometry(id, potion) {
+  const key = potion ? id + ':' + potion : id;
+  if (flatCache.has(key)) return flatCache.get(key);
+  const img = iconImage(id, potion) || images['item/stick'];
   const geo = extrude(img);
   const tex = imageTexture(img);
   const r = { geo, tex };
-  flatCache.set(id, r);
+  flatCache.set(key, r);
   return r;
 }
 
@@ -174,7 +198,7 @@ export function makeItemObject(id, opts = {}) {
     }
     group.userData.block = true;
   } else {
-    const { geo, tex } = flatItemGeometry(id);
+    const { geo, tex } = flatItemGeometry(id, opts.potion);
     const m = entityMaterial(tex, { alphaTest: 0.5, glint: opts.glint });
     if (opts.depthTest === false) m.depthTest = false;
     mats.push(m);

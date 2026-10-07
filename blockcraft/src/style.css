@@ -36,6 +36,7 @@ input, button { font-family: inherit; }
 .row9 i { position: absolute; top: 0; width: calc(9 * var(--s)); height: calc(9 * var(--s)); background-size: 100% 100%; }
 #hearts { left: 0; bottom: 0; }
 #armor { left: 0; bottom: calc(10 * var(--s)); }
+#absorb { left: 0; bottom: calc(10 * var(--s)); }
 #food { right: 0; bottom: 0; }
 #air { right: 0; bottom: calc(10 * var(--s)); }
 #xp { position: absolute; left: 50%; bottom: calc(24 * var(--s)); width: calc(182 * var(--s)); height: calc(5 * var(--s)); transform: translateX(-50%); background: #1a1a1a; box-shadow: 0 0 0 var(--s) #000; }
@@ -194,3 +195,19 @@ input, button { font-family: inherit; }
 @media (pointer: coarse) {
   #hotbar .hb { pointer-events: auto; }
 }
+
+/* brewing stand */
+#screen .tube { position: absolute; background: #8b8b8b; box-shadow: 0 0 0 calc(0.5 * var(--s)) #555 inset; }
+#screen .bubbles, #screen .bubbles i { position: absolute; background-size: 100% 100%; image-rendering: pixelated; }
+#screen .bubbles { opacity: 0.35; }
+#screen .bubbles i { inset: 0; opacity: 1; }
+#screen .brewarrow { position: absolute; background: linear-gradient(#5d5d5d, #5d5d5d) center / 40% 85% no-repeat; clip-path: polygon(30% 0, 70% 0, 70% 70%, 100% 70%, 50% 100%, 0 70%, 30% 70%); }
+#screen .brewarrow i { position: absolute; inset: 0; background: #fff; clip-path: inset(0 0 100% 0); }
+#screen .brewfuel { position: absolute; background: #3b3b3b; }
+#screen .brewfuel i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(#ffb43c, #e06a10); }
+/* status effects */
+#effects { position: absolute; right: calc(4 * var(--s)); top: calc(4 * var(--s)); display: flex; gap: calc(2 * var(--s)); flex-wrap: wrap; justify-content: flex-end; max-width: 50%; }
+#effects .fx { width: calc(24 * var(--s)); height: calc(24 * var(--s)); background: rgba(0, 0, 0, 0.45) center / 75% no-repeat; border: calc(1 * var(--s)) solid #8b8b8b; image-rendering: pixelated; position: relative; }
+#effects .fx.bad { border-color: #a03030; }
+#effects .fx span { position: absolute; left: 0; right: 0; bottom: calc(-9 * var(--s)); text-align: center; font-size: calc(7 * var(--s)); color: #fff; text-shadow: calc(1 * var(--s)) calc(1 * var(--s)) #000; white-space: nowrap; }
+#effects .fx.blink { opacity: 0.5; }

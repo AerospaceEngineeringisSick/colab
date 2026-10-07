@@ -193,6 +193,27 @@ export class Particles {
     this.add({ x, y, z, vx: (Math.random() - 0.5) * 1.5, vy: 1.5 + Math.random() * 1.5, vz: (Math.random() - 0.5) * 1.5, g: 14, life: 0.3, size: 0.05, layer: this.layer('env/rain'), r: 0.6, gg: 0.7, b: 1 });
   }
 
+  // a potion effect's swirl (rgb packed 0xRRGGBB)
+  effectSwirl(x, y, z, col, alpha = 1) {
+    this.add({
+      x, y, z, vx: (Math.random() - 0.5) * 0.2, vy: 0.3 + Math.random() * 0.3, vz: (Math.random() - 0.5) * 0.2, g: 0, drag: 0.96,
+      life: 0.8 + Math.random() * 0.6, size: 0.1, layer: this.layer('env/effect'), frames: 1,
+      r: ((col >> 16) & 255) / 255, gg: ((col >> 8) & 255) / 255, b: (col & 255) / 255, a: alpha, light: -1, shrink: true,
+    });
+  }
+
+  // a splash potion shattering
+  potionBurst(x, y, z, col, instant) {
+    const r = ((col >> 16) & 255) / 255, gg = ((col >> 8) & 255) / 255, b = (col & 255) / 255;
+    const layer = this.layer(instant ? 'env/instant_effect' : 'env/effect');
+    for (let i = 0; i < 60; i++) {
+      const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 3;
+      this.add({ x, y, z, vx: Math.cos(a) * s, vy: 0.5 + Math.random() * 2.5, vz: Math.sin(a) * s, g: 2, drag: 0.9, life: 0.6 + Math.random() * 0.8, size: 0.12, layer, r, gg, b, light: -1, shrink: true });
+    }
+    const glass = this.layer('env/droplet');
+    for (let i = 0; i < 8; i++) this.add({ x, y, z, vx: (Math.random() - 0.5) * 3, vy: 1 + Math.random() * 2, vz: (Math.random() - 0.5) * 3, g: 16, life: 0.6, size: 0.08, layer: glass, r: 0.85, gg: 0.9, b: 1, collide: true });
+  }
+
   // purple motes drifting around a nether portal
   portal(x, y, z) {
     const c = 0.6 + Math.random() * 0.4;

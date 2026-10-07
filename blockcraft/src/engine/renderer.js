@@ -49,6 +49,17 @@ export class Renderer {
 
   // env: { time, day, rain, thunder, flash, underwater (0/1 water, 2 lava), dt, clouds, gamma }
   updateEnvironment(env) {
+    const r = this.environment(env);
+    // night vision lifts every shadow
+    if (env.nightVision) {
+      const a = U.uAmbient.value, k = 0.8 * env.nightVision;
+      a.setRGB(Math.max(a.r, k), Math.max(a.g, k), Math.max(a.b, k));
+      if (env.underwater === 1) { U.uFogNear.value = 8; U.uFogFar.value = 60; }
+    }
+    return r;
+  }
+
+  environment(env) {
     const cam = this.camera;
     if (env.dim === 'nether') return this.netherEnvironment(env);
     U.uAmbient.value.setRGB(0, 0, 0);

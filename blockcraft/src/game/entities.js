@@ -129,7 +129,7 @@ export class ItemEntity extends Entity {
     const g = new THREE.Group();
     this.parts = [];
     for (let i = 0; i < n; i++) {
-      const o = makeItemObject(this.stack.id, { glint: isEnchanted(this.stack) || !!ITEMS[this.stack.id].glint });
+      const o = makeItemObject(this.stack.id, { glint: isEnchanted(this.stack) || !!ITEMS[this.stack.id].glint, potion: this.stack.potion });
       const block = o.userData.block;
       o.scale.setScalar(block ? 0.25 : 0.42);
       if (i) o.position.set((Math.sin(i * 7.1) * 0.06), (block ? 0.04 : 0.02) * i, (Math.cos(i * 3.3) * 0.06 - (block ? 0 : i * 0.03)));

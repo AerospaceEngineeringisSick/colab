@@ -228,6 +228,21 @@ Object.assign(T.entity, {
   magma_cube: 'mobs_mc_magmacube', wither_skeleton: 'mobs_mc_wither_skeleton', fireball: 'mcl_fire_fire_charge',
 });
 T.env.portal_particle = 'mcl_particles_nether_portal';
+// brewing and potions
+Object.assign(T.block, { brewing_stand: 'mcl_brewing_stand', brewing_rack: 'mcl_brewing_rack', brewing_rack_bottle: 'mcl_brewing_rack_bottle' });
+Object.assign(T.item, {
+  glass_bottle: 'mcl_potions_potion_bottle', potion_overlay: 'mcl_potions_potion_overlay', splash_potion: 'mcl_potions_splash_bottle',
+  splash_overlay: 'mcl_potions_splash_overlay', fermented_spider_eye: 'mcl_potions_spider_eye_fermented',
+  glistering_melon_slice: 'mcl_potions_melon_speckled', golden_carrot: 'farming_carrot_gold', brewing_stand: 'mcl_brewing_stand_inv',
+});
+Object.assign(T.gui, {
+  brew_bubbles: 'mcl_brewing_bubbles', brew_bubbles_on: 'mcl_brewing_bubbles_active', brew_burner: 'mcl_brewing_burner',
+  brew_burner_on: 'mcl_brewing_burner_active', slot_bottle: 'mcl_brewing_bottle_bg', slot_fuel: 'mcl_brewing_fuel_bg',
+  effect_absorb: 'mcl_potions_icon_absorb',
+});
+for (const e of ['swift', 'slow', 'strong', 'weak', 'leaping', 'regenerating', 'fire_proof', 'water_breathing', 'night_vision', 'invisible', 'poisoned', 'withering', 'food_poisoning']) T.gui['effect_' + e] = 'mcl_potions_effect_' + e;
+Object.assign(T.env, { effect: 'mcl_particles_effect', instant_effect: 'mcl_particles_instant_effect', droplet: 'mcl_particles_droplet_bottle' });
+T.entity.witch = 'mobs_mc_witch';
 // crop stages
 for (let i = 0; i < 8; i++) T.block['wheat' + i] = 'mcl_farming_wheat_stage_' + i;
 for (let i = 0; i < 4; i++) T.block['potatoes' + i] = 'mcl_farming_potatoes_stage_' + i;

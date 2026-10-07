@@ -316,6 +316,10 @@ block('nether_portal', { render: R.PORTAL, solid: false, opaque: false, lightOpa
 // fire: meta = age
 block('fire', { render: R.FIRE, solid: false, opaque: false, lightOpacity: 0, layer: 1, emit: 15, hardness: 0, replaceable: true, drop: null, sound: 'cloth' });
 
+// brewing stand: meta bits 0-2 show which of the three bottle slots hold something
+block('brewing_stand', { render: R.BOXES, hardness: 0.5, tool: 'pickaxe', needsTool: true, opaque: false, lightOpacity: 0, emit: 1, layer: 1, sound: 'metal',
+  tex: { side: 'brewing_stand', top: 'brewing_rack', bottom: 'brewing_rack_bottle' } });
+
 SLABS.nether_brick_slab = { tex: 'nether_bricks', full: 'nether_bricks', p: 'pickaxe' };
 SLABS.quartz_slab = { tex: BLOCKS[B.quartz_slab].tex, full: 'quartz_block', p: 'pickaxe' };
 

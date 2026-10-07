@@ -567,6 +567,12 @@ export class Mob extends Entity {
     const held = player.inv.held;
     const name = held ? ITEMS[held.id].name : null;
     const d = this.def;
+    // a name tag renamed on an anvil names the mob (and keeps it from despawning)
+    if (name === 'name_tag' && held.label) {
+      this.customName = held.label;
+      this.persistent = true;
+      return 'consume';
+    }
     if (d.breed && name && d.breed.includes(name)) {
       if (this.baby) { this.growAge = Math.min(0, this.growAge + 2400); g.particles.hearts(this.x, this.y + this.h, this.z, 2); return 'consume'; }
       if (this.loveTime === 0 && this.breedCooldown === 0) { this.loveTime = 600; g.particles.hearts(this.x, this.y + this.h, this.z, 4); return 'consume'; }
@@ -694,6 +700,7 @@ export class Mob extends Entity {
     m.root.position.set(x, y, z);
     const by = lerpAngle(this.pbodyYaw, this.bodyYaw, a);
     m.root.rotation.set(0, by + Math.PI, 0);
+    this.renderName(x, y, z);
     // death: topple over
     if (this.dead) m.inner.rotation.z = Math.min(1, (this.deathTime + a) / 20 * 1.6) * Math.PI / 2;
     const swing = this.limbSwing, amt = this.plimbAmt + (this.limbAmt - this.plimbAmt) * a;
@@ -772,12 +779,47 @@ export class Mob extends Entity {
     if (this.heldObj) this.heldObj.userData.setLight(sk, lit);
   }
 
+  // floating name over named mobs, like vanilla's name plates
+  renderName(x, y, z) {
+    if (!this.customName) return;
+    const g = this.game;
+    if (!this.nameSprite || this.nameSprite.userData.text !== this.customName) {
+      if (this.nameSprite) { this.nameSprite.parent.remove(this.nameSprite); this.nameSprite.material.map.dispose(); this.nameSprite.material.dispose(); }
+      const c = document.createElement('canvas');
+      const ctx = c.getContext('2d');
+      ctx.font = '28px "Pixelify Sans", sans-serif';
+      const w = Math.ceil(ctx.measureText(this.customName).width) + 16;
+      c.width = w; c.height = 40;
+      const cx = c.getContext('2d');
+      cx.fillStyle = 'rgba(0,0,0,0.3)';
+      cx.fillRect(0, 0, w, 40);
+      cx.font = '28px "Pixelify Sans", sans-serif';
+      cx.fillStyle = '#fff';
+      cx.textBaseline = 'middle';
+      cx.fillText(this.customName, 8, 21);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.NoColorSpace;
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthWrite: false, transparent: true }));
+      sp.scale.set(w / 40 * 0.25, 0.25, 1);
+      sp.userData.text = this.customName;
+      g.entities.group.add(sp);
+      this.nameSprite = sp;
+    }
+    this.nameSprite.position.set(x, y + this.h + 0.35, z);
+    this.nameSprite.visible = Math.hypot(x - g.player.x, z - g.player.z) < 24;
+  }
+  remove() {
+    if (this.nameSprite) { this.nameSprite.parent && this.nameSprite.parent.remove(this.nameSprite); this.nameSprite.material.map.dispose(); this.nameSprite.material.dispose(); this.nameSprite = null; }
+    super.remove();
+  }
+
   toJSON() {
     if (this.dead) return null;
     const o = { t: 'mob', k: this.kind, x: this.x, y: this.y, z: this.z, yaw: this.yaw, h: this.health };
     if (this.baby) { o.baby = 1; o.grow = this.growAge; }
     if (this.def.sheep) { o.color = this.color; o.sheared = this.sheared ? 1 : 0; }
     if (this.def.wolf && this.tame) { o.tame = 1; o.sit = this.sitting ? 1 : 0; }
+    if (this.customName) o.name = this.customName;
     return o;
   }
 }

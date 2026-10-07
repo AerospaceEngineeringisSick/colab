@@ -7,6 +7,7 @@ import { segBox, Arrow, Thrown } from './entities.js';
 import { collisionBoxes, FACING_DIR } from '../shared/shapes.js';
 import { enchLevel, armorLevel } from '../shared/enchant.js';
 import { Boat, Minecart } from './vehicles.js';
+import { Bobber } from './fishing.js';
 import { boxBlocked } from './physics.js';
 
 const boxBlockedAt = (w, x, y, z, wd, h) => boxBlocked(w, x - wd / 2, y, z - wd / 2, x + wd / 2, y + h, z + wd / 2);
@@ -231,6 +232,7 @@ export class Interaction {
     }
     if (it) {
       if (it.use === 'boat') { if (pressed) this.placeBoat(it); return; }
+      if (it.use === 'fish') { if (pressed) this.useRod(); return; }
       if (it.use === 'minecart') { if (pressed && hit && BLOCKS[hit.id].render === R.RAIL) this.placeMinecart(hit); return; }
       if (it.food) { if (pressed) this.startUse(it, 'eat'); return; }
       if (it.use === 'milk') { if (pressed) this.startUse(it, 'drink'); return; }
@@ -256,6 +258,19 @@ export class Interaction {
         if (it.block !== undefined && !it.hidden) { this.place(it, hit); return; }
       }
     }
+  }
+
+  // cast the line, or reel it in
+  useRod() {
+    const g = this.game, p = this.player;
+    p.swing = 6;
+    if (p.bobber && !p.bobber.removed) {
+      const wear = p.bobber.reel();
+      if (wear) g.damageHeld(wear);
+      return;
+    }
+    p.bobber = g.entities.add(new Bobber(g, p));
+    g.sound.play('throw', p.x, p.y + 1.5, p.z, 0.5, 0.4 / (Math.random() * 0.4 + 0.8));
   }
 
   // boats go on water (or on the ground), facing the way the player looks

@@ -39,6 +39,8 @@ ench('punch', { max: 2, weight: 2, cats: ['bow'], min: (l) => 12 + (l - 1) * 20,
 ench('flame', { max: 1, weight: 2, cats: ['bow'], min: () => 20, span: 30 });
 ench('infinity', { max: 1, weight: 1, cats: ['bow'], min: () => 20, span: 30, excl: 'infinite' });
 ench('mending', { max: 1, weight: 2, cats: ['breakable'], min: (l) => 25 * l, span: 50, excl: 'infinite', treasure: true });
+ench('lure', { max: 3, weight: 2, cats: ['rod'], min: (l) => 15 + (l - 1) * 9, span: 50 });
+ench('luck_of_the_sea', { max: 3, weight: 2, cats: ['rod'], min: (l) => 15 + (l - 1) * 9, span: 50 });
 
 const ARMOR_ENCH = { leather: 15, chainmail: 12, iron: 9, golden: 25, diamond: 10 };
 // anvil repair materials by tool / armour material
@@ -59,7 +61,7 @@ export function enchantability(id) {
   if (id === I.book) return 1;
   if (it.tool && it.tool.mat) return TIERS[it.tool.mat].ench;
   if (it.armor) return ARMOR_ENCH[it.armor.mat] || 0;
-  if (it.use === 'bow') return 1;
+  if (it.use === 'bow' || it.use === 'fish') return 1;
   return 0;
 }
 
@@ -74,6 +76,7 @@ export function itemCats(id) {
     else if (['pickaxe', 'axe', 'shovel', 'hoe'].includes(it.tool.type)) c.add('digger');
   }
   if (it.use === 'bow') c.add('bow');
+  if (it.use === 'fish') c.add('rod');
   return c;
 }
 

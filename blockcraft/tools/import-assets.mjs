@@ -146,6 +146,9 @@ const T = {
     gold_nugget: 'mcl_core_gold_nugget', slime_ball: 'mcl_mobitems_slimeball', ink_sac: 'mcl_mobitems_ink_sac',
     spawn_egg: 'spawn_egg', spawn_egg_overlay: 'spawn_egg_overlay', enchanted_book: 'mcl_enchanting_book_enchanted',
     minecart: 'mcl_minecarts_minecart_normal', repeater: 'mesecons_delayer_item', lever: 'mesecons_walllever_lever_inv',
+    fishing_rod: 'mcl_fishing_fishing_rod', cod: 'mcl_fishing_fish_raw', salmon: 'mcl_fishing_salmon_raw',
+    tropical_fish: 'mcl_fishing_clownfish_raw', pufferfish: 'mcl_fishing_pufferfish_raw', cooked_cod: 'mcl_fishing_fish_cooked',
+    cooked_salmon: 'mcl_fishing_salmon_cooked', saddle: 'mcl_mobitems_saddle', name_tag: 'mcl_mobitems_nametag',
   },
   entity: {
     zombie: 'mobs_mc_zombie', skeleton: 'mobs_mc_skeleton', creeper: 'mobs_mc_creeper', spider: 'mobs_mc_spider',
@@ -155,7 +158,7 @@ const T = {
     wolf_collar: 'mobs_mc_wolf_collar', steve: 'character', alex: 'mcl_skins_character_1', chest: 'mcl_chests_normal',
     bed: 'mcl_beds_bed_red', arrow: 'mcl_bows_arrow', slime: 'mobs_mc_slime',
     skeleton_overlay: 'mobs_mc_stray_overlay', enchanting_book: 'mcl_enchanting_book_entity',
-    minecart: 'mcl_minecarts_minecart',
+    minecart: 'mcl_minecarts_minecart', fishing_bobber: 'mcl_fishing_bobber',
   },
   gui: {
     hotbar: 'mcl_inventory_hotbar', hotbar_selected: 'mcl_inventory_hotbar_selected', heart: 'heart',

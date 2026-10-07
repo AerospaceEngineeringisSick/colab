@@ -33,4 +33,5 @@ export const ADVANCEMENTS = [
   { key: 'table', title: 'Arcane Arts', desc: 'Construct an enchanting table', icon: 'enchanting_table' },
   { key: 'enchant', title: 'Enchanter', desc: 'Enchant an item at an enchanting table', icon: 'enchanted_book' },
   { key: 'anvil', title: 'Hammer Time', desc: 'Craft an anvil', icon: 'anvil' },
+  { key: 'fish', title: 'Fishy Business', desc: 'Catch a fish', icon: 'fishing_rod' },
 ];

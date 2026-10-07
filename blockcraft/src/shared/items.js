@@ -164,6 +164,17 @@ item('enchanted_book', { maxStack: 1, glint: true });
 for (const w of WOODS) item(w + '_boat', { maxStack: 1, use: 'boat', wood: w });
 item('minecart', { maxStack: 1, use: 'minecart' });
 
+// fishing
+item('fishing_rod', { maxStack: 1, durability: 64, use: 'fish' });
+for (const [n, h, sat] of [['cod', 2, 0.4], ['cooked_cod', 5, 6], ['salmon', 2, 0.4], ['cooked_salmon', 6, 9.6], ['tropical_fish', 1, 0.2], ['pufferfish', 1, 0.2]]) {
+  item(n, { food: { hunger: h, sat } });
+}
+ITEMS[I.cod].display = 'Raw Cod';
+ITEMS[I.salmon].display = 'Raw Salmon';
+ITEMS[I.pufferfish].food.effect = { poison: 3, hunger: 1 };
+item('saddle', { maxStack: 1 });
+item('name_tag', { use: 'name_tag' });
+
 // cake & bed & door & sugar cane are block items placed directly
 ITEMS[B.cake].maxStack = 1;
 

@@ -75,6 +75,7 @@ shaped('repeater', 1, ['TRT', 'SSS'], { T: 'redstone_torch', R: 'redstone', S: '
 shaped('redstone_lamp', 1, [' R ', 'RGR', ' R '], { R: 'redstone', G: 'glowstone' });
 shaped('piston', 1, ['PPP', 'CIC', 'CRC'], { P: '#planks', C: 'cobblestone', I: 'iron_ingot', R: 'redstone' });
 shaped('sticky_piston', 1, ['S', 'P'], { S: 'slime_ball', P: 'piston' });
+shaped('fishing_rod', 1, ['  S', ' ST', 'S T'], { S: 'stick', T: 'string' });
 shaped('bowl', 4, ['P P', ' P '], { P: '#planks' });
 shapeless('mushroom_stew', 1, ['bowl', 'brown_mushroom', 'red_mushroom']);
 shaped('golden_apple', 1, ['GGG', 'GAG', 'GGG'], { G: 'gold_ingot', A: 'apple' });
@@ -196,6 +197,7 @@ smelt('iron_ore', 'iron_ingot', 0.7); smelt('gold_ore', 'gold_ingot', 1); smelt(
 smelt('coal_ore', 'coal', 0.1); smelt('lapis_ore', 'lapis_lazuli', 0.2); smelt('redstone_ore', 'redstone', 0.3);
 smelt('emerald_ore', 'emerald', 1); smelt('sand', 'glass', 0.1); smelt('red_sand', 'glass', 0.1);
 smelt('cobblestone', 'stone', 0.1); smelt('stone', 'smooth_stone', 0.1); smelt('clay_ball', 'brick', 0.3);
+smelt('cod', 'cooked_cod', 0.35); smelt('salmon', 'cooked_salmon', 0.35);
 smelt('porkchop', 'cooked_porkchop', 0.35); smelt('beef', 'cooked_beef', 0.35); smelt('chicken', 'cooked_chicken', 0.35);
 smelt('mutton', 'cooked_mutton', 0.35); smelt('potato', 'baked_potato', 0.35); smelt('stone_bricks', 'cracked_stone_bricks', 0.1);
 for (const w of WOODS) smelt(w + '_log', 'charcoal', 0.15);

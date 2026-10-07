@@ -408,6 +408,19 @@ export class Game {
     this.r.fovMul = this.fovSmooth;
   }
 
+  // where the fishing line leaves the rod: in front of the eye in first person, out past the hand otherwise
+  rodTip(a) {
+    const p = this.player;
+    const [x, y, z] = p.renderPos(a);
+    const rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
+    if (this.camMode === 0) {
+      const d = p.lookDir();
+      return [x + d[0] * 0.6 + rx * 0.32, y + p.eye + d[1] * 0.6 + 0.06, z + d[2] * 0.6 + rz * 0.32];
+    }
+    const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw);
+    return [x + rx * 0.35 + fx * 0.9, y + 1.85, z + rz * 0.35 + fz * 0.9];
+  }
+
   updateHand(a, dt) {
     const p = this.player;
     const l = this.world.getLight(Math.floor(p.x), Math.floor(p.y + p.eye), Math.floor(p.z));
@@ -605,6 +618,7 @@ export class Game {
     if (o.t === 'mob') {
       const m = this.spawnMob(o.k, o.x, o.y, o.z, { health: o.h, baby: !!o.baby, color: o.color, sheared: !!o.sheared, tame: !!o.tame, sitting: !!o.sit, persistent: true, yaw: o.yaw });
       if (m && o.baby) m.growAge = o.grow ?? -24000;
+      if (m && o.name) m.customName = o.name;
     } else if (o.t === 'item') {
       const e = this.dropItem(o.x, o.y, o.z, stackFromJSON(o.s), { vx: 0, vy: 0, vz: 0, delay: 0 });
       if (e) e.age = o.age || 0;

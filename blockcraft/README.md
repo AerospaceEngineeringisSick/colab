@@ -6,31 +6,33 @@ A Minecraft-style voxel survival game that runs entirely in **one offline HTML f
 
 ## What's in it
 
-**World**
-- Infinite, seeded terrain with **19 biomes**: plains, forest, birch forest, dark forest, taiga, snowy taiga, snowy plains, desert, savanna, jungle, swamp, mountains, snowy mountains, beaches, rivers and (frozen) oceans, blended smoothly with per-biome grass, foliage and water colours.
-- Spaghetti and cheese caves, overhanging mountains, ore veins (coal, iron, gold, redstone, lapis, diamond), lava pools deep underground, dungeons with loot chests, trees of six wood types, flowers, cacti, sugar cane, pumpkins.
-- **151 blocks** including stairs, slabs, fences, doors, ladders, beds, torches, glass, TNT, crops, wool, enchanting tables and anvils.
-- Smooth lighting with ambient occlusion, warm torch light, day/night cycle with sunrise glow, moon phases, stars, 3D clouds, fog, rain, snow and thunderstorms.
-- Flowing water and lava (infinite water sources, lava + water makes obsidian, cobblestone or stone).
+**Three dimensions**
+- **The Overworld**: infinite seeded terrain with 19 biomes (plains, forests, dark forest, taiga, snowy plains and taiga, desert, savanna, jungle, swamp, mountains, beaches, rivers, oceans) blended with per-biome grass, foliage and water colours. Caves, overhangs, ore veins, lava lakes, dungeons with loot, six kinds of trees, flowers, cacti, sugar cane and pumpkins.
+- **Villages** in plains, taiga, snowy, savanna and desert styles: houses, a library, a smithy, a church, farms, wells, lamp posts and roads, with villagers who work, go home at night and trade, guarded by iron golems.
+- **The Nether**: build an obsidian frame, light it, and step through. Caverns over a lava sea, nether wastes, crimson and warped forests with huge fungi, soul sand valleys with basalt pillars and fossils, glowstone, quartz and nether gold ore, and nether brick **fortresses** with blaze spawners, wart gardens and loot. Portals link both ways (1 Nether block = 8 Overworld blocks).
+- **The End**: throw eyes of ender to find one of three **strongholds** buried around spawn, fill the twelve portal frames, and drop into a floating island ringed by obsidian spikes and end crystals. Defeat the **Ender Dragon** (it circles, strafes with breath fireballs, charges, perches and heals from crystals) to open the exit portal, claim the egg and roll the credits.
+- Smooth lighting with ambient occlusion, day/night with sunrise glow, moon phases, stars and clouds, rain, snow and thunderstorms; a red-fogged Nether and a dusk-lit End.
 
-**Survival**
-- Health, hunger, saturation, fall/drowning/lava/fire damage, armour, XP and levels.
-- Vanilla-accurate movement (20 ticks/second physics), mining speeds and tool tiers: wood → stone → iron → diamond.
-- **272 items** and **135 crafting recipes** with a 2×2/3×3 grid, recipe book, furnace smelting with fuels, chests.
-- Farming (wheat, carrots, potatoes, bone meal), sleeping in beds, bows and arrows, TNT.
-- **Enchanting**: spend XP levels and lapis at an enchanting table (bookshelves unlock stronger offers) using vanilla's offer algorithm. 23 enchantments, all working: Protection (and its fire, blast and projectile variants), Feather Falling, Respiration, Aqua Affinity, Thorns, Sharpness, Smite, Bane of Arthropods, Knockback, Fire Aspect, Looting, Efficiency, Silk Touch, Fortune, Unbreaking, Power, Punch, Flame, Infinity and Mending (dungeon loot only). Enchanted items shimmer in the inventory, in your hand and on the ground.
-- **Anvils**: combine enchanted books and items, repair tools and armour with their material or a second copy, and rename items, with vanilla's level costs and "Too Expensive!" limit.
-- **32 advancements** from "Getting Wood" to "Enchanter".
+**Survival and progression**
+- Health, hunger, saturation, armour, XP and levels; fall, drowning, lava, fire, magma and void damage; vanilla movement (20 ticks/second), mining speeds and tool tiers.
+- **221 blocks, 366 items and 188 crafting recipes** (2×2 and 3×3 with a recipe book), 30 furnace recipes, chests, farming (wheat, carrots, potatoes, nether wart), beds, bows, TNT, fishing rods with vanilla's loot tables.
+- **Enchanting** (25 enchantments, vanilla's offer algorithm and bookshelf power) and **anvils** (combining, repairs, renaming, level costs).
+- **Brewing**: brewing stands fuelled by blaze powder, water bottles, nether wart, every vanilla ingredient, redstone and glowstone upgrades, fermented spider eye corruption and gunpowder splash potions (36 potions).
+- **16 status effects** (speed, strength, regeneration, fire resistance, night vision, invisibility, poison, wither and more) for players and mobs, with HUD icons, timers, tinted and golden hearts.
+- **Trading** with villagers of 13 professions across five levels, restocking daily.
+- **Redstone**: dust, torches, repeaters, levers, buttons, pressure plates, lamps, pistons and sticky pistons, powered and detector rails, doors and TNT.
+- **Boats and minecarts** on water and rails.
+- **48 advancements**, from "Getting Wood" through "We Need to Go Deeper" to "Free the End".
 
-**Mobs** (with real box models, animations and pathfinding)
-- Hostile: zombie, skeleton (shoots arrows), creeper (explodes), spider, enderman.
-- Passive: pig, cow, sheep (shear for coloured wool), chicken (lays eggs), wolf (tame with bones). Animals breed.
-- Night and darkness spawn monsters; zombies and skeletons burn at dawn.
+**Creatures** (real box models, animations and pathfinding)
+- Overworld: zombie, skeleton, creeper, spider, enderman, witch (throws and drinks potions), slime; pig, cow, sheep, chicken, wolf (tameable), villager, iron golem (buildable), silverfish.
+- Nether: ghast (bat its fireballs back!), blaze, magma cube, zombified piglin (angers as a pack), wither skeleton.
+- End: endermen, end crystals and the Ender Dragon with a boss bar.
 
 **Modes and settings**
-- Survival, Creative (fly, full item catalogue) and Spectator; Peaceful to Hard difficulty.
-- Multiple save slots, render distance, FOV, sensitivity, brightness, fancy/fast leaves, GUI scale, volume, particles and keep inventory.
-- Touch controls (joystick, look-drag, tap to place/hit, hold to mine) appear automatically on phones and tablets.
+- Survival, Creative (fly, full catalogue including every potion and enchanted book) and Spectator; Peaceful to Hard.
+- Multiple save slots (each dimension saved separately), render distance, FOV, sensitivity, brightness, fancy/fast leaves, GUI scale, volume, particles, keep inventory.
+- Touch controls appear automatically on phones and tablets.
 
 ## Controls
 
@@ -55,7 +57,7 @@ A Minecraft-style voxel survival game that runs entirely in **one offline HTML f
 
 ### Commands
 
-`/help`, `/gamemode <survival|creative|spectator>`, `/time set <day|night|ticks>`, `/weather <clear|rain|thunder>`, `/give <item> [count]`, `/tp <x> <y> <z>`, `/summon <mob>`, `/setblock <x> <y> <z> <block>`, `/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>`, `/enchant <enchantment> [level]`, `/difficulty`, `/kill`, `/seed`, `/spawnpoint`, `/clear`, `/heal`, `/xp <amount>`, `/biome`. Coordinates accept `~` for relative positions.
+`/help`, `/gamemode <survival|creative|spectator>`, `/time set <day|night|ticks>`, `/weather <clear|rain|thunder>`, `/give <item> [count]`, `/tp <x> <y> <z>`, `/summon <mob>`, `/setblock <x> <y> <z> <block>`, `/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>`, `/enchant <enchantment> [level]`, `/effect <give|clear> [effect] [seconds] [level]`, `/dimension <overworld|nether|end>`, `/locate <village|fortress|stronghold>`, `/difficulty`, `/kill`, `/seed`, `/spawnpoint`, `/clear`, `/heal`, `/xp <amount>`, `/biome`. Coordinates accept `~` for relative positions.
 
 ## Building
 
@@ -74,11 +76,11 @@ npm run watch     # rebuilds on change
 
 | Path | What |
 |---|---|
-| `src/shared/` | Blocks, items, biomes, noise, world generation, lighting and meshing (used by the main thread and workers) |
+| `src/shared/` | Blocks, items, biomes, potions, enchantments, noise, the Overworld/Nether/End generators, villages, strongholds, lighting and meshing (shared by the main thread and workers) |
 | `src/worker/` | Web worker that generates, lights and meshes chunks off the main thread |
 | `src/engine/` | three.js renderer, shaders, textures, sky, weather, particles, mob models, audio |
 | `src/world/` | Chunk streaming, block updates, fluids, random ticks |
-| `src/game/` | Player, physics, input, inventory, crafting, mobs, AI, spawning, commands, saving |
+| `src/game/` | Player, physics, input, inventory, crafting, mobs and the dragon, trading, fishing, vehicles, portals, projectiles, spawning, commands, saving |
 | `src/ui/` | HUD, inventory screens, menus, touch controls |
 | `assets/` | Textures, sounds and their licence notices |
 

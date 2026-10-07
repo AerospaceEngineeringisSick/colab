@@ -4,7 +4,7 @@ A **3D endless runner** for mobile (and desktop) that lives entirely in **one HT
 
 ▶ **Play:** open `index.html` (works from `file://`, offline, and on phones — add it to your home screen for fullscreen play).
 
-> ⛏ **Also in this repo: [BlockCraft](blockcraft/README.md)**, a Minecraft-style survival game with biomes, caves, mobs, crafting and progression, also in a single offline HTML file: `blockcraft/index.html`.
+> ⛏ **Also in this repo: [BlockCraft](blockcraft/README.md)**, a Minecraft-style survival game with biomes, villages, the Nether, the End and the Ender Dragon, enchanting, brewing, redstone and 20 kinds of mobs, also in a single offline HTML file: `blockcraft/index.html`.
 
 ## How to play
 

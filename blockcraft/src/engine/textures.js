@@ -126,6 +126,18 @@ function buildDerived() {
   grey('block/sugar_cane', 0.72);
   grey('block/water_still', 0.82);
   grey('block/water_flow', 0.82);
+  // turned copies for faces whose art has a direction (piston sides, redstone dust arms)
+  const rotated = (name, deg) => {
+    const src = images[name];
+    if (!src) return;
+    const c = canvas(src.width, src.height), g = c.getContext('2d');
+    g.translate(src.width / 2, src.height / 2);
+    g.rotate(deg * Math.PI / 180);
+    g.drawImage(src, -src.width / 2, -src.height / 2);
+    images[name + '_' + deg] = c;
+  };
+  for (const d of [90, 180, 270]) rotated('block/piston_side', d);
+  rotated('block/redstone_dust_line', 90);
 }
 
 // -------------------------------------------------------------------- array

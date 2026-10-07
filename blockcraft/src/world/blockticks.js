@@ -5,6 +5,8 @@ import { growTree } from '../shared/worldgen.js';
 import { rng } from '../shared/noise.js';
 
 const H4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+// piston facing (down, up, north, south, west, east) -> step
+const PISTON_DIR = [[0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1], [-1, 0, 0], [1, 0, 0]];
 const SOIL = new Set();
 const LEAVES = new Set();
 const LOGS = new Set();
@@ -57,6 +59,7 @@ export class BlockTicks {
     const id = v & 1023;
     if (LIQUID[id]) return this.fluidTick(x, y, z, id, v >>> 10);
     if (BLOCKS[id].gravity) return this.gravityCheck(x, y, z, v);
+    if (BLOCKS[id].redstone) return this.game.redstone.scheduled(x, y, z, v);
     if (LEAVES.has(id)) return this.leafDecay(x, y, z, v);
   }
 
@@ -102,11 +105,15 @@ export class BlockTicks {
       else if (id === B.brown_mushroom || id === B.red_mushroom) ok = BLOCKS[below].opaque;
       else if (id === B.dead_bush) ok = below === B.sand || below === B.red_sand || SOIL.has(below);
       else ok = SOIL.has(below);
-    } else if (id === B.torch) {
+    } else if (id === B.torch || id === B.redstone_torch || id === B.unlit_redstone_torch) {
       if (meta === 0) ok = BLOCKS[below].solid && below !== B.glass ? true : BLOCKS[below].render === R.FENCE;
       else { const f = meta - 1; const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][f]; ok = OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1; }
-    } else if (b.render === R.RAIL) {
+    } else if (b.render === R.RAIL || b.render === R.WIRE || b.render === R.PLATE || b.render === R.REPEATER) {
       ok = OPAQUE[below] === 1;
+    } else if (b.render === R.LEVER || b.render === R.BUTTON) {
+      const a = meta & 7;
+      if (a === 0) ok = OPAQUE[below] === 1;
+      else { const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][(a - 1) & 3]; ok = OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1; }
     } else if (id === B.ladder) {
       const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][meta & 3];
       ok = OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1;
@@ -128,6 +135,17 @@ export class BlockTicks {
     } else if (id === B.farmland) {
       if (BLOCKS[w.getId(x, y + 1, z)].solid) { w.setBlock(x, y, z, B.dirt); return; }
     } else if (id === B.cake) ok = BLOCKS[below].solid;
+    else if (id === B.piston_head) {
+      // a head needs its extended piston behind it
+      const [dx, dy, dz] = PISTON_DIR[meta & 7];
+      const bv = w.getBlock(x - dx, y - dy, z - dz);
+      if (!(BLOCKS[bv & 1023].redstone === 'piston' && (bv >>> 10) & 8 && ((bv >>> 10) & 7) === (meta & 7))) { w.setBlock(x, y, z, 0); return; }
+    } else if (b.redstone === 'piston' && meta & 8) {
+      // an extended piston whose head is gone pulls back in
+      const [dx, dy, dz] = PISTON_DIR[meta & 7];
+      if (w.getId(x + dx, y + dy, z + dz) !== B.piston_head) w.setBlock(x, y, z, id | ((meta & 7) << 10));
+      return;
+    }
     if (!ok) this.game.breakBlockNaturally(x, y, z, id !== B.snow);
   }
 

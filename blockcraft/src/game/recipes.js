@@ -64,6 +64,17 @@ for (const w of WOODS) shaped(w + '_boat', 1, ['P P', 'PPP'], { P: w + '_planks'
 shaped('minecart', 1, ['I I', 'III'], { I: 'iron_ingot' });
 shaped('rail', 16, ['I I', 'ISI', 'I I'], { I: 'iron_ingot', S: 'stick' });
 shaped('powered_rail', 6, ['G G', 'GSG', 'GRG'], { G: 'gold_ingot', S: 'stick', R: 'redstone' });
+shaped('detector_rail', 6, ['I I', 'IPI', 'IRI'], { I: 'iron_ingot', P: 'stone_pressure_plate', R: 'redstone' });
+shaped('redstone_torch', 1, ['R', 'S'], { R: 'redstone', S: 'stick' });
+shaped('lever', 1, ['S', 'C'], { S: 'stick', C: 'cobblestone' });
+shapeless('stone_button', 1, ['stone']);
+shapeless('oak_button', 1, ['#planks']);
+shaped('stone_pressure_plate', 1, ['SS'], { S: 'stone' });
+shaped('oak_pressure_plate', 1, ['PP'], { P: '#planks' });
+shaped('repeater', 1, ['TRT', 'SSS'], { T: 'redstone_torch', R: 'redstone', S: 'stone' });
+shaped('redstone_lamp', 1, [' R ', 'RGR', ' R '], { R: 'redstone', G: 'glowstone' });
+shaped('piston', 1, ['PPP', 'CIC', 'CRC'], { P: '#planks', C: 'cobblestone', I: 'iron_ingot', R: 'redstone' });
+shaped('sticky_piston', 1, ['S', 'P'], { S: 'slime_ball', P: 'piston' });
 shaped('bowl', 4, ['P P', ' P '], { P: '#planks' });
 shapeless('mushroom_stew', 1, ['bowl', 'brown_mushroom', 'red_mushroom']);
 shaped('golden_apple', 1, ['GGG', 'GAG', 'GGG'], { G: 'gold_ingot', A: 'apple' });

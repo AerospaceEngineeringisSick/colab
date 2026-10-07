@@ -252,6 +252,7 @@ export class Interaction {
           return;
         }
         if (it.place) { this.placeCrop(it, hit); return; }
+        if (it.placeBlock) { this.place({ ...it, block: B[it.placeBlock] }, hit); return; }
         if (it.block !== undefined && !it.hidden) { this.place(it, hit); return; }
       }
     }
@@ -521,11 +522,18 @@ export class Interaction {
     const b = BLOCKS[bid];
     const f = p.facing();
     if (b.rotate === 'axis') return face < 2 ? 1 : face < 4 ? 0 : 2;
-    if (bid === B.torch) {
+    if (bid === B.torch || bid === B.redstone_torch || b.render === R.LEVER || b.render === R.BUTTON) {
       if (face === 3) return null;
       if (face === 2) return 0;
       // wall torch faces away from the wall it is on
       return [3, 1, 0, 0, 0, 2][face] + 1;
+    }
+    if (b.render === R.REPEATER) return f; // points away from the player
+    if (b.redstone === 'piston') {
+      // faces the player, up or down when looked at steeply
+      if (p.pitch < -0.85) return 1;
+      if (p.pitch > 0.85) return 0;
+      return [2, 5, 3, 4][f]; // player looking south -> face north, etc.
     }
     if (bid === B.ladder) {
       if (face < 2 || face > 3) return [3, 1, 0, 0, 0, 2][face];
@@ -566,7 +574,7 @@ export class Interaction {
       if (bid === B.dead_bush) return below === B.sand || below === B.red_sand || below === B.grass_block || below === B.dirt;
       return below === B.grass_block || below === B.dirt || below === B.podzol || below === B.coarse_dirt || below === B.farmland;
     }
-    if (bid === B.torch) {
+    if (bid === B.torch || bid === B.redstone_torch) {
       if (meta === 0) return BLOCKS[below].solid || BLOCKS[below].render === R.FENCE;
       const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][meta - 1];
       return OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1;
@@ -576,7 +584,12 @@ export class Interaction {
       return OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1;
     }
     if (bid === B.lily_pad) return below === B.water;
-    if (b.render === R.RAIL) return OPAQUE[below] === 1;
+    if (b.render === R.RAIL || b.render === R.WIRE || b.render === R.PLATE || b.render === R.REPEATER) return OPAQUE[below] === 1;
+    if (b.render === R.LEVER || b.render === R.BUTTON) {
+      if (meta === 0) return OPAQUE[below] === 1;
+      const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][(meta - 1) & 3];
+      return OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1;
+    }
     if (bid === B.snow) return BLOCKS[below].solid && below !== B.ice;
     if (bid === B.oak_door) return BLOCKS[below].solid;
     if (bid === B.cake) return BLOCKS[below].solid;

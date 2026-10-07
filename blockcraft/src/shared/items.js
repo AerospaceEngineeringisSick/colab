@@ -9,14 +9,17 @@ export const I = {};
 const titleCase = (s) => s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 // --- block items
-const NO_ITEM = new Set(['air', 'water', 'lava', 'lit_furnace', 'wheat', 'carrots', 'potatoes']);
+const NO_ITEM = new Set(['air', 'water', 'lava', 'lit_furnace', 'wheat', 'carrots', 'potatoes', 'redstone_wire', 'unlit_redstone_torch',
+  'lit_redstone_lamp', 'piston_head']);
 const FLAT_ICON = { // blocks shown with a flat texture in the inventory
   torch: 'block/torch', ladder: 'block/ladder', oak_door: 'item/oak_door', red_bed: 'item/red_bed', sugar_cane: 'item/sugar_cane',
   cobweb: 'block/cobweb', vine: 'block/vine', lily_pad: 'block/lily_pad', cake: 'item/cake', short_grass: 'block/short_grass',
   fern: 'block/fern', dead_bush: 'block/dead_bush', brown_mushroom: 'block/brown_mushroom', red_mushroom: 'block/red_mushroom',
 };
 for (const w of WOODS) FLAT_ICON[w + '_sapling'] = 'block/' + w + '_sapling';
-for (const n of ['rail', 'powered_rail', 'detector_rail']) FLAT_ICON[n] = 'block/' + n;
+for (const n of ['rail', 'powered_rail', 'detector_rail', 'redstone_torch']) FLAT_ICON[n] = 'block/' + n;
+FLAT_ICON.lever = 'item/lever';
+FLAT_ICON.repeater = 'item/repeater';
 for (const f of FLOWERS) FLAT_ICON[f] = 'block/' + f;
 
 for (const b of BLOCKS) {
@@ -39,6 +42,8 @@ ITEMS[B.red_bed].display = 'Bed';
 ITEMS[B.jack_o_lantern].display = "Jack o'Lantern";
 ITEMS[B.short_grass].display = 'Grass';
 ITEMS[B.grass_block].display = 'Grass Block';
+ITEMS[B.repeater].display = 'Redstone Repeater';
+ITEMS[B.redstone_lamp].display = 'Redstone Lamp';
 
 let next = ITEM_BASE;
 function item(name, p = {}) {
@@ -54,6 +59,7 @@ for (const n of ['stick', 'coal', 'charcoal', 'iron_ingot', 'gold_ingot', 'diamo
   'sugar', 'wheat', 'wheat_seeds', 'glowstone_dust', 'iron_nugget', 'gold_nugget', 'slime_ball', 'ink_sac']) item(n);
 ITEMS[I.lapis_lazuli].display = 'Lapis Lazuli';
 ITEMS[I.redstone].display = 'Redstone Dust';
+ITEMS[I.redstone].placeBlock = 'redstone_wire';
 ITEMS[I.wheat_seeds].display = 'Seeds';
 ITEMS[I.wheat_seeds].place = 'wheat';
 ITEMS[I.bone_meal].use = 'bonemeal';

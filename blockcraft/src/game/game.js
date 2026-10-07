@@ -12,6 +12,7 @@ import { Player } from './player.js';
 import { Entities, ItemEntity, XpOrb, FallingBlock, PrimedTnt } from './entities.js';
 import { Mob, MOBS } from './mobs.js';
 import { Boat, Minecart, isRail, connectRail } from './vehicles.js';
+import { Redstone } from '../world/redstone.js';
 import { Interaction } from './interact.js';
 import { Particles } from '../engine/particles.js';
 import { Hand, PlayerModel } from '../engine/hand.js';
@@ -77,6 +78,7 @@ export class Game {
     this.particles = new Particles(r.scene, blockArray, this.world);
     this.particles.tintFn = (kind, x, z) => this.tintAt(kind, x, z);
     this.ticks = new BlockTicks(this);
+    this.redstone = new Redstone(this);
     this.player = new Player(this);
     this.interaction = new Interaction(this);
     this.spawner = new Spawner(this);
@@ -316,6 +318,7 @@ export class Game {
     this.entities.tick();
     this.tickBooks();
     this.ticks.runScheduled();
+    this.redstone.tick();
     this.ticks.randomTicks(p.x, p.z, Math.min(6, this.world.renderDistance), 3);
     this.tileTick();
     if (this.tickCount % 20 === 0) this.spawner.tick();
@@ -474,6 +477,7 @@ export class Game {
 
   // ---------------------------------------------------------------- world events
   blockChanged(x, y, z, old, v) {
+    this.redstone.changed(x, y, z);
     if ((old & 1023) === B.enchanting_table) this.removeBook(x, y, z);
     if ((v & 1023) === B.enchanting_table) this.addBook(x, y, z);
     this.ticks.neighborChanged(x, y, z);
@@ -702,11 +706,14 @@ export class Game {
         if (t.dungeon) { this.advance('dungeon'); t.dungeon = false; }
         return true;
       }
+      case B.lever: this.redstone.toggleLever(x, y, z); return true;
+      case B.stone_button: case B.oak_button: this.redstone.pressButton(x, y, z); return true;
+      case B.repeater: this.redstone.cycleRepeater(x, y, z); return true;
       case B.oak_door: {
         const lower = (meta & 4) ? y - 1 : y;
         const lv = w.getBlock(x, lower, z), uv = w.getBlock(x, lower + 1, z);
         const open = ((lv >>> 10) & 8) ? 0 : 8;
-        w.setBlock(x, lower, z, B.oak_door | ((((lv >>> 10) & 7) | open) << 10), { sync: true });
+        w.setBlock(x, lower, z, B.oak_door | ((((lv >>> 10) & 23) | open) << 10), { sync: true });
         w.setBlock(x, lower + 1, z, B.oak_door | ((((uv >>> 10) & 7) | open) << 10), { sync: true });
         this.sound.play(open ? 'door.open' : 'door.close', x + 0.5, y + 0.5, z + 0.5, 0.7);
         return true;

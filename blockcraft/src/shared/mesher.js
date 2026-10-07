@@ -9,7 +9,7 @@
 import {
   BLOCKS, B, R, OPAQUE, RENDER, LAYER, LIQUID, CULL_SAME,
 } from './blocks.js';
-import { blockModel, fenceConn } from './shapes.js';
+import { blockModel, fenceConn, wireConn, wireColor } from './shapes.js';
 
 export const P = 18; // padded size
 const SX = 1, SZ = P, SY = P * P;
@@ -419,9 +419,10 @@ export class Mesher {
     const blocks = this.blocks, light = this.light;
     let conn = 0;
     if (blk.render === R.FENCE) conn = fenceConn((dx, dz) => blocks[p + dx + dz * SZ] & 1023);
+    else if (blk.render === R.WIRE) conn = wireConn((dx, dy, dz) => blocks[p + dx + dy * SY + dz * SZ]);
     const m = this.model(id, meta, conn);
     const buf = this.bufs[LAYER[id]];
-    const tint = this.tint(blk.tint, x, z);
+    const tint = blk.render === R.WIRE ? wireColor(meta) : this.tint(blk.tint, x, z);
     const r = (tint >> 16) & 255, g = (tint >> 8) & 255, b = tint & 255;
     const own = light[p];
     const emit = blk.emit * 16;

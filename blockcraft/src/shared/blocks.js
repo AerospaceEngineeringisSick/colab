@@ -9,6 +9,7 @@ export const B = {};
 export const R = {
   NONE: 0, CUBE: 1, CROSS: 2, CROP: 3, LIQUID: 4, BOXES: 5, TORCH: 6, DOOR: 7,
   LADDER: 8, FENCE: 9, STAIRS: 10, SLAB: 11, VINE: 12, PAD: 13, BED: 14, RAIL: 15,
+  WIRE: 16, LEVER: 17, BUTTON: 18, PLATE: 19, REPEATER: 20, PISTON: 21, PISTON_HEAD: 22,
 };
 
 const DEFAULTS = {
@@ -147,9 +148,9 @@ block('furnace', { hardness: 3.5, tool: 'pickaxe', needsTool: true, rotate: 'fac
 block('lit_furnace', { hardness: 3.5, tool: 'pickaxe', needsTool: true, rotate: 'facing', emit: 13, tex: { top: 'furnace_top', bottom: 'furnace_top', side: 'furnace_side', front: 'furnace_front_on' }, drop: one('furnace') });
 block('chest', { render: R.BOXES, hardness: 2.5, tool: 'axe', sound: 'wood', rotate: 'facing', layer: 0, tex: { top: 'chest_top', side: 'chest_side', front: 'chest_front' } });
 block('torch', { render: R.TORCH, solid: false, hardness: 0, sound: 'wood', emit: 14, layer: 1 });
-block('tnt', { hardness: 0, sound: 'grass', tex: { top: 'tnt_top', bottom: 'tnt_bottom', side: 'tnt_side' } });
+block('tnt', { hardness: 0, sound: 'grass', tex: { top: 'tnt_top', bottom: 'tnt_bottom', side: 'tnt_side' }, redstone: 'tnt' });
 block('ladder', { render: R.LADDER, hardness: 0.4, tool: 'axe', sound: 'wood', climbable: true, layer: 1 });
-block('oak_door', { render: R.DOOR, tex: { side: 'oak_door_bottom', top: 'oak_door_top' }, hardness: 3, tool: 'axe', sound: 'wood', layer: 1, drop: (m) => (m & 4) ? [] : [['oak_door', 1]] });
+block('oak_door', { render: R.DOOR, tex: { side: 'oak_door_bottom', top: 'oak_door_top' }, hardness: 3, tool: 'axe', sound: 'wood', layer: 1, drop: (m) => (m & 4) ? [] : [['oak_door', 1]], redstone: 'door' });
 
 // --------------------------------------------------------------- farming
 block('farmland', { render: R.BOXES, hardness: 0.6, tool: 'shovel', sound: 'dirt', lightOpacity: 15, drop: one('dirt'), tex: { top: 'farmland', side: 'dirt', bottom: 'dirt' } });
@@ -188,7 +189,7 @@ block('gold_block', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true, so
 block('diamond_block', { hardness: 5, tool: 'pickaxe', tier: 2, needsTool: true, sound: 'metal' });
 block('emerald_block', { hardness: 5, tool: 'pickaxe', tier: 2, needsTool: true, sound: 'metal' });
 block('lapis_block', { hardness: 3, tool: 'pickaxe', tier: 1, needsTool: true });
-block('redstone_block', { hardness: 5, tool: 'pickaxe', needsTool: true, sound: 'metal' });
+block('redstone_block', { hardness: 5, tool: 'pickaxe', needsTool: true, sound: 'metal', redstone: 'block' });
 block('smooth_stone', { hardness: 2, tool: 'pickaxe', needsTool: true, tex: { top: 'smooth_stone', bottom: 'smooth_stone', side: 'smooth_stone_slab_side' } });
 
 // slabs: meta 0 bottom, 1 top. A slab placed on its twin becomes `full`.
@@ -233,8 +234,33 @@ block('anvil', { render: R.BOXES, hardness: 5, tool: 'pickaxe', needsTool: true,
 // rails: meta = shape (0 N-S, 1 E-W, 2-5 ascending E/W/N/S, 6-9 curves SE/SW/NW/NE); powered kinds add 8 when on
 const RAIL = { render: R.RAIL, hardness: 0.7, tool: 'pickaxe', sound: 'metal', solid: false, opaque: false, lightOpacity: 0, layer: 1 };
 block('rail', { ...RAIL, tex: { top: 'rail', side: 'rail_curved' } });
-block('powered_rail', { ...RAIL, tex: { top: 'powered_rail', side: 'powered_rail_on' }, straightOnly: true });
-block('detector_rail', { ...RAIL, tex: { top: 'detector_rail', side: 'detector_rail_on' }, straightOnly: true });
+block('powered_rail', { ...RAIL, tex: { top: 'powered_rail', side: 'powered_rail_on' }, straightOnly: true, redstone: 'prail' });
+block('detector_rail', { ...RAIL, tex: { top: 'detector_rail', side: 'detector_rail_on' }, straightOnly: true, redstone: 'drail' });
+
+// ------------------------------------------------------------------ redstone
+// wire meta: signal strength 0-15
+const SMALL = { solid: false, opaque: false, lightOpacity: 0, layer: 1, hardness: 0 };
+block('redstone_wire', { ...SMALL, render: R.WIRE, sound: 'stone', tex: { top: 'redstone_dust_dot', side: 'redstone_dust_line' }, drop: one('redstone'), redstone: 'wire' });
+// torches: meta like torches (0 standing, 1-4 on a wall, facing+1)
+block('redstone_torch', { ...SMALL, render: R.TORCH, sound: 'wood', emit: 7, tex: 'redstone_torch', redstone: 'torch' });
+block('unlit_redstone_torch', { ...SMALL, render: R.TORCH, sound: 'wood', tex: 'redstone_torch_off', drop: one('redstone_torch'), redstone: 'torch' });
+// lever / buttons: bits 0-2 attachment (0 floor, 1-4 wall as torches), bit 3 on
+block('lever', { ...SMALL, render: R.LEVER, hardness: 0.5, sound: 'wood', tex: { side: 'lever', top: 'cobblestone' }, redstone: 'lever' });
+block('stone_button', { ...SMALL, render: R.BUTTON, hardness: 0.5, sound: 'stone', tex: 'stone', redstone: 'button', pressTicks: 20 });
+block('oak_button', { ...SMALL, render: R.BUTTON, hardness: 0.5, sound: 'wood', tex: 'oak_planks', redstone: 'button', pressTicks: 30 });
+// pressure plates: bit 0 pressed
+block('stone_pressure_plate', { ...SMALL, render: R.PLATE, hardness: 0.5, sound: 'stone', tex: 'stone', tool: 'pickaxe', redstone: 'plate' });
+block('oak_pressure_plate', { ...SMALL, render: R.PLATE, hardness: 0.5, sound: 'wood', tex: 'oak_planks', redstone: 'plate', mobs: true });
+// repeater: bits 0-1 facing (output side), bits 2-3 delay-1, bit 4 powered
+block('repeater', { ...SMALL, render: R.REPEATER, sound: 'stone', tex: { top: 'repeater', front: 'repeater_on', side: 'smooth_stone', bottom: 'smooth_stone' }, redstone: 'repeater' });
+block('redstone_lamp', { hardness: 0.3, sound: 'glass', tex: 'redstone_lamp', redstone: 'lamp' });
+block('lit_redstone_lamp', { hardness: 0.3, sound: 'glass', tex: 'redstone_lamp_on', emit: 15, drop: one('redstone_lamp'), redstone: 'lamp' });
+// pistons: bits 0-2 facing (0 down, 1 up, 2 north, 3 south, 4 west, 5 east), bit 3 extended; heads: bit 3 sticky
+const PISTON = { render: R.PISTON, hardness: 1.5, sound: 'stone', opaque: false, lightOpacity: 15, layer: 0, redstone: 'piston' };
+block('piston', { ...PISTON, tex: { front: 'piston_top', side: 'piston_side', bottom: 'piston_bottom', inner: 'piston_inner' } });
+block('sticky_piston', { ...PISTON, tex: { front: 'piston_top_sticky', side: 'piston_side', bottom: 'piston_bottom', inner: 'piston_inner' }, sticky: true });
+block('piston_head', { render: R.PISTON_HEAD, hardness: 1.5, sound: 'stone', opaque: false, lightOpacity: 0, layer: 0, drop: null,
+  tex: { front: 'piston_top', side: 'piston_side', inner: 'piston_top_sticky' } });
 
 // ------------------------------------------------------------------ tables
 const N = 1024;
@@ -272,7 +298,8 @@ export function blockTextureNames() {
   for (const b of BLOCKS) add(b.tex);
   for (const n of ['grass_side_snow', 'farmland_moist', 'torch', 'ladder', 'oak_door_top', 'oak_door_bottom',
     'bed_head_top', 'bed_foot_top', 'bed_head_side', 'bed_foot_side', 'bed_head_end', 'bed_foot_end',
-    'destroy', 'snow', 'short_grass', 'fern', 'wheat0', 'carrots0', 'potatoes0']) set.add(n);
+    'destroy', 'snow', 'short_grass', 'fern', 'wheat0', 'carrots0', 'potatoes0', 'piston_side_90', 'piston_side_180',
+    'piston_side_270', 'redstone_dust_line_90', 'redstone_torch', 'redstone_torch_off']) set.add(n);
   for (let i = 0; i < 8; i++) set.add('wheat' + i);
   for (let i = 0; i < 4; i++) { set.add('carrots' + i); set.add('potatoes' + i); }
   for (const w of WOODS) set.add(w + '_sapling');

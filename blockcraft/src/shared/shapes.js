@@ -37,6 +37,34 @@ function texOf(b) {
 const FULL_UV = [0, 0, 16, 16];
 const U6 = [FULL_UV, FULL_UV, FULL_UV, FULL_UV, FULL_UV, FULL_UV];
 
+// piston facing (2 north, 3 south, 4 west, 5 east) -> model turn from south
+const PISTON_YROT = { 2: 2, 3: 0, 4: 1, 5: 3 };
+
+// redstone dust: conn bits 1 east, 2 west, 4 south, 8 north; +16/32/64/128 when that side climbs a block
+function wireModel(t, conn) {
+  const flat = (a, tex) => box(a, [null, null, tex, null, null, null]);
+  const e = conn & 1, w = conn & 2, s = conn & 4, n = conn & 8;
+  const k = !!e + !!w + !!s + !!n;
+  const line = t.side, line90 = t.side + '_90';
+  const out = [];
+  if (k === 0) out.push(flat([0, 0.3, 0, 16, 0.3, 16], t.top));
+  else if (!(e || w)) out.push(flat([0, 0.25, 0, 16, 0.25, 16], line));
+  else if (!(n || s)) out.push(flat([0, 0.25, 0, 16, 0.25, 16], line90));
+  else {
+    out.push(flat([0, 0.3, 0, 16, 0.3, 16], t.top));
+    if (n) out.push(flat([0, 0.25, 0, 16, 0.25, 8], line));
+    if (s) out.push(flat([0, 0.25, 8, 16, 0.25, 16], line));
+    if (w) out.push(flat([0, 0.25, 0, 8, 0.25, 16], line90));
+    if (e) out.push(flat([8, 0.25, 0, 16, 0.25, 16], line90));
+  }
+  // up the side of the next block
+  if (conn & 16) out.push(box([15.75, 0, 0, 15.75, 16, 16], [null, line, null, null, null, null]));
+  if (conn & 32) out.push(box([0.25, 0, 0, 0.25, 16, 16], [line, null, null, null, null, null]));
+  if (conn & 64) out.push(box([0, 0, 15.75, 16, 16, 15.75], [null, null, null, null, null, line]));
+  if (conn & 128) out.push(box([0, 0, 0.25, 16, 16, 0.25], [null, null, null, null, line, null]));
+  return M(out);
+}
+
 // model for non-cube blocks. conn: neighbour connection bitmask by face (fences)
 export function blockModel(id, meta, conn = 0) {
   const b = BLOCKS[id];
@@ -68,9 +96,10 @@ export function blockModel(id, meta, conn = 0) {
     }
     case R.TORCH: {
       const uv = [[7, 6, 9, 16], [7, 6, 9, 16], [7, 6, 9, 8], [7, 14, 9, 16], [7, 6, 9, 16], [7, 6, 9, 16]];
-      if (meta === 0) return M([box([7, 0, 7, 9, 10, 9], 'torch', { uv })]);
+      const tx = t ? t.side : 'torch';
+      if (meta === 0) return M([box([7, 0, 7, 9, 10, 9], tx, { uv })]);
       // wall torch, meta = facing + 1: base leans south, stuck into the north wall
-      return M([box([7, 3.5, -1, 9, 13.5, 1], 'torch', { uv, r: { angle: 22.5, origin: [8, 3.5, 0] } })], (meta - 1) & 3);
+      return M([box([7, 3.5, -1, 9, 13.5, 1], tx, { uv, r: { angle: 22.5, origin: [8, 3.5, 0] } })], (meta - 1) & 3);
     }
     case R.LADDER: // meta = facing (away from the wall); base: on the north wall facing south
       return M([box([0, 0, 0, 16, 16, 0.8], [null, null, null, null, 'ladder', 'ladder'], { uv: U6 })], meta & 3);
@@ -91,6 +120,55 @@ export function blockModel(id, meta, conn = 0) {
     }
     case R.PAD:
       return M([box([0, 0, 0, 16, 0.25, 16], [null, null, 'lily_pad', 'lily_pad', null, null])]);
+    case R.WIRE: return wireModel(t, conn);
+    case R.LEVER: {
+      // cobblestone base and a stick that tilts one way when off, the other when on
+      const on = meta & 8, a = meta & 7;
+      const huv = [[7, 6, 9, 16], [7, 6, 9, 16], [7, 6, 9, 8], [7, 6, 9, 8], [7, 6, 9, 16], [7, 6, 9, 16]];
+      if (a === 0) return M([box([5, 0, 4, 11, 3, 12], t.top), box([7, 3, 7, 9, 13, 9], t.side, { uv: huv, r: { angle: on ? 40 : -40, origin: [8, 3, 8] } })]);
+      return M([box([5, 4, 0, 11, 12, 3], t.top), box([7, 8, 2, 9, 18, 4], t.side, { uv: huv, r: { angle: on ? 140 : 40, origin: [8, 8, 3] } })], (a - 1) & 3);
+    }
+    case R.BUTTON: {
+      const d = meta & 8 ? 1 : 2, a = meta & 7;
+      if (a === 0) return M([box([5, 0, 6, 11, d, 10], t.side)]);
+      return M([box([5, 6, 0, 11, 10, d], t.side)], (a - 1) & 3);
+    }
+    case R.PLATE: return M([box([1, 0, 1, 15, meta & 1 ? 0.5 : 1, 15], t.side)]);
+    case R.REPEATER: {
+      // built pointing south (output +z); the back torch slides with the delay
+      const on = meta & 16, delay = (meta >> 2) & 3;
+      const torch = on ? 'redstone_torch' : 'redstone_torch_off';
+      const tuv = [[7, 6, 9, 11], [7, 6, 9, 11], [7, 6, 9, 8], [7, 14, 9, 16], [7, 6, 9, 11], [7, 6, 9, 11]];
+      return M([
+        box([0, 0, 0, 16, 2, 16], [t.side, t.side, on ? t.front : t.top, t.bottom, t.side, t.side]),
+        box([7, 2, 11, 9, 7, 13], torch, { uv: tuv }),
+        box([7, 2, 3 + delay * 2, 9, 7, 5 + delay * 2], torch, { uv: tuv }),
+      ], meta & 3);
+    }
+    case R.PISTON: {
+      const f = meta & 7, ext = meta & 8, S = t.side;
+      const face = ext ? t.inner : t.front;
+      if (f >= 2) return M([box([0, 0, 0, 16, 16, ext ? 12 : 16], [S + '_270', S + '_90', S + '_180', S, face, t.bottom])], PISTON_YROT[f]);
+      if (f === 1) return M([box([0, 0, 0, 16, ext ? 12 : 16, 16], [S, S, face, t.bottom, S, S])]);
+      const D = S + '_180';
+      return M([box([0, ext ? 4 : 0, 0, 16, 16, 16], [D, D, t.bottom, face, D, D])]);
+    }
+    case R.PISTON_HEAD: {
+      const f = meta & 7, S = t.side;
+      const face = meta & 8 ? t.inner : t.front;
+      const along = [[0, 0, 16, 4], [0, 0, 16, 4], [0, 0, 16, 4], [0, 0, 16, 4], [6, 6, 10, 10], [6, 6, 10, 10]];
+      const upright = [[12, 0, 16, 16], [12, 0, 16, 16], [6, 6, 10, 10], [6, 6, 10, 10], [12, 0, 16, 16], [12, 0, 16, 16]];
+      const V = S + '_90';
+      if (f >= 2) {
+        return M([
+          box([0, 0, 12, 16, 16, 16], [S + '_270', S + '_90', S + '_180', S, face, t.front]),
+          box([6, 6, -4, 10, 10, 12], [S, S, S, S, null, null], { uv: along }),
+        ], PISTON_YROT[f]);
+      }
+      if (f === 1) return M([box([0, 12, 0, 16, 16, 16], [S, S, face, t.front, S, S]), box([6, -4, 6, 10, 12, 10], [V, V, null, null, V, V], { uv: upright })]);
+      const D = S + '_180';
+      return M([box([0, 0, 0, 16, 4, 16], [D, D, t.front, face, D, D]), box([6, 4, 6, 10, 20, 10], [V, V, null, null, V, V], { uv: upright })]);
+    }
     case R.RAIL: {
       // flat or 45-degree quad; curves use the curved texture (the 'side' slot), powered rails their lit texture
       const shape = meta & 7 | (meta & 8 && !b.straightOnly ? 8 : 0);
@@ -179,6 +257,7 @@ export function collisionBoxes(id, meta, conn = 0) {
       if (id === B.anvil) return modelBoxes(id, meta, conn);
       return FULL;
     }
+    case R.PISTON: case R.PISTON_HEAD: return modelBoxes(id, meta, conn);
   }
   return FULL;
 }
@@ -198,6 +277,8 @@ export function selectionBoxes(id, meta, conn = 0) {
     case R.VINE: return FULL;
     case R.FENCE: return collisionBoxes(id, meta, conn).map((a) => [a[0], 0, a[2], a[3], 1, a[5]]);
     case R.PAD: return [[0, 0, 0, 1, 1 / 16, 1]];
+    case R.WIRE: return [[0, 0, 0, 1, 1 / 16, 1]];
+    case R.LEVER: case R.BUTTON: case R.PLATE: case R.REPEATER: return modelBoxes(id, meta, conn).map((a) => [Math.max(0, a[0]), Math.max(0, a[1]), Math.max(0, a[2]), Math.min(1, a[3]), Math.max(a[4], a[1] + 1 / 16), Math.min(1, a[5])]);
     case R.RAIL: return (meta & 7) >= 2 && (meta & 7) <= 5 ? [[0, 0, 0, 1, 0.5, 1]] : [[0, 0, 0, 1, 2 / 16, 1]];
     case R.LADDER: return modelBoxes(id, meta, conn).map((a) => [Math.max(0, a[0] - 0.1), a[1], Math.max(0, a[2] - 0.1), Math.min(1, a[3] + 0.1), a[4], Math.min(1, a[5] + 0.1)]);
     case R.BOXES: if (id === B.snow) return [[0, 0, 0, 1, (meta + 1) * 2 / 16, 1]];
@@ -215,4 +296,33 @@ export function fenceConn(getId) {
   if (test(getId(0, 1))) m |= 16;
   if (test(getId(0, -1))) m |= 32;
   return m;
+}
+
+// redstone dust connections from a neighbour lookup get(dx, dy, dz) -> block value (see wireModel for the bits)
+const H_DIRS = [[1, 0, 1, 16], [-1, 0, 2, 32], [0, 1, 4, 64], [0, -1, 8, 128]];
+export function wireConn(get) {
+  let m = 0;
+  const aboveOpen = !BLOCKS[get(0, 1, 0) & 1023].opaque;
+  for (const [dx, dz, bit, up] of H_DIRS) {
+    const side = get(dx, 0, dz);
+    if (wireLinks(side, dx, dz)) m |= bit;
+    else if (!BLOCKS[side & 1023].opaque && (get(dx, -1, dz) & 1023) === B.redstone_wire) m |= bit;
+    else if (aboveOpen && BLOCKS[side & 1023].opaque && (get(dx, 1, dz) & 1023) === B.redstone_wire) m |= bit | up;
+  }
+  return m;
+}
+// does dust visually join the block v lying in direction (dx, dz)?
+export function wireLinks(v, dx, dz) {
+  const b = BLOCKS[v & 1023], k = b.redstone;
+  if (!k) return false;
+  if (k === 'wire' || k === 'torch' || k === 'lever' || k === 'button' || k === 'plate' || k === 'block' || k === 'drail') return true;
+  if (k === 'repeater') { const f = FACING_DIR[(v >>> 10) & 3]; return f[0] !== 0 ? dx !== 0 : dz !== 0; }
+  return false;
+}
+// vanilla dust colour for a signal strength
+export function wireColor(power) {
+  const f = power / 15;
+  const r = f * 0.6 + (power > 0 ? 0.4 : 0.3);
+  const g = Math.max(0, f * f * 0.7 - 0.5), b = Math.max(0, f * f * 0.6 - 0.7);
+  return ((r * 255) << 16) | ((g * 255) << 8) | (b * 255);
 }

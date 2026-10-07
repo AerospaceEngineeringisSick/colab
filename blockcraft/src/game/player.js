@@ -33,6 +33,7 @@ export class Player {
     this.mode = 'survival'; // survival | creative | spectator
     this.spawn = null; // [x,y,z] bed spawn
     this.inv = new PlayerInventory();
+    this.vehicle = null; // boat or minecart being ridden
     this.walkDist = 0; this.prevWalkDist = 0; this.bob = 0; this.prevBob = 0;
     this.stepDist = 0;
     this.jumpCooldown = 0;
@@ -79,6 +80,23 @@ export class Player {
     if (this.dead) return;
     if (this.sleeping) { this.vx = this.vz = 0; return; }
     const inp = this.input;
+    // riding: the vehicle moves us (it reads our input when it ticks)
+    if (this.vehicle) {
+      if (this.vehicle.removed) this.vehicle = null;
+      else {
+        this.sneaking = false; this.h = 1.8; this.eye = 1.62;
+        this.eyeSmooth += (1.62 - this.eyeSmooth) * 0.5;
+        this.sprinting = false;
+        const c = contacts(world, this.x, this.y, this.z, this.w, this.h);
+        this.inWater = c.water; this.inLava = c.lava;
+        this.eyeInWater = world.getId(Math.floor(this.x), Math.floor(this.y + this.eye), Math.floor(this.z)) === B.water;
+        this.eyeInLava = world.getId(Math.floor(this.x), Math.floor(this.y + this.eye), Math.floor(this.z)) === B.lava;
+        this.fallDistance = 0;
+        this.bob *= 0.6;
+        this.survivalTick(c);
+        return;
+      }
+    }
     // wait for the ground to exist
     if (!world.isLoaded(Math.floor(this.x), Math.floor(this.z))) return;
 
@@ -374,6 +392,7 @@ export class Player {
   }
 
   die(cause, source) {
+    if (this.vehicle) this.vehicle.dismount();
     this.dead = true;
     this.game.onPlayerDeath(cause, source);
   }
@@ -434,7 +453,7 @@ export class Player {
       x: this.x, y: this.y, z: this.z, yaw: this.yaw, pitch: this.pitch, health: this.health, food: this.food,
       saturation: this.saturation, exhaustion: this.exhaustion, air: this.air, level: this.level, xp: this.xp, xpTotal: this.xpTotal,
       mode: this.mode, spawn: this.spawn, inv: this.inv.toJSON(), flying: this.flying, fire: this.fire, dead: this.dead,
-      enchSeed: this.enchSeed,
+      enchSeed: this.enchSeed, riding: this.vehicle ? this.vehicle.type : null,
     };
   }
 
@@ -445,6 +464,7 @@ export class Player {
     }
     this.px = this.x; this.py = this.y; this.pz = this.z;
     this.inv.load(o.inv);
+    this.ridingType = o.riding || null; // remounted once vehicles load
     if (o.dead) this.health = 0;
     if (this.y > WH + 50) this.y = WH;
   }

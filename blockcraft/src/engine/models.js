@@ -64,7 +64,38 @@ const biped = (tw, th, legacy, armW = 4) => ({
   },
 });
 
+const PI = Math.PI;
+// boat paddle (side 1 = left, -1 = right): shaft plus blade
+const paddle = (uv, side) => ({
+  pivot: [3, 11, side * -9], rot: [0, side > 0 ? 0 : -PI, -0.19634955],
+  boxes: [{ o: [-1, -2, -13], s: [2, 2, 18], uv }, { o: [side > 0 ? -1.001 : 0.001, -3, -15], s: [1, 6, 7], uv }],
+});
+
 export const MODELS = {
+  // vanilla boat (128x64), long axis along x; the renderer turns it to face +z
+  boat: {
+    tex: [128, 64],
+    parts: {
+      bottom: { pivot: [0, 3, -1], rot: [PI / 2, 0, 0], boxes: [{ o: [-14, -7, 0], s: [28, 16, 3], uv: [0, 0] }] },
+      back: { pivot: [-15, 2, -4], rot: [0, -PI * 1.5, 0], boxes: [{ o: [-13, 1, -1], s: [18, 6, 2], uv: [0, 19] }] },
+      front: { pivot: [15, 2, 0], rot: [0, -PI / 2, 0], boxes: [{ o: [-8, 1, -1], s: [16, 6, 2], uv: [0, 27] }] },
+      right: { pivot: [0, 2, 9], rot: [0, -PI, 0], boxes: [{ o: [-14, 1, -1], s: [28, 6, 2], uv: [0, 35] }] },
+      left: { pivot: [0, 2, -9], boxes: [{ o: [-14, 1, -1], s: [28, 6, 2], uv: [0, 43] }] },
+      leftPaddle: paddle([62, 0], 1),
+      rightPaddle: paddle([62, 20], -1),
+    },
+  },
+  // vanilla minecart (64x32), long axis along x
+  minecart: {
+    tex: [64, 32],
+    parts: {
+      bottom: { pivot: [0, 2, 0], rot: [PI / 2, 0, 0], boxes: [{ o: [-10, -8, -1], s: [20, 16, 2], uv: [0, 10] }] },
+      front: { pivot: [-9, 2, 0], rot: [0, -PI * 1.5, 0], boxes: [{ o: [-8, 1, -1], s: [16, 8, 2], uv: [0, 0] }] },
+      back: { pivot: [9, 2, 0], rot: [0, -PI / 2, 0], boxes: [{ o: [-8, 1, -1], s: [16, 8, 2], uv: [0, 0] }] },
+      left: { pivot: [0, 2, 7], rot: [0, -PI, 0], boxes: [{ o: [-8, 1, -1], s: [16, 8, 2], uv: [0, 0] }] },
+      right: { pivot: [0, 2, -7], boxes: [{ o: [-8, 1, -1], s: [16, 8, 2], uv: [0, 0] }] },
+    },
+  },
   player: biped(64, 32, true),
   zombie: biped(64, 64, true),
   skeleton: {

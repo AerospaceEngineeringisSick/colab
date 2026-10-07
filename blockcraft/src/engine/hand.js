@@ -184,6 +184,13 @@ export class PlayerModel {
     const c = Math.cos(sw * 0.6662), c2 = Math.cos(sw * 0.6662 + Math.PI);
     P.rightLeg.rotation.x = c * 1.4 * amt; P.leftLeg.rotation.x = c2 * 1.4 * amt;
     P.rightArm.rotation.x = c2 * amt * 0.8; P.leftArm.rotation.x = c * amt * 0.8;
+    // seated in a boat or minecart (vanilla riding pose; our frame negates y rotations)
+    const riding = !!p.vehicle;
+    P.rightLeg.rotation.y = riding ? -Math.PI / 10 : 0; P.leftLeg.rotation.y = riding ? Math.PI / 10 : 0;
+    if (riding) {
+      P.rightLeg.rotation.x = P.leftLeg.rotation.x = -1.4137;
+      P.rightArm.rotation.x = P.leftArm.rotation.x = -Math.PI / 5;
+    }
     if (p.swing > 0) P.rightArm.rotation.x -= Math.sin((6 - p.swing) / 6 * Math.PI) * 1.2;
     if (this.held) P.rightArm.rotation.x -= 0.3;
     // sneaking

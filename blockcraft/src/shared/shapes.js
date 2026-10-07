@@ -91,6 +91,21 @@ export function blockModel(id, meta, conn = 0) {
     }
     case R.PAD:
       return M([box([0, 0, 0, 16, 0.25, 16], [null, null, 'lily_pad', 'lily_pad', null, null])]);
+    case R.RAIL: {
+      // flat or 45-degree quad; curves use the curved texture (the 'side' slot), powered rails their lit texture
+      const shape = meta & 7 | (meta & 8 && !b.straightOnly ? 8 : 0);
+      const lit = b.straightOnly && (meta & 8);
+      const tex = shape >= 6 ? t.side : lit ? t.side : t.top;
+      const faces = [null, null, tex, tex, null, null];
+      if (shape <= 1) return M([box([0, 1, 0, 16, 1, 16], faces)], shape);
+      if (shape <= 5) {
+        const uv = [FULL_UV, FULL_UV, FULL_UV, FULL_UV, FULL_UV, FULL_UV];
+        // built rising toward the south, then turned: 5 south, 3 west, 4 north, 2 east
+        return M([box([0, 1, 0, 16, 1, 16 * Math.SQRT2], faces, { uv, r: { angle: -45, origin: [0, 1, 0] } })], { 5: 0, 3: 1, 4: 2, 2: 3 }[shape]);
+      }
+      // curved texture joins south and east; turn for the other corners
+      return M([box([0, 1, 0, 16, 1, 16], faces)], { 6: 0, 7: 1, 8: 2, 9: 3 }[shape]);
+    }
     case R.BOXES: {
       if (id === B.snow) {
         const h = Math.min(16, (meta + 1) * 2);
@@ -183,6 +198,7 @@ export function selectionBoxes(id, meta, conn = 0) {
     case R.VINE: return FULL;
     case R.FENCE: return collisionBoxes(id, meta, conn).map((a) => [a[0], 0, a[2], a[3], 1, a[5]]);
     case R.PAD: return [[0, 0, 0, 1, 1 / 16, 1]];
+    case R.RAIL: return (meta & 7) >= 2 && (meta & 7) <= 5 ? [[0, 0, 0, 1, 0.5, 1]] : [[0, 0, 0, 1, 2 / 16, 1]];
     case R.LADDER: return modelBoxes(id, meta, conn).map((a) => [Math.max(0, a[0] - 0.1), a[1], Math.max(0, a[2] - 0.1), Math.min(1, a[3] + 0.1), a[4], Math.min(1, a[5] + 0.1)]);
     case R.BOXES: if (id === B.snow) return [[0, 0, 0, 1, (meta + 1) * 2 / 16, 1]];
   }

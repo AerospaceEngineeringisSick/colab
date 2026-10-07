@@ -6,6 +6,10 @@ import { raycast } from './raycast.js';
 import { segBox, Arrow, Thrown } from './entities.js';
 import { collisionBoxes, FACING_DIR } from '../shared/shapes.js';
 import { enchLevel, armorLevel } from '../shared/enchant.js';
+import { Boat, Minecart } from './vehicles.js';
+import { boxBlocked } from './physics.js';
+
+const boxBlockedAt = (w, x, y, z, wd, h) => boxBlocked(w, x - wd / 2, y, z - wd / 2, x + wd / 2, y + h, z + wd / 2);
 
 const FACE_DIR = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
 const SLAB_FULL = {};
@@ -34,7 +38,8 @@ export class Interaction {
     const hit = raycast(this.world, eye[0], eye[1], eye[2], dir[0], dir[1], dir[2], this.reach());
     let ent = null, best = hit ? hit.dist : this.reach();
     const er = p.creative ? 5 : 3.2;
-    for (const e of this.game.entities.mobsNear(eye[0], eye[1], eye[2], er + 3)) {
+    for (const e of this.game.entities.targetable(eye[0], eye[1], eye[2], er + 3)) {
+      if (e === p.vehicle) continue;
       const t = segBox(eye[0], eye[1], eye[2], dir[0], dir[1], dir[2], e);
       if (t !== null && t <= Math.min(best, er)) { best = t; ent = e; }
     }
@@ -196,7 +201,7 @@ export class Interaction {
       const kb = enchLevel(held, 'knockback'), fa = enchLevel(held, 'fire_aspect');
       if (kb && e.knock) { const k = 1 + kb * 1.25; e.knock[0] *= k; e.knock[1] *= k; }
       if (fa && !e.dead) e.fire = Math.max(e.fire || 0, 80 * fa);
-      p.lastTargetMob = e;
+      if (e.isMob) p.lastTargetMob = e;
       if (p.sprinting) p.sprinting = false;
       p.addExhaustion(0.1);
       if (it && it.durability) g.damageHeld(it.tool && it.tool.type === 'sword' ? 1 : 2);
@@ -225,6 +230,8 @@ export class Interaction {
       if (g.interactBlock(hit.x, hit.y, hit.z, hit)) { p.swing = 6; return; }
     }
     if (it) {
+      if (it.use === 'boat') { if (pressed) this.placeBoat(it); return; }
+      if (it.use === 'minecart') { if (pressed && hit && BLOCKS[hit.id].render === R.RAIL) this.placeMinecart(hit); return; }
       if (it.food) { if (pressed) this.startUse(it, 'eat'); return; }
       if (it.use === 'milk') { if (pressed) this.startUse(it, 'drink'); return; }
       if (it.use === 'bow') { if (pressed && (p.creative || p.inv.count(I.arrow) > 0)) this.startUse(it, 'bow'); return; }
@@ -248,6 +255,31 @@ export class Interaction {
         if (it.block !== undefined && !it.hidden) { this.place(it, hit); return; }
       }
     }
+  }
+
+  // boats go on water (or on the ground), facing the way the player looks
+  placeBoat(it) {
+    const g = this.game, p = this.player, w = this.world;
+    const eye = g.eyePos(), d = p.lookDir();
+    const hit = raycast(w, eye[0], eye[1], eye[2], d[0], d[1], d[2], this.reach(), 'any');
+    if (!hit) return;
+    let y = hit.y + 1;
+    if (LIQUID[hit.id]) y = hit.y + 0.6;
+    else if (hit.face !== 2) return;
+    const x = hit.px, z = hit.pz;
+    if (boxBlockedAt(w, x, y, z, 1.375, 0.5625)) return;
+    g.entities.add(new Boat(g, x, y, z, it.wood, p.yaw));
+    g.sound.play('place.node', x, y, z, 0.8);
+    p.swing = 6;
+    if (!p.creative) this.consumeHeld(1);
+  }
+  placeMinecart(hit) {
+    const g = this.game, p = this.player;
+    const c = new Minecart(g, hit.x + 0.5, hit.y, hit.z + 0.5);
+    g.entities.add(c);
+    g.sound.play('place.metal', hit.x + 0.5, hit.y, hit.z + 0.5, 0.8);
+    p.swing = 6;
+    if (!p.creative) this.consumeHeld(1);
   }
 
   startUse(it, kind) {
@@ -544,6 +576,7 @@ export class Interaction {
       return OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1;
     }
     if (bid === B.lily_pad) return below === B.water;
+    if (b.render === R.RAIL) return OPAQUE[below] === 1;
     if (bid === B.snow) return BLOCKS[below].solid && below !== B.ice;
     if (bid === B.oak_door) return BLOCKS[below].solid;
     if (bid === B.cake) return BLOCKS[below].solid;

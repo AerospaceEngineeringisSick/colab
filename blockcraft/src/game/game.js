@@ -11,6 +11,7 @@ import { BlockTicks } from '../world/blockticks.js';
 import { Player } from './player.js';
 import { Entities, ItemEntity, XpOrb, FallingBlock, PrimedTnt } from './entities.js';
 import { Mob, MOBS } from './mobs.js';
+import { Boat, Minecart, isRail, connectRail } from './vehicles.js';
 import { Interaction } from './interact.js';
 import { Particles } from '../engine/particles.js';
 import { Hand, PlayerModel } from '../engine/hand.js';
@@ -551,7 +552,7 @@ export class Game {
     for (const e of this.entities.list) {
       if (e.removed) continue;
       if (e.x >= x0 && e.x < x0 + 16 && e.z >= z0 && e.z < z0 + 16) {
-        if (e.isMob && e.persistent) { const o = e.toJSON(); if (o) this.parked.push(o); }
+        if ((e.isMob && e.persistent) || (e.isVehicle && !e.rider)) { const o = e.toJSON(); if (o) this.parked.push(o); }
         e.remove();
       }
     }
@@ -603,6 +604,12 @@ export class Game {
     } else if (o.t === 'item') {
       const e = this.dropItem(o.x, o.y, o.z, stackFromJSON(o.s), { vx: 0, vy: 0, vz: 0, delay: 0 });
       if (e) e.age = o.age || 0;
+    } else if (o.t === 'boat' || o.t === 'minecart') {
+      const v = this.entities.add(o.t === 'boat' ? new Boat(this, o.x, o.y, o.z, o.wood, o.yaw || 0) : new Minecart(this, o.x, o.y, o.z));
+      if (o.t === 'minecart') { v.vx = o.vx || 0; v.vz = o.vz || 0; }
+      // a player saved while riding gets back in
+      const p = this.player;
+      if (p.ridingType === o.t && Math.hypot(p.x - v.x, p.z - v.z) < 1.5) { p.ridingType = null; v.mount(p); }
     }
   }
 
@@ -976,7 +983,7 @@ export class Game {
   }
   onBlockPlaced(x, y, z, v) {
     this.stats.placed++;
-    if ((v & 1023) === B.tnt) void 0;
+    if (isRail(v & 1023)) connectRail(this.world, x, y, z);
   }
   onCraft(id, count) {
     this.stats.crafted += count;

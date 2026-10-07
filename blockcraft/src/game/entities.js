@@ -525,6 +525,11 @@ export class Entities {
     return this.list.filter((e) => e.isMob && !e.removed && !e.dead && (e.x - x) ** 2 + (e.y - y) ** 2 + (e.z - z) ** 2 <= r2);
   }
   mobs() { return this.list.filter((e) => e.isMob && !e.removed); }
+  // things the player can hit or right-click: mobs and vehicles
+  targetable(x, y, z, r) {
+    const r2 = r * r;
+    return this.list.filter((e) => (e.isMob || e.isVehicle) && !e.removed && !e.dead && (e.x - x) ** 2 + (e.y - y) ** 2 + (e.z - z) ** 2 <= r2);
+  }
   clear() { for (const e of this.list) e.remove(); this.list = []; }
 }
 void R;

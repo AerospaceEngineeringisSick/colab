@@ -8,7 +8,7 @@ export const B = {};
 // render types
 export const R = {
   NONE: 0, CUBE: 1, CROSS: 2, CROP: 3, LIQUID: 4, BOXES: 5, TORCH: 6, DOOR: 7,
-  LADDER: 8, FENCE: 9, STAIRS: 10, SLAB: 11, VINE: 12, PAD: 13, BED: 14,
+  LADDER: 8, FENCE: 9, STAIRS: 10, SLAB: 11, VINE: 12, PAD: 13, BED: 14, RAIL: 15,
 };
 
 const DEFAULTS = {
@@ -230,6 +230,11 @@ block('enchanting_table', { render: R.BOXES, hardness: 5, tool: 'pickaxe', needs
 // anvil: meta bits 0-1 facing (the long side runs across the player's view)
 block('anvil', { render: R.BOXES, hardness: 5, tool: 'pickaxe', needsTool: true, opaque: false, lightOpacity: 0, sound: 'metal', layer: 0,
   rotate: 'facing', gravity: true, tex: { top: 'anvil_top', side: 'anvil_side', bottom: 'anvil_base' } });
+// rails: meta = shape (0 N-S, 1 E-W, 2-5 ascending E/W/N/S, 6-9 curves SE/SW/NW/NE); powered kinds add 8 when on
+const RAIL = { render: R.RAIL, hardness: 0.7, tool: 'pickaxe', sound: 'metal', solid: false, opaque: false, lightOpacity: 0, layer: 1 };
+block('rail', { ...RAIL, tex: { top: 'rail', side: 'rail_curved' } });
+block('powered_rail', { ...RAIL, tex: { top: 'powered_rail', side: 'powered_rail_on' }, straightOnly: true });
+block('detector_rail', { ...RAIL, tex: { top: 'detector_rail', side: 'detector_rail_on' }, straightOnly: true });
 
 // ------------------------------------------------------------------ tables
 const N = 1024;

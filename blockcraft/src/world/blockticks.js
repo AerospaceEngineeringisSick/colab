@@ -105,6 +105,8 @@ export class BlockTicks {
     } else if (id === B.torch) {
       if (meta === 0) ok = BLOCKS[below].solid && below !== B.glass ? true : BLOCKS[below].render === R.FENCE;
       else { const f = meta - 1; const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][f]; ok = OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1; }
+    } else if (b.render === R.RAIL) {
+      ok = OPAQUE[below] === 1;
     } else if (id === B.ladder) {
       const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][meta & 3];
       ok = OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1;

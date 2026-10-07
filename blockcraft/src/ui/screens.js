@@ -51,14 +51,14 @@ const CREATIVE_TABS = [
   { name: 'Building Blocks', icon: 'bricks', filter: (it) => it.block !== undefined && BLOCKS[it.block].render !== R.CROSS && !isFunctional(it) && !isNature(it) },
   { name: 'Nature', icon: 'grass_block', filter: (it) => it.block !== undefined && isNature(it) },
   { name: 'Functional', icon: 'crafting_table', filter: (it) => it.block !== undefined && isFunctional(it) },
-  { name: 'Tools & Combat', icon: 'iron_pickaxe', filter: (it) => it.id >= 1024 && (it.tool || it.armor || it.durability || it.name === 'arrow' || it.name === 'enchanted_book') },
-  { name: 'Food & Materials', icon: 'apple', filter: (it) => it.id >= 1024 && !it.tool && !it.armor && !it.durability && !it.egg && it.name !== 'arrow' && it.name !== 'enchanted_book' },
+  { name: 'Tools & Combat', icon: 'iron_pickaxe', filter: (it) => it.id >= 1024 && (it.tool || it.armor || it.durability || it.name === 'arrow' || it.name === 'enchanted_book' || it.use === 'boat' || it.use === 'minecart') },
+  { name: 'Food & Materials', icon: 'apple', filter: (it) => it.id >= 1024 && !it.tool && !it.armor && !it.durability && !it.egg && it.name !== 'arrow' && it.name !== 'enchanted_book' && it.use !== 'boat' && it.use !== 'minecart' },
   { name: 'Spawn Eggs', icon: 'pig_spawn_egg', filter: (it) => !!it.egg },
   { name: 'Search', icon: 'compass', filter: () => true, search: true },
   { name: 'Survival Inventory', icon: 'chest', inv: true },
 ];
 const NATURE = ['grass_block', 'dirt', 'coarse_dirt', 'podzol', 'sand', 'red_sand', 'gravel', 'clay', 'snow_block', 'snow', 'ice', 'packed_ice', 'stone', 'granite', 'diorite', 'andesite', 'cobblestone', 'mossy_cobblestone', 'bedrock', 'obsidian', 'coal_ore', 'iron_ore', 'gold_ore', 'diamond_ore', 'redstone_ore', 'lapis_ore', 'emerald_ore', 'cactus', 'sugar_cane', 'pumpkin', 'melon', 'cobweb', 'vine', 'lily_pad'];
-const FUNCTIONAL = ['crafting_table', 'furnace', 'chest', 'enchanting_table', 'anvil', 'torch', 'ladder', 'oak_door', 'red_bed', 'tnt', 'bookshelf', 'jack_o_lantern', 'glowstone', 'sea_lantern', 'spawner', 'cake', 'farmland', 'dirt_path', 'oak_fence'];
+const FUNCTIONAL = ['crafting_table', 'furnace', 'chest', 'enchanting_table', 'anvil', 'rail', 'powered_rail', 'detector_rail', 'torch', 'ladder', 'oak_door', 'red_bed', 'tnt', 'bookshelf', 'jack_o_lantern', 'glowstone', 'sea_lantern', 'spawner', 'cake', 'farmland', 'dirt_path', 'oak_fence'];
 function isNature(it) { const n = it.name; return NATURE.includes(n) || n.endsWith('_log') || n.endsWith('_leaves') || n.endsWith('_sapling') || BLOCKS[it.block].plant || BLOCKS[it.block].render === R.CROSS; }
 function isFunctional(it) { return FUNCTIONAL.includes(it.name); }
 

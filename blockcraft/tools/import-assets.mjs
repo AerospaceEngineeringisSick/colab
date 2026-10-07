@@ -102,6 +102,9 @@ const T = {
     enchanting_table_top: 'mcl_enchanting_table_top', enchanting_table_side: 'mcl_enchanting_table_side',
     enchanting_table_bottom: 'mcl_enchanting_table_bottom', anvil_top: 'mcl_anvils_anvil_top_damaged_0',
     anvil_side: 'mcl_anvils_anvil_side', anvil_base: 'mcl_anvils_anvil_base',
+    rail: 'default_rail', rail_curved: 'default_rail_curved', powered_rail: 'mcl_minecarts_rail_golden',
+    powered_rail_on: 'mcl_minecarts_rail_golden_powered', detector_rail: 'mcl_minecarts_rail_detector',
+    detector_rail_on: 'mcl_minecarts_rail_detector_powered',
   },
   item: {
     stick: 'default_stick', coal: 'default_coal_lump', charcoal: 'mcl_core_charcoal', iron_ingot: 'default_steel_ingot',
@@ -136,6 +139,7 @@ const T = {
     cookie: 'farming_cookie', cake: 'cake', glowstone_dust: 'mcl_nether_glowstone_dust', iron_nugget: 'mcl_core_iron_nugget',
     gold_nugget: 'mcl_core_gold_nugget', slime_ball: 'mcl_mobitems_slimeball', ink_sac: 'mcl_mobitems_ink_sac',
     spawn_egg: 'spawn_egg', spawn_egg_overlay: 'spawn_egg_overlay', enchanted_book: 'mcl_enchanting_book_enchanted',
+    minecart: 'mcl_minecarts_minecart_normal',
   },
   entity: {
     zombie: 'mobs_mc_zombie', skeleton: 'mobs_mc_skeleton', creeper: 'mobs_mc_creeper', spider: 'mobs_mc_spider',
@@ -145,6 +149,7 @@ const T = {
     wolf_collar: 'mobs_mc_wolf_collar', steve: 'character', alex: 'mcl_skins_character_1', chest: 'mcl_chests_normal',
     bed: 'mcl_beds_bed_red', arrow: 'mcl_bows_arrow', slime: 'mobs_mc_slime',
     skeleton_overlay: 'mobs_mc_stray_overlay', enchanting_book: 'mcl_enchanting_book_entity',
+    minecart: 'mcl_minecarts_minecart',
   },
   gui: {
     hotbar: 'mcl_inventory_hotbar', hotbar_selected: 'mcl_inventory_hotbar_selected', heart: 'heart',
@@ -170,6 +175,11 @@ for (const m of ['leather', 'chain', 'iron', 'gold', 'diamond']) {
     T.item[`${im}_${p}`] = `mcl_armor_inv_${p}_${m}`;
     T.entity[`armor_${m}_${p}`] = `mcl_armor_${p}_${m}`;
   }
+}
+// boats: inventory icons and entity textures per wood
+for (const w of ['oak', 'birch', 'spruce', 'jungle', 'acacia', 'dark_oak']) {
+  T.item[w + '_boat'] = `mcl_boats_${w}_boat`;
+  T.entity['boat_' + w] = `mcl_boats_texture_${w}_boat`;
 }
 // enchanting table glyphs (Standard Galactic) and level-cost badges
 for (let i = 1; i <= 18; i++) T.gui['glyph_' + i] = 'mcl_enchanting_glyph_' + i;

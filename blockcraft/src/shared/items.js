@@ -16,6 +16,7 @@ const FLAT_ICON = { // blocks shown with a flat texture in the inventory
   fern: 'block/fern', dead_bush: 'block/dead_bush', brown_mushroom: 'block/brown_mushroom', red_mushroom: 'block/red_mushroom',
 };
 for (const w of WOODS) FLAT_ICON[w + '_sapling'] = 'block/' + w + '_sapling';
+for (const n of ['rail', 'powered_rail', 'detector_rail']) FLAT_ICON[n] = 'block/' + n;
 for (const f of FLOWERS) FLAT_ICON[f] = 'block/' + f;
 
 for (const b of BLOCKS) {
@@ -152,6 +153,10 @@ for (const [mob, col] of Object.entries(SPAWN_EGGS)) {
 
 // enchanted books carry their enchantments in the stack (stack.ench)
 item('enchanted_book', { maxStack: 1, glint: true });
+
+// vehicles
+for (const w of WOODS) item(w + '_boat', { maxStack: 1, use: 'boat', wood: w });
+item('minecart', { maxStack: 1, use: 'minecart' });
 
 // cake & bed & door & sugar cane are block items placed directly
 ITEMS[B.cake].maxStack = 1;

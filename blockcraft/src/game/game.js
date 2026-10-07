@@ -4,7 +4,7 @@ import { BLOCKS, B, R, OPAQUE, LIQUID, WOODS } from '../shared/blocks.js';
 import { ITEMS, I } from '../shared/items.js';
 import { WH, SEA } from '../shared/constants.js';
 import { WorldGen } from '../shared/worldgen.js';
-import { BIOMES, BI } from '../shared/biomes.js';
+import { BIOMES, BI, snowsAt } from '../shared/biomes.js';
 import { rng } from '../shared/noise.js';
 import { World } from '../world/world.js';
 import { BlockTicks } from '../world/blockticks.js';
@@ -14,6 +14,7 @@ import { Mob, MOBS } from './mobs.js';
 import { Interaction } from './interact.js';
 import { Particles } from '../engine/particles.js';
 import { Hand, PlayerModel } from '../engine/hand.js';
+import { Weather } from '../engine/weather.js';
 import { texInfo, blockArray } from '../engine/textures.js';
 import { selectionBoxes, fenceConn } from '../shared/shapes.js';
 import { Container } from './inventory.js';
@@ -76,6 +77,7 @@ export class Game {
     this.spawner = new Spawner(this);
     this.hand = new Hand(r, 'entity/steve');
     this.playerModel = new PlayerModel(r.scene, 'entity/steve');
+    this.weatherFx = new Weather(r.scene);
     this.activeTiles = new Set();
     this.selection = this.makeSelectionBox();
     this.breakOverlay = this.makeBreakOverlay();
@@ -143,6 +145,7 @@ export class Game {
     this.r.scene.remove(this.breakOverlay);
     this.r.scene.remove(this.playerModel.root);
     this.r.handScene.remove(this.hand.root);
+    this.weatherFx.dispose(this.r.scene);
   }
 
   // pick a land column near the origin for a new world
@@ -223,6 +226,7 @@ export class Game {
     // dim the sky light when standing in a cave so fog isn't glowing
     this.entities.render(a, this.clock);
     this.particles.update(paused ? 0 : dt);
+    this.weatherFx.update(this.world, this, cam.position, this.weather.rainAmt, paused ? 0 : dt);
     this.updateSelection();
     this.updateHand(a, dt);
     const third = this.camMode !== 0;
@@ -737,7 +741,8 @@ export class Game {
     }
     // rain sound when exposed
     const p = this.player;
-    const exposed = w.rainAmt > 0.2 && this.world.rainY(Math.floor(p.x), Math.floor(p.z)) <= p.y + p.eye + 4 && this.biomeAt(p.x, p.z).snow !== 1 && !this.biomeAt(p.x, p.z).dry;
+    const top = this.world.rainY(Math.floor(p.x), Math.floor(p.z)), pb = this.biomeAt(p.x, p.z);
+    const exposed = w.rainAmt > 0.2 && top <= p.y + p.eye + 4 && !snowsAt(pb, top) && !pb.dry;
     this.sound.loop('weather.rain', exposed && this.settings.sfx > 0, 0.35 * w.rainAmt);
   }
   biomeAt(x, z) { return this.world.biomeAt(Math.floor(x), Math.floor(z)); }
@@ -766,24 +771,17 @@ export class Game {
         this.particles.flame(x + Math.random(), y + Math.random(), z + Math.random());
       }
     }
-    // rain & snow
+    // rain splashes on the ground (the falling rain itself is drawn by Weather)
     const wr = this.weather.rainAmt;
     if (wr > 0.05) {
-      const n = Math.floor(wr * 40 * (this.settings.particles / 2));
+      const n = Math.floor(wr * 12 * (this.settings.particles / 2));
       for (let i = 0; i < n; i++) {
-        const x = p.x + (Math.random() - 0.5) * 24, z = p.z + (Math.random() - 0.5) * 24;
+        const x = p.x + (Math.random() - 0.5) * 16, z = p.z + (Math.random() - 0.5) * 16;
         const bio = this.biomeAt(x, z);
         if (bio.dry) continue;
         const top = w.rainY(Math.floor(x), Math.floor(z));
-        if (top < 0) continue;
-        const snow = bio.snow || (top > 100);
-        const y = Math.max(top + 1, p.y + 6 + Math.random() * 6);
-        if (snow) {
-          this.particles.add({ x, y, z, vx: (Math.random() - 0.5) * 0.4, vy: -1.4 - Math.random() * 0.4, vz: (Math.random() - 0.5) * 0.4, g: 0, drag: 1, life: Math.min(4, (y - top - 1) / 1.6), size: 0.1, layer: this.particles.layer('env/snowflake') });
-        } else {
-          this.particles.add({ x, y, z, vy: -14, g: 0, drag: 1, life: Math.min(1.2, (y - top - 1) / 14), size: 0.11, layer: this.particles.layer('env/rain'), r: 0.7, gg: 0.8, b: 1, a: 0.7 });
-          if (Math.random() < 0.3 && Math.abs(top - p.y) < 12) this.particles.rainDrop(x, top + 1.02, z);
-        }
+        if (top < 0 || snowsAt(bio, top) || Math.abs(top - p.y) > 10) continue;
+        this.particles.rainDrop(x, top + 1.02, z);
       }
     }
     // underwater bubbles from the player

@@ -73,7 +73,9 @@ export class BlockTicks {
       const b = BLOCKS[id];
       if (b.liquid) this.schedule(nx, ny, nz, id === B.water ? 5 : 30);
       else if (b.gravity) this.schedule(nx, ny, nz, 2);
-      else this.checkSupport(nx, ny, nz, v);
+      // the changed block itself is not support-checked: multi-block structures
+      // (doors, beds) are placed one half at a time
+      else if (d < 6) this.checkSupport(nx, ny, nz, v);
     }
     // fluids next to a removed block may flow into it
     for (const D of DIRS) {

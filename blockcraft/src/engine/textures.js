@@ -211,16 +211,29 @@ export function avgColor(name) {
 // make a three.js texture from an image (entities, items, sky)
 const texCache = new Map();
 export function imageTexture(name, opts = {}) {
+  // canvases are keyed by identity (string concatenation would collapse them all into one key)
+  if (typeof name !== 'string') {
+    let m = objTexCache.get(name);
+    if (!m) objTexCache.set(name, m = {});
+    const k = opts.repeat ? 'r' : 'n';
+    if (!m[k]) m[k] = canvasTexture(name, opts);
+    return m[k];
+  }
   const key = name + (opts.repeat ? '#r' : '');
   if (texCache.has(key)) return texCache.get(key);
-  const c = typeof name === 'string' ? images[name] : name;
+  const c = images[name];
   if (!c) throw new Error('no image ' + name);
+  const t = canvasTexture(c, opts);
+  texCache.set(key, t);
+  return t;
+}
+const objTexCache = new WeakMap();
+function canvasTexture(c, opts) {
   const t = new THREE.CanvasTexture(c);
   t.magFilter = THREE.NearestFilter;
   t.minFilter = THREE.NearestFilter;
   t.generateMipmaps = false;
   t.colorSpace = THREE.NoColorSpace;
   if (opts.repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; }
-  texCache.set(key, t);
   return t;
 }

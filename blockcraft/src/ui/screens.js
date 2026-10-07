@@ -490,6 +490,15 @@ export class Screens {
   // ---------------------------------------------------------------- input
   onDown(e, s) {
     e.preventDefault(); e.stopPropagation();
+    if (e.pointerType === 'touch') {
+      // touch: tap = left click, long press = right click
+      clearTimeout(this.pressTimer);
+      let fired = false;
+      this.pressTimer = setTimeout(() => { fired = true; this.click(s, 2, false); if (navigator.vibrate) navigator.vibrate(15); }, 380);
+      const up = () => { clearTimeout(this.pressTimer); if (!fired) this.click(s, 0, false); };
+      window.addEventListener('pointerup', up, { once: true });
+      return;
+    }
     const btn = e.button === 2 ? 2 : e.button === 1 ? 1 : 0;
     const shift = e.shiftKey;
     // drag distribution starts when holding a stack over an empty or matching slot

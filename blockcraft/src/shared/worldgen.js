@@ -3,7 +3,7 @@
 import { Simplex, hash2, hash3, rng } from './noise.js';
 import { CS, WH, SEA, idx } from './constants.js';
 import { B, OPAQUE, FLOWERS } from './blocks.js';
-import { BIOMES, BI, LAND } from './biomes.js';
+import { BIOMES, BI, LAND, snowsAt } from './biomes.js';
 
 const smooth = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -490,7 +490,7 @@ export class WorldGen {
     for (let z = 0; z < CS; z++) for (let x = 0; x < CS; x++) {
       const i = z * 16 + x;
       const bio = biomes[i];
-      const snowy = BIOMES[bio].snow || (bio === BI.MOUNTAINS && heights[i] > 100);
+      const snowy = snowsAt(BIOMES[bio], heights[i]);
       if (!snowy) continue;
       let y = WH - 2;
       while (y > 0 && blocks[idx(x, y, z)] === 0) y--;

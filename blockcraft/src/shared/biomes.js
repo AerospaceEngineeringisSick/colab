@@ -31,6 +31,10 @@ BIOMES.forEach((b, i) => {
 
 export const BI = {};
 for (const b of BIOMES) BI[b.name.replace(/ /g, '_').toUpperCase()] = b.id;
+BIOMES[BI.MOUNTAINS].snowAbove = 100;
+
+// does precipitation fall as snow at this height? (mountain peaks are cold, like vanilla's temperature falloff)
+export const snowsAt = (b, y) => !!b.snow || (b.snowAbove !== undefined && y > b.snowAbove);
 
 // land biomes that take part in climate blending
 export const LAND = BIOMES.filter((b) => b.t !== undefined);

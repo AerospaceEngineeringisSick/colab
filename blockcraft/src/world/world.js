@@ -47,7 +47,7 @@ export class World {
     this.wanted = [];
     this.savedKeys = new Set(); // chunks present in the save
     this.loadChunkData = null; // async (cx,cz) => {blocks, tiles} | null
-    this.dirtySections = new Set();
+    this.dirtyChunks = new Set();
     this.sectionMeshes = new Set();
     this.onChunkLoaded = null;
     this.fastLeaves = false;
@@ -76,7 +76,7 @@ export class World {
     this.fastLeaves = v;
     this.mesher.fastLeaves = v;
     for (const w of this.workers) w.postMessage({ type: 'opts', fastLeaves: v });
-    for (const c of this.chunks.values()) { c.dirty = 0xff; }
+    for (const c of this.chunks.values()) { c.dirty = 0xff; this.dirtyChunks.add(c); }
   }
 
   pickWorker() {
@@ -187,10 +187,11 @@ export class World {
   }
   markSection(cx, sy, cz) {
     if (sy < 0 || sy >= 8) return;
-    const c = this.chunks.get(ckey(cx, cz));
+    const c = this.getChunk(cx, cz);
     if (!c || !c.blocks) return;
     c.dirty |= 1 << sy;
     c.rev[sy]++;
+    this.dirtyChunks.add(c);
   }
 
   // ------------------------------------------------------------ lighting
@@ -293,25 +294,27 @@ export class World {
 
   // spread light across the border between a new chunk and its loaded neighbours
   stitchLight(c) {
+    const x0 = c.cx * 16, z0 = c.cz * 16;
+    // [neighbour dx, dz, local x/z in c, local x/z in neighbour, along-x?]
+    const sides = [[0, -1, 0, 15, true], [0, 1, 15, 0, true], [-1, 0, 0, 15, false], [1, 0, 15, 0, false]];
     for (const shift of [4, 0]) {
       const q = [];
-      const tryPair = (ax, az, bx, bz) => {
-        const nb = this.getChunk(bx >> 4, bz >> 4);
-        if (!nb || !nb.light) return;
-        for (let y = 0; y < WH; y++) {
-          const la = (this.getLight(ax, y, az) >> shift) & 15;
-          const lb = (this.getLight(bx, y, bz) >> shift) & 15;
-          if (la > lb + 1) q.push(ax, y, az); else if (lb > la + 1) q.push(bx, y, bz);
+      for (const [dx, dz, ca, nbIdx, alongX] of sides) {
+        const nb = this.chunks.get(ckey(c.cx + dx, c.cz + dz));
+        if (!nb || !nb.light) continue;
+        const A = c.light, Bl = nb.light;
+        for (let i = 0; i < 16; i++) {
+          const ax = alongX ? i : ca, az = alongX ? ca : i;
+          const bx = alongX ? i : nbIdx, bz = alongX ? nbIdx : i;
+          for (let y = 0; y < WH; y++) {
+            const la = (A[(y << 8) | (az << 4) | ax] >> shift) & 15;
+            const lb = (Bl[(y << 8) | (bz << 4) | bx] >> shift) & 15;
+            if (la > lb + 1) q.push(x0 + ax, y, z0 + az);
+            else if (lb > la + 1) q.push(x0 + ax + dx, y, z0 + az + dz);
+          }
         }
-      };
-      const x0 = c.cx * 16, z0 = c.cz * 16;
-      for (let i = 0; i < 16; i++) {
-        tryPair(x0 + i, z0, x0 + i, z0 - 1);
-        tryPair(x0 + i, z0 + 15, x0 + i, z0 + 16);
-        tryPair(x0, z0 + i, x0 - 1, z0 + i);
-        tryPair(x0 + 15, z0 + i, x0 + 16, z0 + i);
       }
-      this.addBFS(q, shift);
+      if (q.length) this.addBFS(q, shift);
     }
   }
 
@@ -400,10 +403,10 @@ export class World {
       }
       c.savedTiles = null;
       if (this.onChunkLoaded) this.onChunkLoaded(c, m.loaded ? [] : m.spawns, !m.loaded && m.tiles && m.tiles.length);
-      // neighbours may now be meshable; light changes already marked dirty
+      // this chunk and its unmeshed neighbours may now be meshable
       for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
         const n = this.chunks.get(ckey(c.cx + dx, c.cz + dz));
-        if (n && n.blocks && (dx || dz)) n.dirty = 0xff;
+        if (n && n.blocks && n.dirty) this.dirtyChunks.add(n);
       }
     } else if (m.type === 'mesh') {
       this.inflightMesh--;
@@ -411,7 +414,7 @@ export class World {
       const c = this.chunks.get(k);
       if (!c) return;
       c.pending[s] = 0;
-      if (m.rev !== c.rev[s]) { c.dirty |= 1 << s; return; } // stale
+      if (m.rev !== c.rev[s]) { c.dirty |= 1 << s; this.dirtyChunks.add(c); return; } // stale
       this.applyMesh(c, s, m.out);
       c.meshedRev[s] = m.rev;
     }
@@ -429,10 +432,10 @@ export class World {
   scheduleMeshes(px, pz) {
     const maxJobs = this.workers.length * 3;
     if (this.inflightMesh >= maxJobs) return;
-    // closest dirty chunks first
+    // closest dirty chunks first (only chunks flagged dirty are visited)
     const list = [];
-    for (const c of this.chunks.values()) {
-      if (!c.dirty || !c.blocks) continue;
+    for (const c of this.dirtyChunks) {
+      if (!c.dirty || !c.blocks || this.chunks.get(c.key) !== c) { this.dirtyChunks.delete(c); continue; }
       const dx = c.cx * 16 + 8 - px, dz = c.cz * 16 + 8 - pz;
       list.push([dx * dx + dz * dz, c]);
     }

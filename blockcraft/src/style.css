@@ -48,6 +48,9 @@ input, button { font-family: inherit; }
 #chatlog { display: flex; flex-direction: column; justify-content: flex-end; max-height: calc(90 * var(--s)); overflow: hidden; }
 #chatlog div { padding: 0 calc(1 * var(--s)); background: rgba(0, 0, 0, 0.45); white-space: pre-wrap; word-break: break-word; transition: opacity 1s; }
 #chat.open #chatlog { max-height: calc(180 * var(--s)); }
+#ui.touch #chat { bottom: auto; top: calc(4 * var(--s)); width: min(calc(220 * var(--s)), 55vw); }
+#ui.touch #chat #chatlog { max-height: calc(60 * var(--s)); }
+#ui.touch #debug { top: calc(70 * var(--s)); }
 #chat.open #chatlog div { opacity: 1 !important; }
 #chatinput { margin-top: calc(2 * var(--s)); width: 100%; height: calc(12 * var(--s)); background: rgba(0, 0, 0, 0.55); border: 0; color: #fff; font-size: calc(8 * var(--s)); padding: 0 calc(2 * var(--s)); outline: none; pointer-events: auto; text-shadow: var(--s) var(--s) 0 #3f3f3f; }
 

@@ -31,6 +31,7 @@ export class Touch {
     this.enabled = s === 'on' || (s === 'auto' && coarse);
     this.input.touch.active = this.enabled;
     this.root.classList.toggle('hidden', !this.enabled || !this.ui.game);
+    if (this.ui.touch === this) this.ui.applyScale();
   }
   onGameStart() { this.update(); }
   onGameStop() { this.root.classList.add('hidden'); }

@@ -67,11 +67,14 @@ export class UI {
     const s = this.app.settings.guiScale;
     const w = window.innerWidth, h = window.innerHeight;
     let auto = Math.max(1, Math.min(Math.floor(w / 320), Math.floor(h / 240)));
-    if (w < 700 || h < 500) auto = Math.max(1, Math.min(auto, 2));
     auto = Math.min(auto, 4);
-    // allow fractional scale on small phones so the hotbar fits
+    // phones and small windows: a fractional scale keeps things big enough to tap
+    const touch = this.touch && this.touch.enabled;
+    if (touch || w < 700 || h < 500) auto = Math.max(auto, Math.floor(Math.min(w / 300, h / 225) * 4) / 4);
     let scale = s ? Math.min(s, auto + 1) : auto;
     if (182 * scale > w * 0.98) scale = (w * 0.98) / 182;
+    if (176 * scale > w * 0.98 || 172 * scale > h) scale = Math.min((w * 0.98) / 176, h / 172);
+    this.root.classList.toggle('touch', !!touch);
     this.scale = scale;
     document.documentElement.style.setProperty('--s', scale + 'px');
   }
@@ -151,7 +154,13 @@ export class UI {
     }
     this.hbSel = el('div', '', this.hotbar); this.hbSel.id = 'hb-sel';
     const stats = el('div', '', hud); stats.id = 'stats';
-    const row = (id) => { const r = el('div', 'row9', stats); r.id = id; const items = []; for (let i = 0; i < 10; i++) { const x = el('i', '', r); items.push(x); } return items; };
+    const row = (id) => {
+      const r = el('div', 'row9', stats); r.id = id;
+      const fromRight = id === 'food' || id === 'air';
+      const items = [];
+      for (let i = 0; i < 10; i++) { const x = el('i', '', r); x.style[fromRight ? 'right' : 'left'] = `calc(${i * 8} * var(--s))`; items.push(x); }
+      return items;
+    };
     this.hearts = row('hearts'); this.armorRow = row('armor'); this.foodRow = row('food'); this.airRow = row('air');
     const xp = el('div', '', hud); xp.id = 'xp';
     this.xpFill = el('i', '', xp); this.xpLevel = el('b', '', xp);
@@ -241,53 +250,50 @@ export class UI {
   updateStats(game, dt) {
     const p = game.player, I2 = this.hudIcons;
     const c = game.clock;
-    // hearts with low-health jitter and hurt flash
+    // write a style property only when it changes (keeps per-frame DOM work tiny)
+    const css = (e, k, v) => { if (e['_' + k] !== v) { e['_' + k] = v; e.style[k] = v; } };
+    const img = (e, src) => { if (e._src !== src) { e._src = src; e.style.backgroundImage = `url(${src})`; } };
+    // hearts with low-health jitter, hurt flash and the regeneration wave
     const hp = Math.ceil(p.health);
     const flash = p.hurtTime > 0 && p.hurtTime % 4 < 2;
     const regenWave = p.regenTimer === 0 && p.health < p.maxHealth && p.food >= 18 ? Math.floor(c * 20) % 15 : -1;
     for (let i = 0; i < 10; i++) {
       const e = this.hearts[i];
       const v = hp - i * 2;
-      const src = v >= 2 ? I2.heart : v === 1 ? I2.heartHalf : (flash ? I2.heartFlash : I2.heartEmpty);
-      if (e._src !== src) { e._src = src; e.style.backgroundImage = `url(${src})`; }
+      img(e, v >= 2 ? I2.heart : v === 1 ? I2.heartHalf : (flash ? I2.heartFlash : I2.heartEmpty));
       let dy = 0;
       if (p.health <= 4) dy = Math.round(Math.sin(c * 30 + i * 7.1) * 1.2);
       if (regenWave === i) dy -= 2;
-      e.style.transform = `translateY(${dy * this.scale}px)`;
-      e.style.left = `calc(${i * 8} * var(--s))`;
+      css(e, 'transform', dy ? `translateY(${dy * this.scale}px)` : '');
     }
     // food (right to left) with jitter when saturation is empty
     for (let i = 0; i < 10; i++) {
       const e = this.foodRow[i];
       const v = p.food - i * 2;
-      const src = v >= 2 ? I2.food : v === 1 ? I2.foodHalf : I2.foodEmpty;
-      if (e._src !== src) { e._src = src; e.style.backgroundImage = `url(${src})`; }
+      img(e, v >= 2 ? I2.food : v === 1 ? I2.foodHalf : I2.foodEmpty);
       const dy = p.saturation <= 0 && Math.floor(c * 20) % (p.food * 3 + 1) === 0 ? Math.round(Math.random() * 2 - 1) : 0;
-      e.style.transform = `translateY(${dy * this.scale}px)` + (p.hungerEffect > 0 ? ' ' : '');
-      e.style.filter = p.hungerEffect > 0 ? 'hue-rotate(60deg) saturate(0.7)' : '';
-      e.style.right = `calc(${i * 8} * var(--s))`;
+      css(e, 'transform', dy ? `translateY(${dy * this.scale}px)` : '');
+      css(e, 'filter', p.hungerEffect > 0 ? 'hue-rotate(60deg) saturate(0.7)' : '');
     }
     // armour
     const ap = p.inv.armorPoints();
     for (let i = 0; i < 10; i++) {
       const e = this.armorRow[i];
-      e.style.display = ap > 0 ? '' : 'none';
+      css(e, 'display', ap > 0 ? '' : 'none');
       const v = ap - i * 2;
-      const src = v >= 2 ? I2.armor : v === 1 ? I2.armorHalf : I2.armorEmpty;
-      if (e._src !== src) { e._src = src; e.style.backgroundImage = `url(${src})`; }
-      e.style.left = `calc(${i * 8} * var(--s))`;
+      img(e, v >= 2 ? I2.armor : v === 1 ? I2.armorHalf : I2.armorEmpty);
     }
     // air bubbles
     const showAir = p.eyeInWater || p.air < 300;
     const bubbles = Math.ceil(Math.max(0, p.air) / 30);
     for (let i = 0; i < 10; i++) {
       const e = this.airRow[i];
-      e.style.display = showAir && i < bubbles ? '' : 'none';
-      if (!e._src) { e._src = 1; e.style.backgroundImage = `url(${I2.bubble})`; }
-      e.style.right = `calc(${i * 8} * var(--s))`;
+      css(e, 'display', showAir && i < bubbles ? '' : 'none');
+      img(e, I2.bubble);
     }
-    this.xpFill.style.width = (p.xp * 100).toFixed(1) + '%';
-    this.xpLevel.textContent = p.level > 0 ? p.level : '';
+    css(this.xpFill, 'width', (p.xp * 100).toFixed(1) + '%');
+    const lv = p.level > 0 ? String(p.level) : '';
+    if (this.xpLevel.textContent !== lv) this.xpLevel.textContent = lv;
     void dt;
   }
 

@@ -56,7 +56,8 @@ class App {
     this.ui.menus.showTitle();
     this.last = performance.now();
     requestAnimationFrame((t) => this.frame(t));
-    // automation hook for tests
+    // automation / console hook
+    this.B = B; this.I = I; this.ITEMS = ITEMS; this.BLOCKS = BLOCKS;
     window.__blockcraft = this;
   }
 

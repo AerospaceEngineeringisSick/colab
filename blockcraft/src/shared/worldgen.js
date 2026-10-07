@@ -5,6 +5,7 @@ import { CS, WH, SEA, idx } from './constants.js';
 import { B, OPAQUE, FLOWERS } from './blocks.js';
 import { BIOMES, BI, LAND, snowsAt } from './biomes.js';
 import { ENCHANTS } from './enchant.js';
+import { stampVillages, villagesNear, VILLAGE_RADIUS } from './villages.js';
 
 const smooth = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -136,6 +137,7 @@ export class WorldGen {
     this.dungeon(ctx);
     this.trees(ctx);
     this.plants(ctx);
+    stampVillages(this, ctx);
     this.snow(ctx);
     this.animals(ctx);
 
@@ -391,12 +393,14 @@ export class WorldGen {
     const CELL = 4, MARGIN = 6;
     const gx0 = Math.floor((x0 - MARGIN) / CELL), gx1 = Math.floor((x0 + 15 + MARGIN) / CELL);
     const gz0 = Math.floor((z0 - MARGIN) / CELL), gz1 = Math.floor((z0 + 15 + MARGIN) / CELL);
+    const villages = villagesNear(this, x0 - MARGIN, z0 - MARGIN, x0 + 15 + MARGIN, z0 + 15 + MARGIN);
     for (let gz = gz0; gz <= gz1; gz++) for (let gx = gx0; gx <= gx1; gx++) {
       const hx = hash2(gx, gz, this.seed + 101), hz = hash2(gx, gz, this.seed + 202), hp = hash2(gx, gz, this.seed + 303);
       const wx = gx * CELL + ((hx * CELL) | 0), wz = gz * CELL + ((hz * CELL) | 0);
       if (wx < x0 - MARGIN || wx > x0 + 15 + MARGIN || wz < z0 - MARGIN || wz > z0 + 15 + MARGIN) continue;
       this.column(wx, wz, col);
       if (col.h <= SEA || col.mf > 0.12 || col.rv > 0.3) continue;
+      if (villages.some((v) => Math.abs(v.x - wx) < VILLAGE_RADIUS && Math.abs(v.z - wz) < VILLAGE_RADIUS)) continue;
       const kind = treeFor(col.biome, hp, hash2(wx, wz, this.seed + 404));
       if (!kind) continue;
       // in mountains only below the tree line

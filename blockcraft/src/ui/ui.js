@@ -407,6 +407,7 @@ export class UI {
   openFurnace(t) { this.openTile = t; this.screens.open('furnace', t); }
   openEnchanting(pos) { this.openTile = null; this.screens.open('enchant', pos); }
   openAnvil(pos) { this.openTile = null; this.screens.open('anvil', pos); }
+  openTrade(villager) { this.openTile = null; this.screens.open('trade', villager); }
   openChest(t) { this.openTile = t; this.screens.open('chest', t); }
   closeScreen(silent) {
     if (!this.screenOpen) return;

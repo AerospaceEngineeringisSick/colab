@@ -549,7 +549,7 @@ export class Game {
       }
       if (t.type === 'furnace' || t.type === 'spawner') this.activeTiles.add(t);
     }
-    for (const s of spawns || []) this.spawnMob(s.type, s.x, s.y, s.z, { persistent: true });
+    for (const s of spawns || []) this.spawnMob(s.type, s.x, s.y, s.z, { persistent: true, ...(s.opts || {}) });
     // bring back entities that were saved or parked in this chunk
     if (this.parked && this.parked.length) {
       const x0 = c.cx * 16, z0 = c.cz * 16;
@@ -616,7 +616,7 @@ export class Game {
   loadEntity(o) {
     if (!o) return;
     if (o.t === 'mob') {
-      const m = this.spawnMob(o.k, o.x, o.y, o.z, { health: o.h, baby: !!o.baby, color: o.color, sheared: !!o.sheared, tame: !!o.tame, sitting: !!o.sit, persistent: true, yaw: o.yaw });
+      const m = this.spawnMob(o.k, o.x, o.y, o.z, { health: o.h, baby: !!o.baby, color: o.color, sheared: !!o.sheared, tame: !!o.tame, sitting: !!o.sit, persistent: true, yaw: o.yaw, ...(o.extra || {}) });
       if (m && o.baby) m.growAge = o.grow ?? -24000;
       if (m && o.name) m.customName = o.name;
     } else if (o.t === 'item') {
@@ -1005,6 +1005,22 @@ export class Game {
   onBlockPlaced(x, y, z, v) {
     this.stats.placed++;
     if (isRail(v & 1023)) connectRail(this.world, x, y, z);
+    if ((v & 1023) === B.pumpkin || (v & 1023) === B.jack_o_lantern) this.buildGolem(x, y, z);
+  }
+  // a pumpkin on a T of four iron blocks comes to life
+  buildGolem(x, y, z) {
+    const w = this.world;
+    if (w.getId(x, y - 1, z) !== B.iron_block || w.getId(x, y - 2, z) !== B.iron_block) return;
+    for (const [dx, dz] of [[1, 0], [0, 1]]) {
+      if (w.getId(x + dx, y - 1, z + dz) !== B.iron_block || w.getId(x - dx, y - 1, z - dz) !== B.iron_block) continue;
+      for (const [cx, cy, cz] of [[x, y, z], [x, y - 1, z], [x, y - 2, z], [x + dx, y - 1, z + dz], [x - dx, y - 1, z - dz]]) {
+        this.particles.breakBlock(cx, cy, cz, w.getId(cx, cy, cz));
+        w.setBlock(cx, cy, cz, 0);
+      }
+      this.spawnMob('iron_golem', x + 0.5, y - 2, z + 0.5, { persistent: true, home: [x, y - 2, z] });
+      this.advance('golem');
+      return;
+    }
   }
   onCraft(id, count) {
     this.stats.crafted += count;

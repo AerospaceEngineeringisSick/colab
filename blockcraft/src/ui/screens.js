@@ -2,6 +2,7 @@
 import { ITEMS, I, FUEL, maxStack, ARMOR_SLOTS } from '../shared/items.js';
 import { BLOCKS, B, R } from '../shared/blocks.js';
 import { Container, same, withCount, cloneStack, stackKey, itemName } from '../game/inventory.js';
+import { LEVEL_NAMES, LEVEL_XP, PROFESSION_NAMES, gainTradeXp } from '../game/trading.js';
 import { ENCHANTS, enchName, isEnchanted, enchantability, tableOffers, countShelves, anvilCombine, repairTest } from '../shared/enchant.js';
 import { matchRecipe, RECIPES, SMELT } from '../game/recipes.js';
 import { images, canvas } from '../engine/textures.js';
@@ -101,6 +102,7 @@ export class Screens {
     else if (kind === 'creative') this.buildCreative();
     else if (kind === 'enchant') this.buildEnchant();
     else if (kind === 'anvil') this.buildAnvil();
+    else if (kind === 'trade') this.buildTrade();
     this.render(true);
   }
 
@@ -165,11 +167,11 @@ export class Screens {
   containerSlot(p, c, i, x, y, opts = {}) {
     return this.slot(p, x, y, () => c.slots[i], (v) => { c.slots[i] = v; }, { container: c, index: i, ...opts });
   }
-  playerSlots(p, top, label = true) {
+  playerSlots(p, top, label = true, left = 8) {
     const inv = this.inv;
-    for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) this.containerSlot(p, inv, 9 + r * 9 + c, 8 + c * 18, top + r * 18, { group: 'main' });
-    for (let c = 0; c < 9; c++) this.containerSlot(p, inv, c, 8 + c * 18, top + 58, { group: 'hotbar' });
-    if (label) this.label(p, 'Inventory', 8, top - 11);
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) this.containerSlot(p, inv, 9 + r * 9 + c, left + c * 18, top + r * 18, { group: 'main' });
+    for (let c = 0; c < 9; c++) this.containerSlot(p, inv, c, left + c * 18, top + 58, { group: 'hotbar' });
+    if (label) this.label(p, 'Inventory', left, top - 11);
   }
 
   // ---------------------------------------------------------------- screens
@@ -404,6 +406,125 @@ export class Screens {
     if (!creative) p.spendLevels(r.cost);
     const t = this.tile;
     g.sound.play('place.metal', t.x + 0.5, t.y + 0.5, t.z + 0.5, 0.8, 0.6);
+    this.changed();
+  }
+
+  // ---------------------------------------------------------------- villager trading
+  buildTrade() {
+    const v = this.tile;
+    const p = this.panel(276, 166);
+    this.extra = new Container(2);
+    this.tradeSel = -1;
+    this.tradeScroll = 0;
+    this.tradeTitle = this.label(p, '', 107, 6);
+    this.tradeTitle.style.width = S(162); this.tradeTitle.style.textAlign = 'center';
+    const bar = el('div', 'tradexp', p);
+    bar.style.left = S(136); bar.style.top = S(16); bar.style.width = S(102); bar.style.height = S(5);
+    this.tradeBar = el('i', '', bar);
+    this.label(p, 'Trades', 5, 6);
+    this.tradeList = el('div', 'tradelist', p);
+    this.tradeList.style.left = S(4); this.tradeList.style.top = S(17); this.tradeList.style.width = S(96); this.tradeList.style.height = S(140);
+    this.tradeList.addEventListener('wheel', (e) => { this.tradeScroll = Math.max(0, Math.min(Math.max(0, v.offers.length - 7), this.tradeScroll + Math.sign(e.deltaY))); this.fillTrades(); }, { passive: true });
+    this.containerSlot(p, this.extra, 0, 136, 37, { tradeIn: true });
+    this.containerSlot(p, this.extra, 1, 162, 37, { tradeIn: true });
+    arrows();
+    const ar = el('div', 'arrow', p); ar.style.left = S(186); ar.style.top = S(36); ar.style.width = S(24); ar.style.height = S(17); ar.style.backgroundImage = `url(${ARROW})`;
+    this.tradeX = el('div', 'anvilx', p); this.tradeX.style.left = S(190); this.tradeX.style.top = S(35); this.tradeX.textContent = '✕';
+    this.slot(p, 220, 37, () => (this.tradeOut ? this.tradeOut.out : null), () => {}, { result: true, tradeResult: true });
+    this.playerSlots(p, 84, true, 108);
+    this.fillTrades();
+    this.updateTrade();
+  }
+
+  fillTrades() {
+    const v = this.tile, list = this.tradeList;
+    list.innerHTML = '';
+    v.offers.slice(this.tradeScroll, this.tradeScroll + 7).forEach((o, k) => {
+      const i = k + this.tradeScroll;
+      const row = el('div', 'traderow' + (i === this.tradeSel ? ' on' : '') + (o.uses >= o.max ? ' out' : ''), list);
+      row.style.top = S(k * 20);
+      const icon = (st, x) => { const c = el('div', 'tslot', row); c.style.left = S(x); c.innerHTML = slotHTML(st); return c; };
+      icon(o.a, 4);
+      if (o.b) icon(o.b, 24);
+      const arw = el('div', 'tarrow', row); arw.style.left = S(48); arw.textContent = o.uses >= o.max ? '✕' : '→';
+      icon(o.out, 68);
+      row.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); this.selectTrade(i); });
+      row.addEventListener('pointerenter', () => { this.hover = { get: () => o.out }; this.showTooltip(this.hover); });
+      row.addEventListener('pointerleave', () => { this.hover = null; this.tooltip.classList.add('hidden'); });
+    });
+  }
+
+  // pick an offer and move its price from the inventory into the cost slots
+  selectTrade(i) {
+    const v = this.tile, o = v.offers[i], c = this.extra, inv = this.inv;
+    this.tradeSel = i;
+    for (let k = 0; k < 2; k++) if (c.slots[k]) { const left = inv.give(c.slots[k]); c.slots[k] = left > 0 ? withCount(c.slots[k], left) : null; }
+    const pull = (want, k) => {
+      if (!want || c.slots[k]) return;
+      let need = maxStack(want.id), got = null;
+      for (let j = 0; j < 36 && need > 0; j++) {
+        const st = inv.slots[j];
+        if (!st || st.id !== want.id || st.ench || st.label || (ITEMS[st.id].durability && st.dmg)) continue;
+        const n = Math.min(need, st.count);
+        got = got ? withCount(got, got.count + n) : withCount(st, n);
+        st.count -= n; need -= n;
+        if (st.count <= 0) inv.slots[j] = null;
+      }
+      if (got) c.slots[k] = got;
+    };
+    pull(o.a, 0);
+    pull(o.b, 1);
+    this.game.sound.click();
+    this.changed();
+    this.fillTrades();
+  }
+
+  updateTrade() {
+    const v = this.tile, c = this.extra;
+    if (!c) return;
+    const lvl = v.tradeLevel;
+    this.tradeTitle.textContent = `${PROFESSION_NAMES[v.profession] || 'Villager'} - ${LEVEL_NAMES[lvl]}`;
+    const lo = LEVEL_XP[lvl], hi = LEVEL_XP[Math.min(4, lvl + 1)];
+    this.tradeBar.style.width = (lvl >= 4 ? 100 : Math.max(0, Math.min(100, (v.tradeXp - lo) / (hi - lo) * 100))) + '%';
+    // the offer the cost slots satisfy: the selected one first, then any other
+    const fits = (o) => {
+      const a = c.slots[0], b = c.slots[1];
+      if (!a || a.id !== o.a.id || a.count < o.a.count) return false;
+      if (o.b && (!b || b.id !== o.b.id || b.count < o.b.count)) return false;
+      return o.uses < o.max;
+    };
+    let pick = null;
+    if (this.tradeSel >= 0 && v.offers[this.tradeSel] && fits(v.offers[this.tradeSel])) pick = v.offers[this.tradeSel];
+    else pick = v.offers.find(fits) || null;
+    this.tradeOut = pick ? { offer: pick, out: pick.out } : null;
+    const sel = v.offers[this.tradeSel];
+    this.tradeX.style.display = sel && sel.uses >= sel.max ? '' : 'none';
+  }
+
+  takeTrade(shift) {
+    const v = this.tile, c = this.extra, g = this.game, p = g.player;
+    for (let n = 0; n < (shift ? 64 : 1); n++) {
+      const t = this.tradeOut;
+      if (!t) break;
+      const o = t.offer;
+      const out = cloneStack(o.out);
+      if (shift) { if (this.inv.give(out) > 0) break; }
+      else {
+        if (this.cursor && !(same(this.cursor, out) && this.cursor.count + out.count <= maxStack(out.id))) return;
+        if (this.cursor) this.cursor.count += out.count; else this.cursor = out;
+      }
+      c.slots[0].count -= o.a.count;
+      if (c.slots[0].count <= 0) c.slots[0] = null;
+      if (o.b) { c.slots[1].count -= o.b.count; if (c.slots[1].count <= 0) c.slots[1] = null; }
+      o.uses++;
+      const up = gainTradeXp(v, o.xp);
+      p.addXp(3 + Math.floor(Math.random() * 4) + (up ? 5 : 0));
+      g.sound.play(up ? 'villager.yes' : 'villager.trade', v.x, v.y + 1.5, v.z, 0.7);
+      if (up) g.particles.hearts(v.x, v.y + v.h, v.z, 4);
+      g.advance('trade');
+      this.updateTrade();
+    }
+    this.fillTrades();
     this.changed();
   }
 
@@ -852,6 +973,7 @@ export class Screens {
       return;
     }
     if (s.anvilResult) { this.takeAnvil(shift); return; }
+    if (s.tradeResult) { this.takeTrade(shift); return; }
     if (s.result) {
       if (shift) {
         // craft as many as fit
@@ -987,6 +1109,11 @@ export class Screens {
       } else moveInto(s.group === 'main' ? playerHot : playerMain);
       return;
     }
+    if (this.kind === 'trade') {
+      moveInto(this.slots.filter((t) => t.tradeIn));
+      if (st.count > 0 && s.get()) moveInto(s.group === 'main' ? playerHot : playerMain);
+      return;
+    }
     if (this.kind === 'anvil') {
       moveInto(this.slots.filter((t) => t.anvilIn));
       if (st.count > 0 && s.get()) moveInto(s.group === 'main' ? playerHot : playerMain);
@@ -1008,6 +1135,7 @@ export class Screens {
   changed() {
     if (this.kind === 'enchant') this.updateEnchant();
     if (this.kind === 'anvil') this.updateAnvil();
+    if (this.kind === 'trade') this.updateTrade();
     this.updateRecipe();
     this.render(true);
     if (this.recipePanel) this.fillRecipes();

@@ -110,6 +110,17 @@ input, button { font-family: inherit; }
 .enchopt .glyphs { position: absolute; left: calc(20 * var(--s)); top: calc(2 * var(--s)); width: calc(86 * var(--s)); height: calc(16 * var(--s)); background-size: 100% 100%; image-rendering: pixelated; }
 .enchopt .lvl { position: absolute; right: calc(2 * var(--s)); bottom: calc(1 * var(--s)); font-size: calc(8 * var(--s)); line-height: 1; color: #80ff20; text-shadow: var(--s) var(--s) 0 #3f3f3f; }
 .enchopt.off .lvl { color: #407f10; text-shadow: none; }
+/* villager trading */
+.tradelist { position: absolute; overflow: hidden; }
+.traderow { position: absolute; left: 0; width: calc(88 * var(--s)); height: calc(20 * var(--s)); background: #8b8b8b; box-shadow: inset var(--s) var(--s) 0 #c6c6c6, inset calc(-1 * var(--s)) calc(-1 * var(--s)) 0 #555; cursor: pointer; }
+.traderow:hover { background: #a6a6c8; }
+.traderow.on { background: #b9b9e0; }
+.traderow.out { background: #7a6d6d; }
+.traderow .tslot { position: absolute; top: calc(2 * var(--s)); width: calc(16 * var(--s)); height: calc(16 * var(--s)); }
+.traderow .tarrow { position: absolute; top: calc(3 * var(--s)); font-size: calc(10 * var(--s)); line-height: 1; color: #fff; text-shadow: var(--s) var(--s) 0 #3f3f3f; }
+.traderow.out .tarrow { color: #e33; }
+.tradexp { position: absolute; background: #333; box-shadow: 0 0 0 var(--s) #000; }
+.tradexp i { display: block; height: 100%; background: #7cfc00; }
 /* anvil */
 .rename { position: absolute; box-sizing: border-box; background: #000; border: var(--s) solid #a0a0a0; color: #fff; font: inherit; font-size: calc(8 * var(--s)); padding: 0 calc(3 * var(--s)); outline: none; text-shadow: var(--s) var(--s) 0 #3f3f3f; }
 .rename:disabled { background: #6b6b6b; border-color: #8b8b8b; color: transparent; }

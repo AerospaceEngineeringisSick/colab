@@ -34,4 +34,6 @@ export const ADVANCEMENTS = [
   { key: 'enchant', title: 'Enchanter', desc: 'Enchant an item at an enchanting table', icon: 'enchanted_book' },
   { key: 'anvil', title: 'Hammer Time', desc: 'Craft an anvil', icon: 'anvil' },
   { key: 'fish', title: 'Fishy Business', desc: 'Catch a fish', icon: 'fishing_rod' },
+  { key: 'trade', title: 'What a Deal!', desc: 'Successfully trade with a villager', icon: 'emerald' },
+  { key: 'golem', title: 'Hired Help', desc: 'Summon an iron golem', icon: 'iron_block' },
 ];

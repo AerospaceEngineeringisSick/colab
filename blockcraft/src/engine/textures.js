@@ -232,6 +232,16 @@ export function avgColor(name) {
 
 // make a three.js texture from an image (entities, items, sky)
 const texCache = new Map();
+// villager skin = base + biome outfit + profession layer (vanilla draws them as separate layers on one model)
+export function villagerTexture(type, prof) {
+  const name = `entity/villager_${type}_${prof}`;
+  if (images[name]) return name;
+  const c = canvas(64, 64), g = c.getContext('2d');
+  for (const n of ['entity/villager_base', 'entity/villager_' + type, prof ? 'entity/villager_profession_' + prof : null]) if (n && images[n]) g.drawImage(images[n], 0, 0);
+  images[name] = c;
+  return name;
+}
+
 export function imageTexture(name, opts = {}) {
   // canvases are keyed by identity (string concatenation would collapse them all into one key)
   if (typeof name !== 'string') {

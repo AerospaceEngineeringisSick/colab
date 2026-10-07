@@ -439,7 +439,9 @@ export class Mesher {
         const wf = rotFace(f, m.yrot);
         const q = p + FACES[wf].ns;
         if (onEdge && OPAQUE[blocks[q] & 1023]) continue;
-        const l = onEdge ? light[q] : own;
+        // inner faces use the cell's own light, or the neighbour's when the cell blocks light (paths, farmland)
+        const lq = OPAQUE[blocks[q] & 1023] ? 0 : light[q];
+        const l = onEdge ? lq : Math.max(own >> 4, lq >> 4) << 4 | Math.max(own & 15, lq & 15);
         const sky = (l >> 4) * 16, bl = Math.max((l & 15) * 16, emit);
         // auto uv from box extents
         let uv = bx.uv ? bx.uv[f] : autoUV(f, a);

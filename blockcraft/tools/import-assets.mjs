@@ -190,6 +190,12 @@ for (const w of ['oak', 'birch', 'spruce', 'jungle', 'acacia', 'dark_oak']) {
   T.item[w + '_boat'] = `mcl_boats_${w}_boat`;
   T.entity['boat_' + w] = `mcl_boats_texture_${w}_boat`;
 }
+// villagers: base skin, biome outfit and profession layers (composited in game), iron golem
+T.entity.villager_base = 'mobs_mc_villager_base';
+for (const t of ['plains', 'desert', 'savanna', 'snow', 'taiga', 'jungle', 'swamp']) T.entity['villager_' + t] = 'mobs_mc_villager_' + t;
+for (const p of ['armorer', 'butcher', 'cartographer', 'cleric', 'farmer', 'fisherman', 'fletcher', 'leatherworker', 'librarian', 'mason',
+  'nitwit', 'shepherd', 'toolsmith', 'weaponsmith']) T.entity['villager_profession_' + p] = 'mobs_mc_villager_profession_' + p;
+T.entity.iron_golem = 'mobs_mc_iron_golem';
 // enchanting table glyphs (Standard Galactic) and level-cost badges
 for (let i = 1; i <= 18; i++) T.gui['glyph_' + i] = 'mcl_enchanting_glyph_' + i;
 for (let i = 1; i <= 3; i++) { T.gui['enchant_cost_' + i] = 'mcl_enchanting_number_' + i; T.gui[`enchant_cost_${i}_off`] = `mcl_enchanting_number_${i}_off`; }

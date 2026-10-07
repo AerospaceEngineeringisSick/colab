@@ -9,6 +9,8 @@ import { raycast } from './raycast.js';
 import { MODELS, buildModel, addEyes } from '../engine/models.js';
 import { makeItemObject } from '../engine/itemmesh.js';
 import { enchLevel } from '../shared/enchant.js';
+import { unlockLevel, restock } from './trading.js';
+import { villagerTexture } from '../engine/textures.js';
 
 const r = Math.random;
 const rint = (a, b) => a + Math.floor(r() * (b - a + 1));
@@ -58,6 +60,15 @@ export const MOBS = {
     model: 'chicken', tex: 'entity/chicken', w: 0.4, h: 0.7, eye: 0.6, health: 4, speed: 0.25, passive: true, xp: 2, chicken: true,
     breed: ['wheat_seeds', 'melon_seeds', 'pumpkin_seeds'], sounds: { say: 'chicken.say', hurt: 'chicken.hurt', death: 'chicken.hurt' },
     drops: (m) => [['feather', rint(0, 2)], [m.fire > 0 ? 'cooked_chicken' : 'chicken', 1]],
+  },
+  villager: {
+    model: 'villager', tex: 'entity/villager_base', w: 0.6, h: 1.95, eye: 1.62, health: 20, speed: 0.22, passive: true, villager: true, xp: 0,
+    sounds: { say: 'villager.say', hurt: 'villager.hurt', death: 'villager.hurt' }, drops: () => [],
+  },
+  iron_golem: {
+    model: 'iron_golem', tex: 'entity/iron_golem', w: 1.4, h: 2.7, eye: 2.4, health: 100, speed: 0.17, neutral: true, golem: true,
+    attack: 7, follow: 24, xp: 0, noFall: true, sounds: { hurt: 'golem.hurt', death: 'golem.hurt' },
+    drops: () => [['iron_ingot', rint(3, 5)], ['poppy', rint(0, 2)]],
   },
   wolf: {
     model: 'wolf', tex: 'entity/wolf', w: 0.6, h: 0.85, eye: 0.7, health: 8, speed: 0.3, neutral: true, wolf: true, attack: 4, xp: 2,
@@ -115,6 +126,18 @@ export class Mob extends Entity {
     if (d.chicken) this.eggTimer = rint(6000, 12000);
     if (d.wolf) { this.tame = !!opts.tame; this.sitting = !!opts.sitting; this.owner = opts.tame ? 'player' : null; if (this.tame) this.maxHealth = this.health = opts.health ?? 20; }
     if (d.enderman) { this.stareTimer = 0; this.teleportCooldown = 0; }
+    if (d.villager) {
+      this.profession = opts.profession || 'nitwit';
+      this.vtype = opts.vtype || 'plains';
+      this.home = opts.home || [Math.floor(x), Math.floor(y), Math.floor(z)];
+      this.tradeSeed = opts.tradeSeed ?? ((Math.random() * 4294967296) >>> 0);
+      this.tradeLevel = opts.tradeLevel || 0;
+      this.tradeXp = opts.tradeXp || 0;
+      this.offers = opts.offers || [];
+      this.lastRestock = opts.lastRestock ?? -1;
+      if (!opts.offers) unlockLevel(this, 0);
+    }
+    if (d.golem) this.home = opts.home || null;
     this.nameTag = null;
   }
 
@@ -204,7 +227,7 @@ export class Mob extends Entity {
     // falling damage
     if (!this.onGround && this.vy < 0 && !c.water) this.fallDistance -= (this.y - this.py);
     if (this.onGround || c.water) {
-      if (this.fallDistance > 3 && !this.def.chicken) this.hurt(Math.ceil(this.fallDistance - 3), null, this.x, this.z, 'fall');
+      if (this.fallDistance > 3 && !this.def.chicken && !this.def.noFall) this.hurt(Math.ceil(this.fallDistance - 3), null, this.x, this.z, 'fall');
       this.fallDistance = 0;
     }
     if (this.y < -30) this.remove();
@@ -237,6 +260,25 @@ export class Mob extends Entity {
     }
     if (this.target && (this.target.removed || this.target.dead)) this.target = null;
 
+    if (d.villager) return this.villagerAI(p, dist);
+    if (d.golem) {
+      // iron golems hunt monsters near the village (not creepers), and anyone who hit them
+      if (this.target && this.target !== p && (this.target.removed || this.target.dead || this.distTo(this.target.x, this.target.y, this.target.z) > 24)) this.target = null;
+      if (!this.target && this.age % 10 === 0) {
+        let best = null, bd = 16;
+        for (const e of g.entities.mobsNear(this.x, this.y, this.z, 16)) {
+          if (!e.def.hostile || e.def.creeper || e.dead) continue;
+          const dd = this.distTo(e.x, e.y, e.z);
+          if (dd < bd) { bd = dd; best = e; }
+        }
+        this.target = best;
+      }
+    }
+    // zombies go after villagers when there's no player to chase
+    if (d.name === 'zombie' && !this.target && this.age % 20 === 0) {
+      for (const e of g.entities.mobsNear(this.x, this.y, this.z, 16)) if (e.def.villager && !e.dead) { this.target = e; break; }
+    }
+
     // ---- behaviours
     if (this.target) return this.combat(this.target);
     if (this.panic > 0) return this.wander(true);
@@ -264,6 +306,34 @@ export class Mob extends Entity {
         g.dropItem(this.x, this.y + 0.3, this.z, { id: I.egg, count: 1 });
       }
     }
+    this.wander(false);
+  }
+
+  villagerAI(p, dist) {
+    const g = this.game;
+    // hold still and face whoever is trading
+    if (this.trading) {
+      if (g.ui.screens.kind !== 'trade' || g.ui.screens.tile !== this) this.trading = false;
+      else { this.lookAt(p.x, p.y + p.eye, p.z); return; }
+    }
+    if (this.lastRestock !== g.day && g.time > 1000 && g.time < 9000) { restock(this); this.lastRestock = g.day; }
+    // run from zombies
+    if (this.age % 10 === 0) {
+      this.threat = null;
+      for (const e of g.entities.mobsNear(this.x, this.y, this.z, 8)) if (e.def.name === 'zombie' && !e.dead) { this.threat = e; break; }
+    }
+    if (this.threat && !this.threat.dead && !this.threat.removed) {
+      const dx = this.x - this.threat.x, dz = this.z - this.threat.z, l = Math.hypot(dx, dz) || 1;
+      this.navigate(this.x + dx / l * 6, this.y, this.z + dz / l * 6, 1.7);
+      return;
+    }
+    if (this.panic > 0) return this.wander(true);
+    const [hx, hy, hz] = this.home;
+    const away = Math.hypot(hx + 0.5 - this.x, hz + 0.5 - this.z);
+    // nights are spent at home
+    if (!g.isDay()) { if (away > 1.5) this.navigate(hx + 0.5, hy, hz + 0.5, 1.0); return; }
+    if (dist < 6 && !p.dead && p.mode !== 'spectator' && r() < 0.5 && !this.wanderTo) { this.lookAt(p.x, p.y + p.eye, p.z); return; }
+    if (away > 28) { this.navigate(hx + 0.5, hy, hz + 0.5, 1.0); return; }
     this.wander(false);
   }
 
@@ -431,14 +501,16 @@ export class Mob extends Entity {
       if (this.attackCooldown === 0 && this.canSee(t)) {
         this.attackCooldown = 20;
         this.swingTime = 8;
-        let dmg = d.attack;
+        let dmg = d.golem ? 7 + rint(0, 14) : d.attack;
+        if (d.golem) this.swingTime = 10;
         if (t === g.player) {
           if (t.damage(dmg, 'mob', false, this) > 0) {
             t.knockback(this.x, this.z, 0.4);
+            if (d.golem) t.vy = Math.max(t.vy, 0.6);
             if (d.spider) g.sound.play('spider.attack', this.x, this.y, this.z, 0.7);
             if (this.fire > 0 && r() < 0.3) t.fire = Math.max(t.fire, 80);
           }
-        } else t.hurt(dmg, this, this.x, this.z, 'mob');
+        } else if (t.hurt(dmg, this, this.x, this.z, 'mob') && d.golem && t.knock) t.knock[2] = 0.7;
       }
       if (dist > 1) this.navigate(t.x, t.y, t.z, d.enderman ? 1.5 : 1.0);
     } else this.navigate(t.x, t.y, t.z, d.enderman ? 1.5 : (d.wolf ? 1.4 : 1.0));
@@ -567,6 +639,13 @@ export class Mob extends Entity {
     const held = player.inv.held;
     const name = held ? ITEMS[held.id].name : null;
     const d = this.def;
+    if (d.villager && !this.baby && !this.dead) {
+      if (!this.offers.length) { g.sound.play('villager.hurt', this.x, this.y, this.z, 0.6, 1.3); this.headYaw += 0.4; return true; }
+      this.trading = true;
+      g.ui.openTrade(this);
+      g.sound.play('villager.say', this.x, this.y, this.z, 0.7);
+      return true;
+    }
     // a name tag renamed on an anvil names the mob (and keeps it from despawning)
     if (name === 'name_tag' && held.label) {
       this.customName = held.label;
@@ -629,6 +708,9 @@ export class Mob extends Entity {
       if (this.def.wolf && this.tame) { this.sitting = false; }
     } else if (source && source.isMob && this.def.neutral && !this.tame) { this.target = source; this.angry = 200; }
     if (this.def.passive && cause !== 'fire') this.panic = 100;
+    if (this.def.villager && source === g.player) {
+      for (const e of g.entities.mobsNear(this.x, this.y, this.z, 24)) if (e.def.golem) { e.angry = 600; e.target = g.player; }
+    }
     if (this.def.enderman && r() < 0.5 && cause !== 'fire') this.teleportRandom();
     if (this.health <= 0) { this.die(source, cause); return true; }
     if (this.def.sounds.hurt) g.sound.play(this.def.sounds.hurt, this.x, this.y, this.z, 0.8, this.baby ? 1.4 : 1);
@@ -665,6 +747,7 @@ export class Mob extends Entity {
     const d = this.def;
     let tex = d.tex;
     if (d.wolf && this.tame) tex = 'entity/wolf_tame';
+    if (d.villager) tex = villagerTexture(this.vtype, this.profession);
     const m = buildModel(MODELS[d.model], tex);
     if (d.eyes) addEyes(m, MODELS[d.model], d.eyes);
     if (d.sheep) {
@@ -725,7 +808,12 @@ export class Mob extends Entity {
         P.rightArm.rotation.z = Math.sin(t * 1.3) * 0.04 + 0.03; P.leftArm.rotation.z = -Math.sin(t * 1.3) * 0.04 - 0.03;
         P.rightArm.rotation.y = 0; P.leftArm.rotation.y = 0;
       }
-      if (this.swingTime > 0) { P.rightArm.rotation.x -= Math.sin(this.swingTime / 8 * Math.PI) * 0.8; this.swingTime -= 0.5; }
+      if (this.swingTime > 0 && d.golem) {
+        // iron golems swing both arms up and over
+        const k = Math.sin(this.swingTime / 10 * Math.PI) * 2;
+        P.rightArm.rotation.x = P.leftArm.rotation.x = -k;
+        this.swingTime -= 0.5;
+      } else if (this.swingTime > 0) { P.rightArm.rotation.x -= Math.sin(this.swingTime / 8 * Math.PI) * 0.8; this.swingTime -= 0.5; }
       if (d.enderman && this.angry > 0) { head.position.y = 42 / 16 + 0.1; }
     }
     for (let i = 0; i < 4; i++) {
@@ -820,6 +908,8 @@ export class Mob extends Entity {
     if (this.def.sheep) { o.color = this.color; o.sheared = this.sheared ? 1 : 0; }
     if (this.def.wolf && this.tame) { o.tame = 1; o.sit = this.sitting ? 1 : 0; }
     if (this.customName) o.name = this.customName;
+    if (this.def.villager) o.extra = { profession: this.profession, vtype: this.vtype, home: this.home, tradeSeed: this.tradeSeed, tradeLevel: this.tradeLevel, tradeXp: this.tradeXp, offers: this.offers, lastRestock: this.lastRestock };
+    if (this.def.golem && this.home) o.extra = { home: this.home };
     return o;
   }
 }

@@ -89,7 +89,7 @@ shaped('oak_slab', 6, ['MMM'], { M: '#planks' });
 shaped('stone_brick_slab', 6, ['MMM'], { M: 'stone_bricks' });
 shaped('sandstone_slab', 6, ['MMM'], { M: 'sandstone' });
 shaped('brick_slab', 6, ['MMM'], { M: 'bricks' });
-shaped('oak_stairs', 4, ['M  ', 'MM ', 'MMM'], { M: '#planks' });
+for (const w of ['oak', 'spruce', 'acacia', 'birch', 'jungle', 'dark_oak']) shaped(w + '_stairs', 4, ['M  ', 'MM ', 'MMM'], { M: w + '_planks' });
 shaped('cobblestone_stairs', 4, ['M  ', 'MM ', 'MMM'], { M: 'cobblestone' });
 shaped('stone_brick_stairs', 4, ['M  ', 'MM ', 'MMM'], { M: 'stone_bricks' });
 shaped('brick_stairs', 4, ['M  ', 'MM ', 'MMM'], { M: 'bricks' });

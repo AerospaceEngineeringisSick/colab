@@ -262,6 +262,11 @@ block('sticky_piston', { ...PISTON, tex: { front: 'piston_top_sticky', side: 'pi
 block('piston_head', { render: R.PISTON_HEAD, hardness: 1.5, sound: 'stone', opaque: false, lightOpacity: 0, layer: 0, drop: null,
   tex: { front: 'piston_top', side: 'piston_side', inner: 'piston_top_sticky' } });
 
+// more wood stairs (villages use them for roofs)
+for (const w of ['spruce', 'acacia', 'birch', 'jungle', 'dark_oak']) {
+  block(w + '_stairs', { render: R.STAIRS, tex: w + '_planks', hardness: 2, tool: 'axe', sound: 'wood', layer: 0, flammable: true });
+}
+
 // ------------------------------------------------------------------ tables
 const N = 1024;
 export const OPAQUE = new Uint8Array(N);

@@ -96,6 +96,40 @@ export const MODELS = {
       right: { pivot: [0, 2, -7], boxes: [{ o: [-8, 1, -1], s: [16, 8, 2], uv: [0, 0] }] },
     },
   },
+  // vanilla villager (64x64 layered texture); arms are folded, the hat brim sits on the head
+  villager: {
+    tex: [64, 64],
+    parts: {
+      head: {
+        pivot: [0, 24, 0], boxes: [
+          { o: [-4, 0, -4], s: [8, 10, 8], uv: [0, 0] },
+          { o: [-1, -1, 4], s: [2, 4, 2], uv: [24, 0] },
+          { o: [-4, 0, -4], s: [8, 10, 8], uv: [32, 0], inflate: 0.51, layer: 1 },
+          { o: [-8, -8, 5], s: [16, 16, 1], uv: [30, 47], rot: [-PI / 2, 0, 0], layer: 1 },
+        ],
+      },
+      body: { pivot: [0, 24, 0], boxes: [{ o: [-4, -12, -3], s: [8, 12, 6], uv: [16, 20] }, { o: [-4, -20, -3], s: [8, 20, 6], uv: [0, 38], inflate: 0.5, layer: 1 }] },
+      arms: {
+        pivot: [0, 21, 1], rot: [-0.75, 0, 0], boxes: [
+          { o: [-8, -6, -2], s: [4, 8, 4], uv: [44, 22] }, { o: [4, -6, -2], s: [4, 8, 4], uv: [44, 22], mirror: true }, { o: [-4, -6, -2], s: [8, 4, 4], uv: [40, 38] },
+        ],
+      },
+      rightLeg: { pivot: [-2, 12, 0], boxes: [{ o: [-2, -12, -2], s: [4, 12, 4], uv: [0, 22] }] },
+      leftLeg: { pivot: [2, 12, 0], boxes: [{ o: [-2, -12, -2], s: [4, 12, 4], uv: [0, 22], mirror: true }] },
+    },
+  },
+  // vanilla iron golem (128x128)
+  iron_golem: {
+    tex: [128, 128],
+    parts: {
+      head: { pivot: [0, 31, 2], boxes: [{ o: [-4, 2, -2.5], s: [8, 10, 8], uv: [0, 0] }, { o: [-1, 1, 5.5], s: [2, 4, 2], uv: [24, 0] }] },
+      body: { pivot: [0, 31, 0], boxes: [{ o: [-9, -10, -5], s: [18, 12, 11], uv: [0, 40] }, { o: [-4.5, -15, -3], s: [9, 5, 6], uv: [0, 70], inflate: 0.5 }] },
+      rightArm: { pivot: [0, 31, 0], boxes: [{ o: [-13, -27.5, -3], s: [4, 30, 6], uv: [60, 21] }] },
+      leftArm: { pivot: [0, 31, 0], boxes: [{ o: [9, -27.5, -3], s: [4, 30, 6], uv: [60, 58] }] },
+      rightLeg: { pivot: [-4, 13, 0], boxes: [{ o: [-3.5, -13, -2], s: [6, 16, 5], uv: [37, 0] }] },
+      leftLeg: { pivot: [5, 13, 0], boxes: [{ o: [-3.5, -13, -2], s: [6, 16, 5], uv: [60, 0], mirror: true }] },
+    },
+  },
   player: biped(64, 32, true),
   zombie: biped(64, 64, true),
   skeleton: {
@@ -238,7 +272,9 @@ export function buildModel(def, texName, opts = {}) {
         if (!overlayMat) { overlayMat = entityMaterial(tex, { alphaTest: 0.1, side: THREE.DoubleSide }); mats.push(overlayMat); }
         m = overlayMat;
       }
-      const mesh = new THREE.Mesh(boxGeometry(b.o, b.s, b.uv, tw, th, b), m);
+      const geo = boxGeometry(b.o, b.s, b.uv, tw, th, b);
+      if (b.rot) { geo.rotateX(b.rot[0]); geo.rotateY(b.rot[1]); geo.rotateZ(b.rot[2]); }
+      const mesh = new THREE.Mesh(geo, m);
       g.add(mesh);
     }
     inner.add(g);

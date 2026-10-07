@@ -175,6 +175,10 @@ ITEMS[I.pufferfish].food.effect = { poison: 3, hunger: 1 };
 item('saddle', { maxStack: 1 });
 item('name_tag', { use: 'name_tag' });
 
+// spawn eggs for mobs added later (appended so older item ids stay put)
+export const MORE_EGGS = { villager: [0x563c33, 0xbd8b72], iron_golem: [0xdbcdc2, 0x74a332] };
+for (const [mob, col] of Object.entries(MORE_EGGS)) item(mob + '_spawn_egg', { icon: 'egg', egg: { mob, col }, use: 'spawn_egg' });
+
 // cake & bed & door & sugar cane are block items placed directly
 ITEMS[B.cake].maxStack = 1;
 

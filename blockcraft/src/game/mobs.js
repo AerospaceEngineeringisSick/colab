@@ -8,18 +8,19 @@ import { findPath } from './pathfind.js';
 import { raycast } from './raycast.js';
 import { MODELS, buildModel, addEyes } from '../engine/models.js';
 import { makeItemObject } from '../engine/itemmesh.js';
+import { enchLevel } from '../shared/enchant.js';
 
 const r = Math.random;
 const rint = (a, b) => a + Math.floor(r() * (b - a + 1));
 
 export const MOBS = {
   zombie: {
-    model: 'zombie', tex: 'entity/zombie', w: 0.6, h: 1.95, eye: 1.74, health: 20, speed: 0.23, hostile: true, attack: 3,
+    undead: true, model: 'zombie', tex: 'entity/zombie', w: 0.6, h: 1.95, eye: 1.74, health: 20, speed: 0.23, hostile: true, attack: 3,
     follow: 35, burns: true, armsForward: true, xp: 5, sounds: { say: 'zombie.say', hurt: 'zombie.hurt', death: 'zombie.death' },
     drops: () => [['rotten_flesh', rint(0, 2)], ...(r() < 0.025 ? [[['iron_ingot', 'carrot', 'potato'][rint(0, 2)], 1]] : [])],
   },
   skeleton: {
-    model: 'skeleton', tex: 'entity/skeleton', w: 0.6, h: 1.99, eye: 1.74, health: 20, speed: 0.25, hostile: true, ranged: true,
+    undead: true, model: 'skeleton', tex: 'entity/skeleton', w: 0.6, h: 1.99, eye: 1.74, health: 20, speed: 0.25, hostile: true, ranged: true,
     follow: 16, burns: true, xp: 5, holds: 'bow', sounds: { say: 'skeleton.say', hurt: 'skeleton.hurt', death: 'skeleton.death' },
     drops: () => [['bone', rint(0, 2)], ['arrow', rint(0, 2)], ...(r() < 0.085 ? [['bow', 1]] : [])],
   },
@@ -641,7 +642,12 @@ export class Mob extends Entity {
     if (this.def.sounds.death) g.sound.play(this.def.sounds.death, this.x, this.y, this.z, 0.9, this.baby ? 1.4 : 1);
     const byPlayer = source === g.player || (source && source.def && source.def.wolf && source.tame);
     if (!this.baby) {
-      for (const [n, c] of this.def.drops(this)) if (c > 0 && I[n] !== undefined) g.dropItem(this.x, this.y + 0.5, this.z, { id: I[n], count: c });
+      // looting: up to one extra of each drop per level (not wool)
+      const loot = source === g.player ? enchLevel(g.player.inv.held, 'looting') : 0;
+      for (let [n, c] of this.def.drops(this)) {
+        if (loot && !n.endsWith('_wool')) c += Math.floor(Math.random() * (loot + 1));
+        if (c > 0 && I[n] !== undefined) g.dropItem(this.x, this.y + 0.5, this.z, { id: I[n], count: c });
+      }
       if (byPlayer || this.def.hostile) g.spawnXp(this.x, this.y + 0.5, this.z, this.def.hostile ? 5 : rint(1, 3));
     }
     if (source === g.player) g.onMobKilled(this, cause);

@@ -133,6 +133,16 @@ export function buildBlockArray() {
   const names = blockTextureNames();
   // particle sprites share the array
   const extra = ['env/smoke', 'env/flame', 'env/bonemeal', 'env/bubble', 'env/lava_particle', 'env/rain', 'env/snowflake'];
+  // enchanting glyphs (6x6) become 16x16 particle sprites at double size
+  for (let i = 1; i <= 18; i++) {
+    const src = images['gui/glyph_' + i];
+    if (!src) continue;
+    const c = canvas(16, 16), g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    g.drawImage(src, 2, 2, 12, 12);
+    images['env/glyph_' + i] = c;
+    extra.push('env/glyph_' + i);
+  }
   const list = [];
   for (const n of names) {
     const c = images['block/' + n];

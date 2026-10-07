@@ -129,7 +129,7 @@ for (const [mat, a] of Object.entries(ARMOR)) {
   ARMOR_SLOTS.forEach((slot, i) => {
     item(`${mat}_${slot}`, {
       maxStack: 1,
-      armor: { slot: i, def: a.def[i], tough: a.tough || 0, tex: `entity/armor_${a.tex}_${slot}` },
+      armor: { slot: i, def: a.def[i], tough: a.tough || 0, tex: `entity/armor_${a.tex}_${slot}`, mat },
       durability: ARMOR_BASE[i] * a.mult,
     });
   });
@@ -149,6 +149,9 @@ export const SPAWN_EGGS = {
 for (const [mob, col] of Object.entries(SPAWN_EGGS)) {
   item(mob + '_spawn_egg', { icon: 'egg', egg: { mob, col }, use: 'spawn_egg' });
 }
+
+// enchanted books carry their enchantments in the stack (stack.ench)
+item('enchanted_book', { maxStack: 1, glint: true });
 
 // cake & bed & door & sugar cane are block items placed directly
 ITEMS[B.cake].maxStack = 1;

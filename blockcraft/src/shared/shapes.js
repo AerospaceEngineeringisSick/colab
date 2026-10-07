@@ -105,6 +105,17 @@ export function blockModel(id, meta, conn = 0) {
       if (id === B.chest) {
         return M([box([1, 0, 1, 15, 14, 15], ['chest_side', 'chest_side', 'chest_top', 'chest_top', 'chest_front', 'chest_side'])], meta & 3);
       }
+      if (id === B.enchanting_table) return M([box([0, 0, 0, 16, 12, 16], [t.side, t.side, t.top, t.bottom, t.side, t.side])]);
+      if (id === B.anvil) {
+        // built facing south with the long top running east-west, then turned
+        const base = 'anvil_base';
+        return M([
+          box([2, 0, 2, 14, 4, 14], base),
+          box([4, 4, 3, 12, 5, 13], base),
+          box([6, 5, 4, 10, 10, 12], base),
+          box([0, 10, 3, 16, 16, 13], [base, base, 'anvil_top', base, 'anvil_side', 'anvil_side']),
+        ], meta & 3);
+      }
       if (id === B.cake) {
         const bites = Math.min(6, meta);
         return M([box([1 + bites * 2, 0, 1, 15, 8, 15], [t.side, bites ? t.inner : t.side, t.top, t.bottom, t.side, t.side])]);
@@ -149,6 +160,8 @@ export function collisionBoxes(id, meta, conn = 0) {
       if (id === B.chest) return [[1 / 16, 0, 1 / 16, 15 / 16, 14 / 16, 15 / 16]];
       if (id === B.farmland || id === B.dirt_path) return [[0, 0, 0, 1, 15 / 16, 1]];
       if (id === B.cake) return [[(1 + Math.min(6, meta) * 2) / 16, 0, 1 / 16, 15 / 16, 0.5, 15 / 16]];
+      if (id === B.enchanting_table) return [[0, 0, 0, 1, 0.75, 1]];
+      if (id === B.anvil) return modelBoxes(id, meta, conn);
       return FULL;
     }
   }

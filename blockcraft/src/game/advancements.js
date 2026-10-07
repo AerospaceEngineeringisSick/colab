@@ -30,4 +30,7 @@ export const ADVANCEMENTS = [
   { key: 'sleep', title: 'Sweet Dreams', desc: 'Sleep in a bed to skip the night', icon: 'red_bed' },
   { key: 'bookshelf', title: 'Librarian', desc: 'Build a bookshelf', icon: 'bookshelf' },
   { key: 'dungeon', title: 'Dungeon Delver', desc: 'Open a chest in a monster dungeon', icon: 'mossy_cobblestone' },
+  { key: 'table', title: 'Arcane Arts', desc: 'Construct an enchanting table', icon: 'enchanting_table' },
+  { key: 'enchant', title: 'Enchanter', desc: 'Enchant an item at an enchanting table', icon: 'enchanted_book' },
+  { key: 'anvil', title: 'Hammer Time', desc: 'Craft an anvil', icon: 'anvil' },
 ];

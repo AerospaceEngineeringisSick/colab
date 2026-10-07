@@ -4,6 +4,7 @@ import { ITEMS } from '../shared/items.js';
 import { WH } from '../shared/constants.js';
 import { moveBox, contacts, boxBlocked } from './physics.js';
 import { PlayerInventory } from './inventory.js';
+import { enchLevel, armorLevel } from '../shared/enchant.js';
 
 export const xpForLevel = (l) => (l < 16 ? 2 * l + 7 : l < 31 ? 5 * l - 38 : 9 * l - 158);
 
@@ -27,6 +28,7 @@ export class Player {
     this.fallDistance = 0;
     this.hurtTime = 0; this.invuln = 0; this.lastDamage = 0;
     this.fire = 0;
+    this.enchSeed = (Math.random() * 0x7fffffff) | 0; // keeps enchanting-table offers stable until used
     this.dead = false;
     this.mode = 'survival'; // survival | creative | spectator
     this.spawn = null; // [x,y,z] bed spawn
@@ -237,13 +239,14 @@ export class Player {
     if (this.swing > 0) this.swing = Math.max(0, this.swing - 1);
     const diff = this.game.difficulty;
     if (this.creative || this.mode === 'spectator') { this.air = 300; this.fire = 0; return; }
-    // drowning
+    // drowning (respiration: each level adds a chance to skip losing air)
     if (this.eyeInWater) {
-      this.air--;
+      const resp = armorLevel(this.inv, 'respiration');
+      if (!resp || Math.random() < 1 / (resp + 1)) this.air--;
       if (this.air <= -20) { this.air = 0; this.damage(2, 'drown'); }
     } else this.air = Math.min(300, this.air + 4);
     // lava / fire
-    if (this.inLava) { this.fire = 300; if (this.age % 10 === 0) this.damage(4, 'lava'); }
+    if (this.inLava) { this.fire = Math.round(300 * Math.max(0.1, 1 - 0.15 * armorLevel(this.inv, 'fire_protection'))); if (this.age % 10 === 0) this.damage(4, 'lava'); }
     if (this.inWater && this.fire > 0) { this.fire = 0; this.game.sound.play('fire.extinguish', this.x, this.y, this.z, 0.5); }
     if (this.fire > 0) {
       this.fire--;
@@ -304,6 +307,12 @@ export class Player {
       amount *= 1 - red;
       if (def > 0 && cause !== 'fire') this.damageArmor(amount);
     }
+    // enchantment protection factor: 4% less damage per point, at most 80%
+    if (!bypassArmor && cause !== 'void') {
+      const epf = Math.min(20, this.protectionPoints(cause));
+      if (epf > 0) amount *= 1 - epf / 25;
+    }
+    if (source && source.isMob && cause === 'mob') this.thorns(source);
     if (amount <= 0) return 0;
     this.health = Math.max(0, this.health - amount);
     this.hurtTime = 10;
@@ -315,15 +324,44 @@ export class Player {
     return amount;
   }
 
-  damageArmor(amount) {
-    const n = Math.max(1, Math.floor(amount / 4));
+  protectionPoints(cause) {
+    let p = 0;
+    for (const s of this.inv.armor.slots) {
+      if (!s || !s.ench) continue;
+      p += enchLevel(s, 'protection');
+      if (cause === 'fire' || cause === 'lava') p += 2 * enchLevel(s, 'fire_protection');
+      if (cause === 'explosion') p += 2 * enchLevel(s, 'blast_protection');
+      if (cause === 'arrow' || cause === 'thrown') p += 2 * enchLevel(s, 'projectile_protection');
+      if (cause === 'fall') p += 3 * enchLevel(s, 'feather_falling');
+    }
+    return p;
+  }
+
+  // thorns: a chance to hurt melee attackers
+  thorns(source) {
     const slots = this.inv.armor.slots;
     for (let i = 0; i < 4; i++) {
-      const s = slots[i];
-      if (!s) continue;
-      s.dmg = (s.dmg || 0) + n;
-      if (s.dmg >= ITEMS[s.id].durability) { slots[i] = null; this.game.sound.play('tool.break', this.x, this.y, this.z); }
+      const l = enchLevel(slots[i], 'thorns');
+      if (l && Math.random() < 0.15 * l) {
+        source.hurt(1 + Math.floor(Math.random() * 4), this, this.x, this.z, 'thorns');
+        this.damageArmorPiece(i, 2);
+      }
     }
+  }
+
+  damageArmor(amount) {
+    const n = Math.max(1, Math.floor(amount / 4));
+    for (let i = 0; i < 4; i++) this.damageArmorPiece(i, n);
+  }
+  damageArmorPiece(i, n) {
+    const slots = this.inv.armor.slots;
+    const s = slots[i];
+    if (!s) return;
+    // unbreaking on armour: each point of damage lands with chance 0.6 + 0.4 / (level + 1)
+    const ub = enchLevel(s, 'unbreaking');
+    if (ub) { let k = 0; for (let j = 0; j < n; j++) if (Math.random() < 0.6 + 0.4 / (ub + 1)) k++; n = k; }
+    s.dmg = (s.dmg || 0) + n;
+    if (s.dmg >= ITEMS[s.id].durability) { slots[i] = null; this.game.sound.play('tool.break', this.x, this.y, this.z); }
   }
 
   knockback(fromX, fromZ, strength = 0.4) {
@@ -339,6 +377,21 @@ export class Player {
     this.dead = true;
     this.game.onPlayerDeath(cause, source);
   }
+
+  // picking up experience: mending repairs a random damaged item first (2 durability per point)
+  collectXp(n) {
+    const inv = this.inv;
+    const cands = [inv.held, ...inv.armor.slots].filter((s) => s && s.dmg > 0 && enchLevel(s, 'mending'));
+    if (cands.length) {
+      const s = cands[Math.floor(Math.random() * cands.length)];
+      const fix = Math.min(n * 2, s.dmg);
+      s.dmg -= fix;
+      n -= Math.ceil(fix / 2);
+    }
+    if (n > 0) this.addXp(n);
+  }
+
+  spendLevels(n) { this.level = Math.max(0, this.level - n); }
 
   addXp(n) {
     this.xpTotal += n;
@@ -381,12 +434,13 @@ export class Player {
       x: this.x, y: this.y, z: this.z, yaw: this.yaw, pitch: this.pitch, health: this.health, food: this.food,
       saturation: this.saturation, exhaustion: this.exhaustion, air: this.air, level: this.level, xp: this.xp, xpTotal: this.xpTotal,
       mode: this.mode, spawn: this.spawn, inv: this.inv.toJSON(), flying: this.flying, fire: this.fire, dead: this.dead,
+      enchSeed: this.enchSeed,
     };
   }
 
   load(o) {
     if (!o) return;
-    for (const k of ['x', 'y', 'z', 'yaw', 'pitch', 'health', 'food', 'saturation', 'exhaustion', 'air', 'level', 'xp', 'xpTotal', 'mode', 'spawn', 'flying', 'fire']) {
+    for (const k of ['x', 'y', 'z', 'yaw', 'pitch', 'health', 'food', 'saturation', 'exhaustion', 'air', 'level', 'xp', 'xpTotal', 'mode', 'spawn', 'flying', 'fire', 'enchSeed']) {
       if (o[k] !== undefined) this[k] = o[k];
     }
     this.px = this.x; this.py = this.y; this.pz = this.z;

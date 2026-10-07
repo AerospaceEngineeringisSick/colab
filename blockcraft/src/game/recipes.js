@@ -58,6 +58,8 @@ shapeless('sugar', 1, ['sugar_cane']);
 shaped('paper', 3, ['RRR'], { R: 'sugar_cane' });
 shapeless('book', 1, ['paper', 'paper', 'paper', 'leather']);
 shaped('bookshelf', 1, ['PPP', 'BBB', 'PPP'], { P: '#planks', B: 'book' });
+shaped('enchanting_table', 1, [' B ', 'DOD', 'OOO'], { B: 'book', D: 'diamond', O: 'obsidian' });
+shaped('anvil', 1, ['BBB', ' I ', 'III'], { B: 'iron_block', I: 'iron_ingot' });
 shaped('bowl', 4, ['P P', ' P '], { P: '#planks' });
 shapeless('mushroom_stew', 1, ['bowl', 'brown_mushroom', 'red_mushroom']);
 shaped('golden_apple', 1, ['GGG', 'GAG', 'GGG'], { G: 'gold_ingot', A: 'apple' });

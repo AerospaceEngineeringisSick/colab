@@ -9,16 +9,18 @@ A Minecraft-style voxel survival game that runs entirely in **one offline HTML f
 **World**
 - Infinite, seeded terrain with **19 biomes**: plains, forest, birch forest, dark forest, taiga, snowy taiga, snowy plains, desert, savanna, jungle, swamp, mountains, snowy mountains, beaches, rivers and (frozen) oceans, blended smoothly with per-biome grass, foliage and water colours.
 - Spaghetti and cheese caves, overhanging mountains, ore veins (coal, iron, gold, redstone, lapis, diamond), lava pools deep underground, dungeons with loot chests, trees of six wood types, flowers, cacti, sugar cane, pumpkins.
-- **149 blocks** including stairs, slabs, fences, doors, ladders, beds, torches, glass, TNT, crops, wool and more.
+- **151 blocks** including stairs, slabs, fences, doors, ladders, beds, torches, glass, TNT, crops, wool, enchanting tables and anvils.
 - Smooth lighting with ambient occlusion, warm torch light, day/night cycle with sunrise glow, moon phases, stars, 3D clouds, fog, rain, snow and thunderstorms.
 - Flowing water and lava (infinite water sources, lava + water makes obsidian, cobblestone or stone).
 
 **Survival**
 - Health, hunger, saturation, fall/drowning/lava/fire damage, armour, XP and levels.
 - Vanilla-accurate movement (20 ticks/second physics), mining speeds and tool tiers: wood → stone → iron → diamond.
-- **269 items** and **133 crafting recipes** with a 2×2/3×3 grid, recipe book, furnace smelting with fuels, chests.
+- **272 items** and **135 crafting recipes** with a 2×2/3×3 grid, recipe book, furnace smelting with fuels, chests.
 - Farming (wheat, carrots, potatoes, bone meal), sleeping in beds, bows and arrows, TNT.
-- **29 advancements** from "Getting Wood" to "Diamonds!".
+- **Enchanting**: spend XP levels and lapis at an enchanting table (bookshelves unlock stronger offers) using vanilla's offer algorithm. 23 enchantments, all working: Protection (and its fire, blast and projectile variants), Feather Falling, Respiration, Aqua Affinity, Thorns, Sharpness, Smite, Bane of Arthropods, Knockback, Fire Aspect, Looting, Efficiency, Silk Touch, Fortune, Unbreaking, Power, Punch, Flame, Infinity and Mending (dungeon loot only). Enchanted items shimmer in the inventory, in your hand and on the ground.
+- **Anvils**: combine enchanted books and items, repair tools and armour with their material or a second copy, and rename items, with vanilla's level costs and "Too Expensive!" limit.
+- **32 advancements** from "Getting Wood" to "Enchanter".
 
 **Mobs** (with real box models, animations and pathfinding)
 - Hostile: zombie, skeleton (shoots arrows), creeper (explodes), spider, enderman.
@@ -53,7 +55,7 @@ A Minecraft-style voxel survival game that runs entirely in **one offline HTML f
 
 ### Commands
 
-`/help`, `/gamemode <survival|creative|spectator>`, `/time set <day|night|ticks>`, `/weather <clear|rain|thunder>`, `/give <item> [count]`, `/tp <x> <y> <z>`, `/summon <mob>`, `/setblock <x> <y> <z> <block>`, `/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>`, `/difficulty`, `/kill`, `/seed`, `/spawnpoint`, `/clear`, `/heal`, `/xp <amount>`, `/biome`. Coordinates accept `~` for relative positions.
+`/help`, `/gamemode <survival|creative|spectator>`, `/time set <day|night|ticks>`, `/weather <clear|rain|thunder>`, `/give <item> [count]`, `/tp <x> <y> <z>`, `/summon <mob>`, `/setblock <x> <y> <z> <block>`, `/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>`, `/enchant <enchantment> [level]`, `/difficulty`, `/kill`, `/seed`, `/spawnpoint`, `/clear`, `/heal`, `/xp <amount>`, `/biome`. Coordinates accept `~` for relative positions.
 
 ## Building
 

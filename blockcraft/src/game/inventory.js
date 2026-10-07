@@ -1,10 +1,41 @@
 // Item stacks and containers.
 import { ITEMS, I, maxStack } from '../shared/items.js';
+import { copyEnch, sameEnch } from '../shared/enchant.js';
 
+// a stack is { id, count, dmg } plus optional ench (enchantments), label (anvil name) and work (anvil uses)
 export const stack = (id, count = 1, dmg = 0) => ({ id, count, dmg });
-export const cloneStack = (s) => (s ? { id: s.id, count: s.count, dmg: s.dmg || 0 } : null);
-export const same = (a, b) => a && b && a.id === b.id && (a.dmg || 0) === (b.dmg || 0) && !ITEMS[a.id].durability;
-export const itemName = (s) => (s ? ITEMS[s.id].display : '');
+export const cloneStack = (s) => (s ? { ...s, ench: copyEnch(s.ench) } : null);
+// the same stack data with a different count
+export const withCount = (s, n) => ({ ...s, count: n });
+export const same = (a, b) => a && b && a.id === b.id && (a.dmg || 0) === (b.dmg || 0) && !ITEMS[a.id].durability
+  && sameEnch(a.ench, b.ench) && (a.label || '') === (b.label || '') && (a.work || 0) === (b.work || 0);
+export const itemName = (s) => (s ? s.label || ITEMS[s.id].display : '');
+// key that changes whenever anything visible about a stack changes
+export const stackKey = (s) => (s ? `${s.id}:${s.count}:${s.dmg || 0}:${s.ench ? s.ench.length : 0}:${s.label || ''}` : '');
+
+// saves: [id, count, dmg] with a 4th element { e, l, w } only when there is extra data.
+// Item names are accepted for the id (world generation writes loot that way).
+export function stackToJSON(s) {
+  if (!s) return null;
+  const x = {};
+  if (s.ench && s.ench.length) x.e = s.ench;
+  if (s.label) x.l = s.label;
+  if (s.work) x.w = s.work;
+  return Object.keys(x).length ? [s.id, s.count, s.dmg || 0, x] : [s.id, s.count, s.dmg || 0];
+}
+export function stackFromJSON(v) {
+  if (!v) return null;
+  const id = typeof v[0] === 'string' ? I[v[0]] : v[0];
+  if (id === undefined || !ITEMS[id]) return null;
+  const s = { id, count: v[1] || 1, dmg: v[2] || 0 };
+  const x = v[3];
+  if (x) {
+    if (x.e && x.e.length) s.ench = copyEnch(x.e);
+    if (x.l) s.label = String(x.l);
+    if (x.w) s.work = x.w | 0;
+  }
+  return s;
+}
 
 // resolve 'name' or id
 export const idOf = (n) => (typeof n === 'number' ? n : I[n]);
@@ -33,7 +64,7 @@ export class Container {
       if (left <= 0) break;
       if (!this.slots[i]) {
         const n = Math.min(left, max);
-        this.slots[i] = { id: s.id, count: n, dmg: s.dmg || 0 };
+        this.slots[i] = withCount(s, n);
         left -= n;
       }
     }
@@ -59,13 +90,10 @@ export class Container {
   }
 
   clear() { this.slots.fill(null); }
-  toJSON() { return this.slots.map((s) => (s ? [s.id, s.count, s.dmg || 0] : null)); }
+  toJSON() { return this.slots.map(stackToJSON); }
   load(arr) {
     if (!arr) return;
-    for (let i = 0; i < this.slots.length; i++) {
-      const v = arr[i];
-      this.slots[i] = v && ITEMS[v[0]] ? { id: v[0], count: v[1], dmg: v[2] || 0 } : null;
-    }
+    for (let i = 0; i < this.slots.length; i++) this.slots[i] = stackFromJSON(arr[i]);
   }
 }
 

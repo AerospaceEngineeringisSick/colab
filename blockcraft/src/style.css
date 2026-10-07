@@ -24,6 +24,10 @@ input, button { font-family: inherit; }
 #hotbar .hb { position: absolute; top: calc(3 * var(--s)); width: calc(16 * var(--s)); height: calc(16 * var(--s)); }
 #hb-sel { position: absolute; top: calc(-1 * var(--s)); width: calc(24 * var(--s)); height: calc(24 * var(--s)); background: var(--hotbar-sel) 0 0 / 100% 100%; transition: left 0.03s; }
 .icon { position: absolute; inset: 0; background-image: var(--icons); background-size: calc(var(--icon-cols) * 100%) calc(var(--icon-rows) * 100%); background-repeat: no-repeat; }
+.glint { position: absolute; inset: 0; pointer-events: none; -webkit-mask-image: var(--icons); mask-image: var(--icons); -webkit-mask-size: calc(var(--icon-cols) * 100%) calc(var(--icon-rows) * 100%); mask-size: calc(var(--icon-cols) * 100%) calc(var(--icon-rows) * 100%); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  background: linear-gradient(120deg, rgba(128, 64, 255, 0.18) 0 34%, rgba(196, 128, 255, 0.75) 42%, rgba(128, 64, 255, 0.18) 50%, rgba(160, 96, 255, 0.5) 58%, rgba(128, 64, 255, 0.18) 64% 100%);
+  background-size: 300% 100%; mix-blend-mode: screen; animation: glint 3.2s linear infinite; }
+@keyframes glint { from { background-position: 100% 0; } to { background-position: -50% 0; } }
 .count { position: absolute; right: calc(-1 * var(--s)); bottom: calc(-1 * var(--s)); font-size: calc(8 * var(--s)); line-height: 1; color: #fff; text-shadow: var(--s) var(--s) 0 #3f3f3f; z-index: 2; }
 .dura { position: absolute; left: calc(2 * var(--s)); bottom: calc(1 * var(--s)); width: calc(13 * var(--s)); height: calc(2 * var(--s)); background: #000; z-index: 1; }
 .dura i { display: block; height: 50%; background: #0f0; }
@@ -96,6 +100,22 @@ input, button { font-family: inherit; }
 .tab { width: calc(28 * var(--s)); height: calc(26 * var(--s)); background: #a8a8a8; border: var(--s) solid #000; border-bottom: 0; border-radius: calc(2 * var(--s)) calc(2 * var(--s)) 0 0; position: relative; cursor: pointer; box-shadow: inset var(--s) var(--s) 0 #dcdcdc; }
 .tab.on { background: var(--panel); height: calc(29 * var(--s)); z-index: 2; box-shadow: inset calc(2 * var(--s)) calc(2 * var(--s)) 0 #fff; }
 .tab .in { position: absolute; left: calc(5 * var(--s)); top: calc(5 * var(--s)); width: calc(16 * var(--s)); height: calc(16 * var(--s)); }
+/* enchanting table */
+.enchbook, .anvilham { position: absolute; background-size: 100% 100%; image-rendering: pixelated; }
+.enchopt { position: absolute; box-sizing: border-box; background: #8b7462; box-shadow: inset var(--s) var(--s) 0 #a08a77, inset calc(-1 * var(--s)) calc(-1 * var(--s)) 0 #5e4c3f; cursor: default; }
+.enchopt.empty { background: #8b7462; box-shadow: inset var(--s) var(--s) 0 #6d5a4b, inset calc(-1 * var(--s)) calc(-1 * var(--s)) 0 #a08a77; }
+.enchopt.on { background: #c9ad95; box-shadow: inset var(--s) var(--s) 0 #ead9c9, inset calc(-1 * var(--s)) calc(-1 * var(--s)) 0 #8c7360; cursor: pointer; }
+.enchopt.hover { background: #ddb9c9; box-shadow: inset var(--s) var(--s) 0 #f5dce6, inset calc(-1 * var(--s)) calc(-1 * var(--s)) 0 #9c6f85; cursor: pointer; }
+.enchopt .badge { position: absolute; left: var(--s); top: var(--s); width: calc(16 * var(--s)); height: calc(16 * var(--s)); background-size: 100% 100%; image-rendering: pixelated; }
+.enchopt .glyphs { position: absolute; left: calc(20 * var(--s)); top: calc(2 * var(--s)); width: calc(86 * var(--s)); height: calc(16 * var(--s)); background-size: 100% 100%; image-rendering: pixelated; }
+.enchopt .lvl { position: absolute; right: calc(2 * var(--s)); bottom: calc(1 * var(--s)); font-size: calc(8 * var(--s)); line-height: 1; color: #80ff20; text-shadow: var(--s) var(--s) 0 #3f3f3f; }
+.enchopt.off .lvl { color: #407f10; text-shadow: none; }
+/* anvil */
+.rename { position: absolute; box-sizing: border-box; background: #000; border: var(--s) solid #a0a0a0; color: #fff; font: inherit; font-size: calc(8 * var(--s)); padding: 0 calc(3 * var(--s)); outline: none; text-shadow: var(--s) var(--s) 0 #3f3f3f; }
+.rename:disabled { background: #6b6b6b; border-color: #8b8b8b; color: transparent; }
+.panel .lbl.plus { font-size: calc(14 * var(--s)); color: #8b8b8b; line-height: 1; }
+.anvilx { position: absolute; color: #d22; font-size: calc(14 * var(--s)); line-height: 1; text-shadow: var(--s) var(--s) 0 #400; }
+.panel .lbl.anvilcost { text-shadow: var(--s) var(--s) 0 #3f3f3f; }
 .search { position: absolute; height: calc(12 * var(--s)); background: #000; border: var(--s) solid #a0a0a0; color: #fff; font-size: calc(8 * var(--s)); padding: 0 calc(2 * var(--s)); outline: none; text-shadow: var(--s) var(--s) 0 #3f3f3f; }
 .scroller { position: absolute; background: #8b8b8b; box-shadow: inset var(--s) var(--s) 0 #373737, inset calc(-1 * var(--s)) calc(-1 * var(--s)) 0 #fff; }
 .scroller i { position: absolute; left: var(--s); right: var(--s); height: calc(15 * var(--s)); background: #c6c6c6; box-shadow: inset var(--s) var(--s) 0 #fff, inset calc(-1 * var(--s)) calc(-1 * var(--s)) 0 #555; }

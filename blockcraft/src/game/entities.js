@@ -8,6 +8,8 @@ import { entityMaterial } from '../engine/materials.js';
 import { imageTexture, images } from '../engine/textures.js';
 import { boxGeometry } from '../engine/models.js';
 import { raycast } from './raycast.js';
+import { same, stackToJSON } from './inventory.js';
+import { isEnchanted } from '../shared/enchant.js';
 
 let nextId = 1;
 
@@ -96,7 +98,7 @@ export class ItemEntity extends Entity {
       for (const e of this.game.entities.near(this.x, this.y, this.z, 1.5)) {
         if (e === this || e.type !== 'item' || e.removed) continue;
         const a = this.stack, b = e.stack;
-        if (a.id !== b.id || (a.dmg || 0) !== (b.dmg || 0) || ITEMS[a.id].durability) continue;
+        if (!same(a, b)) continue;
         const max = ITEMS[a.id].maxStack;
         if (a.count + b.count > max) continue;
         a.count += b.count;
@@ -127,7 +129,7 @@ export class ItemEntity extends Entity {
     const g = new THREE.Group();
     this.parts = [];
     for (let i = 0; i < n; i++) {
-      const o = makeItemObject(this.stack.id);
+      const o = makeItemObject(this.stack.id, { glint: isEnchanted(this.stack) || !!ITEMS[this.stack.id].glint });
       const block = o.userData.block;
       o.scale.setScalar(block ? 0.25 : 0.42);
       if (i) o.position.set((Math.sin(i * 7.1) * 0.06), (block ? 0.04 : 0.02) * i, (Math.cos(i * 3.3) * 0.06 - (block ? 0 : i * 0.03)));
@@ -147,7 +149,7 @@ export class ItemEntity extends Entity {
     const [s, b] = this.light();
     for (const p of this.parts) p.userData.setLight(s, b);
   }
-  toJSON() { return { t: 'item', x: this.x, y: this.y, z: this.z, s: [this.stack.id, this.stack.count, this.stack.dmg || 0], age: this.age }; }
+  toJSON() { return { t: 'item', x: this.x, y: this.y, z: this.z, s: stackToJSON(this.stack), age: this.age }; }
 }
 
 // ------------------------------------------------------------------ experience orbs
@@ -173,7 +175,7 @@ export class XpOrb extends Entity {
         this.vx += (dx / d) * f; this.vy += (dy / d) * f; this.vz += (dz / d) * f;
       }
       if (d < 1.2) {
-        p.addXp(this.value);
+        p.collectXp(this.value);
         this.game.sound.play('xp.orb', this.x, this.y, this.z, 0.25, 0.55 + Math.random() * 0.4);
         this.remove();
         return;
@@ -219,6 +221,8 @@ export class Arrow extends Entity {
     this.pickup = shooter === game.player && game.player.mode !== 'creative';
     this.pitch = 0;
     this.crit = false;
+    this.fire = false; // flame enchantment
+    this.punch = 0; // punch enchantment level
   }
   tick() {
     super.tick();
@@ -226,7 +230,7 @@ export class Arrow extends Entity {
       if (this.age > 1200) this.remove();
       // player picks up stuck arrows
       const p = this.game.player;
-      if (this.pickup && this.distTo(p.x, p.y + 0.5, p.z) < 1.5) {
+      if (this.pickup && this.distTo(p.x, p.y + 0.5, p.z) < 1.5 && this.age > 4) {
         if (p.inv.give({ id: I.arrow, count: 1, dmg: 0 }) === 0) { this.game.sound.pop(); this.remove(); }
       }
       // falls if the block disappears
@@ -253,8 +257,11 @@ export class Arrow extends Entity {
       const dmg = Math.ceil(sp * this.damage) + (this.crit ? Math.floor(Math.random() * 3) : 0);
       if (target === p) {
         if (p.damage(dmg, 'arrow', false, this.shooter) > 0) { p.knockback(this.x - this.vx, this.z - this.vz, 0.3); this.game.sound.play('bow.hitplayer', p.x, p.y, p.z, 0.8); }
+        if (this.fire) p.fire = Math.max(p.fire, 100);
       } else {
-        target.hurt(dmg, this.shooter, this.x - this.vx, this.z - this.vz, 'arrow');
+        const ok = target.hurt(dmg, this.shooter, this.x - this.vx, this.z - this.vz, 'arrow');
+        if (ok && this.fire) target.fire = Math.max(target.fire, 100);
+        if (ok && this.punch && target.knock) { const k = 1 + this.punch * 1.5; target.knock[0] *= k; target.knock[1] *= k; }
         this.game.sound.play('bow.hit', target.x, target.y, target.z, 0.8);
       }
       this.remove();
@@ -274,6 +281,8 @@ export class Arrow extends Entity {
     this.vx *= drag; this.vy *= drag; this.vz *= drag;
     this.vy -= 0.05;
     if (this.crit && this.age % 2 === 0) this.game.particles.crit(this.x, this.y, this.z, 1);
+    if (this.fire && this.age % 2 === 1) this.game.particles.flame(this.x, this.y, this.z);
+    if (inWater) this.fire = false;
     if (this.age > 1200) this.remove();
   }
   render(a) {
@@ -342,6 +351,7 @@ export class FallingBlock extends Entity {
     this.type = 'falling';
     this.v = v;
     this.w = 0.98; this.h = 0.98;
+    this.startY = y;
   }
   tick() {
     super.tick();
@@ -351,6 +361,7 @@ export class FallingBlock extends Entity {
     if (this.onGround || this.age > 600) {
       const bx = Math.floor(this.x), by = Math.floor(this.y + 0.5), bz = Math.floor(this.z);
       const cur = this.world.getId(bx, by, bz);
+      if ((this.v & 1023) === B.anvil) this.anvilLanded(bx, by, bz);
       if (BLOCKS[cur].replaceable) {
         this.world.setBlock(bx, by, bz, this.v);
         this.game.sound.place(bx, by, bz, this.v & 1023);
@@ -360,9 +371,19 @@ export class FallingBlock extends Entity {
       this.remove();
     }
   }
+  // a falling anvil hurts whatever it lands on: 2 per block fallen, at most 40
+  anvilLanded(bx, by, bz) {
+    const dmg = Math.min(40, Math.floor((this.startY - by) * 2));
+    this.game.sound.play('place.metal', bx + 0.5, by + 0.5, bz + 0.5, 1, 0.5);
+    if (dmg <= 0) return;
+    const hit = (e) => e.x + e.w / 2 > bx && e.x - e.w / 2 < bx + 1 && e.z + e.w / 2 > bz && e.z - e.w / 2 < bz + 1 && e.y < by + 1 && e.y + e.h > by;
+    for (const m of this.game.entities.mobsNear(bx + 0.5, by, bz + 0.5, 3)) if (!m.dead && hit(m)) m.hurt(dmg, null, bx + 0.5, bz + 0.5, 'anvil');
+    const p = this.game.player;
+    if (hit({ x: p.x, y: p.y, z: p.z, w: 0.6, h: 1.8 })) p.damage(dmg, 'anvil');
+  }
   render(a) {
     if (!this.object) {
-      this.object = makeItemObject(this.v & 1023);
+      this.object = makeItemObject(this.v & 1023, { meta: this.v >>> 10 });
       this.game.entities.group.add(this.object);
     }
     const [x, y, z] = this.lerp(a);

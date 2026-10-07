@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { loadImages, buildBlockArray, texInfo } from './engine/textures.js';
 import { resolveBlockTextures, BLOCKS, B } from './shared/blocks.js';
 import { ITEMS, I } from './shared/items.js';
+import { EN } from './shared/enchant.js';
 import { Renderer } from './engine/renderer.js';
 import { initItemMeshes } from './engine/itemmesh.js';
 import { Sound } from './engine/audio.js';
@@ -57,7 +58,7 @@ class App {
     this.last = performance.now();
     requestAnimationFrame((t) => this.frame(t));
     // automation / console hook
-    this.B = B; this.I = I; this.ITEMS = ITEMS; this.BLOCKS = BLOCKS;
+    this.B = B; this.I = I; this.ITEMS = ITEMS; this.BLOCKS = BLOCKS; this.EN = EN;
     window.__blockcraft = this;
   }
 

@@ -4,6 +4,7 @@ import { Simplex, hash2, hash3, rng } from './noise.js';
 import { CS, WH, SEA, idx } from './constants.js';
 import { B, OPAQUE, FLOWERS } from './blocks.js';
 import { BIOMES, BI, LAND, snowsAt } from './biomes.js';
+import { ENCHANTS } from './enchant.js';
 
 const smooth = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -726,6 +727,7 @@ function dungeonLoot(R) {
     ['redstone', 1, 4, 8], ['apple', 1, 3, 10], ['golden_apple', 1, 1, 3], ['diamond', 1, 2, 3], ['saddle', 0, 0, 0],
     ['iron_pickaxe', 1, 1, 3], ['iron_sword', 1, 1, 3], ['melon_seeds', 2, 4, 6], ['pumpkin_seeds', 2, 4, 6], ['book', 1, 3, 6],
     ['iron_helmet', 1, 1, 2], ['iron_chestplate', 1, 1, 2], ['bow', 1, 1, 4], ['arrow', 4, 12, 8], ['emerald', 1, 2, 3],
+    ['enchanted_book', 1, 1, 8],
   ].filter((t) => t[3] > 0);
   const total = table.reduce((s, t) => s + t[3], 0);
   const items = new Array(27).fill(null);
@@ -737,7 +739,11 @@ function dungeonLoot(R) {
     const count = pick[1] + ((R() * (pick[2] - pick[1] + 1)) | 0);
     let slot = (R() * 27) | 0;
     while (items[slot]) slot = (slot + 1) % 27;
-    items[slot] = [pick[0], count];
+    if (pick[0] === 'enchanted_book') {
+      // any enchantment, treasure ones (mending) included, at a random level
+      const e = ENCHANTS[(R() * ENCHANTS.length) | 0];
+      items[slot] = ['enchanted_book', 1, 0, { e: [[e.id, 1 + ((R() * e.max) | 0)]] }];
+    } else items[slot] = [pick[0], count];
   }
   return items;
 }

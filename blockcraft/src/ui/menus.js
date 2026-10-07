@@ -275,7 +275,7 @@ export class Menus {
     this.title(r, 'Statistics');
     const s = g.stats;
     const rows = [
-      ['Blocks mined', s.mined], ['Blocks placed', s.placed], ['Items crafted', s.crafted], ['Mobs killed', s.kills], ['Deaths', s.deaths],
+      ['Blocks mined', s.mined], ['Blocks placed', s.placed], ['Items crafted', s.crafted], ['Mobs killed', s.kills], ['Items enchanted', s.enchanted || 0], ['Deaths', s.deaths],
       ['Distance walked', (s.walked / 1000).toFixed(2) + ' km'], ['Days survived', g.day], ['Experience level', p.level], ['World seed', g.meta.seed],
     ];
     const k = el('div', 'keys', r);

@@ -15,17 +15,21 @@ import { Interaction } from './interact.js';
 import { Particles } from '../engine/particles.js';
 import { Hand, PlayerModel } from '../engine/hand.js';
 import { Weather } from '../engine/weather.js';
+import { EnchantBook } from '../engine/enchbook.js';
 import { texInfo, blockArray } from '../engine/textures.js';
 import { selectionBoxes, fenceConn } from '../shared/shapes.js';
-import { Container } from './inventory.js';
+import { Container, withCount, cloneStack, stackFromJSON } from './inventory.js';
 import { SMELT } from './recipes.js';
 import { FUEL } from '../shared/items.js';
 import { Spawner } from './spawner.js';
 import { ADVANCEMENTS } from './advancements.js';
 import { runCommand } from './commands.js';
 import { U } from '../engine/materials.js';
+import { enchLevel, shelfOffsets } from '../shared/enchant.js';
 
 const TICK = 0.05;
+// blocks silk touch never picks up whole
+const NO_SILK = new Set([B.spawner, B.farmland, B.dirt_path, B.cake, B.red_bed, B.oak_door]);
 const DIFF_NAMES = ['Peaceful', 'Easy', 'Normal', 'Hard'];
 
 export class Game {
@@ -50,7 +54,7 @@ export class Game {
     this.time = meta.time ?? 1000;
     this.day = meta.day ?? 0;
     this.weather = Object.assign({ rain: false, thunder: false, timer: 12000 + Math.random() * 96000, rainAmt: 0, thunderAmt: 0, flash: 0 }, meta.weather || {});
-    this.stats = Object.assign({ mined: 0, placed: 0, kills: 0, deaths: 0, crafted: 0, walked: 0 }, meta.stats || {});
+    this.stats = Object.assign({ mined: 0, placed: 0, kills: 0, deaths: 0, crafted: 0, walked: 0, enchanted: 0 }, meta.stats || {});
     this.advancements = new Set(meta.advancements || []);
     this.gen = new WorldGen(meta.seed);
 
@@ -79,6 +83,7 @@ export class Game {
     this.playerModel = new PlayerModel(r.scene, 'entity/steve');
     this.weatherFx = new Weather(r.scene);
     this.activeTiles = new Set();
+    this.books = new Map(); // enchanting table books by block key
     this.selection = this.makeSelectionBox();
     this.breakOverlay = this.makeBreakOverlay();
     this.camMode = 0; // 0 first person, 1 back, 2 front
@@ -146,6 +151,8 @@ export class Game {
     this.r.scene.remove(this.playerModel.root);
     this.r.handScene.remove(this.hand.root);
     this.weatherFx.dispose(this.r.scene);
+    for (const b of this.books.values()) b.dispose();
+    this.books.clear();
   }
 
   // pick a land column near the origin for a new world
@@ -225,6 +232,7 @@ export class Game {
     });
     // dim the sky light when standing in a cave so fog isn't glowing
     this.entities.render(a, this.clock);
+    this.renderBooks(a);
     this.particles.update(paused ? 0 : dt);
     this.weatherFx.update(this.world, this, cam.position, this.weather.rainAmt, paused ? 0 : dt);
     this.updateSelection();
@@ -305,6 +313,7 @@ export class Game {
     p.tick();
     if (!wasDead && !p.dead) this.stats.walked += Math.hypot(p.x - p.px, p.z - p.pz);
     this.entities.tick();
+    this.tickBooks();
     this.ticks.runScheduled();
     this.ticks.randomTicks(p.x, p.z, Math.min(6, this.world.renderDistance), 3);
     this.tileTick();
@@ -335,7 +344,7 @@ export class Game {
     if (!h) return;
     const n = all ? h.count : 1;
     const d = p.lookDir();
-    this.dropItem(p.x, p.y + p.eye - 0.3, p.z, { id: h.id, count: n, dmg: h.dmg }, { vx: d[0] * 0.3, vy: d[1] * 0.3 + 0.1, vz: d[2] * 0.3, delay: 40 });
+    this.dropItem(p.x, p.y + p.eye - 0.3, p.z, withCount(h, n), { vx: d[0] * 0.3, vy: d[1] * 0.3 + 0.1, vz: d[2] * 0.3, delay: 40 });
     h.count -= n;
     if (h.count <= 0) p.inv.held = null;
     p.swing = 6;
@@ -464,21 +473,54 @@ export class Game {
 
   // ---------------------------------------------------------------- world events
   blockChanged(x, y, z, old, v) {
+    if ((old & 1023) === B.enchanting_table) this.removeBook(x, y, z);
+    if ((v & 1023) === B.enchanting_table) this.addBook(x, y, z);
     this.ticks.neighborChanged(x, y, z);
     const oid = old & 1023;
     if (WOODS.some((w) => B[w + '_log'] === oid)) this.ticks.logRemoved(x, y, z);
   }
 
+  // ---------------------------------------------------------------- enchanting table books
+  addBook(x, y, z) {
+    const k = `${x},${y},${z}`;
+    if (!this.books.has(k)) this.books.set(k, new EnchantBook(this.entities.group, x, y, z));
+  }
+  removeBook(x, y, z) {
+    const k = `${x},${y},${z}`;
+    const b = this.books.get(k);
+    if (b) { b.dispose(); this.books.delete(k); }
+  }
+  tickBooks() {
+    const p = this.player;
+    for (const b of this.books.values()) {
+      const d = Math.hypot(p.x - b.x - 0.5, p.y - b.y - 0.5, p.z - b.z - 0.5);
+      b.tick(!p.dead && p.mode !== 'spectator' && d < 3 ? p : null);
+      if (d > 24) continue;
+      // glyphs drift from the bookshelves that power the table
+      if (!b.shelves || this.tickCount % 40 === 0) b.shelves = shelfOffsets(this.world, b.x, b.y, b.z);
+      for (const o of b.shelves) if (Math.random() < 1 / 16) this.particles.enchantGlyph(b.x, b.y, b.z, o[0], o[1], o[2]);
+    }
+  }
+  renderBooks(a) {
+    for (const b of this.books.values()) {
+      const l = this.world.getLight(b.x, b.y + 1, b.z);
+      b.render(a, [l >> 4, Math.max(7, l & 15)]);
+    }
+  }
+
   chunkLoaded(c, spawns, freshTiles) {
+    // enchanting tables get their floating book
+    if (c.blocks) {
+      const bl = c.blocks;
+      for (let i = 0; i < bl.length; i++) {
+        if ((bl[i] & 1023) === B.enchanting_table) this.addBook(c.cx * 16 + (i & 15), i >> 8, c.cz * 16 + ((i >> 4) & 15));
+      }
+    }
     // generated tile entities carry item names: convert
     for (const t of c.tiles.values()) {
       if (t.type === 'chest' && Array.isArray(t.items) && !(t.items instanceof Container)) {
         const ct = new Container(27);
-        t.items.forEach((s, i) => {
-          if (!s) return;
-          const id = typeof s[0] === 'string' ? I[s[0]] : s[0];
-          if (id !== undefined && ITEMS[id]) ct.slots[i] = { id, count: s[1], dmg: s[2] || 0 };
-        });
+        t.items.forEach((s, i) => { ct.slots[i] = stackFromJSON(s); });
         t.items = ct;
         if (freshTiles) t.dungeon = true;
       }
@@ -503,6 +545,7 @@ export class Game {
   }
   chunkUnloaded(c) {
     for (const t of c.tiles.values()) this.activeTiles.delete(t);
+    for (const [k, b] of this.books) if (b.x >> 4 === c.cx && b.z >> 4 === c.cz) { b.dispose(); this.books.delete(k); }
     // freeze far-away entities: remove non-persistent ones, keep animals (saved with the world)
     const x0 = c.cx * 16, z0 = c.cz * 16;
     for (const e of this.entities.list) {
@@ -532,7 +575,7 @@ export class Game {
   // ---------------------------------------------------------------- spawning helpers
   dropItem(x, y, z, stack, opts) {
     if (!stack || stack.count <= 0 || !ITEMS[stack.id]) return null;
-    return this.entities.add(new ItemEntity(this, x, y, z, { id: stack.id, count: stack.count, dmg: stack.dmg || 0 }, opts));
+    return this.entities.add(new ItemEntity(this, x, y, z, cloneStack(stack), opts));
   }
   spawnXp(x, y, z, n) {
     while (n > 0) {
@@ -558,7 +601,7 @@ export class Game {
       const m = this.spawnMob(o.k, o.x, o.y, o.z, { health: o.h, baby: !!o.baby, color: o.color, sheared: !!o.sheared, tame: !!o.tame, sitting: !!o.sit, persistent: true, yaw: o.yaw });
       if (m && o.baby) m.growAge = o.grow ?? -24000;
     } else if (o.t === 'item') {
-      const e = this.dropItem(o.x, o.y, o.z, { id: o.s[0], count: o.s[1], dmg: o.s[2] }, { vx: 0, vy: 0, vz: 0, delay: 0 });
+      const e = this.dropItem(o.x, o.y, o.z, stackFromJSON(o.s), { vx: 0, vy: 0, vz: 0, delay: 0 });
       if (e) e.age = o.age || 0;
     }
   }
@@ -574,10 +617,13 @@ export class Game {
       this.particles.breakBlock(x, y, z, id);
       this.sound.breakBlock(x + 0.5, y + 0.5, z + 0.5, id);
     }
+    // enchantments on the tool that broke it
+    const held = byPlayer ? this.player.inv.held : null;
+    const silk = enchLevel(held, 'silk_touch') > 0 && ITEMS[id] && !ITEMS[id].hidden && !NO_SILK.has(id) && !b.plant;
+    const fortune = silk ? 0 : enchLevel(held, 'fortune');
     // multi-block structures
     let newV = 0;
-    if (id === B.ice && !byPlayer) newV = 0;
-    if (id === B.ice && byPlayer && this.player.mode === 'survival' && BLOCKS[w.getId(x, y - 1, z)].solid) newV = B.water;
+    if (id === B.ice && byPlayer && !silk && this.player.mode === 'survival' && BLOCKS[w.getId(x, y - 1, z)].solid) newV = B.water;
     w.setBlock(x, y, z, newV, { sync: byPlayer });
     if (id === B.oak_door) {
       const oy = (meta & 4) ? y - 1 : y + 1;
@@ -591,8 +637,9 @@ export class Game {
     if (drops && (!byPlayer || this.player.mode === 'survival')) {
       const rnd = Math.random;
       let list;
-      if (b.drop === null) list = [];
-      else if (typeof b.drop === 'function') list = b.drop(meta, rnd, toolType);
+      if (silk) list = [[id, 1]];
+      else if (b.drop === null) list = [];
+      else if (typeof b.drop === 'function') list = b.drop(meta, rnd, toolType, fortune);
       else list = [[ITEMS[id] && !ITEMS[id].hidden ? id : null, 1]];
       if (id === B.oak_door) list = [[I.oak_door, 1]];
       if (id === B.red_bed) list = [[I.red_bed, 1]];
@@ -601,7 +648,7 @@ export class Game {
         if (iid === null || iid === undefined || n <= 0) continue;
         this.dropItem(x + 0.5 + (rnd() - 0.5) * 0.4, y + 0.3, z + 0.5 + (rnd() - 0.5) * 0.4, { id: iid, count: n });
       }
-      if (b.xp && byPlayer) this.spawnXp(x + 0.5, y + 0.5, z + 0.5, b.xp[0] + Math.floor(rnd() * (b.xp[1] - b.xp[0] + 1)));
+      if (b.xp && byPlayer && !silk) this.spawnXp(x + 0.5, y + 0.5, z + 0.5, b.xp[0] + Math.floor(rnd() * (b.xp[1] - b.xp[0] + 1)));
     }
   }
 
@@ -613,6 +660,9 @@ export class Game {
     if (!h) return;
     const it = ITEMS[h.id];
     if (!it.durability) return;
+    // unbreaking: each point of wear only lands with chance 1 / (level + 1)
+    const ub = enchLevel(h, 'unbreaking');
+    if (ub) { let k = 0; for (let i = 0; i < n; i++) if (Math.random() < 1 / (ub + 1)) k++; n = k; }
     h.dmg = (h.dmg || 0) + n;
     if (h.dmg >= it.durability) {
       p.inv.held = null;
@@ -628,6 +678,8 @@ export class Game {
     const id = v & 1023, meta = v >>> 10;
     switch (id) {
       case B.crafting_table: this.ui.openCrafting(); return true;
+      case B.enchanting_table: this.ui.openEnchanting({ x, y, z }); return true;
+      case B.anvil: this.ui.openAnvil({ x, y, z }); return true;
       case B.furnace: case B.lit_furnace: {
         let t = w.getTile(x, y, z);
         if (!t) { t = { type: 'furnace', items: new Container(3), burn: 0, burnMax: 0, cook: 0, xp: 0 }; w.setTile(x, y, z, t); this.activeTiles.add(t); }
@@ -929,7 +981,7 @@ export class Game {
   onCraft(id, count) {
     this.stats.crafted += count;
     const n = ITEMS[id].name;
-    const map = { crafting_table: 'bench', wooden_pickaxe: 'pick', furnace: 'furnace', stone_pickaxe: 'stonepick', iron_pickaxe: 'ironpick', bread: 'bread', cake: 'cake', bookshelf: 'bookshelf', wooden_hoe: 'hoe', torch: 'torch', diamond_pickaxe: 'diamondpick' };
+    const map = { crafting_table: 'bench', wooden_pickaxe: 'pick', furnace: 'furnace', stone_pickaxe: 'stonepick', iron_pickaxe: 'ironpick', bread: 'bread', cake: 'cake', bookshelf: 'bookshelf', wooden_hoe: 'hoe', torch: 'torch', diamond_pickaxe: 'diamondpick', enchanting_table: 'table', anvil: 'anvil' };
     if (map[n]) this.advance(map[n]);
   }
   onMobKilled(m, cause) {
@@ -954,6 +1006,7 @@ export class Game {
       fire: `${name} burned to death`, starve: `${name} starved to death`, cactus: `${name} was pricked to death`,
       explosion: src ? `${name} was blown up by ${src}` : `${name} blew up`, void: `${name} fell out of the world`,
       arrow: `${name} was shot by ${src || 'Skeleton'}`, mob: `${name} was slain by ${src || 'a mob'}`, poison: `${name} died`,
+      anvil: `${name} was squashed by a falling anvil`, thorns: `${name} was killed trying to hurt ${src || 'a mob'}`,
     };
     const msg = msgs[cause] || `${name} died`;
     this.deathMessage = msg;

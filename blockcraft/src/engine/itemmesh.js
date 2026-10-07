@@ -175,7 +175,7 @@ export function makeItemObject(id, opts = {}) {
     group.userData.block = true;
   } else {
     const { geo, tex } = flatItemGeometry(id);
-    const m = entityMaterial(tex, { alphaTest: 0.5 });
+    const m = entityMaterial(tex, { alphaTest: 0.5, glint: opts.glint });
     if (opts.depthTest === false) m.depthTest = false;
     mats.push(m);
     const mesh = new THREE.Mesh(geo, m);

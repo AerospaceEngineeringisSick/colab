@@ -32,7 +32,7 @@ const DEFAULTS = {
   rotate: null, // 'axis' | 'facing'
   plant: false, // needs soil below, breaks when unsupported
   slip: 0.6,
-  drop: undefined, // undefined: itself; null: nothing; or a function(meta, rand, tool)
+  drop: undefined, // undefined: itself; null: nothing; or a function(meta, rand, tool, fortune)
   xp: null, // [min,max]
   flammable: false,
   sway: false,
@@ -54,6 +54,8 @@ function block(name, props = {}) {
 
 const one = (item, n = 1) => () => [[item, n]];
 const chance = (r, p) => r() < p;
+// fortune on ores: multiplies the drop by 1..fortune+1 (1 is the most likely)
+const oreBonus = (r, f) => (f ? Math.max(1, Math.floor(r() * (f + 2))) : 1);
 
 // --------------------------------------------------------------- natural
 block('air', { render: R.NONE, opaque: false, solid: false, lightOpacity: 0, replaceable: true, hardness: 0, tex: null });
@@ -72,7 +74,7 @@ block('sand', { hardness: 0.5, tool: 'shovel', sound: 'sand', gravity: true });
 block('red_sand', { hardness: 0.5, tool: 'shovel', sound: 'sand', gravity: true });
 block('gravel', {
   hardness: 0.6, tool: 'shovel', sound: 'gravel', gravity: true,
-  drop: (m, r) => [[chance(r, 0.1) ? 'flint' : 'gravel', 1]],
+  drop: (m, r, t, f = 0) => [[chance(r, [0.1, 0.143, 0.25, 1][Math.min(3, f)]) ? 'flint' : 'gravel', 1]],
 });
 block('sandstone', { hardness: 0.8, tool: 'pickaxe', needsTool: true, tex: { top: 'sandstone_top', bottom: 'sandstone_bottom', side: 'sandstone_side' } });
 block('cut_sandstone', { hardness: 0.8, tool: 'pickaxe', needsTool: true, tex: { top: 'sandstone_top', bottom: 'sandstone_top', side: 'cut_sandstone' } });
@@ -94,13 +96,13 @@ block('polished_diorite', { hardness: 1.5, tool: 'pickaxe', needsTool: true });
 block('andesite', { hardness: 1.5, tool: 'pickaxe', needsTool: true });
 block('polished_andesite', { hardness: 1.5, tool: 'pickaxe', needsTool: true });
 // ores
-block('coal_ore', { hardness: 3, tool: 'pickaxe', needsTool: true, drop: one('coal'), xp: [0, 2] });
+block('coal_ore', { hardness: 3, tool: 'pickaxe', needsTool: true, drop: (m, r, t, f) => [['coal', oreBonus(r, f)]], xp: [0, 2] });
 block('iron_ore', { hardness: 3, tool: 'pickaxe', tier: 1, needsTool: true });
 block('gold_ore', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true });
-block('diamond_ore', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true, drop: one('diamond'), xp: [3, 7] });
-block('redstone_ore', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true, drop: (m, r) => [['redstone', 4 + (r() * 2 | 0)]], xp: [1, 5] });
-block('lapis_ore', { hardness: 3, tool: 'pickaxe', tier: 1, needsTool: true, drop: (m, r) => [['lapis_lazuli', 4 + (r() * 5 | 0)]], xp: [2, 5] });
-block('emerald_ore', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true, drop: one('emerald'), xp: [3, 7] });
+block('diamond_ore', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true, drop: (m, r, t, f) => [['diamond', oreBonus(r, f)]], xp: [3, 7] });
+block('redstone_ore', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true, drop: (m, r, t, f = 0) => [['redstone', 4 + (r() * 2 | 0) + (r() * (f + 1) | 0)]], xp: [1, 5] });
+block('lapis_ore', { hardness: 3, tool: 'pickaxe', tier: 1, needsTool: true, drop: (m, r, t, f) => [['lapis_lazuli', (4 + (r() * 5 | 0)) * oreBonus(r, f)]], xp: [2, 5] });
+block('emerald_ore', { hardness: 3, tool: 'pickaxe', tier: 2, needsTool: true, drop: (m, r, t, f) => [['emerald', oreBonus(r, f)]], xp: [3, 7] });
 
 // --------------------------------------------------------------- wood
 export const WOODS = ['oak', 'birch', 'spruce', 'jungle', 'acacia', 'dark_oak'];
@@ -110,12 +112,13 @@ const LEAF_TINT = { birch: [0.5, 0.65, 0.33], spruce: [0.38, 0.6, 0.38] };
 for (const w of WOODS) block(w + '_leaves', {
   hardness: 0.2, tool: 'hoe', sound: 'grass', opaque: false, layer: 1, lightOpacity: 1, flammable: true,
   tint: LEAF_TINT[w] || 'foliage', sway: true,
-  drop: (m, r, tool) => {
+  drop: (m, r, tool, f = 0) => {
     if (tool === 'shears') return [[w + '_leaves', 1]];
     const out = [];
-    if (chance(r, w === 'jungle' ? 0.025 : 0.05)) out.push([w + '_sapling', 1]);
+    const k = Math.min(3, f);
+    if (chance(r, w === 'jungle' ? [1 / 40, 1 / 36, 1 / 32, 1 / 24][k] : [1 / 20, 1 / 16, 1 / 12, 1 / 10][k])) out.push([w + '_sapling', 1]);
     if (chance(r, 0.02)) out.push(['stick', 1 + (r() * 2 | 0)]);
-    if ((w === 'oak' || w === 'dark_oak') && chance(r, 0.005)) out.push(['apple', 1]);
+    if ((w === 'oak' || w === 'dark_oak') && chance(r, [1 / 200, 1 / 180, 1 / 160, 1 / 120][k])) out.push(['apple', 1]);
     return out;
   },
 });
@@ -152,16 +155,16 @@ block('oak_door', { render: R.DOOR, tex: { side: 'oak_door_bottom', top: 'oak_do
 block('farmland', { render: R.BOXES, hardness: 0.6, tool: 'shovel', sound: 'dirt', lightOpacity: 15, drop: one('dirt'), tex: { top: 'farmland', side: 'dirt', bottom: 'dirt' } });
 block('wheat', {
   render: R.CROP, tex: 'wheat7', hardness: 0, sound: 'grass', plant: true,
-  drop: (m, r) => m >= 7 ? [['wheat', 1], ['wheat_seeds', 1 + (r() * 3 | 0)]] : [['wheat_seeds', 1]],
+  drop: (m, r, t, f = 0) => m >= 7 ? [['wheat', 1], ['wheat_seeds', 1 + (r() * 3 | 0) + (r() * (f + 1) | 0)]] : [['wheat_seeds', 1]],
 });
-block('carrots', { render: R.CROP, tex: 'carrots3', hardness: 0, sound: 'grass', plant: true, drop: (m, r) => [['carrot', m >= 7 ? 2 + (r() * 3 | 0) : 1]] });
+block('carrots', { render: R.CROP, tex: 'carrots3', hardness: 0, sound: 'grass', plant: true, drop: (m, r, t, f = 0) => [['carrot', m >= 7 ? 2 + (r() * 3 | 0) + (r() * (f + 1) | 0) : 1]] });
 block('potatoes', {
   render: R.CROP, tex: 'potatoes3', hardness: 0, sound: 'grass', plant: true,
-  drop: (m, r) => m >= 7 ? [['potato', 2 + (r() * 3 | 0)]] : [['potato', 1]],
+  drop: (m, r, t, f = 0) => m >= 7 ? [['potato', 2 + (r() * 3 | 0) + (r() * (f + 1) | 0)]] : [['potato', 1]],
 });
 block('pumpkin', { hardness: 1, tool: 'axe', sound: 'wood', rotate: 'facing', tex: { top: 'pumpkin_top', bottom: 'pumpkin_top', side: 'pumpkin_side', front: 'pumpkin_face' } });
 block('jack_o_lantern', { hardness: 1, tool: 'axe', sound: 'wood', rotate: 'facing', emit: 15, tex: { top: 'pumpkin_top', bottom: 'pumpkin_top', side: 'pumpkin_side', front: 'jack_o_lantern' } });
-block('melon', { hardness: 1, tool: 'axe', sound: 'wood', tex: { top: 'melon_top', bottom: 'melon_top', side: 'melon_side' }, drop: (m, r) => [['melon_slice', 3 + (r() * 5 | 0)]] });
+block('melon', { hardness: 1, tool: 'axe', sound: 'wood', tex: { top: 'melon_top', bottom: 'melon_top', side: 'melon_side' }, drop: (m, r, t, f = 0) => [['melon_slice', Math.min(9, 3 + (r() * 5 | 0) + (r() * (f + 1) | 0))]] });
 block('hay_block', { hardness: 0.5, tool: 'hoe', sound: 'grass', rotate: 'axis', tex: { end: 'hay_top', side: 'hay_side' } });
 block('cactus', { render: R.BOXES, hardness: 0.4, sound: 'cloth', layer: 1, plant: true, tex: { top: 'cactus_top', bottom: 'cactus_bottom', side: 'cactus_side' } });
 block('sugar_cane', { render: R.CROSS, hardness: 0, sound: 'grass', plant: true, tint: 'grass', drop: one('sugar_cane') });
@@ -214,7 +217,7 @@ for (const [n, s] of Object.entries(STAIRS)) block(n, {
 block('oak_fence', { render: R.FENCE, tex: 'oak_planks', hardness: 2, tool: 'axe', sound: 'wood', layer: 0 });
 block('dirt_path', { render: R.BOXES, hardness: 0.65, tool: 'shovel', sound: 'grass', lightOpacity: 15, drop: one('dirt'), tex: { top: 'dirt_path_top', side: 'dirt_path_side', bottom: 'dirt' } });
 block('spawner', { hardness: 5, tool: 'pickaxe', needsTool: true, sound: 'metal', opaque: false, layer: 1, drop: null, xp: [15, 43] });
-block('glowstone', { hardness: 0.3, sound: 'glass', emit: 15, drop: (m, r) => [['glowstone_dust', 2 + (r() * 3 | 0)]] });
+block('glowstone', { hardness: 0.3, sound: 'glass', emit: 15, drop: (m, r, t, f = 0) => [['glowstone_dust', Math.min(4, 2 + (r() * 3 | 0) + (r() * (f + 1) | 0))]] });
 block('cake', { render: R.BOXES, hardness: 0.5, sound: 'cloth', drop: null, layer: 0, tex: { top: 'cake_top', bottom: 'cake_bottom', side: 'cake_side', inner: 'cake_inner' } });
 // bed: meta bits 0-1 facing (towards the head), bit 2 head part
 block('red_bed', { render: R.BED, tex: { top: 'bed_head_top', side: 'bed_head_side', bottom: 'oak_planks' }, hardness: 0.2, sound: 'wood', layer: 0, drop: (m) => (m & 4) ? [['red_bed', 1]] : [] });
@@ -222,6 +225,11 @@ export const COLORS = ['white', 'orange', 'magenta', 'light_blue', 'yellow', 'li
 for (const c of COLORS) block(c + '_wool', { hardness: 0.8, tool: 'shears', sound: 'cloth', flammable: true, tex: 'wool_' + c });
 block('sea_lantern', { hardness: 0.3, sound: 'glass', emit: 15, drop: null });
 block('bone_block', { hardness: 2, tool: 'pickaxe', needsTool: true, rotate: 'axis', tex: { end: 'bone_block_top', side: 'bone_block_side' } });
+block('enchanting_table', { render: R.BOXES, hardness: 5, tool: 'pickaxe', needsTool: true, opaque: false, lightOpacity: 0, emit: 7, layer: 1,
+  tex: { top: 'enchanting_table_top', side: 'enchanting_table_side', bottom: 'enchanting_table_bottom' } });
+// anvil: meta bits 0-1 facing (the long side runs across the player's view)
+block('anvil', { render: R.BOXES, hardness: 5, tool: 'pickaxe', needsTool: true, opaque: false, lightOpacity: 0, sound: 'metal', layer: 0,
+  rotate: 'facing', gravity: true, tex: { top: 'anvil_top', side: 'anvil_side', bottom: 'anvil_base' } });
 
 // ------------------------------------------------------------------ tables
 const N = 1024;

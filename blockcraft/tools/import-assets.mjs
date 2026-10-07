@@ -99,6 +99,9 @@ const T = {
     wool_yellow: 'wool_yellow', wool_lime: 'mcl_wool_lime', wool_pink: 'wool_pink', wool_gray: 'wool_dark_grey',
     wool_light_gray: 'wool_grey', wool_cyan: 'wool_cyan', wool_purple: 'wool_violet', wool_blue: 'wool_blue',
     wool_brown: 'wool_brown', wool_green: 'wool_dark_green', wool_red: 'wool_red', wool_black: 'wool_black',
+    enchanting_table_top: 'mcl_enchanting_table_top', enchanting_table_side: 'mcl_enchanting_table_side',
+    enchanting_table_bottom: 'mcl_enchanting_table_bottom', anvil_top: 'mcl_anvils_anvil_top_damaged_0',
+    anvil_side: 'mcl_anvils_anvil_side', anvil_base: 'mcl_anvils_anvil_base',
   },
   item: {
     stick: 'default_stick', coal: 'default_coal_lump', charcoal: 'mcl_core_charcoal', iron_ingot: 'default_steel_ingot',
@@ -132,7 +135,7 @@ const T = {
     pumpkin_seeds: 'mcl_farming_pumpkin_seeds', melon_seeds: 'mcl_farming_melon_seeds', pumpkin_pie: 'mcl_farming_pumpkin_pie',
     cookie: 'farming_cookie', cake: 'cake', glowstone_dust: 'mcl_nether_glowstone_dust', iron_nugget: 'mcl_core_iron_nugget',
     gold_nugget: 'mcl_core_gold_nugget', slime_ball: 'mcl_mobitems_slimeball', ink_sac: 'mcl_mobitems_ink_sac',
-    spawn_egg: 'spawn_egg', spawn_egg_overlay: 'spawn_egg_overlay',
+    spawn_egg: 'spawn_egg', spawn_egg_overlay: 'spawn_egg_overlay', enchanted_book: 'mcl_enchanting_book_enchanted',
   },
   entity: {
     zombie: 'mobs_mc_zombie', skeleton: 'mobs_mc_skeleton', creeper: 'mobs_mc_creeper', spider: 'mobs_mc_spider',
@@ -141,7 +144,7 @@ const T = {
     chicken: 'mobs_mc_chicken', wolf: 'mobs_mc_wolf', wolf_angry: 'mobs_mc_wolf_angry', wolf_tame: 'mobs_mc_wolf_tame',
     wolf_collar: 'mobs_mc_wolf_collar', steve: 'character', alex: 'mcl_skins_character_1', chest: 'mcl_chests_normal',
     bed: 'mcl_beds_bed_red', arrow: 'mcl_bows_arrow', slime: 'mobs_mc_slime',
-    skeleton_overlay: 'mobs_mc_stray_overlay',
+    skeleton_overlay: 'mobs_mc_stray_overlay', enchanting_book: 'mcl_enchanting_book_entity',
   },
   gui: {
     hotbar: 'mcl_inventory_hotbar', hotbar_selected: 'mcl_inventory_hotbar_selected', heart: 'heart',
@@ -150,6 +153,8 @@ const T = {
     slot_chestplate: 'mcl_inventory_empty_armor_slot_chestplate', slot_leggings: 'mcl_inventory_empty_armor_slot_leggings',
     slot_boots: 'mcl_inventory_empty_armor_slot_boots', fire_bg: 'default_furnace_fire_bg', fire_fg: 'default_furnace_fire_fg',
     arrow_bg: 'gui_furnace_arrow_bg', arrow_fg: 'gui_furnace_arrow_fg', craft_arrow: 'gui_crafting_arrow',
+    slot_lapis: 'mcl_enchanting_lapis_background', anvil_hammer: 'mcl_anvils_inventory_hammer',
+    enchant_book: 'mcl_enchanting_book_open',
   },
   env: {
     moon_phases: 'mcl_moon_moon_phases', rain: 'weather_pack_rain_raindrop_1', snowflake: 'weather_pack_snow_snowflake1',
@@ -166,6 +171,9 @@ for (const m of ['leather', 'chain', 'iron', 'gold', 'diamond']) {
     T.entity[`armor_${m}_${p}`] = `mcl_armor_${p}_${m}`;
   }
 }
+// enchanting table glyphs (Standard Galactic) and level-cost badges
+for (let i = 1; i <= 18; i++) T.gui['glyph_' + i] = 'mcl_enchanting_glyph_' + i;
+for (let i = 1; i <= 3; i++) { T.gui['enchant_cost_' + i] = 'mcl_enchanting_number_' + i; T.gui[`enchant_cost_${i}_off`] = `mcl_enchanting_number_${i}_off`; }
 // crop stages
 for (let i = 0; i < 8; i++) T.block['wheat' + i] = 'mcl_farming_wheat_stage_' + i;
 for (let i = 0; i < 4; i++) T.block['potatoes' + i] = 'mcl_farming_potatoes_stage_' + i;
@@ -271,6 +279,7 @@ const S = {
   'throw': ['mcl_throwing_throw'],
   'item.pickup': ['item_drop_pickup'],
   'item.burn': ['builtin_item_lava'],
+  'enchant': ['mcl_enchanting_enchant.0', 'mcl_enchanting_enchant.1', 'mcl_enchanting_enchant.2'],
 };
 
 const sdir = path.join(OUT, 'sounds');
@@ -306,6 +315,7 @@ const lic = {
   'mcl_throwing-README.md': path.join(SRC, 'mods/ITEMS/mcl_throwing/README.md'),
   'mcl_item_entity-README.md': path.join(SRC, 'mods/ENTITIES/mcl_item_entity/README.txt'),
   'mcl_fishing-README.md': path.join(SRC, 'mods/ITEMS/mcl_fishing/README.md'),
+  'mcl_enchanting-sounds-attributions.txt': path.join(SRC, 'mods/ITEMS/mcl_enchanting/sounds/attributions.txt'),
 };
 for (const [d, s] of Object.entries(lic)) if (fs.existsSync(s)) fs.copyFileSync(s, path.join(ldir, d));
 

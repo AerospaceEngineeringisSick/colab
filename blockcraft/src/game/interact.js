@@ -5,6 +5,7 @@ import { WH } from '../shared/constants.js';
 import { raycast } from './raycast.js';
 import { segBox, Arrow, Thrown } from './entities.js';
 import { collisionBoxes, FACING_DIR } from '../shared/shapes.js';
+import { enchLevel, armorLevel } from '../shared/enchant.js';
 
 const FACE_DIR = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
 const SLAB_FULL = {};
@@ -68,7 +69,10 @@ export class Interaction {
     }
     if (b.needsTool && b.tool === 'pickaxe' && !(tool && tool.type === 'pickaxe' && tool.tier >= b.tier)) harvest = false;
     if (b.needsTool && b.tool === 'shovel' && id === B.snow && !(tool && tool.type === 'shovel')) harvest = false;
-    if (p.eyeInWater) speed /= 5;
+    // efficiency only helps a tool that is already the right one for the block
+    const eff = enchLevel(held, 'efficiency');
+    if (eff && speed > 1) speed += eff * eff + 1;
+    if (p.eyeInWater && !armorLevel(p.inv, 'aqua_affinity')) speed /= 5;
     if (!p.onGround && !p.flying) speed /= 5;
     const dmg = speed / b.hardness / (harvest ? 30 : 100);
     if (dmg >= 1) return 0;
@@ -180,9 +184,18 @@ export class Interaction {
     let dmg = it && it.damage ? it.damage : 1;
     const crit = p.vy < 0 && !p.onGround && !p.inWater && !p.flying;
     if (crit) { dmg *= 1.5; g.particles.crit(e.x, e.y + e.h * 0.7, e.z, 12); }
+    // damage enchantments
+    const sharp = enchLevel(held, 'sharpness'), smite = enchLevel(held, 'smite'), bane = enchLevel(held, 'bane_of_arthropods');
+    let bonus = sharp ? 0.5 * sharp + 0.5 : 0;
+    if (smite && e.def.undead) bonus += 2.5 * smite;
+    if (bane && e.def.spider) bonus += 2.5 * bane;
+    if (bonus) { dmg += bonus; g.particles.crit(e.x, e.y + e.h * 0.7, e.z, 6); }
     if (g.difficulty === 0 && e.def.hostile) dmg = Math.max(dmg, 4);
     const ok = e.hurt(dmg, p, p.x, p.z, p.sprinting ? 'sprint' : 'player');
     if (ok) {
+      const kb = enchLevel(held, 'knockback'), fa = enchLevel(held, 'fire_aspect');
+      if (kb && e.knock) { const k = 1 + kb * 1.25; e.knock[0] *= k; e.knock[1] *= k; }
+      if (fa && !e.dead) e.fire = Math.max(e.fire || 0, 80 * fa);
       p.lastTargetMob = e;
       if (p.sprinting) p.sprinting = false;
       p.addExhaustion(0.1);
@@ -289,11 +302,16 @@ export class Interaction {
     if (f > 1) f = 1;
     const d = p.lookDir();
     const sp = f * 3;
-    const a = new Arrow(g, p.x + d[0] * 0.3, p.y + p.eye - 0.1, p.z + d[2] * 0.3, d[0] * sp + p.vx, d[1] * sp + (p.onGround ? 0 : p.vy), d[2] * sp + p.vz, p, 2);
+    const bow = p.inv.held;
+    const power = enchLevel(bow, 'power'), infinity = enchLevel(bow, 'infinity');
+    const a = new Arrow(g, p.x + d[0] * 0.3, p.y + p.eye - 0.1, p.z + d[2] * 0.3, d[0] * sp + p.vx, d[1] * sp + (p.onGround ? 0 : p.vy), d[2] * sp + p.vz, p, power ? 2.5 + 0.5 * power : 2);
     a.crit = f >= 1;
+    a.fire = !!enchLevel(bow, 'flame');
+    a.punch = enchLevel(bow, 'punch');
+    if (infinity) a.pickup = false;
     g.entities.add(a);
     g.sound.play('bow.shoot', p.x, p.y, p.z, 1, 1 / (Math.random() * 0.4 + 1.2) + f * 0.5);
-    if (!p.creative) { p.inv.remove(I.arrow, 1); g.damageHeld(1); }
+    if (!p.creative) { if (!infinity) p.inv.remove(I.arrow, 1); g.damageHeld(1); }
     g.advance('bow');
   }
 

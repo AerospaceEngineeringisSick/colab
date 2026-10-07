@@ -83,6 +83,13 @@ export function iconStyle(id) {
   const x = (i % COLS) / (COLS - 1) * 100, y = Math.floor(i / COLS) / (rows - 1) * 100;
   return `background-position:${x}% ${y}%`;
 }
+// the same position for a mask over the icon sheet (glint overlay)
+export function iconMask(id) {
+  const st = iconStyle(id);
+  if (!st) return '';
+  const v = st.slice(st.indexOf(':') + 1);
+  return `-webkit-mask-position:${v};mask-position:${v}`;
+}
 
 // draw an icon into a 2D canvas context (e.g. toasts)
 export function drawIcon(ctx, id, x, y, size) {

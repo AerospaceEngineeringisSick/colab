@@ -5,6 +5,10 @@ import { makeItemObject } from './itemmesh.js';
 import { MODELS, buildModel, boxGeometry } from './models.js';
 import { entityMaterial } from './materials.js';
 import { imageTexture } from './textures.js';
+import { isEnchanted } from '../shared/enchant.js';
+
+// enchanted items (and a few special ones) shimmer
+const shines = (s) => !!s && (isEnchanted(s) || !!ITEMS[s.id].glint);
 
 export class Hand {
   constructor(renderer, skin = 'entity/steve') {
@@ -30,7 +34,8 @@ export class Hand {
   }
 
   setItem(stack) {
-    const key = stack ? stack.id : -1;
+    const glint = shines(stack);
+    const key = stack ? stack.id + (glint ? 0.5 : 0) : -1;
     if (key === this.itemId) return;
     if (this.itemObj) {
       this.itemPivot.remove(this.itemObj);
@@ -38,14 +43,14 @@ export class Hand {
       this.itemObj = null;
     }
     this.itemId = key;
-    if (stack) this.itemObj = makeItemObject(stack.id, { depthTest: true });
+    if (stack) this.itemObj = makeItemObject(stack.id, { depthTest: true, glint });
     if (this.itemObj) this.itemPivot.add(this.itemObj);
   }
 
   // state: { stack, swing (0..1), bobX, bobY, light:[s,b], using:{kind, ticks}, equipChange, sneak, a(lerp) }
   update(st, dt) {
     // equip animation: lower the old item, swap, raise the new one
-    const k = st.stack ? st.stack.id + ':' + st.slot : 'none:' + st.slot;
+    const k = st.stack ? st.stack.id + ':' + st.slot + (shines(st.stack) ? ':g' : '') : 'none:' + st.slot;
     if (k !== this.curKey) {
       if (this.curKey === undefined) { this.curKey = k; this.setItem(st.stack); }
       else { this.lowering = true; this.pendingKey = k; }
@@ -148,12 +153,13 @@ export class PlayerModel {
     this.armor = [];
   }
   setHeld(stack) {
-    const id = stack ? stack.id : -1;
+    const glint = shines(stack);
+    const id = stack ? stack.id + (glint ? 0.5 : 0) : -1;
     if (id === this.heldId) return;
     this.heldId = id;
     if (this.held) { this.model.parts.rightArm.remove(this.held); this.held = null; }
     if (stack) {
-      this.held = makeItemObject(stack.id);
+      this.held = makeItemObject(stack.id, { glint });
       const block = this.held.userData.block;
       this.held.scale.setScalar(block ? 0.3 : 0.5);
       this.held.position.set(-0.06, -0.62, block ? 0.0 : 0.1);

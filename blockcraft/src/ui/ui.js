@@ -2,7 +2,9 @@
 import { ITEMS } from '../shared/items.js';
 import { BLOCKS } from '../shared/blocks.js';
 import { images, canvas } from '../engine/textures.js';
-import { iconStyle } from './icons.js';
+import { iconStyle, iconMask } from './icons.js';
+import { isEnchanted } from '../shared/enchant.js';
+import { stackKey, itemName } from '../game/inventory.js';
 import { Screens } from './screens.js';
 import { Menus } from './menus.js';
 import { Touch } from './touch.js';
@@ -33,6 +35,7 @@ export function slotHTML(stack) {
   if (!stack) return '';
   const it = ITEMS[stack.id];
   let h = `<div class="icon" style="${iconStyle(stack.id)}"></div>`;
+  if (isEnchanted(stack) || (it && it.glint)) h += `<div class="glint" style="${iconMask(stack.id)}"></div>`;
   if (stack.count > 1) h += `<span class="count">${stack.count}</span>`;
   if (it && it.durability && stack.dmg > 0) {
     const f = 1 - stack.dmg / it.durability;
@@ -209,17 +212,19 @@ export class UI {
     const inv = p.inv;
     for (let i = 0; i < 9; i++) {
       const s = inv.slots[i];
-      const key = s ? `${s.id}:${s.count}:${s.dmg}` : '';
+      const key = stackKey(s);
       if (this.hudCache['hb' + i] !== key) { this.hudCache['hb' + i] = key; this.hbSlots[i].innerHTML = slotHTML(s); }
     }
     this.hbSel.style.left = `calc(${inv.selected * 20 - 1} * var(--s))`;
     this.hotbar.style.display = p.mode === 'spectator' ? 'none' : '';
     // held item name popup
     const held = inv.held;
-    const hk = held ? held.id + ':' + inv.selected : 'none:' + inv.selected;
+    const hk = held ? held.id + ':' + inv.selected + ':' + (held.label || '') : 'none:' + inv.selected;
     if (hk !== this.lastHeldKey) {
       this.lastHeldKey = hk;
-      this.itemName.textContent = held ? ITEMS[held.id].display : '';
+      this.itemName.textContent = itemName(held);
+      this.itemName.style.color = held && (isEnchanted(held) || ITEMS[held.id].glint) ? '#55ffff' : '';
+      this.itemName.style.fontStyle = held && held.label ? 'italic' : '';
       this.itemNameTime = 2.2;
     }
     this.itemNameTime = (this.itemNameTime || 0) - dt;
@@ -400,6 +405,8 @@ export class UI {
   openInventory() { if (this.game.player.mode === 'creative') this.screens.open('creative'); else this.screens.open('inventory'); this.game.advance('inventory'); }
   openCrafting() { this.screens.open('crafting'); }
   openFurnace(t) { this.openTile = t; this.screens.open('furnace', t); }
+  openEnchanting(pos) { this.openTile = null; this.screens.open('enchant', pos); }
+  openAnvil(pos) { this.openTile = null; this.screens.open('anvil', pos); }
   openChest(t) { this.openTile = t; this.screens.open('chest', t); }
   closeScreen(silent) {
     if (!this.screenOpen) return;

@@ -147,6 +147,16 @@ export class Particles {
     if (Math.random() < 0.4) this.add({ x, y: y + 0.12, z, vy: 0.5, g: -0.2, drag: 0.95, life: 0.8, size: 0.1, layer: this.layer('env/smoke'), r: 0.15, gg: 0.15, b: 0.15, grow: 0.6 });
   }
 
+  // a glyph flying from a bookshelf at offset (dx,dy,dz) into the enchanting table at (x,y,z)
+  enchantGlyph(x, y, z, dx, dy, dz) {
+    const c = Math.random() * 0.6 + 0.4;
+    this.add({
+      fly: true, ox: x + 0.5, oy: y + 2, oz: z + 0.5, dx: dx + Math.random() - 0.5, dy: dy - Math.random() - 1, dz: dz + Math.random() - 0.5,
+      x: x + 0.5 + dx, y: y + 2 + dy, z: z + 0.5 + dz, life: (30 + Math.random() * 10) / 20, size: 0.06 + Math.random() * 0.04,
+      layer: this.layer('env/glyph_' + (1 + Math.floor(Math.random() * 18))), r: c * 0.9, gg: c * 0.9, b: c, light: -1, fade: false,
+    });
+  }
+
   lavaPop(x, y, z) {
     this.add({ x, y, z, vx: (Math.random() - 0.5) * 2, vy: 3 + Math.random() * 2, vz: (Math.random() - 0.5) * 2, g: 16, life: 1.5, size: 0.12, layer: this.layer('env/lava_particle'), light: -1, collide: true, shrink: true });
   }
@@ -201,6 +211,13 @@ export class Particles {
       const p = list[i];
       p.age += dt;
       if (p.age >= p.life) continue;
+      if (p.fly) {
+        // enchanting glyph: drifts from its start offset back into the origin with a little dip (vanilla curve)
+        const f = 1 - p.age / p.life, f1 = (1 - f) ** 4;
+        p.x = p.ox + p.dx * f; p.y = p.oy + p.dy * f - f1 * 1.2; p.z = p.oz + p.dz * f;
+        list[j++] = p;
+        continue;
+      }
       p.vy -= p.g * dt;
       const d = Math.pow(p.drag, dt * 20);
       p.vx *= d; p.vy *= d; p.vz *= d;

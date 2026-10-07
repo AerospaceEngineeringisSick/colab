@@ -172,6 +172,8 @@ uniform vec4 uOverlay;
 uniform vec3 uColor;
 uniform float uAlphaTest;
 uniform float uFullbright;
+uniform float uGlint;
+uniform float uTime;
 varying vec2 vUv;
 varying float vShade;
 varying float vDist;
@@ -182,6 +184,14 @@ void main() {
   if (c.a < uAlphaTest) discard;
   vec3 lit = mix(lightmap(uLight.x, uLight.y), vec3(1.0), uFullbright);
   vec3 col = c.rgb * uColor * mix(vShade, 1.0, uFullbright) * lit;
+  if (uGlint > 0.5) {
+    // enchantment glint: two purple bands sliding across at different angles
+    float t = uTime * 0.25;
+    float a = fract((vUv.x * 0.8 + vUv.y * 0.4) * 1.3 - t);
+    float b = fract((vUv.x * 0.5 - vUv.y * 0.9) * 1.1 + t * 0.7);
+    float g = smoothstep(0.0, 0.18, a) * smoothstep(0.42, 0.18, a) + 0.7 * smoothstep(0.0, 0.14, b) * smoothstep(0.3, 0.14, b);
+    col += vec3(0.5, 0.22, 0.95) * (0.07 + 0.5 * g) * max(lit, vec3(0.45));
+  }
   col = mix(col, uOverlay.rgb, uOverlay.a);
   col = applyFog(col, vDist);
   gl_FragColor = vec4(col, c.a);
@@ -200,6 +210,7 @@ export function entityMaterial(map, opts = {}) {
       uColor: { value: new THREE.Color(1, 1, 1) },
       uAlphaTest: { value: opts.alphaTest ?? 0.1 },
       uFullbright: { value: opts.fullbright ? 1 : 0 },
+      uGlint: { value: opts.glint ? 1 : 0 },
     },
     transparent: !!opts.transparent,
     side: opts.side ?? THREE.FrontSide,

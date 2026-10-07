@@ -3,11 +3,12 @@ import { ITEMS, I } from '../shared/items.js';
 import { MOBS } from './mobs.js';
 import { B } from '../shared/blocks.js';
 import { WH } from '../shared/constants.js';
+import { ENCHANTS, EN, canApply, compatible, enchName } from '../shared/enchant.js';
 
 const HELP = [
   '/gamemode <survival|creative|spectator>', '/time set <day|noon|night|midnight|ticks>', '/weather <clear|rain|thunder>',
   '/give <item> [count]', '/tp <x> <y> <z>', '/summon <mob>', '/difficulty <peaceful|easy|normal|hard>', '/kill',
-  '/setblock <x> <y> <z> <block>', '/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>',
+  '/setblock <x> <y> <z> <block>', '/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>', '/enchant <enchantment> [level]',
   '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome',
 ];
 
@@ -89,6 +90,19 @@ export function runCommand(g, text) {
     case 'heal': p.health = p.maxHealth; p.food = 20; p.saturation = 5; return say('Healed');
     case 'xp': case 'experience': { const n = parseInt(args[0], 10) || 0; p.addXp(n); return say(`Gave ${n} experience`); }
     case 'biome': return say(`Biome: ${g.world.biomeAt(Math.floor(p.x), Math.floor(p.z)).name}`);
+    case 'enchant': {
+      const key = (args[0] || '').replace(/^minecraft:/, '').toLowerCase();
+      const e = ENCHANTS[EN[key]];
+      if (!e) return err(`Unknown enchantment '${key}'. Try: ${ENCHANTS.map((x) => x.key).join(', ')}`);
+      const lvl = args[1] === undefined ? 1 : parseInt(args[1], 10);
+      if (!(lvl >= 1 && lvl <= e.max)) return err(`${lvl} is not a valid level for ${e.name} (1-${e.max})`);
+      const h = p.inv.held;
+      if (!h || !canApply(e, h.id) || h.id === I.book) return err(`${h ? ITEMS[h.id].display : 'Nothing'} cannot support that enchantment`);
+      const ench = h.ench || [];
+      if (ench.some((x) => x[0] !== e.id && !compatible(ENCHANTS[x[0]], e))) return err(`${ITEMS[h.id].display} has an enchantment that conflicts with ${e.name}`);
+      h.ench = ench.filter((x) => x[0] !== e.id).concat([[e.id, lvl]]);
+      return say(`Applied enchantment ${enchName([e.id, lvl])} to ${ITEMS[h.id].display}`);
+    }
     case 'setblock': case 'fill': {
       const n = cmd === 'fill' ? 6 : 3;
       const c = [];

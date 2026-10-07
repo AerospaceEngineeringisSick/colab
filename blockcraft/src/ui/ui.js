@@ -178,6 +178,9 @@ export class UI {
     this.hearts = row('hearts'); this.armorRow = row('armor'); this.foodRow = row('food'); this.airRow = row('air');
     this.absorbRow = row('absorb');
     this.effectsEl = el('div', '', hud); this.effectsEl.id = 'effects';
+    this.bossEl = el('div', 'hidden', hud); this.bossEl.id = 'bossbar';
+    el('div', 't', this.bossEl).textContent = 'Ender Dragon';
+    this.bossFill = el('i', '', el('div', 'bar', this.bossEl));
     const xp = el('div', '', hud); xp.id = 'xp';
     this.xpFill = el('i', '', xp); this.xpLevel = el('b', '', xp);
     this.itemName = el('div', 't', hud); this.itemName.id = 'itemname';
@@ -246,6 +249,10 @@ export class UI {
     this.actionEl.style.opacity = this.actionTime > 0 ? Math.min(1, this.actionTime) : 0;
     if (p.mode === 'survival') this.updateStats(game, dt);
     this.updateEffects(p);
+    const d = game.dragon;
+    const showBoss = !!(d && !d.removed && game.dim === 'end' && Math.hypot(d.x - p.x, d.z - p.z) < 192);
+    if (this.bossEl._on !== showBoss) { this.bossEl._on = showBoss; this.bossEl.classList.toggle('hidden', !showBoss); }
+    if (showBoss) { const w = Math.round(d.health / d.maxHealth * 1000) / 10 + '%'; if (this.bossFill._w !== w) { this.bossFill._w = w; this.bossFill.style.width = w; } }
     // overlays
     this.lowhpEl.style.opacity = p.mode === 'survival' && p.health <= 4 && !p.dead ? 0.6 + Math.sin(game.clock * 6) * 0.2 : 0;
     this.fireEl.style.opacity = p.fire > 0 && !p.creative && !p.inWater ? 0.6 + Math.sin(game.clock * 20) * 0.2 : 0;

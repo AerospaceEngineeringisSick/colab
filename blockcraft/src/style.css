@@ -211,3 +211,15 @@ input, button { font-family: inherit; }
 #effects .fx.bad { border-color: #a03030; }
 #effects .fx span { position: absolute; left: 0; right: 0; bottom: calc(-9 * var(--s)); text-align: center; font-size: calc(7 * var(--s)); color: #fff; text-shadow: calc(1 * var(--s)) calc(1 * var(--s)) #000; white-space: nowrap; }
 #effects .fx.blink { opacity: 0.5; }
+
+/* end credits */
+#credits { position: fixed; inset: 0; background: #000; z-index: 50; overflow: hidden; cursor: pointer; }
+#credits .roll { position: absolute; left: 50%; width: min(90vw, 640px); transform: translateX(-50%); top: 100%; color: #ddd; text-align: center; font-size: 18px; line-height: 1.6; animation: creditsRoll 48s linear forwards; }
+#credits h1 { font-size: 44px; color: #fff; margin: 0 0 40px; letter-spacing: 2px; }
+#credits h2 { font-size: 22px; color: #ffff55; margin: 60px 0 16px; }
+#credits .q { color: #c5a8ff; margin: 0 0 28px; }
+@keyframes creditsRoll { from { top: 100%; } to { top: -170%; } }
+/* boss bar */
+#bossbar { position: absolute; left: 50%; top: calc(6 * var(--s)); transform: translateX(-50%); width: calc(182 * var(--s)); text-align: center; color: #fff; font-size: calc(8 * var(--s)); text-shadow: calc(1 * var(--s)) calc(1 * var(--s)) #3f3f3f; }
+#bossbar .bar { margin-top: calc(2 * var(--s)); height: calc(5 * var(--s)); background: #4a1146; border: calc(1 * var(--s)) solid #000; }
+#bossbar .bar i { display: block; height: 100%; background: linear-gradient(#ff7bf4, #d22ac8); }

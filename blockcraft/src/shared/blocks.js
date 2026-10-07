@@ -320,6 +320,18 @@ block('fire', { render: R.FIRE, solid: false, opaque: false, lightOpacity: 0, la
 block('brewing_stand', { render: R.BOXES, hardness: 0.5, tool: 'pickaxe', needsTool: true, opaque: false, lightOpacity: 0, emit: 1, layer: 1, sound: 'metal',
   tex: { side: 'brewing_stand', top: 'brewing_rack', bottom: 'brewing_rack_bottle' } });
 
+// ------------------------------------------------------------------ the End
+block('end_stone', { hardness: 3, tool: 'pickaxe', needsTool: true });
+block('end_stone_bricks', { hardness: 3, tool: 'pickaxe', needsTool: true });
+// end portal frame: meta bits 0-1 facing (toward the portal), bit 2 an eye is set
+block('end_portal_frame', { render: R.BOXES, hardness: -1, opaque: false, lightOpacity: 15, emit: 1, layer: 0, rotate: 'facing', drop: null,
+  tex: { top: 'end_portal_frame_top', side: 'end_portal_frame_side', bottom: 'end_portal_frame_bottom', front: 'end_portal_frame_eye' } });
+block('end_portal', { render: R.BOXES, solid: false, opaque: false, lightOpacity: 0, emit: 15, hardness: -1, drop: null, layer: 0, tex: 'end_portal' });
+block('dragon_egg', { render: R.BOXES, hardness: 3, opaque: false, lightOpacity: 0, emit: 1, gravity: true, layer: 0 });
+block('purpur_block', { hardness: 1.5, tool: 'pickaxe', needsTool: true });
+block('purpur_pillar', { hardness: 1.5, tool: 'pickaxe', needsTool: true, rotate: 'axis', tex: { end: 'purpur_pillar_top', side: 'purpur_pillar' } });
+block('end_rod', { render: R.BOXES, hardness: 0, opaque: false, lightOpacity: 0, emit: 14, layer: 1, solid: false, tex: { side: 'end_rod', top: 'end_rod_top' } });
+
 SLABS.nether_brick_slab = { tex: 'nether_bricks', full: 'nether_bricks', p: 'pickaxe' };
 SLABS.quartz_slab = { tex: BLOCKS[B.quartz_slab].tex, full: 'quartz_block', p: 'pickaxe' };
 

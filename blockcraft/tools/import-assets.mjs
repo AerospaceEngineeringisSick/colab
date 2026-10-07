@@ -243,6 +243,17 @@ Object.assign(T.gui, {
 for (const e of ['swift', 'slow', 'strong', 'weak', 'leaping', 'regenerating', 'fire_proof', 'water_breathing', 'night_vision', 'invisible', 'poisoned', 'withering', 'food_poisoning']) T.gui['effect_' + e] = 'mcl_potions_effect_' + e;
 Object.assign(T.env, { effect: 'mcl_particles_effect', instant_effect: 'mcl_particles_instant_effect', droplet: 'mcl_particles_droplet_bottle' });
 T.entity.witch = 'mobs_mc_witch';
+// the End
+Object.assign(T.block, {
+  end_stone: 'mcl_end_end_stone', end_stone_bricks: 'mcl_end_end_bricks', end_portal_frame_top: 'mcl_portals_endframe_top',
+  end_portal_frame_side: 'mcl_portals_endframe_side', end_portal_frame_bottom: 'mcl_portals_endframe_bottom', end_portal_frame_eye: 'mcl_portals_endframe_eye',
+  end_portal: 'mcl_portals_end_portal', dragon_egg: 'mcl_end_dragon_egg', purpur_block: 'mcl_end_purpur_block', purpur_pillar: 'mcl_end_purpur_pillar',
+  purpur_pillar_top: 'mcl_end_purpur_pillar_top', end_rod: 'mcl_end_end_rod_side', end_rod_top: 'mcl_end_end_rod_top',
+  chorus_plant: 'mcl_end_chorus_plant', chorus_flower: 'mcl_end_chorus_flower', chorus_flower_dead: 'mcl_end_chorus_flower_dead',
+});
+Object.assign(T.item, { ender_eye: 'mcl_end_ender_eye', chorus_fruit: 'mcl_end_chorus_fruit', popped_chorus_fruit: 'mcl_end_chorus_fruit_popped', end_crystal: 'mcl_end_crystal_item' });
+Object.assign(T.entity, { ender_dragon: 'mobs_mc_dragon', dragon_fireball: 'mobs_mc_dragon_fireball', end_crystal: 'mcl_end_crystal', silverfish: 'mobs_mc_silverfish', endermite: 'mobs_mc_endermite' });
+Object.assign(T.env, { end_sky: 'mcl_playerplus_end_sky', crystal_beam: 'mcl_end_crystal_beam', teleport: 'mcl_particles_teleport', dragon_breath: 'mcl_particles_dragon_breath_2' });
 // crop stages
 for (let i = 0; i < 8; i++) T.block['wheat' + i] = 'mcl_farming_wheat_stage_' + i;
 for (let i = 0; i < 4; i++) T.block['potatoes' + i] = 'mcl_farming_potatoes_stage_' + i;
@@ -258,6 +269,21 @@ for (const [cat, map] of Object.entries(T)) {
     fs.writeFileSync(path.join(dir, dest + '.png'), PNG.sync.write(png, { colorType: 6 }));
     nTex++;
   }
+}
+// big source images shrunk to what the game needs (box filter)
+for (const [dest, size] of [['env/end_sky', 128]]) {
+  const f = path.join(OUT, 'textures', dest + '.png');
+  const src = PNG.sync.read(fs.readFileSync(f));
+  const k = src.width / size, out = new PNG({ width: size, height: size });
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const acc = [0, 0, 0, 0];
+    for (let j = 0; j < k; j++) for (let i = 0; i < k; i++) {
+      const o = ((y * k + j) * src.width + x * k + i) * 4;
+      for (let c = 0; c < 4; c++) acc[c] += src.data[o + c];
+    }
+    for (let c = 0; c < 4; c++) out.data[(y * size + x) * 4 + c] = Math.round(acc[c] / (k * k));
+  }
+  fs.writeFileSync(f, PNG.sync.write(out, { colorType: 6 }));
 }
 // side textures with see-through bottoms are laid over their base block
 for (const [dest, base] of [['crimson_nylium_side', 'netherrack'], ['warped_nylium_side', 'netherrack']]) {
@@ -402,6 +428,9 @@ const S = {
   'slime.attack': ['green_slime_attack'],
   'magma.attack': ['mobs_mc_magma_cube_attack'],
   'fire.crackle': ['fire_fire.1', 'fire_fire.2', 'fire_fire.3'],
+  'silverfish.say': ['mobs_mc_silverfish_idle'],
+  'silverfish.hurt': ['mobs_mc_silverfish_hurt'],
+  'silverfish.death': ['mobs_mc_silverfish_death'],
   'dragon.growl': ['mobs_mc_ender_dragon_attack'],
   'dragon.shoot': ['mobs_mc_ender_dragon_shoot'],
 };

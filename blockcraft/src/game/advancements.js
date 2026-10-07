@@ -44,4 +44,8 @@ export const ADVANCEMENTS = [
   { key: 'quartz', title: 'Hidden in the Depths', desc: 'Mine some Nether Quartz', icon: 'quartz' },
   { key: 'brew', title: 'Local Brewery', desc: 'Brew a potion', icon: 'brewing_stand' },
   { key: 'potion', title: 'A Furious Cocktail', desc: 'Drink a potion', icon: 'glass_bottle' },
+  { key: 'eye', title: 'Eye Spy', desc: 'Follow an Eye of Ender', icon: 'ender_eye' },
+  { key: 'end', title: 'The End?', desc: 'Enter the End Portal', icon: 'end_stone' },
+  { key: 'dragon', title: 'Free the End', desc: 'Good luck', icon: 'dragon_egg' },
+  { key: 'egg', title: 'The Next Generation', desc: 'Hold the Dragon Egg', icon: 'dragon_egg' },
 ];

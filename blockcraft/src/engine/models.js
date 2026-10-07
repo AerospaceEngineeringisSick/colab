@@ -304,6 +304,64 @@ MODELS.zombified_piglin = (() => {
   return m;
 })();
 MODELS.wither_skeleton = { ...MODELS.skeleton, scale: 1.2 };
+// silverfish (64x32): seven segments with three ridges of bristles
+const SF_SIZES = [[3, 2, 2], [4, 3, 2], [6, 4, 3], [3, 3, 3], [2, 2, 3], [2, 1, 2], [1, 1, 2]];
+const SF_UV = [[0, 0], [0, 4], [0, 9], [0, 16], [0, 22], [11, 0], [13, 4]];
+const SF_Z = [-3.5, -1.5, 1, 4, 7, 9.5, 11.5];
+MODELS.silverfish = {
+  tex: [64, 32],
+  parts: {
+    ...Object.fromEntries(SF_SIZES.map(([sx, sy, sz], i) => ['seg' + i, { pivot: [0, sy, -SF_Z[i]], boxes: [{ o: [-sx / 2, -sy, -sz / 2], s: [sx, sy, sz], uv: SF_UV[i] }] }])),
+    layer0: { pivot: [0, 8, -SF_Z[2]], boxes: [{ o: [-5, -8, -1.5], s: [10, 8, 3], uv: [20, 0] }] },
+    layer1: { pivot: [0, 4, -SF_Z[4]], boxes: [{ o: [-3, -4, -1.5], s: [6, 4, 3], uv: [20, 11] }] },
+    layer2: { pivot: [0, 5, -SF_Z[1]], boxes: [{ o: [-3, -5, -1], s: [6, 5, 2], uv: [20, 18] }] },
+  },
+};
+
+// ender dragon (256x256), from vanilla's model. Neck and tail segments are placed each frame.
+const NECK = [{ o: [-5, -5, -5], s: [10, 10, 10], uv: [192, 104] }, { o: [-1, 5, -3], s: [2, 4, 6], uv: [48, 0] }];
+const dragonLeg = (x, front) => {
+  const side = x > 0 ? 'left' : 'right';
+  if (front) {
+    return {
+      [side + 'FrontLeg']: { pivot: [x * 12, 4, -2], boxes: [{ o: [-4, -20, -4], s: [8, 24, 8], uv: [112, 104] }] },
+      [side + 'FrontLegTip']: { parent: side + 'FrontLeg', pivot: [0, -20, 1], boxes: [{ o: [-3, -23, -3], s: [6, 24, 6], uv: [226, 138] }] },
+      [side + 'FrontFoot']: { parent: side + 'FrontLegTip', pivot: [0, -23, 0], boxes: [{ o: [-4, -4, -4], s: [8, 4, 16], uv: [144, 104] }] },
+    };
+  }
+  return {
+    [side + 'HindLeg']: { pivot: [x * 16, 8, -42], boxes: [{ o: [-8, -28, -8], s: [16, 32, 16], uv: [0, 0] }] },
+    [side + 'HindLegTip']: { parent: side + 'HindLeg', pivot: [0, -32, 4], boxes: [{ o: [-6, -30, -12], s: [12, 32, 12], uv: [196, 0] }] },
+    [side + 'HindFoot']: { parent: side + 'HindLegTip', pivot: [0, -31, -4], boxes: [{ o: [-9, -6, -4], s: [18, 6, 24], uv: [112, 0] }] },
+  };
+};
+MODELS.ender_dragon = {
+  tex: [256, 256],
+  parts: {
+    head: {
+      pivot: [0, 24, 0], boxes: [
+        { o: [-6, -4, 8], s: [12, 5, 16], uv: [176, 44] }, { o: [-8, -8, -6], s: [16, 16, 16], uv: [112, 30] },
+        { o: [-5, 8, -2], s: [2, 4, 6], uv: [0, 0], mirror: true }, { o: [-5, 1, 18], s: [2, 2, 4], uv: [112, 0], mirror: true },
+        { o: [3, 8, -2], s: [2, 4, 6], uv: [0, 0] }, { o: [3, 1, 18], s: [2, 2, 4], uv: [112, 0] },
+      ],
+    },
+    jaw: { parent: 'head', pivot: [0, -4, 8], boxes: [{ o: [-6, -4, 0], s: [12, 4, 16], uv: [176, 65] }] },
+    ...Object.fromEntries([...Array(5).keys()].map((i) => ['neck' + i, { pivot: [0, 4, 12 + i * 10], boxes: NECK }])),
+    ...Object.fromEntries([...Array(12).keys()].map((i) => ['tail' + i, { pivot: [0, 14, -60 - i * 10], boxes: NECK }])),
+    body: {
+      pivot: [0, 20, -8], boxes: [
+        { o: [-12, -24, -48], s: [24, 24, 64], uv: [0, 0] },
+        { o: [-1, 0, -2], s: [2, 6, 12], uv: [220, 53] }, { o: [-1, 0, -22], s: [2, 6, 12], uv: [220, 53] }, { o: [-1, 0, -42], s: [2, 6, 12], uv: [220, 53] },
+      ],
+    },
+    leftWing: { pivot: [12, 19, -2], boxes: [{ o: [0, -4, -4], s: [56, 8, 8], uv: [112, 88], mirror: true }, { o: [0, 0, -58], s: [56, 0, 56], uv: [-56, 88], mirror: true }] },
+    leftWingTip: { parent: 'leftWing', pivot: [56, 0, 0], boxes: [{ o: [0, -2, -2], s: [56, 4, 4], uv: [112, 136], mirror: true }, { o: [0, 0, -58], s: [56, 0, 56], uv: [-56, 144], mirror: true }] },
+    rightWing: { pivot: [-12, 19, -2], boxes: [{ o: [-56, -4, -4], s: [56, 8, 8], uv: [112, 88] }, { o: [-56, 0, -58], s: [56, 0, 56], uv: [-56, 88] }] },
+    rightWingTip: { parent: 'rightWing', pivot: [-56, 0, 0], boxes: [{ o: [-56, -2, -2], s: [56, 4, 4], uv: [112, 136] }, { o: [-56, 0, -58], s: [56, 0, 56], uv: [-56, 144] }] },
+    ...dragonLeg(1, true), ...dragonLeg(-1, true), ...dragonLeg(1, false), ...dragonLeg(-1, false),
+  },
+};
+
 // witch (64x128): a villager with a mole and a crooked pointed hat
 MODELS.witch = {
   tex: [64, 128],

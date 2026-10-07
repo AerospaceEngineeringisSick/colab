@@ -61,7 +61,9 @@ export class Renderer {
 
   environment(env) {
     const cam = this.camera;
+    if (this.sky.endSky) this.sky.endSky.visible = env.dim === 'end';
     if (env.dim === 'nether') return this.netherEnvironment(env);
+    if (env.dim === 'end') return this.endEnvironment(env);
     U.uAmbient.value.setRGB(0, 0, 0);
     this.sky.group.visible = true;
     const dir = new THREE.Vector3();
@@ -132,10 +134,36 @@ export class Renderer {
     return 0;
   }
 
+  // the End: eternal dusk under a dark patterned sky, no sun, no weather
+  endEnvironment(env) {
+    const cam = this.camera, sc = this.sky.camera;
+    cam.getWorldQuaternion(sc.quaternion);
+    if (sc.fov !== cam.fov || sc.aspect !== cam.aspect) { sc.fov = cam.fov; sc.aspect = cam.aspect; sc.updateProjectionMatrix(); }
+    U.uDaylight.value = 0.85;
+    U.uSkyLightColor.value.setRGB(0.9, 0.84, 1.0);
+    U.uAmbient.value.setRGB(0.14, 0.11, 0.17);
+    U.uFlash.value = 0;
+    U.uGamma.value = env.gamma ?? 0.5;
+    U.uTime.value = env.time_s;
+    const far = this.renderDistance * 16;
+    if (env.underwater === 1) { U.uFogColor.value.setRGB(0.05, 0.16, 0.42); U.uFogNear.value = 2; U.uFogFar.value = 28; }
+    else if (env.underwater === 2) { U.uFogColor.value.setRGB(0.6, 0.12, 0.02); U.uFogNear.value = 0; U.uFogFar.value = 2.5; }
+    else { U.uFogColor.value.setRGB(0.1, 0.08, 0.13); U.uFogNear.value = far * 0.55; U.uFogFar.value = far - 4; }
+    this.gl.setClearColor(U.uFogColor.value);
+    this.sky.dome.visible = false;
+    this.sky.group.visible = false;
+    this.sky.clouds.mesh.visible = false;
+    cam.far = Math.max(300, far + 200);
+    const fov = this.fov * this.fovMul;
+    if (Math.abs(cam.fov - fov) > 0.01) cam.fov = fov;
+    cam.updateProjectionMatrix();
+    return 0.62;
+  }
+
   render(drawHand) {
     const gl = this.gl;
     gl.clear();
-    if (this.sky.dome.visible) {
+    if (this.sky.dome.visible || (this.sky.endSky && this.sky.endSky.visible)) {
       gl.render(this.sky.scene, this.sky.camera);
       gl.clearDepth();
     }

@@ -38,7 +38,7 @@ export class Spawner {
     // despawn
     for (const m of mobs) {
       if (m.dead) continue;
-      if (g.difficulty === 0 && m.def.hostile) { m.remove(); continue; }
+      if (g.difficulty === 0 && m.def.hostile && !m.def.boss) { m.remove(); continue; }
       if (m.persistent) continue;
       const d = Math.hypot(m.x - p.x, m.y - p.y, m.z - p.z);
       if (d > 128) m.remove();
@@ -46,6 +46,22 @@ export class Spawner {
     }
     if (p.dead) return;
     const w = g.world;
+    // the End: endermen wander the island
+    if (g.dim === 'end') {
+      if (g.difficulty > 0 && g.settings.spawnMobs !== false) {
+        const n = mobs.filter((m) => m.def.enderman).length;
+        for (let attempt = 0; attempt < 3 && n < 24; attempt++) {
+          const ang = Math.random() * Math.PI * 2, dist = 24 + Math.random() * 40;
+          const x = Math.floor(p.x + Math.cos(ang) * dist), z = Math.floor(p.z + Math.sin(ang) * dist);
+          if (!w.isLoaded(x, z)) continue;
+          const y = w.topY(x, z) + 1;
+          if (y < 2 || w.getId(x, y - 1, z) !== B.end_stone) continue;
+          if (BLOCKS[w.getId(x, y, z)].solid || BLOCKS[w.getId(x, y + 1, z)].solid || BLOCKS[w.getId(x, y + 2, z)].solid) continue;
+          g.spawnMob('enderman', x + 0.5, y, z + 0.5);
+        }
+      }
+      return;
+    }
     // the Nether has its own creatures
     if (g.dim === 'nether') {
       if (g.difficulty > 0 && g.settings.spawnMobs !== false) this.netherTick(mobs);

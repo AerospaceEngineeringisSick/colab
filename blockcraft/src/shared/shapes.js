@@ -210,6 +210,18 @@ export function blockModel(id, meta, conn = 0) {
         return M([box([1, 0, 1, 15, 14, 15], ['chest_side', 'chest_side', 'chest_top', 'chest_top', 'chest_front', 'chest_side'])], meta & 3);
       }
       if (id === B.enchanting_table) return M([box([0, 0, 0, 16, 12, 16], [t.side, t.side, t.top, t.bottom, t.side, t.side])]);
+      if (id === B.end_portal_frame) {
+        const f = [t.side, t.side, t.top, t.bottom, t.side, t.side];
+        const out = [box([0, 0, 0, 16, 13, 16], f)];
+        if (meta & 4) out.push(box([4, 13, 4, 12, 16, 12], t.front, { uv: [[4, 0, 12, 3], [4, 0, 12, 3], [4, 4, 12, 12], [4, 4, 12, 12], [4, 0, 12, 3], [4, 0, 12, 3]] }));
+        return M(out, meta & 3);
+      }
+      if (id === B.end_portal) return M([box([0, 0, 0, 16, 12, 16], [null, null, t.top, null, null, null])]);
+      if (id === B.dragon_egg) {
+        const rows = [[3, 0, 1], [2, 1, 3], [1, 3, 8], [2, 8, 11], [3, 11, 13], [4, 13, 14], [5, 14, 15], [6, 15, 16]];
+        return M(rows.map(([i, y0, y1]) => box([i, y0, i, 16 - i, y1, 16 - i], t.side)));
+      }
+      if (id === B.end_rod) return M([box([6, 0, 6, 10, 1, 10], t.top), box([7, 1, 7, 9, 16, 9], t.side, { uv: [[7, 0, 9, 15], [7, 0, 9, 15], [7, 7, 9, 9], [7, 7, 9, 9], [7, 0, 9, 15], [7, 0, 9, 15]] })]);
       if (id === B.brewing_stand) {
         // three stone feet, the blaze rod, and three arms (a bottle hangs from each full slot)
         const T = t.side, arm = (bit) => (meta & bit ? t.bottom : t.top);
@@ -279,6 +291,8 @@ export function collisionBoxes(id, meta, conn = 0) {
       if (id === B.cake) return [[(1 + Math.min(6, meta) * 2) / 16, 0, 1 / 16, 15 / 16, 0.5, 15 / 16]];
       if (id === B.enchanting_table) return [[0, 0, 0, 1, 0.75, 1]];
       if (id === B.brewing_stand) return [[0, 0, 0, 1, 2 / 16, 1], [7 / 16, 0, 7 / 16, 9 / 16, 14 / 16, 9 / 16]];
+      if (id === B.end_portal_frame) return [[0, 0, 0, 1, 13 / 16, 1]];
+      if (id === B.dragon_egg) return [[1 / 16, 0, 1 / 16, 15 / 16, 1, 15 / 16]];
       if (id === B.anvil) return modelBoxes(id, meta, conn);
       return FULL;
     }
@@ -308,6 +322,7 @@ export function selectionBoxes(id, meta, conn = 0) {
     case R.LADDER: return modelBoxes(id, meta, conn).map((a) => [Math.max(0, a[0] - 0.1), a[1], Math.max(0, a[2] - 0.1), Math.min(1, a[3] + 0.1), a[4], Math.min(1, a[5] + 0.1)]);
     case R.BOXES: if (id === B.snow) return [[0, 0, 0, 1, (meta + 1) * 2 / 16, 1]]; break;
     case R.PORTAL: return (meta & 1) ? [[6 / 16, 0, 0, 10 / 16, 1, 1]] : [[0, 0, 6 / 16, 1, 1, 10 / 16]];
+    case R.BOXES: if (id === B.end_portal) return NONE; if (id === B.end_rod) return [[6 / 16, 0, 6 / 16, 10 / 16, 1, 10 / 16]]; break;
     case R.FIRE: return NONE;
   }
   const c = collisionBoxes(id, meta, conn);

@@ -6,6 +6,7 @@ import { B, OPAQUE, FLOWERS } from './blocks.js';
 import { BIOMES, BI, LAND, snowsAt } from './biomes.js';
 import { ENCHANTS } from './enchant.js';
 import { stampVillages, villagesNear, VILLAGE_RADIUS } from './villages.js';
+import { stampStrongholds } from './strongholds.js';
 
 const smooth = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -138,6 +139,7 @@ export class WorldGen {
     this.trees(ctx);
     this.plants(ctx);
     stampVillages(this, ctx);
+    stampStrongholds(this, ctx);
     this.snow(ctx);
     this.animals(ctx);
 

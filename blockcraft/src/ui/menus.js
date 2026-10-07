@@ -341,6 +341,38 @@ export class Menus {
   loadProgress(f) { const b = document.getElementById('loadBar'); if (b) b.style.width = Math.round(f * 100) + '%'; }
   hideLoading() { const l = document.getElementById('loading'); if (l) l.classList.add('hidden'); }
 
+  // after the dragon: a quiet scroll of words, then home. Click or Escape to skip.
+  showEndCredits(done) {
+    const ov = el('div', '', this.ui.root);
+    ov.id = 'credits';
+    const roll = el('div', 'roll', ov);
+    const name = (this.app.settings.playerName || 'Player').replace(/[<>&]/g, '');
+    roll.innerHTML = `
+      <h1>BlockCraft</h1>
+      <p class="q">The island falls quiet. The crystals are dust, the spikes stand empty, and the long purple dark goes on without a dragon in it.</p>
+      <p class="q">You came here from a single tree, ${name}. You punched it until wood fell out, and you kept going: stone, iron, diamond, obsidian, fire.</p>
+      <p class="q">You walked through a frame of black glass into a world of lava and ash, and came back. You read the eyes of the endermen and followed them down into the stone.</p>
+      <p class="q">Now the way home is open. Everything you built is still there: the farm, the furnace, the bed you slept in. Go and see.</p>
+      <h2>Made with</h2>
+      <p>three.js (MIT licence)</p>
+      <p>Textures and sounds from Mineclonia and its contributors (CC BY-SA and related licences; see assets/licenses)</p>
+      <p>A generative soundtrack written in the browser with the Web Audio API</p>
+      <h2>Thank you for playing</h2>
+      <p class="q">&nbsp;</p>`;
+    let finished = false;
+    const end = () => {
+      if (finished) return;
+      finished = true;
+      window.removeEventListener('keydown', key, true);
+      ov.remove();
+      done();
+    };
+    const key = (e) => { if (e.code === 'Escape' || e.code === 'Space') { e.preventDefault(); e.stopPropagation(); end(); } };
+    window.addEventListener('keydown', key, true);
+    ov.addEventListener('pointerdown', end);
+    roll.addEventListener('animationend', end);
+  }
+
   showDeath(msg, score) {
     const r = this.clear('');
     r.classList.remove('hidden');

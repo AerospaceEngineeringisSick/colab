@@ -30,6 +30,9 @@ import { U } from '../engine/materials.js';
 import { enchLevel, shelfOffsets } from '../shared/enchant.js';
 import { NetherGen } from '../shared/nethergen.js';
 import { brewResult, EFFECTS } from '../shared/potions.js';
+import { EndGen, ARRIVAL, buildPodium } from '../shared/endgen.js';
+import { EndCrystal } from './endentities.js';
+import { EnderDragon } from './dragon.js';
 import { lightPortal, portalCorner, findPortal, buildPortal } from './portals.js';
 
 const TICK = 0.05;
@@ -63,6 +66,7 @@ export class Game {
     this.advancements = new Set(meta.advancements || []);
     this.gen = new WorldGen(meta.seed);
     this.netherGen = new NetherGen(meta.seed);
+    this.endGen = new EndGen(meta.seed);
     meta.portals = meta.portals || { overworld: [], nether: [] };
     r.renderDistance = this.settings.renderDistance;
     await this.makeWorld(meta.dim || 'overworld');
@@ -202,9 +206,19 @@ export class Game {
   }
 
   // ---------------------------------------------------------------- portals
+  podiumY() { return this.endGen.podiumY(); }
+
   portalTick() {
     const p = this.player;
     const w = this.world;
+    // end portals take you at once
+    if (!p.dead && !this.travelling && !p.portalLock && w.getId(Math.floor(p.x), Math.floor(p.y + 0.1), Math.floor(p.z)) === B.end_portal) {
+      p.portalLock = true;
+      this.sound.play('portal.travel', null, null, null, 0.7, 0.7);
+      if (this.dim === 'end') this.leaveEnd();
+      else this.changeDimension('end', ARRIVAL[0] + 0.5, ARRIVAL[1], ARRIVAL[2] + 0.5, () => this.arriveInEnd());
+      return;
+    }
     const inPortal = !p.dead && [0.2, 1.2].some((dy) => w.getId(Math.floor(p.x), Math.floor(p.y + dy), Math.floor(p.z)) === B.nether_portal);
     if (!inPortal) { p.portalTime = 0; p.portalLock = false; return; }
     if (p.portalLock || this.travelling || p.mode === 'spectator') return;
@@ -215,6 +229,95 @@ export class Game {
       p.portalLock = true;
       this.usePortal();
     }
+  }
+
+  // a fresh obsidian platform out over the void, like vanilla's
+  arriveInEnd() {
+    const w = this.world, p = this.player;
+    const [ax, ay, az] = ARRIVAL;
+    for (let dx = -2; dx <= 2; dx++) for (let dz = -2; dz <= 2; dz++) {
+      w.setBlock(ax + dx, ay - 1, az + dz, B.obsidian);
+      for (let y = ay; y < ay + 3; y++) w.setBlock(ax + dx, y, az + dz, 0);
+    }
+    w.flushDirty(ax >> 4, az >> 4);
+    p.x = ax + 0.5; p.y = ay; p.z = az + 0.5; p.yaw = Math.PI / 2;
+    p.portalLock = true;
+    this.advance('end');
+    this.ensureDragon();
+  }
+
+  // the dragon lives until it is killed (it comes back if you leave and return)
+  ensureDragon() {
+    if (this.dim !== 'end' || this.meta.dragonKilled) return;
+    if (this.dragon && !this.dragon.removed) return;
+    this.dragon = this.entities.add(new EnderDragon(this, 0.5, 90, 40.5));
+  }
+
+  // dragon slain: the exit portal opens, the egg appears and the experience rains down
+  onDragonDeath(d) {
+    const first = !this.meta.dragonKilled && !this.meta.dragonEver;
+    this.meta.dragonKilled = true;
+    this.meta.dragonEver = true;
+    this.dragon = null;
+    const y0 = this.podiumY(), w = this.world;
+    buildPodium((x, y, z, v) => w.setBlock(x, y, z, v), y0, true);
+    if (first) w.setBlock(0, y0 + 4, 0, B.dragon_egg);
+    w.flushDirty(0, 0);
+    const orbs = first ? 48 : 20, each = first ? 250 : 25;
+    for (let i = 0; i < orbs; i++) this.entities.add(new XpOrb(this, d.x + (Math.random() - 0.5) * 4, d.y, d.z + (Math.random() - 0.5) * 4, each));
+    this.message('The Ender Dragon has been defeated!', '#ff55ff');
+    this.advance('dragon');
+  }
+
+  // four crystals around the exit portal summon the dragon again
+  crystalPlaced() {
+    if (this.dim !== 'end' || !this.meta.dragonKilled) return;
+    const y0 = this.podiumY();
+    const near = this.entities.list.filter((e) => e.type === 'end_crystal' && !e.dead && Math.hypot(e.x, e.z) < 6 && Math.abs(e.y - y0) < 3);
+    if (near.length < 4) return;
+    for (const c of near) { c.dead = true; c.remove(); this.particles.explosion(c.x, c.y + 1, c.z, 1); }
+    this.meta.dragonKilled = false;
+    const w = this.world;
+    buildPodium((x, y, z, v) => w.setBlock(x, y, z, v), y0, false);
+    w.flushDirty(0, 0);
+    this.sound.play('dragon.growl', 0, y0 + 10, 0, 3, 0.7, { range: 200 });
+    this.message('The Ender Dragon returns!', '#ff55ff');
+    this.ensureDragon();
+  }
+
+  // through the exit portal: the credits roll, then home
+  leaveEnd() {
+    const p = this.player;
+    const go = () => {
+      const s = p.spawn || this.spawnPos;
+      this.changeDimension('overworld', s[0] + 0.5, s[1], s[2] + 0.5, () => {
+        const ok = p.spawn && this.world.getId(p.spawn[0], p.spawn[1] - 1, p.spawn[2]) === B.red_bed;
+        if (!ok) { const t = this.spawnPos; p.x = t[0] + 0.5; p.z = t[2] + 0.5; p.y = t[1]; this.dropToGround(); }
+      });
+    };
+    if (!this.meta.seenCredits) { this.meta.seenCredits = true; this.running = false; this.app.ui.menus.showEndCredits(() => { this.running = true; this.lastFrame = performance.now(); go(); }); } else go();
+  }
+
+  // an eye placed in a frame: a complete ring of twelve eyes opens the portal
+  checkEndPortal(x, y, z) {
+    const w = this.world;
+    const v = w.getBlock(x, y, z), f = (v >>> 10) & 3;
+    const D = [[0, 1], [-1, 0], [0, -1], [1, 0]][f]; // the way the frame faces (into the ring)
+    const P = [D[1], D[0]]; // along the frame's side
+    const frameOK = (fx, fz, facing) => { const fv = w.getBlock(fx, y, fz); return (fv & 1023) === B.end_portal_frame && ((fv >>> 10) & 3) === facing && ((fv >>> 10) & 4); };
+    for (let k = -1; k <= 1; k++) {
+      const cx = x + D[0] * 2 + P[0] * k, cz = z + D[1] * 2 + P[1] * k;
+      let ok = true;
+      for (let j = -1; j <= 1 && ok; j++) {
+        ok = frameOK(cx + j, cz - 2, 0) && frameOK(cx + j, cz + 2, 2) && frameOK(cx - 2, cz + j, 3) && frameOK(cx + 2, cz + j, 1);
+      }
+      if (!ok) continue;
+      for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) w.setBlock(cx + dx, y, cz + dz, B.end_portal);
+      w.flushDirty(cx >> 4, cz >> 4);
+      this.sound.play('portal.end_open', null, null, null, 1, 1);
+      return true;
+    }
+    return false;
   }
 
   recordPortal(dim, c) {
@@ -451,6 +554,7 @@ export class Game {
     this.ambientTick();
     this.sleepTick();
     this.portalTick();
+    if (this.dim === 'end' && this.tickCount % 100 === 0) this.ensureDragon();
     if (this.tickCount - this.lastSave > 20 * 45) { this.lastSave = this.tickCount; this.save(); }
   }
 
@@ -681,7 +785,10 @@ export class Game {
       }
       if (t.type === 'furnace' || t.type === 'spawner' || t.type === 'brewing') this.activeTiles.add(t);
     }
-    for (const s of spawns || []) this.spawnMob(s.type, s.x, s.y, s.z, { persistent: true, ...(s.opts || {}) });
+    for (const s of spawns || []) {
+      if (s.type === 'end_crystal') { if (!this.meta.dragonKilled || !this.meta.dragonEver) this.entities.add(new EndCrystal(this, s.x, s.y, s.z, true)); continue; }
+      this.spawnMob(s.type, s.x, s.y, s.z, { persistent: true, ...(s.opts || {}) });
+    }
     // bring back entities that were saved or parked in this chunk
     if (this.parked && this.parked.length) {
       const x0 = c.cx * 16, z0 = c.cz * 16;
@@ -699,7 +806,7 @@ export class Game {
     // freeze far-away entities: remove non-persistent ones, keep animals (saved with the world)
     const x0 = c.cx * 16, z0 = c.cz * 16;
     for (const e of this.entities.list) {
-      if (e.removed) continue;
+      if (e.removed || (e.def && e.def.boss)) continue; // the dragon roams beyond loaded terrain
       if (e.x >= x0 && e.x < x0 + 16 && e.z >= z0 && e.z < z0 + 16) {
         if ((e.isMob && e.persistent) || (e.isVehicle && !e.rider)) { const o = e.toJSON(); if (o) this.parked.push(o); }
         e.remove();
@@ -754,6 +861,8 @@ export class Game {
     } else if (o.t === 'item') {
       const e = this.dropItem(o.x, o.y, o.z, stackFromJSON(o.s), { vx: 0, vy: 0, vz: 0, delay: 0 });
       if (e) e.age = o.age || 0;
+    } else if (o.t === 'end_crystal') {
+      this.entities.add(new EndCrystal(this, o.x, o.y, o.z, o.base !== false));
     } else if (o.t === 'boat' || o.t === 'minecart') {
       const v = this.entities.add(o.t === 'boat' ? new Boat(this, o.x, o.y, o.z, o.wood, o.yaw || 0) : new Minecart(this, o.x, o.y, o.z));
       if (o.t === 'minecart') { v.vx = o.vx || 0; v.vz = o.vz || 0; }
@@ -856,6 +965,28 @@ export class Game {
         this.ui.openChest(t);
         this.sound.play('chest.open', x + 0.5, y + 0.5, z + 0.5, 0.6);
         if (t.dungeon) { this.advance('dungeon'); t.dungeon = false; }
+        return true;
+      }
+      case B.end_portal_frame: {
+        const held = p.inv.held;
+        if (!held || held.id !== I.ender_eye || (meta & 4)) return false;
+        w.setBlock(x, y, z, B.end_portal_frame | ((meta | 4) << 10), { sync: true });
+        this.sound.play('portal.eye', x + 0.5, y + 0.5, z + 0.5, 0.8);
+        for (let i = 0; i < 8; i++) this.particles.smoke(x + 0.5, y + 1, z + 0.5, 1, 0.4, 0.3);
+        if (!p.creative) { held.count--; if (held.count <= 0) p.inv.held = null; }
+        this.checkEndPortal(x, y, z);
+        return true;
+      }
+      case B.dragon_egg: {
+        // the egg won't be taken by hand: it blinks away
+        for (let i = 0; i < 64; i++) {
+          const tx = x + Math.floor((Math.random() - 0.5) * 16), ty = y + Math.floor((Math.random() - 0.5) * 8), tz = z + Math.floor((Math.random() - 0.5) * 16);
+          if (w.getId(tx, ty, tz) !== 0 || !BLOCKS[w.getId(tx, ty - 1, tz)].solid) continue;
+          w.setBlock(x, y, z, 0, { sync: true });
+          w.setBlock(tx, ty, tz, B.dragon_egg, { sync: true });
+          for (let k = 0; k < 16; k++) { const t = k / 16; this.particles.portal(x + 0.5 + (tx - x) * t, y + 0.5 + (ty - y) * t, z + 0.5 + (tz - z) * t); }
+          break;
+        }
         return true;
       }
       case B.lever: this.redstone.toggleLever(x, y, z); return true;
@@ -1253,6 +1384,7 @@ export class Game {
     if (id === I.cobblestone) this.advance('stone');
     if (id === I.blaze_rod) this.advance('blazerod');
     if (id === I.quartz) this.advance('quartz');
+    if (id === I.dragon_egg) this.advance('egg');
     void count; void ent;
   }
   onBlockPlaced(x, y, z, v) {

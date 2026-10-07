@@ -10,6 +10,7 @@ import { Boat, Minecart } from './vehicles.js';
 import { Bobber } from './fishing.js';
 import { SplashPotion } from './splash.js';
 import { POTIONS } from '../shared/potions.js';
+import { EnderEye, EndCrystal } from './endentities.js';
 import { boxBlocked } from './physics.js';
 
 const boxBlockedAt = (w, x, y, z, wd, h) => boxBlocked(w, x - wd / 2, y, z - wd / 2, x + wd / 2, y + h, z + wd / 2);
@@ -250,6 +251,26 @@ export class Interaction {
       if (it.food) { if (pressed) this.startUse(it, 'eat'); return; }
       if (it.use === 'milk' || it.use === 'drink_potion') { if (pressed) this.startUse(it, 'drink'); return; }
       if (it.use === 'bottle') { if (pressed) this.fillBottle(); return; }
+      if (it.use === 'ender_eye') {
+        // eyes fly toward the nearest stronghold (only the Overworld has them)
+        if (pressed && g.dim === 'overworld') {
+          g.entities.add(new EnderEye(g, p.x, p.y + p.eye - 0.2, p.z));
+          g.sound.play('throw', p.x, p.y, p.z, 0.5, 0.4);
+          p.swing = 6;
+          if (!p.creative) this.consumeHeld(1);
+          g.advance('eye');
+        }
+        return;
+      }
+      if (it.use === 'end_crystal') {
+        if (pressed && hit && hit.face === 2 && (hit.id === B.obsidian || hit.id === B.bedrock) && this.world.getId(hit.x, hit.y + 1, hit.z) === 0) {
+          g.entities.add(new EndCrystal(g, hit.x + 0.5, hit.y + 1, hit.z + 0.5, false));
+          p.swing = 6;
+          if (!p.creative) this.consumeHeld(1);
+          g.crystalPlaced();
+        }
+        return;
+      }
       if (it.use === 'throw_potion') { if (pressed) this.throwPotion(held); return; }
       if (it.use === 'bow') { if (pressed && (p.creative || p.inv.count(I.arrow) > 0)) this.startUse(it, 'bow'); return; }
       if (it.use === 'throw') { if (pressed) this.throwItem(it); return; }

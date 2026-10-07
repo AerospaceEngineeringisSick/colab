@@ -135,6 +135,10 @@ shapeless('blue_wool', 1, ['#wool', 'lapis_lazuli']);
 shapeless('white_wool', 1, ['#wool', 'bone_meal']);
 shapeless('red_wool', 1, ['#wool', 'redstone']);
 shaped('smooth_stone', 1, ['SS'], { S: 'smooth_stone_slab' }, { hidden: true });
+// the End
+shapeless('ender_eye', 1, ['ender_pearl', 'blaze_powder']);
+shaped('end_stone_bricks', 4, ['EE', 'EE'], { E: 'end_stone' });
+shaped('end_crystal', 1, ['GGG', 'GEG', 'GTG'], { G: 'glass', E: 'ender_eye', T: 'ghast_tear' });
 // brewing
 shaped('brewing_stand', 1, [' B ', 'CCC'], { B: 'blaze_rod', C: '#cobble' });
 shaped('glass_bottle', 3, ['G G', ' G '], { G: 'glass' });

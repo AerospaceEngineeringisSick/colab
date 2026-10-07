@@ -10,7 +10,7 @@ const titleCase = (s) => s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperC
 
 // --- block items
 const NO_ITEM = new Set(['air', 'water', 'lava', 'lit_furnace', 'wheat', 'carrots', 'potatoes', 'redstone_wire', 'unlit_redstone_torch',
-  'lit_redstone_lamp', 'piston_head', 'fire', 'nether_portal']);
+  'lit_redstone_lamp', 'piston_head', 'fire', 'nether_portal', 'end_portal']);
 const FLAT_ICON = { // blocks shown with a flat texture in the inventory
   torch: 'block/torch', ladder: 'block/ladder', oak_door: 'item/oak_door', red_bed: 'item/red_bed', sugar_cane: 'item/sugar_cane',
   cobweb: 'block/cobweb', vine: 'block/vine', lily_pad: 'block/lily_pad', cake: 'item/cake', short_grass: 'block/short_grass',
@@ -22,6 +22,7 @@ FLAT_ICON.lever = 'item/lever';
 FLAT_ICON.repeater = 'item/repeater';
 FLAT_ICON.nether_wart = 'item/nether_wart';
 FLAT_ICON.brewing_stand = 'item/brewing_stand';
+FLAT_ICON.end_rod = 'block/end_rod';
 for (const n of ['crimson_fungus', 'warped_fungus', 'crimson_roots', 'warped_roots', 'nether_sprouts', 'weeping_vines', 'twisting_vines']) FLAT_ICON[n] = 'block/' + n;
 for (const f of FLOWERS) FLAT_ICON[f] = 'block/' + f;
 
@@ -210,6 +211,10 @@ item('glistering_melon_slice');
 item('golden_carrot', { food: { hunger: 6, sat: 14.4 } });
 export const POTION_EGGS = { witch: [0x340000, 0x51a03e] };
 for (const [mob, col] of Object.entries(POTION_EGGS)) item(mob + '_spawn_egg', { icon: 'egg', egg: { mob, col }, use: 'spawn_egg' });
+// the End (appended: item ids are saved)
+item('ender_eye', { display: 'Eye of Ender', use: 'ender_eye' });
+item('end_crystal', { use: 'end_crystal', glint: true });
+item('silverfish_spawn_egg', { icon: 'egg', egg: { mob: 'silverfish', col: [0x6e6e6e, 0x303030] }, use: 'spawn_egg' });
 
 // cake & bed & door & sugar cane are block items placed directly
 ITEMS[B.cake].maxStack = 1;

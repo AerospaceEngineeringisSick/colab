@@ -116,6 +116,10 @@ export const MOBS = {
       return out;
     },
   },
+  silverfish: {
+    model: 'silverfish', tex: 'entity/silverfish', w: 0.4, h: 0.3, eye: 0.13, health: 8, speed: 0.3, hostile: true, silverfish: true,
+    attack: 1, follow: 16, xp: 5, spider: false, sounds: { say: 'silverfish.say', hurt: 'silverfish.hurt', death: 'silverfish.death' }, drops: () => [],
+  },
   wolf: {
     model: 'wolf', tex: 'entity/wolf', w: 0.6, h: 0.85, eye: 0.7, health: 8, speed: 0.3, neutral: true, wolf: true, attack: 4, xp: 2,
     follow: 16, sounds: { hurt: 'wolf.hurt', death: 'wolf.death' }, drops: () => [],
@@ -305,12 +309,12 @@ export class Mob extends Entity {
     }
     if (c.cactus && this.age % 10 === 0) this.hurt(1, null, this.x, this.z, 'cactus');
     // undead burn in daylight
-    if (this.def.burns && this.isDay() && !c.water && !g.weather.rain) {
+    if (this.def.burns && g.dim === 'overworld' && this.isDay() && !c.water && !g.weather.rain) {
       const l = this.lightAt();
       if ((l >> 4) >= 15 && this.world.rainY(Math.floor(this.x), Math.floor(this.z)) <= this.y + this.h && r() < 0.05) this.fire = Math.max(this.fire, 160);
     }
     // endermen hate water
-    if (this.def.enderman && (c.water || (g.weather.rain && this.world.rainY(Math.floor(this.x), Math.floor(this.z)) < this.y))) {
+    if (this.def.enderman && (c.water || (g.dim === 'overworld' && g.weather.rain && this.world.rainY(Math.floor(this.x), Math.floor(this.z)) < this.y))) {
       if (this.age % 10 === 0) this.hurt(1, null, this.x, this.z, 'water');
       if (r() < 0.1) this.teleportRandom();
     }
@@ -1147,6 +1151,16 @@ export class Mob extends Entity {
       for (let i = 4; i < 8; i++, f++) P['rod' + i].position.set(Math.cos(f) * 7 / 16, (24 - (2 + Math.cos((i * 2 + T) * 0.25))) / 16, -Math.sin(f) * 7 / 16);
       f = 0.47123894 + T * Math.PI * -0.05;
       for (let i = 8; i < 12; i++, f++) P['rod' + i].position.set(Math.cos(f) * 5 / 16, (24 - (11 + Math.cos((i * 1.5 + T) * 0.5))) / 16, -Math.sin(f) * 5 / 16);
+    }
+    if (d.silverfish) {
+      // a wriggle running down the body
+      const T = (this.age + a) * 0.9;
+      for (let i = 0; i < 7; i++) {
+        const k = T + i * 0.15 * Math.PI;
+        P['seg' + i].rotation.y = -Math.cos(k) * Math.PI * 0.05 * (1 + Math.abs(i - 2));
+        P['seg' + i].position.x = Math.sin(k) * Math.PI * 0.2 * Math.abs(i - 2) / 16;
+      }
+      for (const [l, s] of [['layer0', 2], ['layer1', 4], ['layer2', 1]]) { P[l].rotation.y = P['seg' + s].rotation.y; P[l].position.x = P['seg' + s].position.x; }
     }
     if (d.slime) {
       // squash and stretch, and magma cube slices spring apart mid-jump

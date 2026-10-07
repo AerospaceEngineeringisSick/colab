@@ -202,6 +202,14 @@ export class Particles {
     });
   }
 
+  // dragon's breath: slow purple puffs (speed: how fast they drift up)
+  breath(x, y, z, speed = 1) {
+    this.add({
+      x: x + (Math.random() - 0.5) * 0.3, y, z: z + (Math.random() - 0.5) * 0.3, vx: (Math.random() - 0.5) * 0.3, vy: (0.2 + Math.random() * 0.4) * speed, vz: (Math.random() - 0.5) * 0.3,
+      g: 0, drag: 0.94, life: 0.8 + Math.random() * 0.8, size: 0.14, layer: this.layer('env/dragon_breath'), r: 0.85, gg: 0.45, b: 1, light: -1, shrink: true,
+    });
+  }
+
   // a splash potion shattering
   potionBurst(x, y, z, col, instant) {
     const r = ((col >> 16) & 255) / 255, gg = ((col >> 8) & 255) / 255, b = (col & 255) / 255;

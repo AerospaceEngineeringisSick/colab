@@ -106,6 +106,21 @@ export class Sky {
     this.moon.renderOrder = -99;
     this.group.add(this.moon);
 
+    // the End's sky: a dark, faintly patterned box
+    const es = images['env/end_sky'];
+    if (es) {
+      const t = new THREE.CanvasTexture(es);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(6, 6);
+      t.magFilter = THREE.NearestFilter;
+      this.endSky = new THREE.Mesh(new THREE.BoxGeometry(600, 600, 600), new THREE.MeshBasicMaterial({
+        map: t, color: new THREE.Color(1.6, 1.35, 1.9), side: THREE.BackSide, depthWrite: false, depthTest: false, fog: false,
+      }));
+      this.endSky.renderOrder = -101;
+      this.endSky.visible = false;
+      this.scene.add(this.endSky);
+    }
+
     this.clouds = new Clouds(scene);
     this.horizon = new THREE.Color();
     this.fog = new THREE.Color();

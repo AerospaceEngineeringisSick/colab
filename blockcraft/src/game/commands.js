@@ -6,12 +6,13 @@ import { WH } from '../shared/constants.js';
 import { ENCHANTS, EN, canApply, compatible, enchName } from '../shared/enchant.js';
 import { villagesNear } from '../shared/villages.js';
 import { EFFECTS } from '../shared/potions.js';
+import { nearestStronghold } from '../shared/strongholds.js';
 
 const HELP = [
   '/gamemode <survival|creative|spectator>', '/time set <day|noon|night|midnight|ticks>', '/weather <clear|rain|thunder>',
   '/give <item> [count]', '/tp <x> <y> <z>', '/summon <mob>', '/difficulty <peaceful|easy|normal|hard>', '/kill',
   '/setblock <x> <y> <z> <block>', '/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>', '/enchant <enchantment> [level]',
-  '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome', '/dimension <overworld|nether>', '/locate <fortress|village>', '/effect <give|clear> [effect] [seconds] [level]',
+  '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome', '/dimension <overworld|nether|end>', '/locate <fortress|village|stronghold>', '/effect <give|clear> [effect] [seconds] [level]',
 ];
 
 export function runCommand(g, text) {
@@ -102,8 +103,10 @@ export function runCommand(g, text) {
       return say(`Applied ${EFFECTS[name].name} ${lvl > 1 ? lvl + ' ' : ''}for ${secs} seconds`);
     }
     case 'dimension': case 'dim': {
-      const d = { overworld: 'overworld', o: 'overworld', nether: 'nether', n: 'nether', the_nether: 'nether' }[(args[0] || '').toLowerCase()];
-      if (!d) return err('Usage: /dimension <overworld|nether>');
+      const d = { overworld: 'overworld', o: 'overworld', nether: 'nether', n: 'nether', the_nether: 'nether', end: 'end', the_end: 'end', e: 'end' }[(args[0] || '').toLowerCase()];
+      if (!d) return err('Usage: /dimension <overworld|nether|end>');
+      if (d === 'end' && g.dim !== 'end') { g.changeDimension('end', 100.5, 49, 0.5, () => g.arriveInEnd()); return undefined; }
+      if (g.dim === 'end' && d === 'overworld') { g.leaveEnd(); return undefined; }
       if (d === g.dim) return say(`Already in the ${d}`);
       const s = d === 'nether' ? 1 / 8 : 8;
       const x = Math.floor(p.x * s), z = Math.floor(p.z * s);
@@ -127,7 +130,12 @@ export function runCommand(g, text) {
         vs.sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z));
         return say(`Nearest village is at [${vs[0].x}, ~, ${vs[0].z}] (${Math.round(Math.hypot(vs[0].x - p.x, vs[0].z - p.z))} blocks away)`, '#55ff55');
       }
-      return err('Usage: /locate <fortress|village>');
+      if (what === 'stronghold') {
+        if (g.dim !== 'overworld') return err('Strongholds are in the Overworld');
+        const s = nearestStronghold(g.meta.seed, p.x, p.z);
+        return say(`Nearest stronghold is at [${s.x}, ${s.y}, ${s.z}] (${Math.round(Math.hypot(s.x - p.x, s.z - p.z))} blocks away)`, '#55ff55');
+      }
+      return err('Usage: /locate <fortress|village|stronghold>');
     }
     case 'enchant': {
       const key = (args[0] || '').replace(/^minecraft:/, '').toLowerCase();

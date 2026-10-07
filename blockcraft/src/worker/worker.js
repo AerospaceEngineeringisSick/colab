@@ -1,5 +1,6 @@
 // Worker: world generation, column lighting and section meshing.
 import { WorldGen } from '../shared/worldgen.js';
+import { NetherGen } from '../shared/nethergen.js';
 import { computeColumnLight } from '../shared/light.js';
 import { Mesher } from '../shared/mesher.js';
 import { resolveBlockTextures } from '../shared/blocks.js';
@@ -11,7 +12,7 @@ self.onmessage = (e) => {
   const m = e.data;
   switch (m.type) {
     case 'init':
-      gen = new WorldGen(m.seed);
+      gen = m.dim === 'nether' ? new NetherGen(m.seed) : new WorldGen(m.seed);
       resolveBlockTextures(m.tex);
       mesher = new Mesher(m.tex);
       mesher.fastLeaves = !!m.fastLeaves;
@@ -30,8 +31,6 @@ self.onmessage = (e) => {
     }
     case 'load': {
       // a saved chunk: recompute biomes/tints from the seed, light from the blocks
-      const r = gen.generateClimate ? null : null;
-      void r;
       const light = computeColumnLight(m.blocks);
       const clim = climate(m.cx, m.cz);
       self.postMessage({

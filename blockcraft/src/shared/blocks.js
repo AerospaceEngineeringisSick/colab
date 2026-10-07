@@ -10,6 +10,7 @@ export const R = {
   NONE: 0, CUBE: 1, CROSS: 2, CROP: 3, LIQUID: 4, BOXES: 5, TORCH: 6, DOOR: 7,
   LADDER: 8, FENCE: 9, STAIRS: 10, SLAB: 11, VINE: 12, PAD: 13, BED: 14, RAIL: 15,
   WIRE: 16, LEVER: 17, BUTTON: 18, PLATE: 19, REPEATER: 20, PISTON: 21, PISTON_HEAD: 22,
+  PORTAL: 23, FIRE: 24,
 };
 
 const DEFAULTS = {
@@ -267,6 +268,57 @@ for (const w of ['spruce', 'acacia', 'birch', 'jungle', 'dark_oak']) {
   block(w + '_stairs', { render: R.STAIRS, tex: w + '_planks', hardness: 2, tool: 'axe', sound: 'wood', layer: 0, flammable: true });
 }
 
+// ------------------------------------------------------------------ the Nether
+block('netherrack', { hardness: 0.4, tool: 'pickaxe', needsTool: true, infiniburn: true });
+// soul sand: a little lower than a full block, so walking on it sinks you in and slows you down
+block('soul_sand', { hardness: 0.5, tool: 'shovel', sound: 'sand', slow: 0.4 });
+block('soul_soil', { hardness: 0.5, tool: 'shovel', sound: 'sand' });
+block('nether_bricks', { hardness: 2, tool: 'pickaxe', needsTool: true });
+block('red_nether_bricks', { hardness: 2, tool: 'pickaxe', needsTool: true });
+block('cracked_nether_bricks', { hardness: 2, tool: 'pickaxe', needsTool: true });
+block('chiseled_nether_bricks', { hardness: 2, tool: 'pickaxe', needsTool: true });
+block('nether_brick_fence', { render: R.FENCE, tex: 'nether_bricks', hardness: 2, tool: 'pickaxe', needsTool: true, layer: 0 });
+block('nether_brick_stairs', { render: R.STAIRS, tex: 'nether_bricks', hardness: 2, tool: 'pickaxe', needsTool: true, layer: 0 });
+block('nether_brick_slab', { render: R.SLAB, tex: 'nether_bricks', hardness: 2, tool: 'pickaxe', needsTool: true, layer: 0, full: 'nether_bricks' });
+block('magma_block', { hardness: 0.5, tool: 'pickaxe', needsTool: true, emit: 3, infiniburn: true, hot: true });
+block('nether_quartz_ore', { hardness: 3, tool: 'pickaxe', needsTool: true, drop: (m, r, t, f) => [['quartz', oreBonus(r, f)]], xp: [2, 5] });
+block('nether_gold_ore', { hardness: 3, tool: 'pickaxe', needsTool: true, drop: (m, r, t, f) => [['gold_nugget', (2 + (r() * 5 | 0)) * oreBonus(r, f)]], xp: [0, 1] });
+block('quartz_block', { hardness: 0.8, tool: 'pickaxe', needsTool: true, tex: { top: 'quartz_block_top', bottom: 'quartz_block_bottom', side: 'quartz_block_side' } });
+block('quartz_pillar', { hardness: 0.8, tool: 'pickaxe', needsTool: true, rotate: 'axis', tex: { end: 'quartz_pillar_top', side: 'quartz_pillar' } });
+block('chiseled_quartz_block', { hardness: 0.8, tool: 'pickaxe', needsTool: true, tex: { end: 'chiseled_quartz_block_top', side: 'chiseled_quartz_block' } });
+block('quartz_stairs', { render: R.STAIRS, tex: { top: 'quartz_block_top', bottom: 'quartz_block_bottom', side: 'quartz_block_side' }, hardness: 0.8, tool: 'pickaxe', needsTool: true, layer: 0 });
+block('quartz_slab', { render: R.SLAB, tex: { top: 'quartz_block_top', bottom: 'quartz_block_bottom', side: 'quartz_block_side' }, hardness: 2, tool: 'pickaxe', needsTool: true, layer: 0, full: 'quartz_block' });
+// nether wart: meta = age 0-3, grows on soul sand
+block('nether_wart', { render: R.CROP, tex: 'nether_wart2', hardness: 0, sound: 'grass', plant: true, soil: 'soul_sand',
+  drop: (m, r, t, f = 0) => [['nether_wart', m >= 3 ? 2 + (r() * 3 | 0) + (r() * (f + 1) | 0) : 1]] });
+block('basalt', { hardness: 1.25, tool: 'pickaxe', needsTool: true, rotate: 'axis', tex: { end: 'basalt_top', side: 'basalt_side' } });
+block('blackstone', { hardness: 1.5, tool: 'pickaxe', needsTool: true, tex: { end: 'blackstone_top', side: 'blackstone' } });
+// nether forests
+block('crimson_nylium', { hardness: 0.4, tool: 'pickaxe', needsTool: true, tex: { top: 'crimson_nylium', side: 'crimson_nylium_side', bottom: 'netherrack' }, drop: one('netherrack'), infiniburn: true });
+block('warped_nylium', { hardness: 0.4, tool: 'pickaxe', needsTool: true, tex: { top: 'warped_nylium', side: 'warped_nylium_side', bottom: 'netherrack' }, drop: one('netherrack'), infiniburn: true });
+block('crimson_stem', { hardness: 2, tool: 'axe', sound: 'wood', rotate: 'axis', tex: { end: 'crimson_stem_top', side: 'crimson_stem' } });
+block('warped_stem', { hardness: 2, tool: 'axe', sound: 'wood', rotate: 'axis', tex: { end: 'warped_stem_top', side: 'warped_stem' } });
+block('crimson_planks', { hardness: 2, tool: 'axe', sound: 'wood' });
+block('warped_planks', { hardness: 2, tool: 'axe', sound: 'wood' });
+block('nether_wart_block', { hardness: 1, tool: 'hoe', sound: 'grass' });
+block('warped_wart_block', { hardness: 1, tool: 'hoe', sound: 'grass' });
+block('shroomlight', { hardness: 1, tool: 'hoe', sound: 'grass', emit: 15 });
+const NPLANT = { render: R.CROSS, hardness: 0, sound: 'grass', plant: true, soil: 'nether' };
+block('crimson_fungus', { ...NPLANT });
+block('warped_fungus', { ...NPLANT });
+block('crimson_roots', { ...NPLANT, replaceable: true });
+block('warped_roots', { ...NPLANT, replaceable: true });
+block('nether_sprouts', { ...NPLANT, replaceable: true, drop: (m, r, tool) => tool === 'shears' ? [['nether_sprouts', 1]] : [] });
+block('weeping_vines', { render: R.CROSS, hardness: 0, sound: 'grass', solid: false, climbable: true, layer: 1, hangs: true });
+block('twisting_vines', { render: R.CROSS, hardness: 0, sound: 'grass', solid: false, climbable: true, layer: 1 });
+// portal: meta 0 runs along x, 1 along z
+block('nether_portal', { render: R.PORTAL, solid: false, opaque: false, lightOpacity: 0, layer: 2, emit: 11, hardness: -1, drop: null, sound: 'glass' });
+// fire: meta = age
+block('fire', { render: R.FIRE, solid: false, opaque: false, lightOpacity: 0, layer: 1, emit: 15, hardness: 0, replaceable: true, drop: null, sound: 'cloth' });
+
+SLABS.nether_brick_slab = { tex: 'nether_bricks', full: 'nether_bricks', p: 'pickaxe' };
+SLABS.quartz_slab = { tex: BLOCKS[B.quartz_slab].tex, full: 'quartz_block', p: 'pickaxe' };
+
 // ------------------------------------------------------------------ tables
 const N = 1024;
 export const OPAQUE = new Uint8Array(N);
@@ -304,7 +356,7 @@ export function blockTextureNames() {
   for (const n of ['grass_side_snow', 'farmland_moist', 'torch', 'ladder', 'oak_door_top', 'oak_door_bottom',
     'bed_head_top', 'bed_foot_top', 'bed_head_side', 'bed_foot_side', 'bed_head_end', 'bed_foot_end',
     'destroy', 'snow', 'short_grass', 'fern', 'wheat0', 'carrots0', 'potatoes0', 'piston_side_90', 'piston_side_180',
-    'piston_side_270', 'redstone_dust_line_90', 'redstone_torch', 'redstone_torch_off']) set.add(n);
+    'piston_side_270', 'redstone_dust_line_90', 'redstone_torch', 'redstone_torch_off', 'nether_wart0', 'nether_wart1']) set.add(n);
   for (let i = 0; i < 8; i++) set.add('wheat' + i);
   for (let i = 0; i < 4; i++) { set.add('carrots' + i); set.add('potatoes' + i); }
   for (const w of WOODS) set.add(w + '_sapling');

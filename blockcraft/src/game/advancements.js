@@ -36,4 +36,10 @@ export const ADVANCEMENTS = [
   { key: 'fish', title: 'Fishy Business', desc: 'Catch a fish', icon: 'fishing_rod' },
   { key: 'trade', title: 'What a Deal!', desc: 'Successfully trade with a villager', icon: 'emerald' },
   { key: 'golem', title: 'Hired Help', desc: 'Summon an iron golem', icon: 'iron_block' },
+  { key: 'portal', title: 'We Need to Go Deeper', desc: 'Build, light and enter a Nether Portal', icon: 'obsidian' },
+  { key: 'nether', title: 'Nether', desc: 'Bring summer clothes', icon: 'netherrack' },
+  { key: 'fortress', title: 'A Terrible Fortress', desc: 'Break your way into a Nether Fortress', icon: 'nether_bricks' },
+  { key: 'blazerod', title: 'Into Fire', desc: 'Relieve a Blaze of its rod', icon: 'blaze_rod' },
+  { key: 'return', title: 'Return to Sender', desc: 'Destroy a Ghast with a fireball', icon: 'fire_charge' },
+  { key: 'quartz', title: 'Hidden in the Depths', desc: 'Mine some Nether Quartz', icon: 'quartz' },
 ];

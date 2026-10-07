@@ -199,6 +199,35 @@ T.entity.iron_golem = 'mobs_mc_iron_golem';
 // enchanting table glyphs (Standard Galactic) and level-cost badges
 for (let i = 1; i <= 18; i++) T.gui['glyph_' + i] = 'mcl_enchanting_glyph_' + i;
 for (let i = 1; i <= 3; i++) { T.gui['enchant_cost_' + i] = 'mcl_enchanting_number_' + i; T.gui[`enchant_cost_${i}_off`] = `mcl_enchanting_number_${i}_off`; }
+// the Nether
+Object.assign(T.block, {
+  netherrack: 'mcl_nether_netherrack', nether_bricks: 'mcl_nether_nether_brick', red_nether_bricks: 'mcl_nether_red_nether_brick',
+  cracked_nether_bricks: 'mcl_nether_cracked_nether_bricks', chiseled_nether_bricks: 'mcl_nether_chiseled_nether_bricks',
+  soul_sand: 'mcl_nether_soul_sand', soul_soil: 'mcl_blackstone_soul_soil', magma_block: 'mcl_nether_magma',
+  nether_quartz_ore: 'mcl_nether_quartz_ore', nether_gold_ore: 'mcl_nether_gold_ore', quartz_block_side: 'mcl_nether_quartz_block_side',
+  quartz_block_top: 'mcl_nether_quartz_block_top', quartz_block_bottom: 'mcl_nether_quartz_block_bottom',
+  quartz_pillar: 'mcl_nether_quartz_pillar_side', quartz_pillar_top: 'mcl_nether_quartz_pillar_top',
+  chiseled_quartz_block: 'mcl_nether_quartz_chiseled_side', chiseled_quartz_block_top: 'mcl_nether_quartz_chiseled_top',
+  nether_wart0: 'mcl_nether_nether_wart_stage_0', nether_wart1: 'mcl_nether_nether_wart_stage_1', nether_wart2: 'mcl_nether_nether_wart_stage_2',
+  basalt_side: 'mcl_blackstone_basalt_side', basalt_top: 'mcl_blackstone_basalt_top', blackstone: 'mcl_blackstone_side',
+  blackstone_top: 'mcl_blackstone_top', nether_portal: 'mcl_portals_portal', fire: 'fire_basic_flame_animated',
+  crimson_stem: 'crimson_hyphae_side', crimson_stem_top: 'crimson_hyphae', warped_stem: 'warped_hyphae_side', warped_stem_top: 'warped_hyphae',
+  crimson_planks: 'crimson_hyphae_wood', warped_planks: 'warped_hyphae_wood', crimson_nylium: 'crimson_nylium', warped_nylium: 'warped_nylium',
+  crimson_nylium_side: 'crimson_nylium_side', warped_nylium_side: 'warped_nylium_side', nether_wart_block: 'nether_wart_block',
+  warped_wart_block: 'warped_wart_block', shroomlight: 'shroomlight', crimson_roots: 'crimson_roots', warped_roots: 'warped_roots',
+  crimson_fungus: 'farming_crimson_fungus', warped_fungus: 'farming_warped_fungus', nether_sprouts: 'nether_sprouts',
+  weeping_vines: 'mcl_crimson_weeping_vines', twisting_vines: 'twisting_vines_plant',
+});
+Object.assign(T.item, {
+  quartz: 'mcl_nether_quartz', nether_brick: 'mcl_nether_netherbrick', nether_wart: 'mcl_nether_nether_wart',
+  blaze_rod: 'mcl_mobitems_blaze_rod', blaze_powder: 'mcl_mobitems_blaze_powder', ghast_tear: 'mcl_mobitems_ghast_tear',
+  magma_cream: 'mcl_mobitems_magma_cream', fire_charge: 'mcl_fire_fire_charge',
+});
+Object.assign(T.entity, {
+  zombified_piglin: 'extra_mobs_zombified_piglin', ghast: 'mobs_mc_ghast', ghast_shooting: 'mobs_mc_ghast_firing', blaze: 'mobs_mc_blaze',
+  magma_cube: 'mobs_mc_magmacube', wither_skeleton: 'mobs_mc_wither_skeleton', fireball: 'mcl_fire_fire_charge',
+});
+T.env.portal_particle = 'mcl_particles_nether_portal';
 // crop stages
 for (let i = 0; i < 8; i++) T.block['wheat' + i] = 'mcl_farming_wheat_stage_' + i;
 for (let i = 0; i < 4; i++) T.block['potatoes' + i] = 'mcl_farming_potatoes_stage_' + i;
@@ -214,6 +243,17 @@ for (const [cat, map] of Object.entries(T)) {
     fs.writeFileSync(path.join(dir, dest + '.png'), PNG.sync.write(png, { colorType: 6 }));
     nTex++;
   }
+}
+// side textures with see-through bottoms are laid over their base block
+for (const [dest, base] of [['crimson_nylium_side', 'netherrack'], ['warped_nylium_side', 'netherrack']]) {
+  const f = path.join(OUT, 'textures/block', dest + '.png');
+  const top = PNG.sync.read(fs.readFileSync(f)), under = PNG.sync.read(fs.readFileSync(path.join(OUT, 'textures/block', base + '.png')));
+  for (let i = 0; i < top.data.length; i += 4) {
+    const a = top.data[i + 3] / 255;
+    for (let k = 0; k < 3; k++) top.data[i + k] = Math.round(top.data[i + k] * a + under.data[i + k] * (1 - a));
+    top.data[i + 3] = 255;
+  }
+  fs.writeFileSync(f, PNG.sync.write(top, { colorType: 6 }));
 }
 
 // ------------------------------------------------------------------ sounds
@@ -341,6 +381,12 @@ const S = {
   'piglin.hurt': ['mobs_mc_zombiepig_hurt.1', 'mobs_mc_zombiepig_hurt.2'],
   'piglin.death': ['mobs_mc_zombiepig_death.1', 'mobs_mc_zombiepig_death.2'],
   'piglin.angry': ['mobs_mc_zombiepig_war_cry.1'],
+  'slime.jump': ['green_slime_jump'],
+  'slime.hurt': ['green_slime_damage'],
+  'slime.death': ['green_slime_death'],
+  'slime.attack': ['green_slime_attack'],
+  'magma.attack': ['mobs_mc_magma_cube_attack'],
+  'fire.crackle': ['fire_fire.1', 'fire_fire.2', 'fire_fire.3'],
   'dragon.growl': ['mobs_mc_ender_dragon_attack'],
   'dragon.shoot': ['mobs_mc_ender_dragon_shoot'],
 };

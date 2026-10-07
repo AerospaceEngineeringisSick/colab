@@ -136,6 +136,15 @@ export class Interaction {
     const id = v & 1023;
     if (!id) { this.stopMining(); return; }
     p.swing = Math.max(p.swing, 4);
+    if (pressed && hit.face !== undefined) {
+      const f = FACE_DIR[hit.face];
+      if (this.world.getId(x + f[0], y + f[1], z + f[2]) === B.fire) {
+        this.world.setBlock(x + f[0], y + f[1], z + f[2], 0, { sync: true });
+        g.sound.play('fire.extinguish', x + 0.5, y + 1, z + 0.5, 0.5, 1.5);
+        this.breakDelay = 5;
+        return;
+      }
+    }
     if (p.creative) {
       if (pressed || this.breakDelay === 0) {
         const held = p.inv.held;
@@ -248,9 +257,12 @@ export class Interaction {
           if (g.ticks.fertilize(hit.x, hit.y, hit.z)) { p.swing = 6; if (!p.creative) this.consumeHeld(1); g.advance('bonemeal'); }
           return;
         }
-        if (it.use === 'ignite' && pressed) {
-          if (hit.id === B.tnt) { g.igniteTnt(hit.x, hit.y, hit.z); g.damageHeld(1); p.swing = 6; }
-          else g.sound.play('fire.ignite', hit.x, hit.y, hit.z, 0.8);
+        if ((it.use === 'ignite' || it.use === 'fire_charge') && pressed) {
+          p.swing = 6;
+          if (g.ignite(hit) && !p.creative) {
+            if (it.use === 'ignite') g.damageHeld(1);
+            else this.consumeHeld(1);
+          }
           return;
         }
         if (it.place) { this.placeCrop(it, hit); return; }
@@ -394,9 +406,16 @@ export class Interaction {
     const cur = w.getId(x, y, z);
     if (cur && !BLOCKS[cur].replaceable) return;
     const fluid = it.fluid === 'water' ? B.water : B.lava;
+    if (fluid === B.water && g.dim === 'nether') {
+      g.sound.play('fire.extinguish', x + 0.5, y + 0.5, z + 0.5, 0.6, 1.8);
+      g.particles.smoke(x + 0.5, y + 0.5, z + 0.5, 8, 0.8, 0.5);
+      p.swing = 6;
+      if (!p.creative) this.replaceHeld(I.bucket);
+      return;
+    }
     if (cur && !LIQUID[cur]) g.breakBlockNaturally(x, y, z, true, true);
     w.setBlock(x, y, z, fluid);
-    g.ticks.schedule(x, y, z, fluid === B.water ? 5 : 30);
+    g.ticks.schedule(x, y, z, g.ticks.flowDelay(fluid === B.water));
     g.sound.play(fluid === B.water ? 'place.water' : 'place.lava', x, y, z, 0.8);
     p.swing = 6;
     if (!p.creative) this.replaceHeld(I.bucket);
@@ -587,6 +606,8 @@ export class Interaction {
       }
       if (bid === B.brown_mushroom || bid === B.red_mushroom) return OPAQUE[below] === 1;
       if (bid === B.dead_bush) return below === B.sand || below === B.red_sand || below === B.grass_block || below === B.dirt;
+      if (b.soil === 'soul_sand') return below === B.soul_sand;
+      if (b.soil === 'nether') return [B.crimson_nylium, B.warped_nylium, B.soul_sand, B.soul_soil, B.netherrack, B.grass_block, B.dirt, B.podzol, B.coarse_dirt, B.farmland].includes(below);
       return below === B.grass_block || below === B.dirt || below === B.podzol || below === B.coarse_dirt || below === B.farmland;
     }
     if (bid === B.torch || bid === B.redstone_torch) {
@@ -598,6 +619,8 @@ export class Interaction {
       const back = [[0, -1], [1, 0], [0, 1], [-1, 0]][meta & 3];
       return OPAQUE[w.getId(x + back[0], y, z + back[1])] === 1;
     }
+    if (bid === B.weeping_vines) { const up = w.getId(x, y + 1, z); return up === bid || BLOCKS[up].solid; }
+    if (bid === B.twisting_vines) return below === bid || BLOCKS[below].solid;
     if (bid === B.lily_pad) return below === B.water;
     if (b.render === R.RAIL || b.render === R.WIRE || b.render === R.PLATE || b.render === R.REPEATER) return OPAQUE[below] === 1;
     if (b.render === R.LEVER || b.render === R.BUTTON) {

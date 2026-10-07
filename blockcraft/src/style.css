@@ -75,6 +75,7 @@ input, button { font-family: inherit; }
 #damage { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(170, 0, 0, 0.55) 100%); opacity: 0; transition: opacity 0.5s; }
 #lowhp { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 50%, rgba(120, 0, 0, 0.5) 100%); opacity: 0; transition: opacity 0.5s; }
 #fireov { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(transparent, rgba(255, 110, 20, 0.35) 60%, rgba(255, 190, 40, 0.55)); opacity: 0; transition: opacity 0.3s; mix-blend-mode: screen; }
+#portalov { position: absolute; inset: -10%; background: radial-gradient(ellipse at center, rgba(150, 60, 230, 0.35) 0%, rgba(90, 10, 170, 0.8) 100%); opacity: 0; pointer-events: none; }
 #sleep { position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity 0.1s linear; }
 #water { position: absolute; inset: 0; background: rgba(20, 50, 160, 0.18); opacity: 0; }
 

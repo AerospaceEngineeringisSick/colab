@@ -21,6 +21,12 @@ export const BIOMES = [
   { name: 'Snowy Beach', grass: 0x80b497, foliage: 0x60a17b, water: 0x3d57d6, snow: 1 },
   { name: 'Frozen River', grass: 0x80b497, foliage: 0x60a17b, water: 0x3938c9, snow: 1 },
   { name: 'Snowy Mountains', grass: 0x80b497, foliage: 0x60a17b, water: 0x3938c9, snow: 1 },
+  // other dimensions (fog: the colour of the air there)
+  { name: 'Nether Wastes', grass: 0xbfb755, foliage: 0xaea42a, water: 0x3f76e4, dry: 1, dim: 'nether', fog: 0x330808 },
+  { name: 'Crimson Forest', grass: 0xbfb755, foliage: 0xaea42a, water: 0x3f76e4, dry: 1, dim: 'nether', fog: 0x330303 },
+  { name: 'Warped Forest', grass: 0xbfb755, foliage: 0xaea42a, water: 0x3f76e4, dry: 1, dim: 'nether', fog: 0x1a051a },
+  { name: 'Soul Sand Valley', grass: 0xbfb755, foliage: 0xaea42a, water: 0x3f76e4, dry: 1, dim: 'nether', fog: 0x1b4745 },
+  { name: 'The End', grass: 0x8eb971, foliage: 0x71a74d, water: 0x3f76e4, dry: 1, dim: 'end', fog: 0x0b080c },
 ];
 BIOMES.forEach((b, i) => {
   b.id = i;

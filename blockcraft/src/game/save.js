@@ -72,14 +72,16 @@ export class Store {
     await this.open();
     if (this.mem) {
       this.mem.worlds.delete(id);
-      for (const k of [...this.mem.chunks.keys()]) if (k.startsWith(id + ':')) this.mem.chunks.delete(k);
+      for (const k of [...this.mem.chunks.keys()]) if (k.startsWith(id + ':') || k.startsWith(id + '~')) this.mem.chunks.delete(k);
       return;
     }
     await req(this.tx('worlds', 'readwrite').delete(id));
-    const store = this.tx('chunks', 'readwrite');
-    const keys = await req(store.index('world').getAllKeys(id));
-    const s2 = this.tx('chunks', 'readwrite');
-    await Promise.all(keys.map((k) => req(s2.delete(k))));
+    // chunks of every dimension (other dimensions are stored as id~nether, id~end)
+    for (const w of [id, id + '~nether', id + '~end']) {
+      const keys = await req(this.tx('chunks').index('world').getAllKeys(w));
+      const s2 = this.tx('chunks', 'readwrite');
+      await Promise.all(keys.map((k) => req(s2.delete(k))));
+    }
   }
 
   async chunkKeys(worldId) {

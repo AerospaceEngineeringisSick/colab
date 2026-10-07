@@ -259,6 +259,7 @@ export class Mesher {
     const sky = (l >> 4) * 16, bl = (l & 15) * 16;
     let name;
     if (id === B.wheat) name = 'wheat' + Math.min(7, meta);
+    else if (id === B.nether_wart) name = 'nether_wart' + [0, 1, 1, 2][Math.min(3, meta)];
     else name = (id === B.carrots ? 'carrots' : 'potatoes') + Math.min(3, meta >> 1);
     const t = this.L(name);
     const yb = y - 1 / 16;

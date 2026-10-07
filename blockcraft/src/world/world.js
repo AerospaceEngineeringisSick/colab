@@ -27,9 +27,10 @@ export class Chunk {
 }
 
 export class World {
-  constructor(game, seed, texInfo) {
+  constructor(game, seed, texInfo, dim = 'overworld') {
     this.game = game;
     this.seed = seed;
+    this.dim = dim;
     this.chunks = new Map();
     this.requested = new Set();
     this.scene = new THREE.Group();
@@ -60,7 +61,7 @@ export class World {
       const w = new Worker(url);
       w.onmessage = (e) => this.onWorker(e.data, w);
       w.onerror = (e) => console.error('worker error', e.message || e);
-      w.postMessage({ type: 'init', seed, tex: texInfo, fastLeaves: this.fastLeaves });
+      w.postMessage({ type: 'init', seed, dim, tex: texInfo, fastLeaves: this.fastLeaves });
       w.busy = 0;
       this.workers.push(w);
     }

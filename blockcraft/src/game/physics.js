@@ -129,6 +129,8 @@ export function contacts(world, x, y, z, w, h) {
       const top = by + (world.getId(bx, by + 1, bz) === id ? 1 : (lvl === 0 ? 0.89 : (8 - lvl) / 9));
       if (y < top) { r.water = true; r.waterTop = Math.max(r.waterTop, top); }
     } else if (b.name === 'lava') r.lava = true;
+    else if (id === B.fire) r.fire = true;
+    else if (id === B.nether_portal) r.portal = true;
     else if (b.climbable) r.ladder = true;
     else if (b.name === 'cobweb') r.web = true;
   }

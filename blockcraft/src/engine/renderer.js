@@ -50,6 +50,9 @@ export class Renderer {
   // env: { time, day, rain, thunder, flash, underwater (0/1 water, 2 lava), dt, clouds, gamma }
   updateEnvironment(env) {
     const cam = this.camera;
+    if (env.dim === 'nether') return this.netherEnvironment(env);
+    U.uAmbient.value.setRGB(0, 0, 0);
+    this.sky.group.visible = true;
     const dir = new THREE.Vector3();
     cam.getWorldDirection(dir);
     const daylight = this.sky.update(cam, env.time, env.day, env.rain, env.thunder, dir, {
@@ -82,6 +85,40 @@ export class Renderer {
     if (Math.abs(cam.fov - fov) > 0.01) { cam.fov = fov; }
     cam.updateProjectionMatrix();
     return daylight;
+  }
+
+  // the Nether: no sky, a dim red glow everywhere and thick coloured fog (env.fog: the biome's)
+  netherEnvironment(env) {
+    const cam = this.camera;
+    U.uDaylight.value = 0;
+    U.uFlash.value = 0;
+    U.uGamma.value = env.gamma ?? 0.5;
+    U.uTime.value = env.time_s;
+    U.uSkyLightColor.value.setRGB(1, 1, 1);
+    U.uAmbient.value.setRGB(0.4, 0.29, 0.25);
+    const far = this.renderDistance * 16;
+    const fog = this.netherFog || (this.netherFog = new THREE.Color(0.2, 0.03, 0.03));
+    if (env.fog !== undefined) {
+      const c = new THREE.Color(env.fog);
+      fog.lerp(c, 0.02);
+    }
+    if (env.underwater === 2) {
+      U.uFogColor.value.setRGB(0.6, 0.12, 0.02);
+      U.uFogNear.value = 0; U.uFogFar.value = 2.5;
+    } else {
+      U.uFogColor.value.copy(fog);
+      U.uFogNear.value = Math.min(far, 192) * 0.05;
+      U.uFogFar.value = Math.min(far, 192) * 0.5 + 16;
+    }
+    this.gl.setClearColor(U.uFogColor.value);
+    this.sky.dome.visible = false;
+    this.sky.group.visible = false;
+    this.sky.clouds.mesh.visible = false;
+    cam.far = Math.max(300, far + 200);
+    const fov = this.fov * this.fovMul;
+    if (Math.abs(cam.fov - fov) > 0.01) cam.fov = fov;
+    cam.updateProjectionMatrix();
+    return 0;
   }
 
   render(drawHand) {

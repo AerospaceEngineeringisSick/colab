@@ -163,7 +163,10 @@ export class Player {
       // ground friction from the block below
       const below = world.getId(Math.floor(this.x), Math.floor(this.y - 0.5), Math.floor(this.z));
       const slip = this.onGround ? (BLOCKS[below].slip || 0.6) : 1;
-      const friction = slip * 0.91;
+      let friction = slip * 0.91;
+      // soul sand drags at your feet
+      const feet = world.getId(Math.floor(this.x), Math.floor(this.y - 0.05), Math.floor(this.z));
+      if (this.onGround && BLOCKS[feet].slow) friction *= BLOCKS[feet].slow;
       const acc = this.onGround ? speed * (0.16277136 / (friction * friction * friction)) : (this.sprinting ? 0.026 : 0.02);
       this.vx += ix * acc; this.vz += iz * acc;
       // jumping
@@ -271,6 +274,9 @@ export class Player {
       if (this.fire % 20 === 0 && !this.inLava) this.damage(1, 'fire');
     }
     if (c.cactus && this.age % 10 === 0) this.damage(1, 'cactus');
+    // standing in fire, or on a magma block without sneaking
+    if (c.fire) { this.fire = Math.max(this.fire, 160); if (this.age % 10 === 0) this.damage(1, 'fire'); }
+    if (this.onGround && !this.sneaking && this.game.world.getId(Math.floor(this.x), Math.floor(this.y - 0.05), Math.floor(this.z)) === B.magma_block && this.age % 10 === 0) this.damage(1, 'hot_floor');
     // void
     if (this.y < -20) this.damage(4, 'void');
     // effects
@@ -319,7 +325,7 @@ export class Player {
       if (diff === 1) amount = Math.min(amount / 2 + 1, amount);
       if (diff === 3) amount *= 1.5;
     }
-    if (!bypassArmor && ['generic', 'mob', 'arrow', 'explosion', 'cactus', 'fire', 'lava'].includes(cause)) {
+    if (!bypassArmor && ['generic', 'mob', 'arrow', 'explosion', 'cactus', 'fire', 'lava', 'hot_floor', 'fireball'].includes(cause)) {
       const def = this.inv.armorPoints(), tough = this.inv.armorToughness();
       const red = Math.min(20, Math.max(def / 5, def - amount / (2 + tough / 4))) / 25;
       amount *= 1 - red;
@@ -347,7 +353,7 @@ export class Player {
     for (const s of this.inv.armor.slots) {
       if (!s || !s.ench) continue;
       p += enchLevel(s, 'protection');
-      if (cause === 'fire' || cause === 'lava') p += 2 * enchLevel(s, 'fire_protection');
+      if (cause === 'fire' || cause === 'lava' || cause === 'hot_floor' || cause === 'fireball') p += 2 * enchLevel(s, 'fire_protection');
       if (cause === 'explosion') p += 2 * enchLevel(s, 'blast_protection');
       if (cause === 'arrow' || cause === 'thrown') p += 2 * enchLevel(s, 'projectile_protection');
       if (cause === 'fall') p += 3 * enchLevel(s, 'feather_falling');

@@ -3,6 +3,8 @@ import { BLOCKS, B, R, OPAQUE, LIQUID, WOODS } from '../shared/blocks.js';
 import { WH, idx, DIRS } from '../shared/constants.js';
 import { growTree } from '../shared/worldgen.js';
 import { rng } from '../shared/noise.js';
+import { portalIntact } from '../game/portals.js';
+import { growFungus } from '../shared/nethergen.js';
 
 const H4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 // piston facing (down, up, north, south, west, east) -> step
@@ -11,6 +13,7 @@ const SOIL = new Set();
 const LEAVES = new Set();
 const LOGS = new Set();
 const SAPLINGS = new Set();
+const NETHER_SOIL = new Set();
 
 export class BlockTicks {
   constructor(game) {
@@ -20,9 +23,13 @@ export class BlockTicks {
     if (!SOIL.size) {
       for (const n of ['grass_block', 'dirt', 'coarse_dirt', 'podzol', 'farmland']) SOIL.add(B[n]);
       for (const w of WOODS) { LEAVES.add(B[w + '_leaves']); LOGS.add(B[w + '_log']); SAPLINGS.add(B[w + '_sapling']); }
+      for (const n of ['crimson_nylium', 'warped_nylium', 'soul_sand', 'soul_soil', 'netherrack', 'grass_block', 'dirt', 'podzol', 'coarse_dirt', 'farmland', 'mycelium']) if (B[n] !== undefined) NETHER_SOIL.add(B[n]);
     }
   }
   get world() { return this.game.world; }
+
+  // lava runs three times faster (and further) in the Nether
+  flowDelay(water) { return water ? 5 : this.game.dim === 'nether' ? 10 : 30; }
 
   schedule(x, y, z, delay) {
     const k = x + ',' + y + ',' + z;
@@ -61,6 +68,7 @@ export class BlockTicks {
     if (BLOCKS[id].gravity) return this.gravityCheck(x, y, z, v);
     if (BLOCKS[id].redstone) return this.game.redstone.scheduled(x, y, z, v);
     if (LEAVES.has(id)) return this.leafDecay(x, y, z, v);
+    if (id === B.fire) return this.fireTick(x, y, z, v >>> 10);
   }
 
   // called whenever a block changes (world.onBlockChanged)
@@ -74,7 +82,7 @@ export class BlockTicks {
       const id = v & 1023;
       if (!id) continue;
       const b = BLOCKS[id];
-      if (b.liquid) this.schedule(nx, ny, nz, id === B.water ? 5 : 30);
+      if (b.liquid) this.schedule(nx, ny, nz, this.flowDelay(id === B.water));
       else if (b.gravity) this.schedule(nx, ny, nz, 2);
       // the changed block itself is not support-checked: multi-block structures
       // (doors, beds) are placed one half at a time
@@ -83,7 +91,7 @@ export class BlockTicks {
     // fluids next to a removed block may flow into it
     for (const D of DIRS) {
       const id = w.getId(x + D[0], y + D[1], z + D[2]);
-      if (LIQUID[id]) this.schedule(x + D[0], y + D[1], z + D[2], id === B.water ? 5 : 30);
+      if (LIQUID[id]) this.schedule(x + D[0], y + D[1], z + D[2], this.flowDelay(id === B.water));
     }
   }
 
@@ -104,6 +112,8 @@ export class BlockTicks {
       } else if (id === B.wheat || id === B.carrots || id === B.potatoes) ok = below === B.farmland;
       else if (id === B.brown_mushroom || id === B.red_mushroom) ok = BLOCKS[below].opaque;
       else if (id === B.dead_bush) ok = below === B.sand || below === B.red_sand || SOIL.has(below);
+      else if (b.soil === 'soul_sand') ok = below === B.soul_sand;
+      else if (b.soil === 'nether') ok = NETHER_SOIL.has(below);
       else ok = SOIL.has(below);
     } else if (id === B.torch || id === B.redstone_torch || id === B.unlit_redstone_torch) {
       if (meta === 0) ok = BLOCKS[below].solid && below !== B.glass ? true : BLOCKS[below].render === R.FENCE;
@@ -132,6 +142,16 @@ export class BlockTicks {
       const sides = [[1, 0, 1], [-1, 0, 2], [0, 1, 4], [0, -1, 8]];
       for (const [dx, dz, bit] of sides) if ((meta & bit) && OPAQUE[w.getId(x + dx, y, z + dz)]) ok = true;
       if (OPAQUE[w.getId(x, y + 1, z)]) ok = true;
+    } else if (id === B.weeping_vines) {
+      const up = w.getId(x, y + 1, z);
+      ok = up === B.weeping_vines || BLOCKS[up].solid;
+    } else if (id === B.twisting_vines) {
+      ok = below === B.twisting_vines || BLOCKS[below].solid;
+    } else if (id === B.nether_portal) {
+      if (!portalIntact(w, x, y, z, meta)) { w.setBlock(x, y, z, 0); return; }
+    } else if (id === B.fire) {
+      // fire needs something to burn on: a solid floor or a flammable neighbour
+      if (!BLOCKS[below].solid && !this.flammableNear(x, y, z)) { w.setBlock(x, y, z, 0); return; }
     } else if (id === B.farmland) {
       if (BLOCKS[w.getId(x, y + 1, z)].solid) { w.setBlock(x, y, z, B.dirt); return; }
     } else if (id === B.cake) ok = BLOCKS[below].solid;
@@ -162,7 +182,7 @@ export class BlockTicks {
   fluidTick(x, y, z, id, meta) {
     const w = this.world;
     const water = id === B.water;
-    const drop = water ? 1 : 2;
+    const drop = water || this.game.dim === 'nether' ? 1 : 2;
     let level = meta & 7, falling = (meta & 8) !== 0;
     const isSource = level === 0 && !falling;
     const lvlOf = (v) => ((v & 1023) === id ? ((v >>> 10) & 8 ? 0 : (v >>> 10) & 7) : -1);
@@ -207,7 +227,7 @@ export class BlockTicks {
       }
       if (bid !== id) this.replaceWithFluid(x, y - 1, z, id, 8);
       else if (((belowV >>> 10) & 8) === 0 && ((belowV >>> 10) & 7) !== 0) w.setBlock(x, y - 1, z, id | (8 << 10));
-      this.schedule(x, y - 1, z, water ? 5 : 30);
+      this.schedule(x, y - 1, z, this.flowDelay(water));
       if (!(level === 0 && !falling)) return;
     }
     // spread sideways
@@ -222,7 +242,7 @@ export class BlockTicks {
       const nid = nv & 1023;
       if (nid === id) {
         const nl = (nv >>> 10) & 7, nf = (nv >>> 10) & 8;
-        if (!nf && nl > next) { w.setBlock(nx, y, nz, id | (next << 10)); this.schedule(nx, y, nz, water ? 5 : 30); }
+        if (!nf && nl > next) { w.setBlock(nx, y, nz, id | (next << 10)); this.schedule(nx, y, nz, this.flowDelay(water)); }
         continue;
       }
       if (LIQUID[nid]) {
@@ -232,7 +252,7 @@ export class BlockTicks {
       }
       if (!this.canFlowInto(nid, id)) continue;
       this.replaceWithFluid(nx, y, nz, id, next);
-      this.schedule(nx, y, nz, water ? 5 : 30);
+      this.schedule(nx, y, nz, this.flowDelay(water));
     }
   }
 
@@ -304,6 +324,49 @@ export class BlockTicks {
       }
     }
     return false;
+  }
+
+  // ---------------------------------------------------------------- fire
+  flammableNear(x, y, z) {
+    const w = this.world;
+    for (const D of DIRS) if (BLOCKS[w.getId(x + D[0], y + D[1], z + D[2])].flammable) return true;
+    return false;
+  }
+
+  // fire ages, burns away the flammable blocks around it, spreads, and goes out (except on netherrack)
+  fireTick(x, y, z, meta) {
+    const w = this.world, g = this.game;
+    const below = w.getId(x, y - 1, z);
+    const forever = !!BLOCKS[below].infiniburn;
+    const again = () => this.schedule(x, y, z, 30 + ((Math.random() * 10) | 0));
+    if (!forever && g.dim === 'overworld' && g.weather.rain && w.rainY(x, z) <= y && Math.random() < 0.6) { w.setBlock(x, y, z, 0); g.sound.play('fire.extinguish', x + 0.5, y + 0.5, z + 0.5, 0.3); return; }
+    const age = meta & 15;
+    if (age < 15 && Math.random() < 0.6) w.setBlock(x, y, z, B.fire | ((age + 1) << 10), { noUpdate: true });
+    const fuel = this.flammableNear(x, y, z);
+    if (!forever) {
+      if (!fuel) { if (!BLOCKS[below].solid || age > 3) { w.setBlock(x, y, z, 0); return; } }
+      else if (age >= 15 && !BLOCKS[below].flammable && Math.random() < 0.25) { w.setBlock(x, y, z, 0); return; }
+    }
+    if (Math.random() < 0.1) g.sound.play('fire.crackle', x + 0.5, y + 0.5, z + 0.5, 0.4, 0.8 + Math.random() * 0.4, { max: 2 });
+    if (g.settings.mobGriefing !== false && fuel) {
+      // burn neighbours: a burnt block becomes fire or air
+      for (const D of DIRS) {
+        const nx = x + D[0], ny = y + D[1], nz = z + D[2];
+        const nid = w.getId(nx, ny, nz);
+        if (!BLOCKS[nid].flammable || Math.random() > (D[1] === 0 ? 0.07 : 0.08)) continue;
+        if (nid === B.tnt) { g.igniteTnt(nx, ny, nz); continue; }
+        if (Math.random() < 5 / (age + 10)) { w.setBlock(nx, ny, nz, B.fire | (Math.min(15, age + 2) << 10)); this.schedule(nx, ny, nz, 30 + ((Math.random() * 10) | 0)); }
+        else w.setBlock(nx, ny, nz, 0);
+      }
+      // jump to empty spots next to fuel
+      for (let i = 0; i < 4; i++) {
+        const nx = x + ((Math.random() * 3) | 0) - 1, ny = y + ((Math.random() * 4) | 0) - 1, nz = z + ((Math.random() * 3) | 0) - 1;
+        if (w.getId(nx, ny, nz) !== 0 || !this.flammableNear(nx, ny, nz) || Math.random() > 0.45) continue;
+        w.setBlock(nx, ny, nz, B.fire | (Math.min(15, age + 1) << 10));
+        this.schedule(nx, ny, nz, 30 + ((Math.random() * 10) | 0));
+      }
+    }
+    if (!forever || fuel) again();
   }
 
   // ---------------------------------------------------------------- leaves
@@ -403,6 +466,10 @@ export class BlockTicks {
         else w.setBlock(x, y, z, id | ((meta + 1) << 10), { noUpdate: true });
         return;
       }
+      case B.nether_wart: {
+        if (meta < 3 && w.getId(x, y - 1, z) === B.soul_sand && Math.random() < 0.1) w.setBlock(x, y, z, id | ((meta + 1) << 10));
+        return;
+      }
       case B.ice: if ((w.getLight(x, y, z) & 15) > 11 || (w.getLight(x, y + 1, z) & 15) > 11) w.setBlock(x, y, z, B.water); return;
       case B.snow: if ((w.getLight(x, y, z) & 15) > 11) { w.setBlock(x, y, z, 0); } return;
       default:
@@ -474,6 +541,20 @@ export class BlockTicks {
       g.particles.bonemeal(x - 2, y + 1, z - 2, 20);
       return true;
     }
+    if (id === B.nether_wart) return false;
+    if (id === B.crimson_fungus || id === B.warped_fungus) {
+      const crimson = id === B.crimson_fungus;
+      if (w.getId(x, y - 1, z) !== (crimson ? B.crimson_nylium : B.warped_nylium)) return false;
+      g.particles.bonemeal(x, y, z);
+      if (Math.random() < 0.4) {
+        w.setBlock(x, y, z, 0);
+        growFungus(crimson ? 'crimson' : 'warped', (bx, by, bz, v) => {
+          const cur = w.getId(bx, by, bz);
+          if (cur === 0 || BLOCKS[cur].replaceable || cur === B.weeping_vines) w.setBlock(bx, by, bz, v);
+        }, x, y, z, rng((Math.random() * 1e9) | 0), (bx, by, bz) => w.getId(bx, by, bz));
+      }
+      return true;
+    }
     if (id === B.sugar_cane || id === B.cactus) return false;
     return false;
   }
@@ -482,7 +563,7 @@ export class BlockTicks {
 const RANDOM_TICKED = new Set();
 setTimeout(() => {}, 0);
 export function initRandomTicked() {
-  for (const n of ['grass_block', 'wheat', 'carrots', 'potatoes', 'farmland', 'sugar_cane', 'cactus', 'ice', 'snow']) RANDOM_TICKED.add(B[n]);
+  for (const n of ['grass_block', 'wheat', 'carrots', 'potatoes', 'farmland', 'sugar_cane', 'cactus', 'ice', 'snow', 'nether_wart']) RANDOM_TICKED.add(B[n]);
   for (const w of WOODS) { RANDOM_TICKED.add(B[w + '_sapling']); RANDOM_TICKED.add(B[w + '_leaves']); }
 }
 initRandomTicked();

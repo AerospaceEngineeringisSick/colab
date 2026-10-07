@@ -14,6 +14,8 @@ export class Sound {
     this.volume = { master: 1, music: 0.5, sfx: 1 };
     this.listener = { x: 0, y: 0, z: 0, yaw: 0 };
     this.loops = new Map();
+    this.voices = 0; // sources playing now
+    this.perName = new Map(); // name -> sources playing now
     const S = window.ASSETS.sounds;
     for (const k of Object.keys(S)) {
       const base = k.replace(/\.\d+$/, '');
@@ -85,6 +87,9 @@ export class Sound {
       }
     }
     if (gain < 0.01) return null;
+    // keep the mixer light: a burning forest shouldn't play fifty crackles at once
+    const playing = this.perName.get(name) || 0;
+    if (!opts.loop && (this.voices >= 32 || playing >= (opts.max || 4))) return null;
     const src = this.ctx.createBufferSource();
     src.buffer = buf;
     src.playbackRate.value = pitch * (opts.noJitter ? 1 : (0.94 + Math.random() * 0.12));
@@ -98,6 +103,9 @@ export class Sound {
     }
     node.connect(this.sfxBus);
     if (opts.loop) src.loop = true;
+    this.voices++;
+    this.perName.set(name, playing + 1);
+    src.onended = () => { this.voices--; this.perName.set(name, (this.perName.get(name) || 1) - 1); };
     src.start();
     return { src, g };
   }

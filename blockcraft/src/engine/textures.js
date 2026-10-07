@@ -61,6 +61,22 @@ function blit(ctx, src, sx, sy, w, h, dx, dy) {
 }
 
 function buildDerived() {
+  // slime and magma cube faces: the source skins keep them elsewhere, so paint vanilla-style eyes
+  {
+    const sl = images['entity/slime'];
+    if (sl) {
+      const g = sl.getContext('2d');
+      g.fillStyle = '#1e3b1a'; g.fillRect(64, 0, 16, 16); // eye boxes (2x2x2 at 32,0 and 32,4, doubled)
+      g.fillStyle = '#2c5222'; g.fillRect(64, 16, 8, 4); // mouth (32,8)
+    }
+    const mc = images['entity/magma_cube'];
+    if (mc) {
+      const g = mc.getContext('2d');
+      // eyes on the front of the third slice from the top (row 10 of the shell, doubled)
+      g.fillStyle = '#ff6a00'; g.fillRect(20, 20, 4, 2); g.fillRect(28, 20, 4, 2);
+      g.fillStyle = '#ffd200'; g.fillRect(22, 20, 2, 2); g.fillRect(28, 20, 2, 2);
+    }
+  }
   // chest faces from the 64x64 entity texture (lid 14x5 over base 14x10)
   const ch = images['entity/chest'];
   {
@@ -144,7 +160,7 @@ function buildDerived() {
 export function buildBlockArray() {
   const names = blockTextureNames();
   // particle sprites share the array
-  const extra = ['env/smoke', 'env/flame', 'env/bonemeal', 'env/bubble', 'env/lava_particle', 'env/rain', 'env/snowflake'];
+  const extra = ['env/smoke', 'env/flame', 'env/bonemeal', 'env/bubble', 'env/lava_particle', 'env/rain', 'env/snowflake', 'env/portal_particle'];
   // enchanting glyphs (6x6) become 16x16 particle sprites at double size
   for (let i = 1; i <= 18; i++) {
     const src = images['gui/glyph_' + i];

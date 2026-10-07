@@ -4,12 +4,13 @@ import { MOBS } from './mobs.js';
 import { B } from '../shared/blocks.js';
 import { WH } from '../shared/constants.js';
 import { ENCHANTS, EN, canApply, compatible, enchName } from '../shared/enchant.js';
+import { villagesNear } from '../shared/villages.js';
 
 const HELP = [
   '/gamemode <survival|creative|spectator>', '/time set <day|noon|night|midnight|ticks>', '/weather <clear|rain|thunder>',
   '/give <item> [count]', '/tp <x> <y> <z>', '/summon <mob>', '/difficulty <peaceful|easy|normal|hard>', '/kill',
   '/setblock <x> <y> <z> <block>', '/fill <x1> <y1> <z1> <x2> <y2> <z2> <block>', '/enchant <enchantment> [level]',
-  '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome',
+  '/seed', '/spawnpoint', '/clear', '/heal', '/xp <amount>', '/biome', '/dimension <overworld|nether>', '/locate <fortress|village>',
 ];
 
 export function runCommand(g, text) {
@@ -90,6 +91,34 @@ export function runCommand(g, text) {
     case 'heal': p.health = p.maxHealth; p.food = 20; p.saturation = 5; return say('Healed');
     case 'xp': case 'experience': { const n = parseInt(args[0], 10) || 0; p.addXp(n); return say(`Gave ${n} experience`); }
     case 'biome': return say(`Biome: ${g.world.biomeAt(Math.floor(p.x), Math.floor(p.z)).name}`);
+    case 'dimension': case 'dim': {
+      const d = { overworld: 'overworld', o: 'overworld', nether: 'nether', n: 'nether', the_nether: 'nether' }[(args[0] || '').toLowerCase()];
+      if (!d) return err('Usage: /dimension <overworld|nether>');
+      if (d === g.dim) return say(`Already in the ${d}`);
+      const s = d === 'nether' ? 1 / 8 : 8;
+      const x = Math.floor(p.x * s), z = Math.floor(p.z * s);
+      g.changeDimension(d, x + 0.5, 70, z + 0.5, () => g.arriveByPortal(d, null, x, d === 'nether' ? 64 : 70, z));
+      return undefined;
+    }
+    case 'locate': {
+      const what = (args[0] || '').toLowerCase();
+      if (what === 'fortress') {
+        if (g.dim !== 'nether') return err('Fortresses are in the Nether');
+        const fs = g.netherGen.fortressesNear(p.x - 1200, p.z - 1200, p.x + 1200, p.z + 1200);
+        if (!fs.length) return err('No fortress nearby');
+        fs.sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z));
+        const f = fs[0];
+        return say(`Nearest fortress is at [${f.x}, ${f.y0}, ${f.z}] (${Math.round(Math.hypot(f.x - p.x, f.z - p.z))} blocks away)`, '#55ff55');
+      }
+      if (what === 'village') {
+        if (g.dim !== 'overworld') return err('Villages are in the Overworld');
+        const vs = villagesNear(g.gen, p.x - 1500, p.z - 1500, p.x + 1500, p.z + 1500);
+        if (!vs.length) return err('No village nearby');
+        vs.sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z));
+        return say(`Nearest village is at [${vs[0].x}, ~, ${vs[0].z}] (${Math.round(Math.hypot(vs[0].x - p.x, vs[0].z - p.z))} blocks away)`, '#55ff55');
+      }
+      return err('Usage: /locate <fortress|village>');
+    }
     case 'enchant': {
       const key = (args[0] || '').replace(/^minecraft:/, '').toLowerCase();
       const e = ENCHANTS[EN[key]];

@@ -58,8 +58,8 @@ const CREATIVE_TABS = [
   { name: 'Search', icon: 'compass', filter: () => true, search: true },
   { name: 'Survival Inventory', icon: 'chest', inv: true },
 ];
-const NATURE = ['grass_block', 'dirt', 'coarse_dirt', 'podzol', 'sand', 'red_sand', 'gravel', 'clay', 'snow_block', 'snow', 'ice', 'packed_ice', 'stone', 'granite', 'diorite', 'andesite', 'cobblestone', 'mossy_cobblestone', 'bedrock', 'obsidian', 'coal_ore', 'iron_ore', 'gold_ore', 'diamond_ore', 'redstone_ore', 'lapis_ore', 'emerald_ore', 'cactus', 'sugar_cane', 'pumpkin', 'melon', 'cobweb', 'vine', 'lily_pad'];
-const FUNCTIONAL = ['crafting_table', 'furnace', 'chest', 'enchanting_table', 'anvil', 'rail', 'powered_rail', 'detector_rail', 'torch', 'ladder', 'oak_door', 'red_bed', 'tnt', 'bookshelf', 'jack_o_lantern', 'glowstone', 'sea_lantern', 'spawner', 'cake', 'farmland', 'dirt_path', 'oak_fence'];
+const NATURE = ['grass_block', 'dirt', 'coarse_dirt', 'podzol', 'sand', 'red_sand', 'gravel', 'clay', 'snow_block', 'snow', 'ice', 'packed_ice', 'stone', 'granite', 'diorite', 'andesite', 'cobblestone', 'mossy_cobblestone', 'bedrock', 'obsidian', 'coal_ore', 'iron_ore', 'gold_ore', 'diamond_ore', 'redstone_ore', 'lapis_ore', 'emerald_ore', 'cactus', 'sugar_cane', 'pumpkin', 'melon', 'cobweb', 'vine', 'lily_pad', 'netherrack', 'soul_sand', 'soul_soil', 'magma_block', 'nether_quartz_ore', 'nether_gold_ore', 'basalt', 'blackstone', 'crimson_nylium', 'warped_nylium', 'crimson_stem', 'warped_stem', 'nether_wart_block', 'warped_wart_block', 'shroomlight', 'glowstone', 'nether_wart'];
+const FUNCTIONAL = ['crafting_table', 'furnace', 'chest', 'enchanting_table', 'anvil', 'rail', 'powered_rail', 'detector_rail', 'torch', 'ladder', 'oak_door', 'red_bed', 'tnt', 'bookshelf', 'jack_o_lantern', 'glowstone', 'sea_lantern', 'spawner', 'cake', 'farmland', 'dirt_path', 'oak_fence', 'obsidian'];
 function isNature(it) { const n = it.name; return NATURE.includes(n) || n.endsWith('_log') || n.endsWith('_leaves') || n.endsWith('_sapling') || BLOCKS[it.block].plant || BLOCKS[it.block].render === R.CROSS; }
 function isFunctional(it) { return FUNCTIONAL.includes(it.name); }
 

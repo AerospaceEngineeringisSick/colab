@@ -14,6 +14,7 @@ export const U = {
   uGamma: { value: 0.5 },
   uWind: { value: 1 },
   uFlash: { value: 0 },
+  uAmbient: { value: new THREE.Color(0, 0, 0) }, // a floor under the light map (the Nether's dim glow)
 };
 
 const LIGHT_GLSL = /* glsl */`
@@ -22,6 +23,7 @@ uniform vec3 uSkyLightColor;
 uniform vec3 uTorchColor;
 uniform float uGamma;
 uniform float uFlash;
+uniform vec3 uAmbient;
 float lcurve(float l) {
   float f = clamp(l / 15.0, 0.0, 1.0);
   float b = f / (4.0 - 3.0 * f);
@@ -32,7 +34,7 @@ vec3 lightmap(float sky, float blk) {
   vec3 s = uSkyLightColor * lcurve(sky * uDaylight) ;
   s = max(s, vec3(lcurve(sky) * uFlash));
   vec3 b = uTorchColor * lcurve(blk);
-  return 1.0 - (1.0 - s) * (1.0 - b);
+  return 1.0 - (1.0 - s) * (1.0 - b) * (1.0 - uAmbient);
 }
 `;
 

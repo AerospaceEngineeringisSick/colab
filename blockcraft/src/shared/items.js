@@ -10,7 +10,7 @@ const titleCase = (s) => s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperC
 
 // --- block items
 const NO_ITEM = new Set(['air', 'water', 'lava', 'lit_furnace', 'wheat', 'carrots', 'potatoes', 'redstone_wire', 'unlit_redstone_torch',
-  'lit_redstone_lamp', 'piston_head']);
+  'lit_redstone_lamp', 'piston_head', 'fire', 'nether_portal']);
 const FLAT_ICON = { // blocks shown with a flat texture in the inventory
   torch: 'block/torch', ladder: 'block/ladder', oak_door: 'item/oak_door', red_bed: 'item/red_bed', sugar_cane: 'item/sugar_cane',
   cobweb: 'block/cobweb', vine: 'block/vine', lily_pad: 'block/lily_pad', cake: 'item/cake', short_grass: 'block/short_grass',
@@ -20,6 +20,8 @@ for (const w of WOODS) FLAT_ICON[w + '_sapling'] = 'block/' + w + '_sapling';
 for (const n of ['rail', 'powered_rail', 'detector_rail', 'redstone_torch']) FLAT_ICON[n] = 'block/' + n;
 FLAT_ICON.lever = 'item/lever';
 FLAT_ICON.repeater = 'item/repeater';
+FLAT_ICON.nether_wart = 'item/nether_wart';
+for (const n of ['crimson_fungus', 'warped_fungus', 'crimson_roots', 'warped_roots', 'nether_sprouts', 'weeping_vines', 'twisting_vines']) FLAT_ICON[n] = 'block/' + n;
 for (const f of FLOWERS) FLAT_ICON[f] = 'block/' + f;
 
 for (const b of BLOCKS) {
@@ -44,6 +46,9 @@ ITEMS[B.short_grass].display = 'Grass';
 ITEMS[B.grass_block].display = 'Grass Block';
 ITEMS[B.repeater].display = 'Redstone Repeater';
 ITEMS[B.redstone_lamp].display = 'Redstone Lamp';
+ITEMS[B.nether_quartz_ore].display = 'Nether Quartz Ore';
+ITEMS[B.quartz_block].display = 'Block of Quartz';
+ITEMS[B.magma_block].display = 'Magma Block';
 
 let next = ITEM_BASE;
 function item(name, p = {}) {
@@ -179,13 +184,27 @@ item('name_tag', { use: 'name_tag' });
 export const MORE_EGGS = { villager: [0x563c33, 0xbd8b72], iron_golem: [0xdbcdc2, 0x74a332] };
 for (const [mob, col] of Object.entries(MORE_EGGS)) item(mob + '_spawn_egg', { icon: 'egg', egg: { mob, col }, use: 'spawn_egg' });
 
+// the Nether
+item('quartz', { display: 'Nether Quartz' });
+item('nether_brick');
+item('blaze_rod');
+item('blaze_powder');
+item('ghast_tear');
+item('magma_cream');
+item('fire_charge', { use: 'fire_charge' });
+export const NETHER_EGGS = {
+  zombified_piglin: [0xea9393, 0x4c7129], ghast: [0xf9f9f9, 0xbcbcbc], blaze: [0xf6b201, 0xfff87e], magma_cube: [0x340000, 0xfcfc00],
+  wither_skeleton: [0x141414, 0x474d4d], slime: [0x51a03e, 0x7ebf6e],
+};
+for (const [mob, col] of Object.entries(NETHER_EGGS)) item(mob + '_spawn_egg', { icon: 'egg', egg: { mob, col }, use: 'spawn_egg' });
+
 // cake & bed & door & sugar cane are block items placed directly
 ITEMS[B.cake].maxStack = 1;
 
 // ------------------------------------------------------------------ fuels (seconds of burn)
 export const FUEL = {};
 const fuel = (n, s) => { if (I[n] !== undefined) FUEL[I[n]] = s; };
-fuel('coal', 80); fuel('charcoal', 80); fuel('coal_block', 800); fuel('lava_bucket', 1000); fuel('stick', 5);
+fuel('coal', 80); fuel('charcoal', 80); fuel('blaze_rod', 120); fuel('coal_block', 800); fuel('lava_bucket', 1000); fuel('stick', 5);
 fuel('crafting_table', 15); fuel('bookshelf', 15); fuel('chest', 15); fuel('oak_fence', 15); fuel('ladder', 15);
 fuel('oak_slab', 7.5); fuel('oak_stairs', 15); fuel('bow', 15); fuel('bowl', 5); fuel('oak_door', 10);
 for (const w of WOODS) { fuel(w + '_log', 15); fuel(w + '_planks', 15); fuel(w + '_sapling', 5); }

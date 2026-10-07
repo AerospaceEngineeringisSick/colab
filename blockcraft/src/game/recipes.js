@@ -3,7 +3,7 @@ import { I, ITEMS } from '../shared/items.js';
 import { WOODS, COLORS } from '../shared/blocks.js';
 
 const TAGS = {
-  planks: WOODS.map((w) => w + '_planks'),
+  planks: [...WOODS.map((w) => w + '_planks'), 'crimson_planks', 'warped_planks'],
   logs: WOODS.map((w) => w + '_log'),
   wool: COLORS.map((c) => c + '_wool'),
   coals: ['coal', 'charcoal'],
@@ -135,6 +135,26 @@ shapeless('blue_wool', 1, ['#wool', 'lapis_lazuli']);
 shapeless('white_wool', 1, ['#wool', 'bone_meal']);
 shapeless('red_wool', 1, ['#wool', 'redstone']);
 shaped('smooth_stone', 1, ['SS'], { S: 'smooth_stone_slab' }, { hidden: true });
+// the Nether
+shapeless('crimson_planks', 4, ['crimson_stem']);
+shapeless('warped_planks', 4, ['warped_stem']);
+shaped('nether_bricks', 1, ['BB', 'BB'], { B: 'nether_brick' });
+shaped('nether_brick_fence', 6, ['NBN', 'NBN'], { N: 'nether_bricks', B: 'nether_brick' });
+shaped('nether_brick_stairs', 4, ['M  ', 'MM ', 'MMM'], { M: 'nether_bricks' });
+shaped('nether_brick_slab', 6, ['MMM'], { M: 'nether_bricks' });
+shaped('chiseled_nether_bricks', 1, ['S', 'S'], { S: 'nether_brick_slab' });
+shaped('red_nether_bricks', 1, ['WB', 'BW'], { W: 'nether_wart', B: 'nether_brick' });
+shaped('nether_wart_block', 1, ['WWW', 'WWW', 'WWW'], { W: 'nether_wart' });
+shaped('quartz_block', 1, ['QQ', 'QQ'], { Q: 'quartz' });
+shaped('quartz_pillar', 2, ['Q', 'Q'], { Q: 'quartz_block' });
+shaped('chiseled_quartz_block', 1, ['S', 'S'], { S: 'quartz_slab' });
+shaped('quartz_slab', 6, ['MMM'], { M: 'quartz_block' });
+shaped('quartz_stairs', 4, ['M  ', 'MM ', 'MMM'], { M: 'quartz_block' });
+shaped('glowstone', 1, ['GG', 'GG'], { G: 'glowstone_dust' });
+shapeless('blaze_powder', 2, ['blaze_rod']);
+shapeless('magma_cream', 1, ['blaze_powder', 'slime_ball']);
+shaped('magma_block', 1, ['MM', 'MM'], { M: 'magma_cream' });
+shapeless('fire_charge', 3, ['blaze_powder', '#coals', 'gunpowder']);
 
 // ------------------------------------------------------------------ matching
 function ingMatch(want, id) {
@@ -201,4 +221,6 @@ smelt('cod', 'cooked_cod', 0.35); smelt('salmon', 'cooked_salmon', 0.35);
 smelt('porkchop', 'cooked_porkchop', 0.35); smelt('beef', 'cooked_beef', 0.35); smelt('chicken', 'cooked_chicken', 0.35);
 smelt('mutton', 'cooked_mutton', 0.35); smelt('potato', 'baked_potato', 0.35); smelt('stone_bricks', 'cracked_stone_bricks', 0.1);
 for (const w of WOODS) smelt(w + '_log', 'charcoal', 0.15);
+smelt('netherrack', 'nether_brick', 0.1); smelt('nether_quartz_ore', 'quartz', 0.2); smelt('nether_gold_ore', 'gold_ingot', 1);
+smelt('nether_bricks', 'cracked_nether_bricks', 0.1);
 void ITEMS;

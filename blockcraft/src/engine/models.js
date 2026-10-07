@@ -248,6 +248,63 @@ export const MODELS = {
   },
 };
 
+// ------------------------------------------------------------------ the Nether
+// ghast (64x32): a big cube with nine dangling tentacles; drawn 4.5x size
+const GHAST_LEN = [10, 12, 9, 13, 8, 11, 14, 9, 12];
+MODELS.ghast = {
+  tex: [64, 32], scale: 4.5,
+  parts: {
+    body: { pivot: [0, 6.4, 0], boxes: [{ o: [-8, -8, -8], s: [16, 16, 16], uv: [0, 0] }] },
+    ...Object.fromEntries(GHAST_LEN.map((len, i) => {
+      const x = ((i % 3) - ((Math.floor(i / 3)) % 2) * 0.5 - 0.75) * 5, z = (Math.floor(i / 3) - 1) * 5;
+      return ['tentacle' + i, { pivot: [x, -0.6, -z], boxes: [{ o: [-1, -len, -1], s: [2, len, 2], uv: [0, 0] }] }];
+    })),
+  },
+};
+// blaze (64x32): a head inside three spinning rings of rods (placed every frame)
+MODELS.blaze = {
+  tex: [64, 32],
+  parts: {
+    head: { pivot: [0, 24, 0], boxes: [{ o: [-4, -4, -4], s: [8, 8, 8], uv: [0, 0] }] },
+    ...Object.fromEntries([...Array(12).keys()].map((i) => ['rod' + i, { pivot: [0, 0, 0], boxes: [{ o: [0, -8, -2], s: [2, 8, 2], uv: [0, 16] }] }])),
+  },
+};
+// magma cube: eight stacked slices that spring apart as it bounces, with a molten core
+MODELS.magma_cube = {
+  tex: [64, 32],
+  parts: {
+    core: { pivot: [0, 0, 0], boxes: [{ o: [-3, 1, -3], s: [6, 6, 6], uv: [0, 16] }] },
+    ...Object.fromEntries([...Array(8).keys()].map((i) => ['slice' + i, { pivot: [0, 7 - i, 0], boxes: [{ o: [-4, 0, -4], s: [8, 1, 8], uv: [0, i] }] }])),
+  },
+};
+// slime: a see-through jelly cube around a solid core with a face
+MODELS.slime = {
+  tex: [64, 32],
+  parts: {
+    core: {
+      pivot: [0, 0, 0], boxes: [
+        { o: [-3, 1, -3], s: [6, 6, 6], uv: [0, 16] },
+        { o: [-3.25, 4, 1.5], s: [2, 2, 2], uv: [32, 0] }, { o: [1.25, 4, 1.5], s: [2, 2, 2], uv: [32, 4] }, { o: [0, 2, 1.5], s: [1, 1, 1], uv: [32, 8] },
+      ],
+    },
+    outer: { pivot: [0, 0, 0], boxes: [{ o: [-4, 0, -4], s: [8, 8, 8], uv: [0, 0], translucent: true }] },
+  },
+};
+// zombified piglin (64x64): the player body with a broad snouted head and floppy ears
+MODELS.zombified_piglin = (() => {
+  const m = biped(64, 64, false);
+  m.parts.head = {
+    pivot: [0, 24, 0], boxes: [
+      { o: [-5, 0, -4], s: [10, 8, 8], uv: [0, 0] }, { o: [-2, 0, 4], s: [4, 4, 1], uv: [31, 1] },
+      { o: [2, 0, 4], s: [1, 2, 1], uv: [2, 4] }, { o: [-3, 0, 4], s: [1, 2, 1], uv: [2, 0] },
+    ],
+  };
+  m.parts.leftEar = { parent: 'head', pivot: [4.5, 6, 0], rot: [0, 0, PI / 6], boxes: [{ o: [0, -5, -2], s: [1, 5, 4], uv: [51, 6] }] };
+  m.parts.rightEar = { parent: 'head', pivot: [-4.5, 6, 0], rot: [0, 0, -PI / 6], boxes: [{ o: [-1, -5, -2], s: [1, 5, 4], uv: [39, 6] }] };
+  return m;
+})();
+MODELS.wither_skeleton = { ...MODELS.skeleton, scale: 1.2 };
+
 // instantiate a model as a THREE.Group of part groups
 export function buildModel(def, texName, opts = {}) {
   const tex = imageTexture(texName);
@@ -258,10 +315,12 @@ export function buildModel(def, texName, opts = {}) {
   root.add(inner);
   const mat = entityMaterial(tex, { alphaTest: 0.1, side: THREE.DoubleSide });
   const mats = [mat];
-  let overlayMat = null;
+  let overlayMat = null, clearMat = null;
   const parts = {};
   for (const [name, p] of Object.entries(def.parts)) {
     const g = new THREE.Group();
+    // child parts hang off another part's pivot (and turn with it)
+    const parent = p.parent ? parts[p.parent] : null;
     g.position.set(p.pivot[0] / 16, p.pivot[1] / 16, p.pivot[2] / 16);
     if (p.rot) g.rotation.set(p.rot[0], p.rot[1], p.rot[2]);
     g.userData.base = p.rot ? p.rot.slice() : [0, 0, 0];
@@ -272,12 +331,17 @@ export function buildModel(def, texName, opts = {}) {
         if (!overlayMat) { overlayMat = entityMaterial(tex, { alphaTest: 0.1, side: THREE.DoubleSide }); mats.push(overlayMat); }
         m = overlayMat;
       }
+      if (b.translucent) {
+        if (!clearMat) { clearMat = entityMaterial(tex, { alphaTest: 0.01, transparent: true }); clearMat.depthWrite = false; mats.push(clearMat); }
+        m = clearMat;
+      }
       const geo = boxGeometry(b.o, b.s, b.uv, tw, th, b);
       if (b.rot) { geo.rotateX(b.rot[0]); geo.rotateY(b.rot[1]); geo.rotateZ(b.rot[2]); }
       const mesh = new THREE.Mesh(geo, m);
+      if (b.translucent) mesh.renderOrder = 3;
       g.add(mesh);
     }
-    inner.add(g);
+    (parent || inner).add(g);
     parts[name] = g;
   }
   return { root, inner, parts, mats, tex };

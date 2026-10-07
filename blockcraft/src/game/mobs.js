@@ -10,7 +10,8 @@ import { MODELS, buildModel, addEyes } from '../engine/models.js';
 import { makeItemObject } from '../engine/itemmesh.js';
 import { enchLevel } from '../shared/enchant.js';
 import { unlockLevel, restock } from './trading.js';
-import { villagerTexture } from '../engine/textures.js';
+import { villagerTexture, imageTexture } from '../engine/textures.js';
+import { Fireball } from './fireball.js';
 
 const r = Math.random;
 const rint = (a, b) => a + Math.floor(r() * (b - a + 1));
@@ -69,6 +70,39 @@ export const MOBS = {
     model: 'iron_golem', tex: 'entity/iron_golem', w: 1.4, h: 2.7, eye: 2.4, health: 100, speed: 0.17, neutral: true, golem: true,
     attack: 7, follow: 24, xp: 0, noFall: true, sounds: { hurt: 'golem.hurt', death: 'golem.hurt' },
     drops: () => [['iron_ingot', rint(3, 5)], ['poppy', rint(0, 2)]],
+  },
+  // ---- the Nether
+  zombified_piglin: {
+    undead: true, model: 'zombified_piglin', tex: 'entity/zombified_piglin', w: 0.6, h: 1.95, eye: 1.79, health: 20, speed: 0.23, neutral: true,
+    piglin: true, attack: 5, follow: 35, fireImmune: true, xp: 5, holds: 'golden_sword',
+    sounds: { say: 'piglin.say', hurt: 'piglin.hurt', death: 'piglin.death' },
+    drops: () => [['rotten_flesh', rint(0, 1)], ['gold_nugget', rint(0, 1)], ...(r() < 0.025 ? [['gold_ingot', 1]] : [])],
+  },
+  ghast: {
+    model: 'ghast', tex: 'entity/ghast', w: 4, h: 4, eye: 2.6, health: 10, speed: 0.02, hostile: true, ghast: true, flies: true,
+    fireImmune: true, noFall: true, follow: 64, xp: 5, sounds: { say: 'ghast.say', hurt: 'ghast.hurt', death: 'ghast.death' },
+    drops: () => [['ghast_tear', rint(0, 1)], ['gunpowder', rint(0, 2)]],
+  },
+  blaze: {
+    model: 'blaze', tex: 'entity/blaze', w: 0.6, h: 1.8, eye: 1.5, health: 20, speed: 0.23, hostile: true, blaze: true, fireImmune: true,
+    noFall: true, attack: 6, follow: 48, xp: 10, fullbright: true, sounds: { say: 'blaze.breath', hurt: 'blaze.hurt', death: 'blaze.death' },
+    drops: (m, byPlayer) => (byPlayer ? [['blaze_rod', rint(0, 1)]] : []),
+  },
+  magma_cube: {
+    model: 'magma_cube', tex: 'entity/magma_cube', texSize: [64, 32], w: 0.52, h: 0.52, eye: 0.3, health: 1, speed: 0.2, hostile: true,
+    slime: true, magma: true, fireImmune: true, noFall: true, follow: 16, xp: 1, sounds: { hurt: 'magma.say', death: 'magma.say' },
+    drops: (m) => (m.size > 1 && r() < 0.5 ? [['magma_cream', 1]] : []),
+  },
+  slime: {
+    model: 'slime', tex: 'entity/slime', texSize: [64, 32], w: 0.52, h: 0.52, eye: 0.3, health: 1, speed: 0.2, hostile: true, slime: true,
+    follow: 16, xp: 1, noFall: true, sounds: { hurt: 'slime.hurt', death: 'slime.death' },
+    drops: (m) => (m.size === 1 ? [['slime_ball', rint(0, 2)]] : []),
+  },
+  wither_skeleton: {
+    undead: true, model: 'wither_skeleton', tex: 'entity/wither_skeleton', w: 0.7, h: 2.4, eye: 2.1, health: 20, speed: 0.25, hostile: true,
+    attack: 8, follow: 16, fireImmune: true, wither: true, xp: 5, holds: 'stone_sword',
+    sounds: { say: 'skeleton.say', hurt: 'skeleton.hurt', death: 'skeleton.death' },
+    drops: () => [['coal', rint(0, 1)], ['bone', rint(0, 2)]],
   },
   wolf: {
     model: 'wolf', tex: 'entity/wolf', w: 0.6, h: 0.85, eye: 0.7, health: 8, speed: 0.3, neutral: true, wolf: true, attack: 4, xp: 2,
@@ -138,6 +172,15 @@ export class Mob extends Entity {
       if (!opts.offers) unlockLevel(this, 0);
     }
     if (d.golem) this.home = opts.home || null;
+    if (d.slime) {
+      this.size = opts.size || [1, 2, 4][rint(0, 2)];
+      this.w = this.h = (d.magma ? 0.52 : 0.51) * this.size;
+      this.maxHealth = this.size * this.size;
+      this.health = opts.health ?? this.maxHealth;
+      this.jumpDelay = rint(10, 30);
+      this.squish = 0; this.psquish = 0;
+    }
+    if (d.ghast || d.blaze) { this.charge = 0; this.attackStep = 0; this.attackTime = 0; }
     this.nameTag = null;
   }
 
@@ -199,14 +242,18 @@ export class Mob extends Entity {
     this.baby = b;
     this.scale = b ? 0.5 : 1;
     this.w = this.def.w * this.scale; this.h = this.def.h * this.scale;
-    if (this.model) this.model.inner.scale.setScalar(this.scale * (this.def.modelScale || 1));
+    if (this.model) this.model.inner.scale.setScalar(this.scale * (MODELS[this.def.model].scale || 1));
   }
 
   environment() {
     const g = this.game;
     const c = contacts(this.world, this.x, this.y, this.z, this.w, this.h);
     this.inWater = c.water; this.inLava = c.lava;
-    if (c.lava) { this.fire = 300; if (this.age % 10 === 0) this.hurt(4, null, this.x, this.z, 'lava'); }
+    const immune = this.def.fireImmune;
+    if (c.lava && !immune) { this.fire = 300; if (this.age % 10 === 0) this.hurt(4, null, this.x, this.z, 'lava'); }
+    if (c.fire && !immune) { this.fire = Math.max(this.fire, 160); if (this.age % 10 === 0) this.hurt(1, null, this.x, this.z, 'fire'); }
+    if (immune) this.fire = 0;
+    if (!immune && this.onGround && this.world.getId(Math.floor(this.x), Math.floor(this.y - 0.05), Math.floor(this.z)) === B.magma_block && this.age % 10 === 0) this.hurt(1, null, this.x, this.z, 'fire');
     if (c.water && this.fire > 0) this.fire = 0;
     if (this.fire > 0) {
       this.fire--;
@@ -261,6 +308,10 @@ export class Mob extends Entity {
     if (this.target && (this.target.removed || this.target.dead)) this.target = null;
 
     if (d.villager) return this.villagerAI(p, dist);
+    if (d.ghast) return this.ghastAI();
+    if (d.slime) return this.slimeAI();
+    if (d.blaze && this.target) return this.blazeAI(this.target);
+    if (d.blaze && r() < 0.1) this.game.particles.smoke(this.x + (r() - 0.5) * 0.6, this.y + r() * this.h, this.z + (r() - 0.5) * 0.6, 1, 0.4, 0.15);
     if (d.golem) {
       // iron golems hunt monsters near the village (not creepers), and anyone who hit them
       if (this.target && this.target !== p && (this.target.removed || this.target.dead || this.distTo(this.target.x, this.target.y, this.target.z) > 24)) this.target = null;
@@ -335,6 +386,127 @@ export class Mob extends Entity {
     if (dist < 6 && !p.dead && p.mode !== 'spectator' && r() < 0.5 && !this.wanderTo) { this.lookAt(p.x, p.y + p.eye, p.z); return; }
     if (away > 28) { this.navigate(hx + 0.5, hy, hz + 0.5, 1.0); return; }
     this.wander(false);
+  }
+
+  // ghasts drift about the caverns and lob fireballs at anything they can see
+  ghastAI() {
+    const g = this.game, w = this.world, t = this.target;
+    const ft = this.floatTo;
+    if (!ft || r() < 0.01 || this.hitH || this.hitV || Math.hypot(ft[0] - this.x, ft[1] - this.y, ft[2] - this.z) < 2) {
+      this.floatTo = null;
+      for (let i = 0; i < 8; i++) {
+        const tx = this.x + (r() * 2 - 1) * 16, ty = this.y + (r() * 2 - 1) * 16, tz = this.z + (r() * 2 - 1) * 16;
+        if (ty < 4 || ty > 120 || !w.isLoaded(Math.floor(tx), Math.floor(tz))) continue;
+        let free = true;
+        for (let k = 0; k <= 4 && free; k++) {
+          const f = k / 4;
+          const sx = this.x + (tx - this.x) * f, sy = this.y + (ty - this.y) * f + 2, sz = this.z + (tz - this.z) * f;
+          if (BLOCKS[w.getId(Math.floor(sx), Math.floor(sy), Math.floor(sz))].solid) free = false;
+        }
+        if (free) { this.floatTo = [tx, ty, tz]; break; }
+      }
+    }
+    if (this.floatTo) {
+      const [tx, ty, tz] = this.floatTo, dx = tx - this.x, dy = ty - this.y, dz = tz - this.z, l = Math.hypot(dx, dy, dz) || 1;
+      this.vx += dx / l * 0.02; this.vy += dy / l * 0.02; this.vz += dz / l * 0.02;
+    }
+    if (t) {
+      this.lookAt(t.x, t.y + (t.eye || t.h / 2), t.z);
+      this.yaw = this.headYaw;
+      const sees = this.distTo(t.x, t.y, t.z) < 64 && this.canSee(t);
+      if (sees) {
+        this.charge++;
+        if (this.charge === 10) g.sound.play('ghast.say', this.x, this.y, this.z, 2, 1, { range: 64 });
+        if (this.charge >= 20) {
+          const d = [-Math.sin(this.yaw), 0, -Math.cos(this.yaw)];
+          const ox = this.x + d[0] * 2.5, oy = this.y + this.h / 2, oz = this.z + d[2] * 2.5;
+          g.entities.add(new Fireball(g, ox, oy - 0.5, oz, t.x - ox, t.y + (t.h || 1.8) / 2 - oy, t.z - oz, this, false));
+          g.sound.play('ghast.shoot', this.x, this.y, this.z, 2, 1, { range: 64 });
+          this.charge = -40;
+        }
+      } else if (this.charge > 0) this.charge--;
+    } else {
+      if (this.charge > 0) this.charge--;
+      const sp = Math.hypot(this.vx, this.vz);
+      if (sp > 0.01) this.yaw = turnToward(this.yaw, Math.atan2(-this.vx, -this.vz), 0.1);
+      this.headYaw = this.yaw; this.headPitch = 0;
+    }
+    this.shooting = this.charge > 10;
+  }
+
+  // blazes hover at their target's height, swat when close, otherwise loose bursts of three fireballs
+  blazeAI(t) {
+    const g = this.game;
+    const dist = this.distTo(t.x, t.y, t.z);
+    this.lookAt(t.x, t.y + (t.eye || t.h / 2), t.z);
+    this.yaw = this.headYaw;
+    if (t.y + (t.eye || 1.6) > this.y + this.def.eye + 0.5) this.vy += (0.3 - this.vy) * 0.3;
+    const sees = this.canSee(t);
+    this.attackTime--;
+    if (dist < 2) {
+      if (this.attackTime <= 0) {
+        this.attackTime = 20;
+        if (t === g.player) t.damage(this.def.attack, 'mob', false, this);
+        else t.hurt(this.def.attack, this, this.x, this.z, 'mob');
+      }
+      this.navigate(t.x, t.y, t.z, 1.0);
+    } else if (dist < this.def.follow && sees) {
+      if (this.attackTime <= 0) {
+        this.attackStep++;
+        if (this.attackStep === 1) { this.attackTime = 60; this.charged = true; }
+        else if (this.attackStep <= 4) {
+          this.attackTime = 6;
+          const spread = Math.sqrt(Math.sqrt(dist)) * 0.5;
+          const ox = this.x, oy = this.y + this.h / 2 + 0.5, oz = this.z;
+          const gauss = () => (r() + r() + r() - 1.5) * spread;
+          g.entities.add(new Fireball(g, ox, oy - 0.15, oz, t.x - ox + gauss(), t.y + (t.h || 1.8) / 2 - oy, t.z - oz + gauss(), this, true));
+          g.sound.play('fireball', this.x, this.y, this.z, 0.8, 1);
+        } else { this.attackTime = 100; this.attackStep = 0; this.charged = false; }
+      }
+    } else {
+      this.navigate(t.x, t.y, t.z, 1.0);
+      this.charged = false; this.attackStep = 0;
+    }
+    if (this.charged && r() < 0.5) g.particles.flame(this.x + (r() - 0.5) * 0.8, this.y + r() * this.h, this.z + (r() - 0.5) * 0.8);
+    if (r() < 0.15) g.particles.smoke(this.x + (r() - 0.5) * 0.6, this.y + r() * this.h, this.z + (r() - 0.5) * 0.6, 1, 0.4, 0.15);
+  }
+
+  // slimes and magma cubes hop toward their target and hurt on contact
+  slimeAI() {
+    const g = this.game, d = this.def, t = this.target;
+    this.psquish = this.squish; this.squish *= 0.6;
+    if (t) { this.lookAt(t.x, t.y, t.z); this.yaw = this.headYaw; }
+    else if (--this.wanderTimer <= 0) { this.wanderTimer = rint(40, 120); this.yaw = r() * Math.PI * 2; this.headYaw = this.yaw; }
+    this.moveSpeed = 0;
+    if (this.onGround) {
+      if (!this.wasGround) {
+        this.squish = -0.5;
+        if (this.size > 1 || d.magma) g.sound.play(d.magma ? 'magma.big' : 'slime.jump', this.x, this.y, this.z, 0.4 * this.size, (r() * 0.4 + 0.8) / (this.size * 0.5 + 0.5));
+        g.particles.landing(this.x, this.y - 0.5, this.z, g.world.getId(Math.floor(this.x), Math.floor(this.y - 0.5), Math.floor(this.z)), this.size * 2);
+      }
+      this.vx *= 0.5; this.vz *= 0.5;
+      if (--this.jumpDelay <= 0) {
+        this.jumpDelay = t ? rint(10, 30) / 3 | 0 : rint(10, 30);
+        const sp = (0.2 + 0.1 * this.size) * 0.6;
+        this.vx = -Math.sin(this.yaw) * sp; this.vz = -Math.cos(this.yaw) * sp;
+        this.vy = d.magma ? 0.42 + 0.1 * this.size : 0.42;
+        this.squish = 1;
+        if (!d.magma || r() < 0.5) g.sound.play(d.magma ? 'magma.say' : 'slime.jump', this.x, this.y, this.z, 0.3 * this.size, 1.2 / this.size);
+      }
+    } else {
+      this.vx += -Math.sin(this.yaw) * 0.01; this.vz += -Math.cos(this.yaw) * 0.01;
+    }
+    this.wasGround = this.onGround;
+    // contact damage (tiny slimes are harmless)
+    const dmg = d.magma ? this.size + 2 : (this.size > 1 ? this.size : 0);
+    if (t && dmg && this.attackCooldown === 0) {
+      const reach = this.w / 2 + 0.6 + (t.w || 0.6) / 2;
+      if (Math.hypot(t.x - this.x, t.z - this.z) < reach && Math.abs(t.y - this.y) < this.h + 0.5 && this.canSee(t)) {
+        this.attackCooldown = 20;
+        if (t === g.player) { if (t.damage(dmg, 'mob', false, this) > 0) g.sound.play(d.magma ? 'magma.attack' : 'slime.attack', this.x, this.y, this.z, 0.6); }
+        else t.hurt(dmg, this, this.x, this.z, 'mob');
+      }
+    }
   }
 
   lookAt(x, y, z) {
@@ -416,6 +588,14 @@ export class Mob extends Entity {
 
   move() {
     const w = this.world;
+    if (this.def.flies) {
+      // free flight: no gravity, air drag on every axis
+      moveBox(w, this, this.vx, this.vy, this.vz, 0);
+      if (this.hitX) this.vx = 0; if (this.hitZ) this.vz = 0; if (this.hitV) this.vy = 0;
+      this.vx *= 0.91; this.vy *= 0.91; this.vz *= 0.91;
+      this.bodyYaw = this.yaw;
+      return;
+    }
     const friction = this.onGround ? 0.546 : 0.91;
     let s = this.moveSpeed;
     if (this.baby && this.def.passive) s *= 1.3;
@@ -445,6 +625,7 @@ export class Mob extends Entity {
       this.vy -= 0.08;
       this.vy *= 0.98;
       if (this.def.chicken && this.vy < -0.06) this.vy = -0.06; // flappy fall
+      if (this.def.blaze && !this.onGround && this.vy < 0) this.vy *= 0.6; // blazes drift down slowly
       this.vx *= friction; this.vz *= friction;
     }
     if (this.knock) { this.vx += this.knock[0]; this.vz += this.knock[1]; if (this.onGround) this.vy = Math.max(this.vy, this.knock[2]); this.knock = null; }
@@ -509,6 +690,7 @@ export class Mob extends Entity {
             if (d.golem) t.vy = Math.max(t.vy, 0.6);
             if (d.spider) g.sound.play('spider.attack', this.x, this.y, this.z, 0.7);
             if (this.fire > 0 && r() < 0.3) t.fire = Math.max(t.fire, 80);
+            if (d.wither && t.addEffect) t.addEffect('wither', 200, 0);
           }
         } else if (t.hurt(dmg, this, this.x, this.z, 'mob') && d.golem && t.knock) t.knock[2] = 0.7;
       }
@@ -708,6 +890,10 @@ export class Mob extends Entity {
       if (this.def.wolf && this.tame) { this.sitting = false; }
     } else if (source && source.isMob && this.def.neutral && !this.tame) { this.target = source; this.angry = 200; }
     if (this.def.passive && cause !== 'fire') this.panic = 100;
+    if (this.def.piglin && source === g.player) {
+      for (const e of g.entities.mobsNear(this.x, this.y, this.z, 32)) if (e.def.piglin && !e.dead) { e.angry = 600; e.target = g.player; }
+      g.sound.play('piglin.angry', this.x, this.y, this.z, 1);
+    }
     if (this.def.villager && source === g.player) {
       for (const e of g.entities.mobsNear(this.x, this.y, this.z, 24)) if (e.def.golem) { e.angry = 600; e.target = g.player; }
     }
@@ -732,11 +918,19 @@ export class Mob extends Entity {
     if (!this.baby) {
       // looting: up to one extra of each drop per level (not wool)
       const loot = source === g.player ? enchLevel(g.player.inv.held, 'looting') : 0;
-      for (let [n, c] of this.def.drops(this)) {
+      for (let [n, c] of this.def.drops(this, byPlayer)) {
         if (loot && !n.endsWith('_wool')) c += Math.floor(Math.random() * (loot + 1));
         if (c > 0 && I[n] !== undefined) g.dropItem(this.x, this.y + 0.5, this.z, { id: I[n], count: c });
       }
-      if (byPlayer || this.def.hostile) g.spawnXp(this.x, this.y + 0.5, this.z, this.def.hostile ? 5 : rint(1, 3));
+      if (byPlayer || this.def.hostile) g.spawnXp(this.x, this.y + 0.5, this.z, this.def.slime ? this.size : this.def.hostile ? (this.def.xp || 5) : rint(1, 3));
+    }
+    // big slimes burst into smaller ones
+    if (this.def.slime && this.size > 1) {
+      const n = rint(2, 4);
+      for (let i = 0; i < n; i++) {
+        const ox = ((i % 2) - 0.5) * this.size / 2, oz = ((i >> 1) - 0.5) * this.size / 2;
+        g.spawnMob(this.kind, this.x + ox, this.y + 0.5, this.z + oz, { size: this.size / 2 });
+      }
     }
     if (source === g.player) g.onMobKilled(this, cause);
   }
@@ -748,7 +942,7 @@ export class Mob extends Entity {
     let tex = d.tex;
     if (d.wolf && this.tame) tex = 'entity/wolf_tame';
     if (d.villager) tex = villagerTexture(this.vtype, this.profession);
-    const m = buildModel(MODELS[d.model], tex);
+    const m = buildModel(MODELS[d.model], tex, { texSize: d.texSize });
     if (d.eyes) addEyes(m, MODELS[d.model], d.eyes);
     if (d.sheep) {
       const fur = buildModel(MODELS.sheep_fur, 'entity/sheep_fur');
@@ -763,12 +957,13 @@ export class Mob extends Entity {
     if (d.holds) {
       const it = makeItemObject(I[d.holds]);
       it.scale.setScalar(0.6);
-      it.position.set(0, -0.6, 0.1);
-      it.rotation.set(0, Math.PI / 2, Math.PI * 0.25);
+      if (d.holds === 'bow') { it.position.set(0, -0.6, 0.1); it.rotation.set(0, Math.PI / 2, Math.PI * 0.25); }
+      else { it.position.set(-0.05, -0.62, 0.12); it.rotation.set(-Math.PI / 2, Math.PI / 2, 0, 'YXZ'); }
       m.parts.rightArm.add(it);
       this.heldObj = it;
     }
-    m.inner.scale.setScalar(this.scale);
+    if (d.fullbright) for (const mat of m.mats) if (mat.uniforms.uFullbright) mat.uniforms.uFullbright.value = 1;
+    m.inner.scale.setScalar(this.scale * (MODELS[d.model].scale || 1) * (this.size || 1));
     this.model = m;
     this.object = m.root;
     this.game.entities.group.add(m.root);
@@ -797,7 +992,7 @@ export class Mob extends Entity {
     const c = Math.cos(swing * 0.6662), c2 = Math.cos(swing * 0.6662 + Math.PI);
     if (P.rightLeg) { P.rightLeg.rotation.x = c * 1.4 * amt; P.leftLeg.rotation.x = c2 * 1.4 * amt; }
     if (P.rightArm) {
-      if (d.armsForward) {
+      if (d.armsForward || (d.piglin && this.target)) {
         P.rightArm.rotation.x = -Math.PI / 2 + Math.sin(t * 3) * 0.05; P.leftArm.rotation.x = -Math.PI / 2 - Math.sin(t * 3) * 0.05;
         P.rightArm.rotation.z = 0; P.leftArm.rotation.z = 0;
       } else if (d.ranged && this.target) {
@@ -853,9 +1048,32 @@ export class Mob extends Entity {
       const k = 1 + f * f * 0.4;
       m.inner.scale.set(k * this.scale, (1 + f * 0.1) / s * this.scale, k * this.scale);
     }
+    if (d.ghast) {
+      for (let i = 0; i < 9; i++) P['tentacle' + i].rotation.x = 0.2 * Math.sin((this.age + a) * 0.3 + i) + 0.4;
+      const want = this.shooting ? 'entity/ghast_shooting' : 'entity/ghast';
+      if (this.ghastTex !== want) { this.ghastTex = want; m.mats[0].uniforms.uMap.value = imageTexture(want); }
+    }
+    if (d.blaze) {
+      // three rings of rods, spinning like vanilla's
+      const T = this.age + a;
+      let f = T * Math.PI * -0.1;
+      for (let i = 0; i < 4; i++, f++) P['rod' + i].position.set(Math.cos(f) * 9 / 16, (24 - (-2 + Math.cos((i * 2 + T) * 0.25))) / 16, -Math.sin(f) * 9 / 16);
+      f = Math.PI / 4 + T * Math.PI * 0.03;
+      for (let i = 4; i < 8; i++, f++) P['rod' + i].position.set(Math.cos(f) * 7 / 16, (24 - (2 + Math.cos((i * 2 + T) * 0.25))) / 16, -Math.sin(f) * 7 / 16);
+      f = 0.47123894 + T * Math.PI * -0.05;
+      for (let i = 8; i < 12; i++, f++) P['rod' + i].position.set(Math.cos(f) * 5 / 16, (24 - (11 + Math.cos((i * 1.5 + T) * 0.5))) / 16, -Math.sin(f) * 5 / 16);
+    }
+    if (d.slime) {
+      // squash and stretch, and magma cube slices spring apart mid-jump
+      this.psquish = this.psquish ?? 0;
+      const sq = (this.psquish + (this.squish - this.psquish) * a) / (this.size * 0.5 + 1);
+      const k = 1 / (sq + 1);
+      m.inner.scale.set(k * this.size, (1 / k) * this.size, k * this.size);
+      if (d.magma) for (let i = 0; i < 8; i++) P['slice' + i].position.y = (7 - i + (4 - i) * Math.max(0, sq) * 1.7) / 16;
+    }
     // lighting and hurt flash
     const [sk, bl] = this.light();
-    const lit = this.fire > 0 ? 15 : bl;
+    const lit = this.fire > 0 || d.fullbright ? 15 : bl;
     const hurt = this.hurtTime > 0 || this.dead;
     let flash = 0;
     if (d.creeper && this.fuse > 0) flash = Math.floor(this.fuse / 2.5) % 2 ? 0.5 : 0;
@@ -910,6 +1128,7 @@ export class Mob extends Entity {
     if (this.customName) o.name = this.customName;
     if (this.def.villager) o.extra = { profession: this.profession, vtype: this.vtype, home: this.home, tradeSeed: this.tradeSeed, tradeLevel: this.tradeLevel, tradeXp: this.tradeXp, offers: this.offers, lastRestock: this.lastRestock };
     if (this.def.golem && this.home) o.extra = { home: this.home };
+    if (this.def.slime) o.extra = { size: this.size };
     return o;
   }
 }

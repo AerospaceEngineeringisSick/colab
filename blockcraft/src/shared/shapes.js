@@ -184,6 +184,17 @@ export function blockModel(id, meta, conn = 0) {
       // curved texture joins south and east; turn for the other corners
       return M([box([0, 1, 0, 16, 1, 16], faces)], { 6: 0, 7: 1, 8: 2, 9: 3 }[shape]);
     }
+    case R.PORTAL:
+      // a 4px thick sheet showing only its two broad faces
+      return (meta & 1) ? M([box([6, 0, 0, 10, 16, 16], [t.side, t.side, null, null, null, null])]) : M([box([0, 0, 6, 16, 16, 10], [null, null, null, null, t.side, t.side])]);
+    case R.FIRE: {
+      // four flame sheets just inside the block edges, visible from both sides
+      const F = t.side;
+      return M([
+        box([1, 0, 0, 1, 16, 16], [F, F, null, null, null, null]), box([15, 0, 0, 15, 16, 16], [F, F, null, null, null, null]),
+        box([0, 0, 1, 16, 16, 1], [null, null, null, null, F, F]), box([0, 0, 15, 16, 16, 15], [null, null, null, null, F, F]),
+      ]);
+    }
     case R.BOXES: {
       if (id === B.snow) {
         const h = Math.min(16, (meta + 1) * 2);
@@ -281,7 +292,9 @@ export function selectionBoxes(id, meta, conn = 0) {
     case R.LEVER: case R.BUTTON: case R.PLATE: case R.REPEATER: return modelBoxes(id, meta, conn).map((a) => [Math.max(0, a[0]), Math.max(0, a[1]), Math.max(0, a[2]), Math.min(1, a[3]), Math.max(a[4], a[1] + 1 / 16), Math.min(1, a[5])]);
     case R.RAIL: return (meta & 7) >= 2 && (meta & 7) <= 5 ? [[0, 0, 0, 1, 0.5, 1]] : [[0, 0, 0, 1, 2 / 16, 1]];
     case R.LADDER: return modelBoxes(id, meta, conn).map((a) => [Math.max(0, a[0] - 0.1), a[1], Math.max(0, a[2] - 0.1), Math.min(1, a[3] + 0.1), a[4], Math.min(1, a[5] + 0.1)]);
-    case R.BOXES: if (id === B.snow) return [[0, 0, 0, 1, (meta + 1) * 2 / 16, 1]];
+    case R.BOXES: if (id === B.snow) return [[0, 0, 0, 1, (meta + 1) * 2 / 16, 1]]; break;
+    case R.PORTAL: return (meta & 1) ? [[6 / 16, 0, 0, 10 / 16, 1, 1]] : [[0, 0, 6 / 16, 1, 1, 10 / 16]];
+    case R.FIRE: return NONE;
   }
   const c = collisionBoxes(id, meta, conn);
   return c.length ? c : FULL;
@@ -290,7 +303,7 @@ export function selectionBoxes(id, meta, conn = 0) {
 // fence connection mask from a neighbour lookup fn(dx,dz) -> block id
 export function fenceConn(getId) {
   let m = 0;
-  const test = (id) => id === B.oak_fence || BLOCKS[id].opaque;
+  const test = (id) => BLOCKS[id].render === R.FENCE || BLOCKS[id].opaque;
   if (test(getId(1, 0))) m |= 1;
   if (test(getId(-1, 0))) m |= 2;
   if (test(getId(0, 1))) m |= 16;

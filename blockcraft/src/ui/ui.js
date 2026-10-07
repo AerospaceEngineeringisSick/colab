@@ -146,6 +146,7 @@ export class UI {
     this.lowhpEl = el('div', '', hud); this.lowhpEl.id = 'lowhp';
     this.waterEl = el('div', '', hud); this.waterEl.id = 'water';
     this.fireEl = el('div', '', hud); this.fireEl.id = 'fireov';
+    this.portalEl = el('div', '', hud); this.portalEl.id = 'portalov';
     this.crosshair = el('div', '', hud); this.crosshair.id = 'crosshair';
     this.hotbar = el('div', '', hud); this.hotbar.id = 'hotbar';
     this.hbSlots = [];
@@ -235,6 +236,10 @@ export class UI {
     // overlays
     this.lowhpEl.style.opacity = p.mode === 'survival' && p.health <= 4 && !p.dead ? 0.6 + Math.sin(game.clock * 6) * 0.2 : 0;
     this.fireEl.style.opacity = p.fire > 0 && !p.creative && !p.inWater ? 0.6 + Math.sin(game.clock * 20) * 0.2 : 0;
+    // the swirling purple haze of a portal about to take you
+    const pt = Math.min(1, (p.portalTime || 0) / 80);
+    this.portalEl.style.opacity = pt > 0 ? 0.25 + pt * 0.6 : 0;
+    if (pt > 0) this.portalEl.style.transform = `scale(${1 + pt * 0.15}) rotate(${Math.sin(game.clock * 2) * pt * 4}deg)`;
     this.waterEl.style.opacity = p.eyeInWater ? 1 : 0;
     this.sleepEl.style.opacity = p.sleeping ? Math.min(1, game.sleepTimer / 80) : 0;
     // chat fade

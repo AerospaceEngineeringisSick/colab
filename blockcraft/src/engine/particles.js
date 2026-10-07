@@ -193,6 +193,23 @@ export class Particles {
     this.add({ x, y, z, vx: (Math.random() - 0.5) * 1.5, vy: 1.5 + Math.random() * 1.5, vz: (Math.random() - 0.5) * 1.5, g: 14, life: 0.3, size: 0.05, layer: this.layer('env/rain'), r: 0.6, gg: 0.7, b: 1 });
   }
 
+  // purple motes drifting around a nether portal
+  portal(x, y, z) {
+    const c = 0.6 + Math.random() * 0.4;
+    this.add({
+      x, y, z, vx: (Math.random() - 0.5) * 1.2, vy: (Math.random() - 0.5) * 1.2, vz: (Math.random() - 0.5) * 1.2, g: 0, drag: 0.95,
+      life: 0.6 + Math.random() * 0.8, size: 0.06 + Math.random() * 0.05, layer: this.layer('env/portal_particle'), r: c * 0.85, gg: c * 0.35, b: c, light: -1, shrink: true,
+    });
+  }
+
+  // drifting ash / spores in the Nether's air (rgb: their colour)
+  mote(x, y, z, rgb, glow = false) {
+    this.add({
+      x, y, z, vx: (Math.random() - 0.5) * 0.4, vy: -0.15 - Math.random() * 0.2, vz: (Math.random() - 0.5) * 0.4, g: 0, drag: 0.99,
+      life: 2 + Math.random() * 3, size: 0.04 + Math.random() * 0.03, layer: this.layer('env/bonemeal'), r: rgb[0], gg: rgb[1], b: rgb[2], light: glow ? -1 : undefined,
+    });
+  }
+
   poof(x, y, z, w = 0.6, h = 1.8) {
     for (let i = 0; i < 20; i++) {
       this.add({

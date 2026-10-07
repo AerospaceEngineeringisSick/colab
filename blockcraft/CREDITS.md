@@ -16,12 +16,13 @@ All textures in `assets/textures/` come from [Mineclonia](https://codeberg.org/m
 
 ## Sounds
 
-All sounds in `assets/sounds/` come from Mineclonia and were trimmed and converted to mono MP3. Authors include Mito551, Benboncan, InspectorJ, AGFX, Sheyvan, lolamadeus, Erdie, dheming, worthahep88, Voxelands contributors, sonictechtonic, Adam_N, Under7dude, haratman, columbia23, Darsycho, Zozzy, Bird_man, Klaraschick, Blender Foundation, PilzAdam, Wuzzy, evsecrets, griffinjennings, kantouth, Baŝto, spookymodem, Cribbler, j1987, themightyglider, JoeDinesSound, tim.kahn, CGEffex, bennstir, inchadney, hantorio, juskiddink, IllusiaProductions, Jose Ortiz 'MindChamber', Ned Bouhalassa and tran5ient.
+All sounds in `assets/sounds/` come from Mineclonia and were trimmed and converted to mono MP3. Authors include Mito551, Benboncan, InspectorJ, AGFX, Sheyvan, lolamadeus, Erdie, dheming, worthahep88, Voxelands contributors, sonictechtonic, Adam_N, Under7dude, haratman, columbia23, Darsycho, Zozzy, Bird_man, Klaraschick, Blender Foundation, PilzAdam, Wuzzy, evsecrets, griffinjennings, kantouth, Baŝto, spookymodem, Cribbler, j1987, themightyglider, JoeDinesSound, tim.kahn, CGEffex, bennstir, inchadney, hantorio, juskiddink, IllusiaProductions, Jose Ortiz 'MindChamber', Ned Bouhalassa and tran5ient. The enchanting sounds are by Alecia Shepherd (CC BY-SA 4.0, from the SnowSong sound and music pack).
 
 Licences used: CC0 1.0, CC BY 3.0, CC BY-SA 3.0, CC BY-SA 4.0, MIT and WTFPL. The exact author and licence of every file is listed in the original Mineclonia notices copied to `assets/licenses/`:
 
 - `mcl_sounds-README.txt` (block, footstep and player sounds)
 - `mobs_mc-LICENSE-media.md` (mob sounds and textures)
+- `mcl_enchanting-sounds-attributions.txt` (enchanting table sounds)
 - `mcl_tnt-README.md`, `mcl_hunger-README.md`, `mcl_bows-README.md`, `mcl_doors-README.md`, `mcl_weather-README.md`, `mcl_lightning-README.md`, `mcl_fire-README.md`, `mcl_throwing-README.md`, `mcl_fishing-README.md`
 - `mineclonia-LEGAL.md` and `mineclonia-CREDITS.md` (general Mineclonia media licence: files without their own notice are CC BY-SA 3.0)
 

@@ -1,0 +1,8 @@
+{ "bpm": 120, "tail": 0.5, "scenes": [
+  { "id": "s1", "slot": 8,  "title": "Cold open: every website comes with jobs", "transition": "fade" },
+  { "id": "s2", "slot": 8,  "title": "Chaos: pop-ups, errors, whose job is that?", "transition": "fadeblack" },
+  { "id": "s3", "slot": 10, "title": "The reveal: dawn, LR mark, Your website handled", "transition": "fade" },
+  { "id": "s4", "slot": 8,  "title": "Worlds: fly-through of real sites, then the care dashboard", "transition": "fade" },
+  { "id": "s5", "slot": 8,  "title": "Price and people: £29 / £299 / Luke & Ralph", "transition": "fade" },
+  { "id": "s6", "slot": 8,  "title": "Title card: LRWeb, Websites handled, lrweb.uk", "last": true }
+]}

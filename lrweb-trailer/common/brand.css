@@ -1,0 +1,17 @@
+@import url(../assets/css/fonts.css);
+:root{
+  --night:#070824;--night-2:#0B0D30;--night-3:#10124A;--navy:#12018D;
+  --indigo:#3F4DE6;--indigo-soft:#8B95F7;--blue:#0B86EA;
+  --green:#3DB88D;--green-bright:#6FE0B4;--base:#F5F8FA;--ink:#16203A;--muted-d:#A7AEC8;
+  --grad:linear-gradient(90deg,#3DB88D 0%,#0B86EA 55%,#3F4DE6 100%);
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Instrument Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--night);color:var(--base);font-family:var(--body)}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;background:var(--night)}
+canvas.full{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.abs{position:absolute}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* cinematic letterbox + vignette + grain are added by the master compositor, do NOT add them in scenes */

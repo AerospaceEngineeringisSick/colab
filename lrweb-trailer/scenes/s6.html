@@ -1,0 +1,58 @@
+<!doctype html><html><head><meta charset="utf-8"><title>s6 title card</title>
+<link rel="stylesheet" href="../common/brand.css">
+<style>
+#sky{position:absolute;inset:0}
+#mark{position:absolute;left:760px;top:250px;width:400px;height:300px;overflow:visible}
+#word{position:absolute;left:0;width:1920px;top:520px;text-align:center;font:800 230px/1 var(--display);letter-spacing:-8px;color:var(--base);white-space:nowrap}
+#word .ch{will-change:transform}
+#tag{position:absolute;left:0;width:1920px;top:770px;text-align:center;font:600 60px var(--display);letter-spacing:-1px}
+#url{position:absolute;left:0;width:1920px;top:870px;text-align:center;font:500 30px var(--mono);letter-spacing:8px;color:#cfd5f5}
+#flare{position:absolute;left:0;top:0;width:1920px;height:1080px}
+</style></head><body><div id="stage">
+<canvas id="sky" width="1920" height="1080"></canvas>
+<svg id="mark" viewBox="0 0 400 300">
+  <defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#3DB88D"/><stop offset=".55" stop-color="#0B86EA"/><stop offset="1" stop-color="#3F4DE6"/></linearGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter></defs>
+  <path id="sunGlow" d="M70 240a130 130 0 0 1 260 0Z" fill="url(#g)" filter="url(#glow)" opacity=".7"/>
+  <path id="sun" d="M70 240a130 130 0 0 1 260 0Z" fill="url(#g)"/>
+  <rect id="hor" x="40" y="240" width="320" height="16" rx="8" fill="#F5F8FA"/>
+</svg>
+<div id="word">LRWeb</div><div id="tag">Websites, <span style="color:var(--green-bright)">handled.</span></div><div id="url">LRWEB.UK</div>
+<canvas id="flare" width="1920" height="1080"></canvas>
+</div>
+<script src="../common/kit.js"></script>
+<script>
+window.DURATION = 8.5;
+let chars;
+const sky=K.$('#sky').getContext('2d'), fl=K.$('#flare').getContext('2d');
+K.ready(()=>{ chars=K.splitChars(K.$('#word')); });
+window.render=function(t){
+  // sky
+  sky.globalCompositeOperation='source-over';
+  const bg=sky.createLinearGradient(0,0,0,1080); bg.addColorStop(0,'#05061a'); bg.addColorStop(.7,'#0B0D30'); bg.addColorStop(1,'#12018D');
+  sky.fillStyle=bg; sky.fillRect(0,0,1920,1080);
+  const rise=K.ease.out(K.prog(t,0.2,3.2));
+  K.stars(sky,t,{n:220,alpha:.9*(1-rise*.4)});
+  K.aurora(sky,t,{intensity:.5+rise*.9,y0:.5});
+  // dawn glow behind the mark
+  const gx=960, gy=520, gr=200+rise*900;
+  const g=sky.createRadialGradient(gx,gy,0,gx,gy,gr); g.addColorStop(0,`rgba(111,224,180,${.45*rise})`); g.addColorStop(.35,`rgba(11,134,234,${.25*rise})`); g.addColorStop(1,'rgba(7,8,36,0)');
+  sky.globalCompositeOperation='lighter'; sky.fillStyle=g; sky.fillRect(0,0,1920,1080);
+  // mark: sun rises, horizon line draws
+  const sunP=K.ease.out5(K.prog(t,0.5,2.4));
+  const mark=K.$('#mark'); K.$('#sun').style.transform=`translateY(${(1-sunP)*140}px)`; K.$('#sun').style.opacity=K.prog(t,.4,1.2);
+  K.$('#sunGlow').style.transform=`translateY(${(1-sunP)*140}px)`; K.$('#sunGlow').style.opacity=.7*sunP;
+  const hp=K.ease.expo(K.prog(t,0.3,1.4)); const hor=K.$('#hor'); hor.setAttribute('x',200-160*hp); hor.setAttribute('width',320*hp);
+  mark.style.transform=`translateY(${K.lerp(40,0,K.ease.out(K.prog(t,2.2,4)))}px) scale(${1+.04*Math.sin(t*.8)})`;
+  // wordmark: letters rise with stagger and settle (cinematic soft landing)
+  chars.forEach((c,i)=>{ const p=K.ease.out5(K.prog(t,2.6+i*.12,3.9+i*.12)); K.set(c,{y:(1-p)*60,o:p,blur:(1-p)*18}); });
+  const tp=K.ease.out5(K.prog(t,3.9,5.1)); K.set(K.$('#tag'),{y:(1-tp)*30,o:tp,blur:(1-tp)*10});
+  const up=K.prog(t,5.0,6.0); K.set(K.$('#url'),{o:up}); K.$('#url').style.letterSpacing=(14-6*K.ease.out(up))+'px';
+  // lens flare streak when the wordmark lands
+  fl.clearRect(0,0,1920,1080); fl.globalCompositeOperation='lighter';
+  const fp=K.prog(t,2.6,4.2), fa=Math.sin(Math.PI*fp)*.9;
+  if(fa>0){ const gr2=fl.createLinearGradient(0,0,1920,0); gr2.addColorStop(0,'rgba(11,134,234,0)'); gr2.addColorStop(.5,`rgba(180,230,255,${fa})`); gr2.addColorStop(1,'rgba(11,134,234,0)');
+    fl.fillStyle=gr2; fl.fillRect(0,640-3-fa*3,1920,6+fa*6); fl.fillStyle=`rgba(255,255,255,${fa*.5})`; fl.fillRect(960-300*fa,637,600*fa,2); }
+  // fade to black on the last 1s handled by the compositor
+};
+</script></body></html>

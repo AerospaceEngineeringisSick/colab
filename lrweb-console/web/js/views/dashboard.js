@@ -51,11 +51,11 @@ function kpiRow({ kpis, revenue, servers }) {
   return h('div', { class: 'grid grid--4 dash-kpis' },
     Stat({
       label: 'Monthly recurring revenue', value: money(kpis.mrrCents, cur), icon: 'card', accent: 'accent',
-      spark: revenue.map((r) => r.cents), ...change, hint: change.delta ? 'vs last month' : undefined,
+      spark: revenue.map((r) => r.cents), ...change,
     }),
     Stat({ label: 'Clients', value: num(kpis.clients.total), hint: `${num(kpis.clients.active)} active`, icon: 'users', accent: 'accent-3' }),
     Stat({
-      label: 'Servers', value: num(kpis.servers.total), hint: `${num(kpis.servers.online)}/${num(kpis.servers.total)} online`,
+      label: 'Servers', value: num(kpis.servers.total), hint: troubled ? `${num(kpis.servers.online)} online · needs attention` : 'All online',
       icon: 'server', accent: troubled ? 'warn' : 'ok',
     }),
     Stat({ label: 'Sites', value: num(kpis.sites.total), hint: `${num(kpis.sites.sslActive)} secured`, icon: 'globe', accent: 'accent-2' }));
@@ -70,8 +70,9 @@ function revenueCard({ kpis, revenue }) {
     series: [{ name: 'Revenue', values: revenue.map((r) => r.cents / 100) }],
     labels: revenue.map((r) => r.month),
     labelFormat: monthShort,
-    // Compact so axis ticks fit the 360px layout; the tooltip shares this formatter.
+    // Compact axis ticks fit the 360px layout; the tooltip shows the exact amount.
     format: (v) => money(v * 100, cur, { compact: true }),
+    tipFormat: (v) => money(Math.round(v * 100), cur),
   }));
 }
 

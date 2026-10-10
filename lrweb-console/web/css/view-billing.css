@@ -1,0 +1,11 @@
+/* Billing view: only the rules the shared components do not cover. Colours come from tokens. */
+.billing-trunc { display: block; max-width: 28ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.billing-nw { white-space: nowrap; }
+.billing-late { color: var(--bad); font-weight: 650; }
+.billing-count { margin-left: 2px; opacity: .7; font-weight: 650; }
+.billing-search { width: min(260px, 100%); }
+.billing-acts { justify-content: flex-end; flex-wrap: nowrap; gap: var(--s1); }
+.billing-act { width: 36px; padding: 0; }
+.billing-plan__name { gap: var(--s2); }
+.billing-plan--popular { margin: 4px 0; padding: 12px 14px; border-top-color: transparent; border-radius: var(--r-md); background: color-mix(in oklab, var(--accent) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 30%, transparent); }
+.billing-foot { font-size: var(--fs-sm); }

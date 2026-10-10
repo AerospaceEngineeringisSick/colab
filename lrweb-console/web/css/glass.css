@@ -16,10 +16,10 @@ body {
   position: absolute; width: 62vmax; height: 62vmax; border-radius: 50%; opacity: var(--blob-op);
   background: radial-gradient(circle at 50% 50%, var(--c) 0%, transparent 62%); will-change: transform;
 }
-.aurora i:nth-child(1) { --c: var(--blob-1); left: -18vmax; top: -22vmax; animation: drift-a 46s ease-in-out infinite alternate; }
-.aurora i:nth-child(2) { --c: var(--blob-2); right: -22vmax; top: 8vmax; animation: drift-b 58s ease-in-out infinite alternate; }
-.aurora i:nth-child(3) { --c: var(--blob-3); left: 8vmax; bottom: -34vmax; width: 70vmax; height: 70vmax; opacity: calc(var(--blob-op) * .7); animation: drift-c 64s ease-in-out infinite alternate; }
-.aurora i:nth-child(4) { --c: var(--blob-4); right: 6vmax; bottom: -30vmax; width: 44vmax; height: 44vmax; opacity: calc(var(--blob-op) * .55); animation: drift-a 72s ease-in-out infinite alternate-reverse; }
+.aurora i:nth-child(1) { --c: var(--blob-1); left: -12vmax; top: -20vmax; width: 72vmax; height: 72vmax; animation: drift-a 46s ease-in-out infinite alternate; }
+.aurora i:nth-child(2) { --c: var(--blob-2); right: -16vmax; top: 2vmax; width: 68vmax; height: 68vmax; animation: drift-b 58s ease-in-out infinite alternate; }
+.aurora i:nth-child(3) { --c: var(--blob-3); left: 22vmax; bottom: -34vmax; width: 78vmax; height: 78vmax; opacity: calc(var(--blob-op) * .75); animation: drift-c 64s ease-in-out infinite alternate; }
+.aurora i:nth-child(4) { --c: var(--blob-4); right: 12vmax; bottom: -22vmax; width: 54vmax; height: 54vmax; opacity: calc(var(--blob-op) * .6); animation: drift-a 72s ease-in-out infinite alternate-reverse; }
 .aurora::after { /* film grain keeps big gradients from banding */
   content: ""; position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

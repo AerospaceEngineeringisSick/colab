@@ -26,16 +26,17 @@ function smooth(pts, yMin, yMax) {
 
 /**
  * AreaChart({ series: [{ name, values: number[], color?: 'var(--accent)' }], labels?: string[],
- *             height?: 220, format?: (n)=>string, yMax?: number, ticks?: 4, labelFormat?: (label)=>string })
+ *             height?: 220, format?: axis tick formatter, tipFormat?: tooltip formatter (defaults to format),
+ *             yMax?: number, ticks?: 4, labelFormat?: (label)=>string })
  * Returns an element; hover shows a crosshair + tooltip with every series' value.
  */
-export function AreaChart({ series, labels = [], height = 220, format = String, yMax, ticks = 4, labelFormat = String } = {}) {
+export function AreaChart({ series, labels = [], height = 220, format = String, tipFormat = format, yMax, ticks = 4, labelFormat = String } = {}) {
   const palette = ['var(--accent)', 'var(--accent-3)', 'var(--accent-2)', 'var(--warn)'];
   const id = uid('ac');
   const tip = h('div', { class: 'chart__tip glass glass--thin', hidden: true });
   const wrap = h('div', { class: 'chart', style: { height: `${height}px` } });
-  const pad = { t: 10, r: 10, b: 24, l: 44 };
-  let geo = null;
+  const base = { t: 10, r: 10, b: 24, l: 44 };
+  let pad = base;
 
   function draw() {
     const W = wrap.clientWidth;
@@ -44,11 +45,13 @@ export function AreaChart({ series, labels = [], height = 220, format = String, 
     const n = Math.max(...series.map((s) => s.values.length));
     if (n < 2) { wrap.replaceChildren(h('p', { class: 'muted chart__empty' }, 'Not enough data yet')); return; }
     const max = yMax ?? niceMax(Math.max(...series.flatMap((s) => s.values)) * 1.08);
+    // Left gutter grows with the widest axis label ("50.0 Mbps" needs more room than "75%").
+    const widest = Math.max(...Array.from({ length: ticks + 1 }, (_, t) => format((max / ticks) * t).length));
+    pad = { ...base, l: Math.max(base.l, Math.round(widest * 6.4 + 14)) };
     const iw = W - pad.l - pad.r;
     const ih = H - pad.t - pad.b;
     const x = (i) => pad.l + (i / (n - 1)) * iw;
     const y = (v) => pad.t + (1 - Math.min(v, max) / max) * ih;
-    geo = { n, x, y, W, H };
 
     const root = svg('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: 'img', 'aria-label': series.map((s) => s.name).join(', ') });
     const defs = svg('defs');
@@ -66,10 +69,11 @@ export function AreaChart({ series, labels = [], height = 220, format = String, 
         svg('text', { class: 'chart__axis', x: pad.l - 8, y: yy + 4, 'text-anchor': 'end' }, format(v)));
     }
     if (labels.length) {
-      const count = Math.min(6, labels.length);
-      for (let k = 0; k < count; k++) {
-        const i = Math.round((k / (count - 1)) * (labels.length - 1));
-        root.append(svg('text', { class: 'chart__axis', x: x(i), y: H - 6, 'text-anchor': k === 0 ? 'start' : k === count - 1 ? 'end' : 'middle' }, labelFormat(labels[i])));
+      // Evenly spaced labels (every `step`), never crowding: ~6 across the width.
+      const step = Math.max(1, Math.ceil(labels.length / Math.max(2, Math.min(6, Math.floor(W / 90)))));
+      for (let i = 0; i < labels.length; i += step) {
+        const xi = Math.min(x(i), W - pad.r);
+        root.append(svg('text', { class: 'chart__axis', x: xi, y: H - 6, 'text-anchor': i === 0 ? 'start' : 'middle' }, labelFormat(labels[i])));
       }
     }
     series.forEach((s, i) => {
@@ -92,7 +96,7 @@ export function AreaChart({ series, labels = [], height = 220, format = String, 
       series.forEach((s, k) => { if (s.values[i] == null) return; dots[k].setAttribute('cx', x(i)); dots[k].setAttribute('cy', y(s.values[i])); dots[k].style.display = ''; });
       tip.replaceChildren(
         h('b', {}, labels[i] != null ? labelFormat(labels[i]) : `#${i + 1}`),
-        ...series.map((s, k) => h('div', { class: 'chart__tip-row' }, h('i', { style: { background: s.color || palette[k % palette.length] } }), h('span', {}, s.name), h('strong', { class: 'num' }, s.values[i] != null ? format(s.values[i]) : '–'))));
+        ...series.map((s, k) => h('div', { class: 'chart__tip-row' }, h('i', { style: { background: s.color || palette[k % palette.length] } }), h('span', {}, s.name), h('strong', { class: 'num' }, s.values[i] != null ? tipFormat(s.values[i]) : '–'))));
       tip.hidden = false;
       const tw = tip.offsetWidth;
       tip.style.transform = `translate(${Math.min(W - tw - 4, Math.max(4, x(i) + 14))}px, ${pad.t + 4}px)`;

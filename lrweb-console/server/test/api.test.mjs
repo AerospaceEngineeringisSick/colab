@@ -19,7 +19,8 @@ async function boot(env = {}) {
   const server = http.createServer(createApp(services));
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   const base = `http://127.0.0.1:${server.address().port}`;
-  const call = async (method, path, { body, token, headers = {} } = {}) => {
+  const call = async (method, path, { body = method === 'POST' ? {} : undefined, token, headers = {} } = {}) => {
+    // Like the browser client, POSTs always carry a JSON body.
     const res = await fetch(base + path, {
       method,
       headers: { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...(token ? { Authorization: `Bearer ${token}` } : {}), ...headers },

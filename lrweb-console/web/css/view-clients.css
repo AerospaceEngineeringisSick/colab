@@ -1,0 +1,38 @@
+/* Clients view: only the layout the shared components cannot express. */
+
+/* ---------- list toolbar ---------- */
+.clients-toolbar { padding: var(--s4); }
+.clients-search { position: relative; flex: 1 1 260px; min-width: 0; }
+.clients-search > .icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--ink-3); pointer-events: none; }
+.clients-search .input { padding-left: 44px; }
+.clients-filter { max-width: 100%; }
+.clients-filter small { font-size: .92em; font-weight: 600; opacity: .62; font-variant-numeric: tabular-nums; }
+.client-cell, .site-cell { display: grid; gap: 2px; min-width: 0; }
+.client-cell strong, .client-cell small, .site-cell small { overflow-wrap: anywhere; }
+.client-due { color: var(--bad); font-weight: 650; }
+
+/* ---------- detail ---------- */
+.client-back { display: inline-flex; align-items: center; gap: 2px; width: max-content; height: 36px; padding: 0 12px 0 6px; border-radius: var(--r-pill); color: var(--ink-2); font-size: var(--fs-sm); font-weight: 600; transition: color .2s, background .2s; }
+.client-back:hover { color: var(--ink); background: var(--field); }
+.client-hero { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s5); }
+.client-hero__who { display: flex; align-items: center; gap: var(--s4); flex: 1 1 300px; min-width: 0; }
+.client-hero__text { display: grid; gap: 6px; min-width: 0; }
+.client-hero h1 { font-size: clamp(1.45rem, 1.1rem + 1.4vw, 2.1rem); line-height: 1.1; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.client-hero__meta { gap: var(--s2); }
+.client-hero__actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.client-chip { min-width: 0; max-width: 100%; }
+.client-chip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+a.client-chip:hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--accent); }
+.client-row-actions { flex-wrap: nowrap; justify-content: flex-end; gap: var(--s2); }
+.site-domain { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; overflow-wrap: anywhere; }
+
+/* ---------- phones ---------- */
+@media (max-width: 640px) {
+  /* status filter scrolls sideways instead of wrapping into two rows */
+  .clients-filter { display: flex; width: 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .clients-filter::-webkit-scrollbar { display: none; }
+  .clients-filter > * { flex: none; }
+  /* the first column leads each stacked row, without a label */
+  .table td.client-main { display: block; text-align: left; }
+  .table td.client-main::before { display: none; }
+}

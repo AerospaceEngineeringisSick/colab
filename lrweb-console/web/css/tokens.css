@@ -37,7 +37,7 @@
   --code-bg: rgb(0 0 0 / .32);
 
   --blob-1: #4f63ff; --blob-2: #a23dff; --blob-3: #00cdbd; --blob-4: #ff4f86;
-  --blob-op: .62;
+  --blob-op: .8;
 }
 
 [data-theme="light"] {

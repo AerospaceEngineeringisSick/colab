@@ -1,0 +1,69 @@
+/* Client onboarding wizard. Cards, fields, buttons, stepper, kv and callouts come from components.css. */
+.onboard { align-items: start; }
+.onboard__main, .onboard__summary { min-width: 0; }
+.onboard__main h2:focus { outline: none; }
+@media (min-width: 1101px) { .onboard__summary { position: sticky; top: 96px; } }
+
+.onboard__foot { padding-top: var(--s4); border-top: 1px solid var(--line); }
+.onboard__foot > .btn:last-child { margin-left: auto; }
+
+/* plan tiles: a visually hidden radio inside a label, so keyboard and screen readers get a real radio group */
+.plan-grid { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.plan {
+  position: relative; display: flex; flex-direction: column; gap: var(--s3);
+  padding: var(--s4); border-radius: var(--r-md); cursor: pointer;
+  transition: box-shadow .3s var(--ease), transform .3s var(--ease);
+}
+.plan:active { transform: scale(.985); }
+.plan:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.plan.is-selected {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 24%, transparent), color-mix(in oklab, var(--accent-2) 12%, transparent) 62%, transparent),
+    linear-gradient(135deg, var(--g-fill-a), var(--g-fill-b));
+  box-shadow: inset 0 1px 0 var(--g-spec), inset 0 0 0 2px var(--accent), 0 0 0 4px color-mix(in oklab, var(--accent) 20%, transparent), var(--g-shadow);
+}
+.plan__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); min-height: 24px; padding-right: 30px; }
+.plan__name { font-size: var(--fs-lg); font-weight: 650; letter-spacing: -.01em; }
+.plan__mark {
+  position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  color: var(--accent-ink); background: var(--field); box-shadow: inset 0 0 0 1.5px var(--g-stroke); transition: background .25s, box-shadow .25s;
+}
+.plan__mark .icon { opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s var(--spring); }
+.plan.is-selected .plan__mark { background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: none; }
+.plan.is-selected .plan__mark .icon { opacity: 1; transform: none; }
+.plan__price { display: block; font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; }
+.plan__price small { font-size: var(--fs-sm); font-weight: 600; letter-spacing: 0; margin-left: 2px; }
+.plan__features { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-sm); color: var(--ink-2); }
+.plan__feature { display: flex; align-items: flex-start; gap: 8px; }
+.plan__feature .icon { flex: none; margin-top: 3px; color: var(--ok); }
+.plan__limits { display: block; margin-top: auto; font-size: var(--fs-xs); }
+
+/* success state */
+.ob-done { align-items: center; text-align: center; padding-top: var(--s3); }
+.ob-done__icon {
+  display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; color: var(--ok);
+  background: radial-gradient(circle at 50% 30%, color-mix(in oklab, var(--ok) 34%, transparent), color-mix(in oklab, var(--ok) 10%, transparent));
+  box-shadow: inset 0 1px 0 var(--g-spec), inset 0 0 0 1px color-mix(in oklab, var(--ok) 42%, transparent), 0 16px 40px -14px color-mix(in oklab, var(--ok) 80%, transparent);
+  animation: ob-pop .6s var(--spring) both;
+}
+@keyframes ob-pop { from { opacity: 0; transform: scale(.5); } }
+.ob-done h2 { font-size: var(--fs-2xl); letter-spacing: -.02em; }
+.ob-done p { margin-top: 6px; }
+.ob-done__actions { justify-content: center; }
+.ob-secrets { width: 100%; text-align: left; }
+
+/* live summary */
+.ob-sum__who { display: flex; align-items: center; gap: var(--s3); min-width: 0; }
+.ob-sum__who strong { display: block; font-weight: 650; overflow-wrap: anywhere; }
+.ob-sum__who small { display: block; overflow-wrap: anywhere; }
+.ob-sum__label { margin-top: var(--s2); font-size: var(--fs-xs); font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); }
+.ob-ticks { display: flex; flex-direction: column; gap: 10px; font-size: var(--fs-sm); color: var(--ink-2); }
+.ob-tick { display: flex; align-items: flex-start; gap: 10px; }
+.ob-tick__mark {
+  display: grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 50%; color: var(--ok);
+  background: color-mix(in oklab, var(--ok) 16%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ok) 32%, transparent);
+}
+
+/* review step */
+.ob-block { display: grid; gap: var(--s3); padding: var(--s4); border-radius: var(--r-md); }
+.ob-block__title { font-size: var(--fs-xs); font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); }

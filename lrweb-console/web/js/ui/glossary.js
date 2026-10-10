@@ -30,6 +30,11 @@ export const GLOSSARY = {
   'one-time password': 'A temporary password shown once. The person must choose their own the first time they sign in.',
   mrr: 'Monthly recurring revenue: what the care plans bring in each month.',
   'care plan': 'LRWeb\'s monthly plan: hosting, updates, backups, security and real people to help.',
+  ssh: 'A secure way for one computer to log in to another. LRWeb uses it to run commands on your servers.',
+  "let's encrypt": 'A free service that issues the padlock certificates (SSL) for websites and renews them automatically.',
+  'reverse proxy': 'A front door that passes visitors on to another server or app sitting behind it.',
+  'environment variable': 'A setting handed to the program when it starts. It is how secrets such as passwords are supplied without being saved in files.',
+  'admin token': 'One long secret code that works like a master password for the whole console. Your own sign-in is safer, because it is personal and can be switched off.',
   simulated: 'This screen is showing practice data. Nothing is being changed on any real server.',
 };
 

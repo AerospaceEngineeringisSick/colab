@@ -454,7 +454,7 @@ export default async function mount(root, ctx) {
     const summary = h('dl', { class: 'kv' }, rows.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]));
     const actions = h('div', { class: 'row', style: { justifyContent: 'center' } },
       Button({ variant: 'primary', iconRight: 'arrow-right', onclick: () => ctx.navigate(`/servers/${encodeURIComponent(server.id)}`) }, 'View server'),
-      Button({ variant: 'glass', icon: 'globe', onclick: () => ctx.navigate(`/sites?serverId=${encodeURIComponent(server.id)}`) }, 'Set up a site'),
+      Button({ variant: 'glass', icon: 'globe', onclick: () => ctx.navigate(`/sites?serverId=${encodeURIComponent(server.id)}&new=1`) }, 'Set up a site'),
       Button({ variant: 'ghost', icon: 'plus', onclick: () => ctx.navigate('/servers/new') }, 'Add another server'));
     const column = h('div', { class: 'stack', style: { width: '100%', maxWidth: '540px', margin: '0 auto' } }, summary, actions);
     return Card({}, hero, column);

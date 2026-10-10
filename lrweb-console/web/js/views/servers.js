@@ -252,7 +252,7 @@ function detailBody(s, m, { ctx, onChanged }) {
       columns: SITE_COLUMNS, rows: sites,
       empty: Empty({
         icon: 'globe', title: 'No sites on this server', message: 'Set up a site here and it will appear in this list.',
-        action: Button({ variant: 'primary', icon: 'plus', onclick: () => ctx.navigate(`/sites?serverId=${enc(s.id)}`) }, 'Set up a site'),
+        action: Button({ variant: 'primary', icon: 'plus', onclick: () => ctx.navigate(`/sites?serverId=${enc(s.id)}&new=1`) }, 'Set up a site'),
       }),
     }));
 

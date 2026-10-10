@@ -79,6 +79,9 @@ async function fill(el, load, render) {
 }
 
 function failure(e, retry) {
+  if (e?.code === 'password_change_required') {
+    return Empty({ icon: 'lock', title: 'Choose your own password first', message: 'The team list appears here once your password is set.' });
+  }
   if (e?.status === 401) {
     return Empty({ icon: 'lock', title: 'You need to sign in again', message: 'Your session has ended. Sign in again to carry on.' });
   }
@@ -99,6 +102,8 @@ function bindField(el, input) {
     if (msg) input.setAttribute('aria-describedby', `${input.id}-err`);
     else input.removeAttribute('aria-describedby');
   };
+  // Typing clears the old complaint, so a corrected field stops looking wrong.
+  input.addEventListener('input', () => { if (el.classList.contains('has-error')) el.setError(''); });
   return { el, input };
 }
 
@@ -152,6 +157,15 @@ function showError(err, fields, note, title = 'Not saved') {
   if (field) field.setError(err.message);
   else note?.show(err?.message || 'Something went wrong. Try again.');
   toast({ title, message: err?.message || '', kind: 'bad' });
+}
+
+// Says which part of the username rule is broken. The field hint already states the full rule.
+function usernameProblem(u) {
+  if (!u) return 'Enter a username.';
+  if (u.length < 3) return 'Use at least 3 characters.';
+  if (u.length > 32) return 'Use 32 characters or fewer.';
+  if (!USERNAME_RE.test(u)) return 'Start with a letter, then use lower-case letters, numbers, dots or dashes.';
+  return '';
 }
 
 const newProblem = (pw) => {
@@ -233,7 +247,7 @@ function setupPage(ctx) {
     };
     if (!check([
       { el: name.el, input: name.input, msg: data.name ? '' : 'Enter your name.' },
-      { el: username.el, input: username.input, msg: USERNAME_RE.test(data.username) ? '' : USERNAME_HINT },
+      { el: username.el, input: username.input, msg: usernameProblem(data.username) },
       { el: password.el, input: password.input, msg: newProblem(data.password) },
       { el: confirm.el, input: confirm.input, msg: confirm.input.value === data.password ? '' : 'The two passwords do not match.' },
     ])) return;
@@ -319,8 +333,6 @@ function accountsPage({ me: first }, ctx) {
   const manager = canManage(me.role);
   let people = [];
   const fetchTeam = () => api.get('/api/team', { signal: ctx.signal }).then((list) => { people = list; return list; });
-  const firstTeam = fetchTeam();
-  firstTeam.catch(() => {}); // each card reports its own failure
   const readAudit = () => api.get('/api/audit', { signal: ctx.signal });
 
   const peopleBody = h('div');
@@ -388,6 +400,17 @@ function accountsPage({ me: first }, ctx) {
     }
   }
   const loadAudit = () => fill(auditBody, readAudit, auditTable);
+
+  // The server refuses the team list and the log until a temporary password has been replaced, so load them after that.
+  function loadData() {
+    const teamP = fetchTeam();
+    teamP.catch(() => {}); // each card reports its own failure
+    fill(peopleBody, () => teamP, () => teamTable());
+    if (manager) fill(auditBody, async () => { await teamP.catch(() => {}); return readAudit(); }, auditTable);
+  }
+  const waitingForPassword = () => Empty({
+    icon: 'lock', title: 'Choose your own password first', message: 'The team list appears here once your password is set.',
+  });
 
   async function signOut(btn) {
     setLoading(btn, true);
@@ -496,7 +519,7 @@ function accountsPage({ me: first }, ctx) {
       };
       if (!check([
         { el: name.el, input: name.input, msg: data.name ? '' : 'Enter their name.' },
-        { el: username.el, input: username.input, msg: USERNAME_RE.test(data.username) ? '' : USERNAME_HINT },
+        { el: username.el, input: username.input, msg: usernameProblem(data.username) },
       ])) return;
 
       setLoading(submit, true);
@@ -540,6 +563,7 @@ function accountsPage({ me: first }, ctx) {
             me = { ...me, mustChangePassword: false };
             state.set('me', me);
             showPasswordForm();
+            loadData();
           },
         })));
     return banner;
@@ -580,7 +604,11 @@ function accountsPage({ me: first }, ctx) {
     nodes.push(activityCard);
   }
 
-  fill(peopleBody, () => firstTeam, () => teamTable());
-  if (manager) fill(auditBody, async () => { await firstTeam.catch(() => {}); return readAudit(); }, auditTable);
+  if (me.mustChangePassword) {
+    peopleBody.replaceChildren(waitingForPassword());
+    auditBody.replaceChildren(waitingForPassword());
+  } else {
+    loadData();
+  }
   return nodes;
 }

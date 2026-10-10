@@ -26,7 +26,10 @@ const HEADINGS = [
 const LABELS = { name: 'Full name', email: 'Email', company: 'Company', phone: 'Phone' };
 const CLIENT_KEYS = Object.keys(LABELS);
 const SITE_TYPES = { php: 'PHP', nodejs: 'Node.js', static: 'Static', python: 'Python', 'reverse-proxy': 'Reverse proxy' };
-const SECRET_LABELS = { siteUserPassword: 'Website login password', dbPassword: 'Database password' };
+const SECRET_LABELS = {
+  siteUser: 'Website login', siteUserPassword: 'Website login password',
+  dbName: 'Database name', dbUser: 'Database login', dbPassword: 'Database password',
+};
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/;
 
 // SiteForm offers online and degraded servers, so both count as usable here.

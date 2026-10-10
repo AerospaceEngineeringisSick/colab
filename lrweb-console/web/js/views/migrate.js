@@ -190,8 +190,13 @@ export default async function mount(root, ctx) {
 
   /* ---------- steps ---------- */
 
-  const currentSite = () => sites.find((s) => s.id === choice.siteId) || null;
-  const serverName = (id, fallback) => serverById.get(id)?.name || fallback || 'Unknown server';
+  function currentSite() {
+    return sites.find((s) => s.id === choice.siteId) || null;
+  }
+
+  function serverName(id, fallback) {
+    return serverById.get(id)?.name || fallback || 'Unknown server';
+  }
 
   function show(n) {
     leave();

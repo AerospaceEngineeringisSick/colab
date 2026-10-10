@@ -8,7 +8,7 @@ import { openPalette } from './ui/palette.js';
 
 const routes = [
   { path: '/', title: 'Dashboard', nav: 'dashboard', load: () => import('./views/dashboard.js') },
-  { path: '/onboard', title: 'Onboard client', nav: 'onboard', load: () => import('./views/onboard-client.js') },
+  { path: '/onboard', title: 'Add a new client', nav: 'onboard', load: () => import('./views/onboard-client.js') },
   { path: '/clients', title: 'Clients', nav: 'clients', load: () => import('./views/clients.js') },
   { path: '/clients/:id', title: 'Client', nav: 'clients', load: () => import('./views/clients.js') },
   { path: '/servers/new', title: 'Add server', nav: 'servers', load: () => import('./views/server-onboard.js') },
@@ -28,7 +28,7 @@ const routes = [
 const NAV_GROUPS = [
   { label: 'Run the business', items: [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', path: '/', dock: true },
-    { id: 'onboard', label: 'Onboard client', icon: 'rocket', path: '/onboard' },
+    { id: 'onboard', label: 'New client', icon: 'rocket', path: '/onboard' },
     { id: 'clients', label: 'Clients', icon: 'users', path: '/clients', dock: true },
     { id: 'sites', label: 'Sites', icon: 'globe', path: '/sites' },
     { id: 'billing', label: 'Billing', icon: 'card', path: '/billing' },
@@ -132,7 +132,7 @@ const router = createRouter({
 
 const commands = [
   ...NAV.map((n) => ({ id: `go-${n.id}`, label: `Go to ${n.label}`, icon: n.icon, run: () => router.navigate(n.path) })),
-  { id: 'new-client', label: 'Onboard a new client', hint: 'Wizard', icon: 'rocket', keywords: 'add create customer', run: () => router.navigate('/onboard') },
+  { id: 'new-client', label: 'Add a new client', hint: 'Wizard', icon: 'rocket', keywords: 'add create customer', run: () => router.navigate('/onboard') },
   { id: 'new-server', label: 'Add a Linux server', hint: 'Wizard', icon: 'server', keywords: 'onboard cloudpanel vps install', run: () => router.navigate('/servers/new') },
   { id: 'move-site', label: 'Move a website to another server', hint: 'Wizard', icon: 'swap', keywords: 'migrate migration transfer', run: () => router.navigate('/migrate') },
   { id: 'switch-traffic', label: 'Switch visitors to another server', icon: 'activity', keywords: 'failover load balance traffic', run: () => router.navigate('/traffic') },

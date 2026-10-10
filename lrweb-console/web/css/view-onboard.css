@@ -38,7 +38,7 @@
 .plan__feature .icon { flex: none; margin-top: 3px; color: var(--ok); }
 
 /* plan features in the review step: a plain bulleted list inside the definition list */
-.ob-feat { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+.ob-feat { margin: 0; padding-left: 1.1em; list-style: disc; display: grid; gap: 4px; }
 
 /* success state */
 .ob-done { align-items: center; text-align: center; padding-top: var(--s3); }

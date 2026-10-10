@@ -198,7 +198,7 @@ function clientDetail({ client, plans, id, ctx }) {
   let balance = client.balanceCents ?? dueTotal(invoices);
   document.title = `${client.name} · LRWeb Console`;
 
-  const provision = () => ctx.navigate(`/sites?clientId=${encodeURIComponent(id)}`);
+  const provision = () => ctx.navigate(`/sites?clientId=${encodeURIComponent(id)}&new=1`);
 
   const balanceStat = (cents) => {
     const due = invoices.filter(isDue).length;

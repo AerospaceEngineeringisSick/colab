@@ -1,8 +1,11 @@
 /* Liquid glass: translucent fill + backdrop blur/saturation + specular rim + pointer-following sheen. */
 
+/* "html body" and isolation keep the backdrop ours even when a host page wraps this file and
+   paints its own body white: the aurora (z-index -1) then sits above our body colour, not behind theirs. */
 html { background: var(--bg-0); }
-body {
-  margin: 0; min-height: 100dvh; color: var(--ink); font: 400 var(--fs-md)/1.55 var(--font);
+html body {
+  margin: 0; padding: 0; min-height: 100dvh; background: var(--bg-0); color: var(--ink); isolation: isolate;
+  font: 400 var(--fs-md)/1.55 var(--font);
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
 }
 

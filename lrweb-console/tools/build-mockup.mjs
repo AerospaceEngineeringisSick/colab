@@ -108,8 +108,10 @@ if (/<\/style/i.test(css)) throw new Error('Inlined CSS would end the <style> el
 
 let html = text('mockup/src/template.html');
 for (const [token, value] of Object.entries(parts)) {
+  // The logos appear twice (sidebar and phone top bar); everything else exactly once.
+  const allowed = token.startsWith('@@LOGO_') ? 2 : 1;
   const count = html.split(token).length - 1;
-  if (count !== 1) throw new Error(`mockup/src/template.html must contain ${token} exactly once (found ${count}).`);
+  if (count !== allowed) throw new Error(`mockup/src/template.html must contain ${token} ${allowed === 1 ? 'exactly once' : `${allowed} times`} (found ${count}).`);
   html = html.split(token).join(value);
 }
 if (/@@[A-Z_]+@@/.test(html)) throw new Error('An unreplaced template token is left in the output.');

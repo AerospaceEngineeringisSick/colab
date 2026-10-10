@@ -13,11 +13,14 @@
 .server-card__meters { display: grid; gap: var(--s3); }
 .server-card__foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s2); margin-top: auto; padding-top: var(--s3); border-top: 1px solid var(--line); font-size: var(--fs-xs); }
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--s2); position: relative; z-index: 1; }
+.setup-hint { font-size: var(--fs-xs); margin: 0; }
 
 /* Detail */
 .back-link { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; font-weight: 600; }
 .server-title { gap: 12px; flex-wrap: wrap; overflow-wrap: anywhere; }
 .gauge-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+/* On phones the workload list gets its own full-width row, so its values do not wrap letter by letter. */
+@media (max-width: 480px) { .gauge-grid .load-card { grid-column: 1 / -1; } }
 .gauge { align-items: center; text-align: center; }
 .gauge .card__title { font-size: var(--fs-md); }
 .gauge__caption { font-size: var(--fs-xs); }

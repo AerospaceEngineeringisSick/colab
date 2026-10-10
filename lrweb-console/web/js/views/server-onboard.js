@@ -6,6 +6,7 @@ import {
   PageHeader, Card, Button, Field, Input, Select, Switch, Stepper, JobProgress, CopyBlock, Skeleton, ErrorState,
 } from '../ui/components.js';
 import { icon } from '../ui/icons.js';
+import { Term } from '../ui/glossary.js';
 
 const DETAILS = 0;
 const PREPARE = 1;
@@ -21,33 +22,53 @@ const DETAIL_KEYS = ['name', 'host', 'sshPort', 'sshUser', 'provider', 'region']
 const HOSTNAME_RE = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 const IPV4_RE = /^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)$/;
 const LINUX_USER_RE = /^[a-z_][a-z0-9_-]{0,31}$/;
-// Notes about root access, keys or risk get the warning styling.
+// Notes about root access, keys or risk get the warning styling. Matched on the server's wording, before it is made plain.
 const SECURITY_NOTE_RE = /secur|protect|verif|sudo|root|key|restrict|bots|warn|placeholder|hash|fresh/i;
+// Server step keys stay the same; only the words shown to people change.
+const STEP_COPY = {
+  ssh: 'Signing in to the server',
+  clpctl: "Checking CloudPanel's tools are installed",
+  panel: 'Checking CloudPanel is responding',
+  os: 'Reading the operating system',
+};
 const CHECK_STEPS = [
-  { key: 'ssh', label: 'SSH login' },
-  { key: 'clpctl', label: 'clpctl available' },
-  { key: 'panel', label: 'CloudPanel answering' },
-  { key: 'os', label: 'Supported OS' },
+  { key: 'ssh', label: STEP_COPY.ssh },
+  { key: 'clpctl', label: STEP_COPY.clpctl },
+  { key: 'panel', label: STEP_COPY.panel },
+  { key: 'os', label: STEP_COPY.os },
 ];
 const FRIENDLY = {
-  ssh: (port) => `Knocking on port ${port}…`,
-  clpctl: () => 'Looking for clpctl on the server…',
-  panel: () => 'Checking that the CloudPanel login answers…',
+  ssh: (port) => `Trying to reach the server on port ${port}…`,
+  clpctl: () => "Looking for CloudPanel's tools on the server…",
+  panel: () => 'Checking that CloudPanel is responding…',
   os: () => 'Reading the operating system…',
 };
 const FIELD_RULES = {
   name: (v) => (!v ? 'Give the server a name, for example web-ams-01' : v.length > 60 ? 'Keep the name under 60 characters' : ''),
-  host: (v) => (!v ? 'Enter a hostname or IP address' : (HOSTNAME_RE.test(v) || IPV4_RE.test(v)) ? '' : 'Use a hostname like web1.example.com or an IPv4 address'),
-  sshPort: (v) => (/^\d+$/.test(v) && Number(v) >= 1 && Number(v) <= 65535 ? '' : 'SSH port must be a number from 1 to 65535'),
-  sshUser: (v) => (LINUX_USER_RE.test(v) ? '' : 'Use a Linux username such as lrweb'),
+  host: (v) => (!v ? "Enter the server's web address or IP address" : (HOSTNAME_RE.test(v) || IPV4_RE.test(v)) ? '' : 'That does not look like an address. Try web1.example.com or 203.0.113.10'),
+  sshPort: (v) => (/^\d+$/.test(v) && Number(v) >= 1 && Number(v) <= 65535 ? '' : 'The sign-in port must be a number from 1 to 65535. 22 is the usual one.'),
+  sshUser: (v) => (LINUX_USER_RE.test(v) ? '' : 'Use a simple username with no spaces, such as lrweb'),
   provider: (v) => (v.length > 40 ? 'Keep it under 40 characters' : ''),
   region: (v) => (v.length > 40 ? 'Keep it under 40 characters' : ''),
 };
 const TROUBLESHOOT = [
-  'The firewall allows the SSH port (TCP {port}) from this LRWeb host.',
-  'The LRWeb public key is in ~lrweb/.ssh/authorized_keys.',
-  'The sudoers rule for clpctl exists (/etc/sudoers.d/lrweb) and lets lrweb run it without a password.',
+  "The server's firewall lets LRWeb sign in on port {port}.",
+  "The setup script copied LRWeb's sign-in key onto the server.",
+  "The setup script let the LRWeb user run CloudPanel's tools without a password.",
 ];
+// The server's notes are written for engineers. Known ones are reworded here; any other note is shown as the server sent it.
+const NOTE_COPY = [
+  [/^Supported OS:/, 'Supported systems: Ubuntu 24.04 and 22.04, Debian 12 and 11.'],
+  [/^Run on a fresh/, 'Only run the script on a brand-new, empty server.'],
+  [/^The LRWeb key can run clpctl/, "The LRWeb sign-in key can run CloudPanel's tools as the main administrator. Keep it safe, and consider letting only your own internet address reach CloudPanel on port 8443."],
+  [/^Verify the installer hash/, 'Before you say yes to the CloudPanel installer, check that it matches the official CloudPanel documentation.'],
+  [/^Mock mode:/, 'This is demo mode, so the script uses a demo key. Switch to live mode with a real key before you run it on a real server. The Settings page explains how.'],
+  [/^WARNING: could not read/, "Warning: LRWeb could not read its sign-in key, so the script has a placeholder instead. Replace the placeholder before you run the script."],
+];
+const plainNote = (n) => NOTE_COPY.find(([re]) => re.test(n))?.[1] ?? n;
+const plainSteps = (job) => (job?.steps
+  ? { ...job, steps: job.steps.map((s) => (STEP_COPY[s.key] ? { ...s, label: STEP_COPY[s.key] } : s)) }
+  : job);
 const bulletStyle = { paddingLeft: '1.25em', listStyle: 'disc', display: 'grid', gap: '6px' };
 
 export default async function mount(root, ctx) {
@@ -61,7 +82,7 @@ export default async function mount(root, ctx) {
   let locked = false;     // no update route exists, so the details freeze once the server exists
   let step = DETAILS;
   let ui = null;          // DOM refs and controllers of the step on screen; stale async work checks identity
-  let script = null;      // last bootstrap script, keyed by the params that produced it
+  let script = null;      // last setup script, keyed by the params that produced it
   let scriptToken = 0;
 
   const stepper = Stepper({ steps: STEPS, current: DETAILS });
@@ -71,7 +92,7 @@ export default async function mount(root, ctx) {
   root.append(
     PageHeader({
       title: 'Add a Linux server',
-      subtitle: 'Bootstrap CloudPanel and connect it to LRWeb',
+      subtitle: 'Prepare a new server and connect it to LRWeb, one step at a time.',
       actions: Button({ variant: 'ghost', icon: 'chevron-left', onclick: () => ctx.navigate('/servers') }, 'Back to servers'),
     }),
     stepper,
@@ -113,7 +134,7 @@ export default async function mount(root, ctx) {
     step = n;
     stepper.set(n);
     ui = { run: new AbortController(), timer: 0, next: null, slot: null };
-    const card = [detailsCard, prepareCard, connectCard, doneCard][n]();
+    const card = { [DETAILS]: detailsCard, [PREPARE]: prepareCard, [CONNECT]: connectCard, [DONE]: doneCard }[n]();
     stage.replaceChildren(card);
     if (focus) {
       // Move focus to the new step's heading for screen readers; no ring, since it is not a control.
@@ -145,13 +166,13 @@ export default async function mount(root, ctx) {
     inputs.os = Select({ options: meta.osOptions, value: meta.osOptions[0]?.value });
     inputs.provider = Input({ placeholder: 'Hetzner, OVH…', maxlength: 40 });
     inputs.region = Input({ placeholder: 'Amsterdam', maxlength: 40 });
-    fields.name = Field({ label: 'Name', required: true, hint: 'Shown in LRWeb and in the script.' }, inputs.name);
-    fields.host = Field({ label: 'Host', required: true, hint: 'Hostname or IPv4 address. LRWeb connects here.' }, inputs.host);
-    fields.sshPort = Field({ label: 'SSH port' }, inputs.sshPort);
-    fields.sshUser = Field({ label: 'SSH user', hint: 'Created by the bootstrap script.' }, inputs.sshUser);
-    fields.os = Field({ label: 'Operating system', required: true }, inputs.os);
-    fields.provider = Field({ label: 'Provider', hint: 'Optional.' }, inputs.provider);
-    fields.region = Field({ label: 'Region', hint: 'Optional.' }, inputs.region);
+    fields.name = Field({ label: 'Name', required: true, hint: 'A short name you will recognise. The setup script uses it too.' }, inputs.name);
+    fields.host = Field({ label: 'Server address', required: true, hint: 'The web address (web1.example.com) or IP address (203.0.113.10). LRWeb connects here.' }, inputs.host);
+    fields.sshPort = Field({ label: 'SSH port', hint: 'How LRWeb signs in to the server. 22 is the usual port.' }, inputs.sshPort);
+    fields.sshUser = Field({ label: 'SSH user', hint: 'How LRWeb signs in to the server. The setup script creates this user.' }, inputs.sshUser);
+    fields.os = Field({ label: 'Operating system', required: true, hint: 'The version of Linux the server runs.' }, inputs.os);
+    fields.provider = Field({ label: 'Provider', hint: 'Optional. The company that rents you the server.' }, inputs.provider);
+    fields.region = Field({ label: 'Region', hint: 'Optional. Where the server is physically located.' }, inputs.region);
     prep.dbEngine = meta.dbEngines[0]?.value ?? '';
     for (const k of DETAIL_KEYS) {
       inputs[k].addEventListener('input', () => { if (fields[k].classList.contains('has-error')) validateField(k); });
@@ -200,12 +221,12 @@ export default async function mount(root, ctx) {
     for (const c of Object.values(inputs)) c.disabled = locked;
     const form = h('form', { class: 'stack', novalidate: true, onsubmit: (e) => { e.preventDefault(); next(); } },
       locked && h('div', { class: 'callout' }, icon('lock', { size: 18 }),
-        h('p', {}, `Registered as ${server.name}. Details are locked so the bootstrap script matches the server.`)),
+        h('p', {}, `Registered as ${server.name}. These details are locked so the setup script still matches the server.`)),
       h('div', { class: 'form-grid' },
         fields.name, fields.host, fields.sshPort, fields.sshUser, fields.os, fields.provider, fields.region),
       h('div', { class: 'spread' }, h('span'),
         Button({ variant: 'primary', type: 'submit', iconRight: 'arrow-right' }, 'Continue')));
-    return Card({ title: 'Server details', subtitle: 'Where LRWeb can reach the server over SSH.' }, form);
+    return Card({ title: 'Server details', subtitle: 'Where the server is and how LRWeb signs in to it.' }, form);
   }
 
   /* ---------- prepare ---------- */
@@ -214,7 +235,7 @@ export default async function mount(root, ctx) {
     const mine = ui;
     const slot = h('div', { class: 'stack' });
     const dbWrap = h('div', { style: { maxWidth: '360px', width: '100%' } });
-    const renderDb = () => dbWrap.replaceChildren(...(prep.install ? [Field({ label: 'Database engine', hint: 'Used by the CloudPanel installer.' }, Select({
+    const renderDb = () => dbWrap.replaceChildren(...(prep.install ? [Field({ label: 'Database engine', hint: 'The database software that is installed alongside CloudPanel.' }, Select({
       options: meta.dbEngines,
       value: prep.dbEngine,
       onchange: (e) => { prep.dbEngine = e.target.value; scheduleScript(); },
@@ -222,24 +243,25 @@ export default async function mount(root, ctx) {
     renderDb();
     const install = Switch({
       checked: prep.install,
-      label: 'Install CloudPanel for me',
+      label: ['Install ', Term('cloudpanel', 'CloudPanel'), ' for me'],
       onchange: (e) => { prep.install = e.target.checked; renderDb(); scheduleScript(); },
     });
     const cont = Button({ variant: 'primary', type: 'submit', iconRight: 'arrow-right', disabled: true }, 'Continue');
     mine.next = cont;
     mine.slot = slot;
+    const address = inputs.host.value.trim() || 'your-server-address';
     const form = h('form', { class: 'stack', novalidate: true, onsubmit: (e) => { e.preventDefault(); next(); } },
       h('ol', { style: { paddingLeft: '1.4em', listStyle: 'decimal' } },
-        h('li', { style: { marginBottom: '6px' } }, 'SSH in to the server as root: ', h('code', { class: 'mono' }, `ssh root@${inputs.host.value.trim()}`)),
-        h('li', { style: { marginBottom: '6px' } }, 'Paste and run the script below.'),
-        h('li', {}, 'Come back here and press Continue.')),
+        h('li', { style: { marginBottom: '6px' } }, 'In a terminal, connect to the server as root (the main administrator): ', h('code', { class: 'mono', style: { overflowWrap: 'anywhere' } }, `ssh root@${address}`)),
+        h('li', { style: { marginBottom: '6px' } }, 'Copy the setup script below and save it on the server as bootstrap.sh.'),
+        h('li', {}, 'Run it with ', h('code', { class: 'mono' }, 'sudo bash bootstrap.sh'), ', then come back here and press Continue.')),
       h('div', { class: 'stack', style: { gap: '12px' } }, h('div', {}, install), dbWrap),
       slot,
       h('div', { class: 'spread' },
         Button({ variant: 'glass', icon: 'chevron-left', onclick: () => goTo(DETAILS, { focus: true }) }, 'Back'),
         cont));
     loadScript();
-    return Card({ title: 'Prepare the server', subtitle: 'Run one script as root on a fresh server.' }, form);
+    return Card({ title: 'Prepare the server', subtitle: 'Run one setup script on the new server. You only do this once.' }, form);
   }
 
   function loadScript() {
@@ -267,7 +289,7 @@ export default async function mount(root, ctx) {
         if (e?.name === 'AbortError' || ui !== mine || token !== scriptToken) return;
         mine.slot.replaceChildren(h('div', { class: 'callout callout--bad', role: 'alert' }, icon('alert', { size: 18 }),
           h('div', { class: 'stack', style: { gap: '10px', minWidth: 0 } },
-            h('p', {}, e.message || 'Could not build the script.'),
+            h('p', {}, e.message || 'We could not make the setup script.'),
             Button({ size: 'sm', variant: 'glass', icon: 'refresh', onclick: () => loadScript() }, 'Try again'))));
       });
   }
@@ -278,13 +300,17 @@ export default async function mount(root, ctx) {
     const general = notes.filter((n) => !SECURITY_NOTE_RE.test(n));
     const noteBox = (items, warn) => h('div', { class: ['callout', warn && 'callout--warn'] },
       icon(warn ? 'shield' : 'info', { size: 18 }),
-      h('ul', { style: bulletStyle }, items.map((n) => h('li', {}, n))));
+      h('ul', { style: bulletStyle }, items.map((n) => h('li', {}, plainNote(n)))));
     mine.slot.replaceChildren(...[
-      CopyBlock({ text: data.script, label: 'bootstrap.sh', maxHeight: 360 }),
-      h('p', { class: 'muted' }, 'Save it as bootstrap.sh, then run ', h('code', { class: 'mono' }, 'sudo bash bootstrap.sh'), ' on the server.'),
+      h('p', { class: 'muted' }, prep.install
+        ? 'Run this once on the new server. It installs CloudPanel and lets LRWeb manage it.'
+        : 'Run this once on the new server. It lets LRWeb manage the CloudPanel already on it.'),
+      CopyBlock({ text: data.script, label: 'setup script (bootstrap.sh)', maxHeight: 360 }),
       security.length && noteBox(security, true),
       general.length && noteBox(general, false),
-      CopyBlock({ text: data.publicKey, label: 'LRWeb public key (already embedded in the script)', maxHeight: 120 }),
+      h('div', { class: 'stack', style: { gap: '8px' } },
+        h('p', { class: 'muted' }, "LRWeb's sign-in key is already in the script. Only use this if a warning above says the script has a placeholder."),
+        CopyBlock({ text: data.publicKey, label: "LRWeb's sign-in key", maxHeight: 120 })),
     ].filter(Boolean));
     mine.next.disabled = false;
   }
@@ -312,20 +338,20 @@ export default async function mount(root, ctx) {
     const jobFoot = () => progress.querySelector('.job__foot');
 
     const paint = (job) => {
-      progress.update(job);
+      progress.update(plainSteps(job));
       const running = job.steps?.find((s) => s.status === 'running');
       if (running) headline.textContent = FRIENDLY[running.key]?.(port()) ?? 'Working…';
     };
 
     // The callout carries the detail, so the status line and the job footer step aside on failure.
-    function showError(title, body, { troubleshoot = false, retryLabel = 'Try again' } = {}) {
+    function showError(title, body, { troubleshoot = false } = {}) {
       failBox.replaceChildren(h('div', { class: 'callout callout--bad', role: 'alert' }, icon('alert', { size: 18 }),
         h('div', { class: 'stack', style: { gap: '10px', minWidth: 0 } },
           h('p', {}, h('strong', {}, title), ' ', body),
           troubleshoot && h('div', { class: 'stack', style: { gap: '6px' } },
-            h('p', {}, 'Check these first:'),
+            h('p', {}, 'Things to check first:'),
             h('ul', { style: bulletStyle }, TROUBLESHOOT.map((t) => h('li', {}, t.replace('{port}', port()))))))));
-      actions.replaceChildren(Button({ variant: 'primary', icon: 'refresh', onclick: () => run() }, retryLabel));
+      actions.replaceChildren(Button({ variant: 'primary', icon: 'refresh', onclick: () => run() }, 'Try again'));
       headline.hidden = true;
       jobFoot().hidden = true;
     }
@@ -353,7 +379,7 @@ export default async function mount(root, ctx) {
         } catch (e) {
           if (e?.name === 'AbortError' || ui !== mine) return;
           if (e.field && fields[e.field]) return backToDetails(e);
-          return showError("Couldn't register the server", e.message);
+          return showError('Could not save the server details.', e.message);
         }
         if (ui !== mine) return;
       }
@@ -363,7 +389,7 @@ export default async function mount(root, ctx) {
         job = await api.post(`/api/servers/${serverId}/check`, {}, { signal });
       } catch (e) {
         if (e?.name === 'AbortError' || ui !== mine) return;
-        return showError("Couldn't start the check", e.message, { retryLabel: 'Retry check' });
+        return showError('Could not start the connection test.', e.message);
       }
       if (ui !== mine) return;
       paint(job);
@@ -373,7 +399,7 @@ export default async function mount(root, ctx) {
         final = await pollJob(job.id, (j) => { if (ui === mine) paint(j); }, { signal });
       } catch (e) {
         if (e?.name === 'AbortError' || ui !== mine) return;
-        return showError('Lost contact with LRWeb', e.message, { retryLabel: 'Retry check' });
+        return showError('Lost contact with LRWeb', e.message);
       }
       if (ui !== mine) return;
       paint(final);
@@ -386,9 +412,9 @@ export default async function mount(root, ctx) {
         mine.timer = setTimeout(() => { if (ui === mine) goTo(DONE, { focus: true }); }, 900);
       } else {
         const failed = final.steps?.find((s) => s.status === 'failed');
-        showError(`${failed?.label ?? 'Connection check'} failed.`,
-          failed?.detail || final.error || 'The check did not finish.',
-          { troubleshoot: true, retryLabel: 'Retry check' });
+        showError(`${STEP_COPY[failed?.key] ?? failed?.label ?? 'The connection test'} failed.`,
+          failed?.detail || final.error || 'The test did not finish.',
+          { troubleshoot: true });
       }
     }
 
@@ -398,7 +424,7 @@ export default async function mount(root, ctx) {
         Button({ variant: 'glass', icon: 'chevron-left', onclick: () => goTo(PREPARE, { focus: true }) }, 'Back'),
         actions));
     run();
-    return Card({ title: 'Connect', subtitle: 'LRWeb logs in over SSH and checks CloudPanel.' }, form);
+    return Card({ title: 'Connect', subtitle: 'LRWeb signs in to the server and checks that CloudPanel responds.' }, form);
   }
 
   /* ---------- done ---------- */
@@ -416,21 +442,21 @@ export default async function mount(root, ctx) {
         },
       }, icon('check', { size: 36 })),
       h('h2', { class: 'card__title' }, 'Server connected'),
-      h('p', { class: 'muted' }, `${server.name} answers over SSH and CloudPanel is ready for sites.`));
+      h('p', { class: 'muted' }, `${server.name} is connected. CloudPanel is ready, so you can now set up websites on it.`));
     const rows = [
       ['Name', server.name],
-      ['Host', h('span', { class: 'mono' }, server.host)],
+      ['Address', h('span', { class: 'mono' }, server.host)],
       ['OS', osLabel],
       ['CloudPanel', /^https:\/\//.test(panel)
         ? h('a', { class: 'link mono', href: panel, target: '_blank', rel: 'noopener noreferrer' }, panel)
-        : panel || '—'],
+        : panel || 'Not set yet'],
     ];
     const summary = h('dl', { class: 'kv' }, rows.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]));
     const actions = h('div', { class: 'row', style: { justifyContent: 'center' } },
       Button({ variant: 'primary', iconRight: 'arrow-right', onclick: () => ctx.navigate(`/servers/${encodeURIComponent(server.id)}`) }, 'View server'),
-      Button({ variant: 'glass', icon: 'globe', onclick: () => ctx.navigate(`/sites?serverId=${encodeURIComponent(server.id)}`) }, 'Add a site'),
+      Button({ variant: 'glass', icon: 'globe', onclick: () => ctx.navigate(`/sites?serverId=${encodeURIComponent(server.id)}`) }, 'Set up a site'),
       Button({ variant: 'ghost', icon: 'plus', onclick: () => ctx.navigate('/servers/new') }, 'Add another server'));
-    const column = h('div', { class: 'stack', style: { width: '100%', maxWidth: '460px', margin: '0 auto' } }, summary, actions);
+    const column = h('div', { class: 'stack', style: { width: '100%', maxWidth: '540px', margin: '0 auto' } }, summary, actions);
     return Card({}, hero, column);
   }
 }

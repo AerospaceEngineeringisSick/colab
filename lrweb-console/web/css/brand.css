@@ -1,0 +1,12 @@
+/* LRWeb brand palette and type, taken from the LRWeb website (lrweb.uk): swap values here to restyle the console. */
+:root {
+  --night: #070824; --night-2: #0b0d30; --night-3: #10124a; --navy: #12018d;
+  --indigo: #3f4de6; --indigo-soft: #8b95f7; --blue: #0b86ea; --blue-deep: #0a6fc2;
+  --green: #3db88d; --green-dark: #1f7a5c; --green-bright: #6fe0b4;
+  --base: #f5f8fa; --brand-ink: #16203a; --brand-muted: #5a6478; --brand-muted-d: #a7aec8;
+  --grad: linear-gradient(90deg, #3db88d 0%, #0b86ea 55%, #3f4de6 100%);
+  --grad-sun: linear-gradient(35deg, #3db88d 0%, #0b86ea 55%, #3f4de6 100%);
+  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}

@@ -1,12 +1,15 @@
 // Dashboard (#/): KPIs, revenue, activity, server health and quick actions from GET /api/overview.
 import { h, ensureCss } from '../core/dom.js';
 import { api } from '../core/api.js';
+import { state } from '../core/store.js';
 import { money, num, ago } from '../core/fmt.js';
 import { PageHeader, Card, Button, Badge, Stat, Meter, StatusBadge, Empty, Skeleton, loadInto } from '../ui/components.js';
 import { icon } from '../ui/icons.js';
 import { AreaChart } from '../ui/charts.js';
+import { Term } from '../ui/glossary.js';
 
 const REFRESH_MS = 30_000;
+const CURRENCY = 'GBP'; // LRWeb's currency, used only if the overview has none
 
 const ACTIVITY_ICON = {
   client: { icon: 'users', color: 'var(--accent)' },
@@ -15,11 +18,13 @@ const ACTIVITY_ICON = {
   server: { icon: 'server', color: 'var(--accent-2)' },
 };
 
+const SERVER_STATUS = { online: 'Online', degraded: 'Needs attention', offline: 'Offline', pending: 'Not set up yet' };
+
 const QUICK = [
-  { title: 'Onboard a client', hint: 'Customer, plan and first site', icon: 'rocket', href: '#/onboard', color: 'var(--accent)' },
-  { title: 'Add a Linux server', hint: 'Connect a VPS over SSH', icon: 'server', href: '#/servers/new', color: 'var(--accent-3)' },
-  { title: 'Provision a site', hint: 'PHP, Node.js, Python or static', icon: 'globe', href: '#/sites', color: 'var(--accent-2)' },
-  { title: 'Review billing', hint: 'Invoices, overdue and payments', icon: 'card', href: '#/billing', color: 'var(--warn)' },
+  { title: 'Add a new client', hint: 'Client, care plan and first website', icon: 'rocket', href: '#/onboard', color: 'var(--accent)' },
+  { title: 'Add a server', hint: 'Connect a server you already have', icon: 'server', href: '#/servers/new', color: 'var(--accent-3)' },
+  { title: 'Set up a website', hint: 'Pick the kind of website first', icon: 'globe', href: '#/sites', color: 'var(--accent-2)' },
+  { title: 'Review billing', hint: 'Invoices and late payments', icon: 'card', href: '#/billing', color: 'var(--warn)' },
 ];
 
 const monthFmt = new Intl.DateTimeFormat(undefined, { month: 'short', timeZone: 'UTC' });
@@ -29,9 +34,18 @@ const monthShort = (ym) => {
   return y && m ? monthFmt.format(new Date(Date.UTC(y, m - 1, 1))) : String(ym);
 };
 
+/** First name of the signed-in person, or '' for the local/system principal or when it is unknown. */
+const firstName = () => {
+  const me = state.get('me');
+  const user = me && !me.system && !me.local ? me : null;
+  return user?.name?.trim().split(/\s+/)[0] || '';
+};
+
 const greeting = () => {
   const hr = new Date().getHours();
-  return hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+  const word = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+  const name = firstName();
+  return name ? `${word}, ${name}` : word;
 };
 
 /** Change between the last two revenue months as Stat delta props. */
@@ -45,12 +59,13 @@ function revenueChange(revenue) {
 }
 
 function kpiRow({ kpis, revenue, servers }) {
-  const cur = kpis.currency;
+  const cur = kpis.currency || CURRENCY;
   const change = revenueChange(revenue);
   const troubled = servers.some((s) => s.status === 'offline' || s.status === 'degraded');
   return h('div', { class: 'grid grid--4 dash-kpis' },
     Stat({
-      label: 'Monthly recurring revenue', value: money(kpis.mrrCents, cur), icon: 'card', accent: 'accent',
+      label: h('span', {}, 'Monthly income from ', Term('care plan', 'care plans')),
+      value: money(kpis.mrrCents, cur), icon: 'card', accent: 'accent',
       spark: revenue.map((r) => r.cents), ...change,
     }),
     Stat({ label: 'Clients', value: num(kpis.clients.total), hint: `${num(kpis.clients.active)} active`, icon: 'users', accent: 'accent-3' }),
@@ -58,14 +73,17 @@ function kpiRow({ kpis, revenue, servers }) {
       label: 'Servers', value: num(kpis.servers.total), hint: troubled ? `${num(kpis.servers.online)} online · needs attention` : 'All online',
       icon: 'server', accent: troubled ? 'warn' : 'ok',
     }),
-    Stat({ label: 'Sites', value: num(kpis.sites.total), hint: `${num(kpis.sites.sslActive)} secured`, icon: 'globe', accent: 'accent-2' }));
+    Stat({
+      label: 'Sites', value: num(kpis.sites.total), icon: 'globe', accent: 'accent-2',
+      hint: h('span', {}, `${num(kpis.sites.sslActive)} with a `, Term('ssl', 'padlock (SSL)')),
+    }));
 }
 
 function revenueCard({ kpis, revenue }) {
-  const cur = kpis.currency;
+  const cur = kpis.currency || CURRENCY;
   return Card({
     title: 'Revenue', subtitle: 'Last 12 months',
-    actions: Badge({ kind: kpis.outstandingCents > 0 ? 'warn' : 'neutral' }, `Outstanding ${money(kpis.outstandingCents, cur)}`),
+    actions: Badge({ kind: kpis.outstandingCents > 0 ? 'warn' : 'neutral' }, `Waiting to be paid ${money(kpis.outstandingCents, cur)}`),
   }, AreaChart({
     series: [{ name: 'Revenue', values: revenue.map((r) => r.cents / 100) }],
     labels: revenue.map((r) => r.month),
@@ -86,20 +104,20 @@ function activityCard(activity) {
           h('span', { class: 'grow dash-activity__text' }, a.text),
           h('time', { class: 'muted dash-activity__time', datetime: a.ts }, ago(a.ts)));
       }))
-      : Empty({ icon: 'activity', title: 'No activity yet', message: 'Clients, sites, invoices and server checks show up here.' }));
+      : Empty({ icon: 'activity', title: 'No activity yet', message: 'Clients, websites, invoices and server checks will show up here.' }));
 }
 
 function serverRow(s) {
   const metrics = [['CPU', s.cpu], ['Memory', s.mem], ['Disk', s.disk]];
   const numeric = metrics.filter(([, v]) => typeof v === 'number');
   let body;
-  if (s.status === 'pending') body = h('p', { class: 'muted dash-server__note' }, 'Waiting for setup');
-  else if (!numeric.length) body = h('p', { class: 'muted dash-server__note' }, 'No metrics yet');
+  if (s.status === 'pending') body = h('p', { class: 'muted dash-server__note' }, 'Health appears once it is set up.');
+  else if (!numeric.length) body = h('p', { class: 'muted dash-server__note' }, 'No readings yet');
   else body = numeric.map(([label, v]) => Meter({ value: v, label }));
   return h('li', { class: 'list__item dash-server' },
     h('div', { class: 'spread' },
       h('a', { class: 'dash-server__name', href: `#/servers/${encodeURIComponent(s.id)}` }, s.name),
-      StatusBadge(s.status)),
+      StatusBadge(s.status, SERVER_STATUS[s.status])),
     body);
 }
 
@@ -108,8 +126,8 @@ function healthCard(servers, navigate) {
     servers.length
       ? h('ul', { class: 'list' }, servers.map(serverRow))
       : Empty({
-        icon: 'server', title: 'No servers yet', message: 'Add a Linux server to start monitoring it.',
-        action: Button({ variant: 'primary', size: 'sm', icon: 'server', onclick: () => navigate('/servers/new') }, 'Add server'),
+        icon: 'server', title: 'No servers yet', message: 'Add a server to start keeping an eye on it.',
+        action: Button({ variant: 'primary', size: 'sm', icon: 'server', onclick: () => navigate('/servers/new') }, 'Add a server'),
       }),
     h('a', { class: 'link row dash-more', href: '#/servers' }, 'View all servers', icon('arrow-right', { size: 16 })));
 }
@@ -155,10 +173,10 @@ export default async function mount(root, ctx) {
 
   root.append(PageHeader({
     title: greeting(),
-    subtitle: "Here's what's happening across your infrastructure",
+    subtitle: "Here's what's happening with your clients, websites and servers.",
     actions: [
-      Button({ variant: 'primary', icon: 'rocket', onclick: () => navigate('/onboard') }, 'Onboard client'),
-      Button({ variant: 'glass', icon: 'server', onclick: () => navigate('/servers/new') }, 'Add server'),
+      Button({ variant: 'primary', icon: 'rocket', onclick: () => navigate('/onboard') }, 'Add a new client'),
+      Button({ variant: 'glass', icon: 'server', onclick: () => navigate('/servers/new') }, 'Add a server'),
     ],
   }), body);
 

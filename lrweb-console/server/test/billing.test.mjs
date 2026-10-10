@@ -9,6 +9,9 @@ const NOW = Date.UTC(2026, 9, 10, 12);
 const DAY = 86_400_000;
 const iso = (ms) => new Date(ms).toISOString();
 const sec = (ms) => Math.floor(ms / 1000);
+const EM_DASH = '\u2014';
+// LRWeb care plan prices in pence (GBP, monthly).
+const PRICE = { plan_essential: 2900, plan_plus: 4900, plan_pro: 8900 };
 
 function seededStore() {
   const store = createStore({ memory: true });
@@ -43,13 +46,34 @@ function fakeFetch(handler) {
 }
 
 describe('mock mode', () => {
-  test('plans come from the catalogue with integer cents and the popular flag', async () => {
+  test('plans are the three LRWeb care plans in GBP with the real feature wording and no invented limits', async () => {
     const { billing } = billingWith();
     const plans = await billing.listPlans();
-    assert.deepEqual(plans.map((p) => p.id), ['plan_starter', 'plan_business', 'plan_agency']);
-    assert.deepEqual(plans.map((p) => p.priceCents), [1500, 3900, 9900]);
-    assert.equal(plans.find((p) => p.id === 'plan_business').popular, true);
-    assert.ok(plans.every((p) => p.currency === 'USD' && p.interval === 'month' && p.features.length >= 3));
+    assert.deepEqual(plans.map((p) => p.id), ['plan_essential', 'plan_plus', 'plan_pro']);
+    assert.deepEqual(plans.map((p) => p.name), ['Essential', 'Plus', 'Pro']);
+    assert.deepEqual(plans.map((p) => p.priceCents), [2900, 4900, 8900]);
+    assert.deepEqual(plans.filter((p) => p.popular).map((p) => p.id), ['plan_plus']);
+    assert.ok(plans.every((p) => p.currency === 'GBP' && p.interval === 'month'));
+    assert.ok(plans.every((p) => !('limits' in p)), 'care plans have no hosting limits');
+    assert.deepEqual(plans[0].features, [
+      'Managed UK-focused hosting', 'Core, theme and plugin updates', 'Daily off-site backups',
+      'Uptime and security monitoring', 'SSL certificate included', 'Email support',
+    ]);
+    assert.deepEqual(plans[1].features, [
+      'Everything in Essential', 'Monthly content edits included', 'Performance optimisation',
+      'Priority support', 'Quarterly site health review',
+    ]);
+    assert.deepEqual(plans[2].features, [
+      'Everything in Plus', 'E-commerce and booking support', 'More included edit time',
+      'Same-day response target', 'Monthly performance report',
+    ]);
+    assert.ok(plans.every((p) => p.features.every((f) => !f.includes(EM_DASH))));
+  });
+
+  test('currency defaults to GBP and LRWEB_CURRENCY still overrides it', async () => {
+    assert.equal(loadConfig({}).billing.currency, 'GBP');
+    const { billing } = billingWith({ env: { LRWEB_CURRENCY: 'eur' } });
+    assert.ok((await billing.listPlans()).every((p) => p.currency === 'EUR'));
   });
 
   test('describe reports a ready mock integration', () => {
@@ -66,52 +90,84 @@ describe('mock mode', () => {
     };
     const a = await snapshot();
     const b = await snapshot();
-    assert.ok(a.length > 20);
+    assert.ok(a.length > 30);
     assert.deepEqual(a, b);
     assert.equal(new Set(a.map((s) => s.split('|')[0])).size, a.length, 'invoice numbers are unique');
   });
 
-  test('summary has 12 revenue buckets and flags the suspended client as overdue', async () => {
+  test('bills are care plan invoices with a month in the description', async () => {
     const { billing } = billingWith();
+    const invoices = await billing.listInvoices({ clientId: 'cli_petal', limit: 100 });
+    assert.ok(invoices.length >= 5);
+    assert.ok(invoices.every((i) => i.amountCents === 4900 && i.currency === 'GBP'));
+    assert.match(invoices[0].description, /^Plus care plan, [A-Z][a-z]+ 20\d\d$/);
+  });
+
+  test('summary: GBP, 12 revenue buckets and MRR from the active clients plan prices', async () => {
+    const { store, billing } = billingWith();
     const s = await billing.summary();
-    assert.equal(s.currency, 'USD');
+    assert.equal(s.currency, 'GBP');
     assert.equal(s.revenue.length, 12);
     assert.equal(s.revenue[0].month, '2025-11');
     assert.equal(s.revenue[11].month, '2026-10');
     assert.ok(s.revenue.every((r) => Number.isInteger(r.cents) && r.cents >= 0));
-    assert.ok(s.revenue[11].cents > 0);
-    // Six active clients on Starter, Business and Agency: 1500 + 3900 + 3900 + 9900 + 9900 + 9900.
-    assert.equal(s.activeSubscriptions, 6);
-    assert.equal(s.mrrCents, 39000);
-    assert.equal(s.arrCents, 468000);
-    assert.ok(s.overdueCents > 0);
-    assert.ok(s.outstandingCents >= s.overdueCents);
+    assert.ok(s.revenue[11].cents > 0, 'Petal & Stem paid its October bill');
+
+    const paid = await billing.listInvoices({ status: 'paid', limit: 500 });
+    assert.equal(s.revenue.reduce((sum, r) => sum + r.cents, 0), paid.reduce((sum, i) => sum + i.amountCents, 0));
+
+    // Five active clients: 2900 + 2900 + 4900 + 4900 + 8900. The suspended and trial clients add nothing.
+    const active = store.all('clients').filter((c) => c.status === 'active');
+    const mrr = active.reduce((sum, c) => sum + PRICE[c.planId], 0);
+    assert.equal(mrr, 24500);
+    assert.equal(s.mrrCents, mrr);
+    assert.equal(s.arrCents, mrr * 12);
+    assert.equal(s.activeSubscriptions, active.length);
+  });
+
+  test('the suspended client has two unpaid bills, one overdue; two other clients have recent open bills', async () => {
+    const { billing } = billingWith();
+    const s = await billing.summary();
+    assert.equal(s.overdueCents, 2900);
+    assert.equal(s.outstandingCents, 13600);
+    assert.equal(s.paidThisMonthCents, 4900);
+
+    const north = await billing.listInvoices({ clientId: 'cli_north', limit: 100 });
+    assert.deepEqual(north.filter((i) => i.status !== 'paid').map((i) => i.status), ['open', 'overdue']);
+
     const overdue = await billing.listInvoices({ status: 'overdue', limit: 500 });
-    assert.ok(overdue.some((i) => i.clientId === 'cli_verdant'));
+    assert.deepEqual(overdue.map((i) => i.clientId), ['cli_north']);
     assert.equal(overdue.reduce((sum, i) => sum + i.amountCents, 0), s.overdueCents);
+
+    const open = await billing.listInvoices({ status: 'open', limit: 500 });
+    assert.deepEqual([...new Set(open.map((i) => i.clientId))].sort(), ['cli_north', 'cli_smith', 'cli_volt']);
+    assert.ok(open.every((i) => Date.parse(i.issuedAt) >= NOW - 7 * DAY), 'open bills are recent');
   });
 
   test('trial clients get a trialing subscription and no invoices', async () => {
     const { store, billing } = billingWith();
     // History is seeded lazily on the first billing call, so make one before inspecting the store.
-    assert.deepEqual(await billing.listInvoices({ clientId: 'cli_lumen' }), []);
+    assert.deepEqual(await billing.listInvoices({ clientId: 'cli_form' }), []);
     assert.equal(store.find('subscriptions', (x) => x.status === 'trialing').length, 1);
+    assert.equal(store.find('subscriptions', (x) => x.status === 'active').length, 5);
+    assert.equal(store.find('subscriptions', (x) => x.status === 'past_due').length, 1);
   });
 
   test('createCustomer -> subscribe -> send -> markPaid flow', async () => {
     const { store, billing } = billingWith();
     store.insert('clients', {
       id: 'cli_new', name: 'Ada Lovelace', company: 'Analytical Co', email: 'ada@analytical.example',
-      phone: '', planId: 'plan_starter', status: 'pending', billingCustomerId: '', createdAt: iso(NOW),
+      phone: '', planId: 'plan_essential', status: 'pending', billingCustomerId: '', createdAt: iso(NOW),
     });
     const { customerId } = await billing.createCustomer({ name: 'Ada Lovelace', email: 'ada@analytical.example', company: 'Analytical Co' });
     assert.match(customerId, /^cus_[0-9a-f]{8}$/);
     store.update('clients', 'cli_new', { billingCustomerId: customerId });
 
-    const { subscriptionId, invoice } = await billing.subscribe({ customerId, planId: 'plan_business' });
+    const { subscriptionId, invoice } = await billing.subscribe({ customerId, planId: 'plan_plus' });
     assert.ok(subscriptionId);
     assert.equal(invoice.status, 'open');
-    assert.equal(invoice.amountCents, 3900);
+    assert.equal(invoice.amountCents, 4900);
+    assert.equal(invoice.description, 'Plus care plan, October 2026');
     assert.equal(invoice.clientId, 'cli_new');
     assert.equal(invoice.clientName, 'Analytical Co');
     assert.equal(invoice.issuedAt, iso(NOW));
@@ -168,7 +224,7 @@ describe('whmcs mode', () => {
   const whmcsInvoice = (over = {}) => ({
     id: 501, invoicenum: 'INV-501', userid: 42, date: '2026-10-09', duedate: '2026-10-16',
     datepaid: '0000-00-00 00:00:00', total: '15.00', status: 'Unpaid',
-    firstname: 'Maya', lastname: 'Fernandez', companyname: 'Acme Roasters', ...over,
+    firstname: 'Dave', lastname: 'Smith', companyname: 'Smith & Sons', ...over,
   });
 
   test('describe shows the host only and never the credentials', () => {
@@ -182,14 +238,14 @@ describe('whmcs mode', () => {
     assert.ok(!text.includes('api-ident-123'));
   });
 
-  test('listPlans maps GetProducts to whmcs_<pid> plans and strips tags from features', async () => {
+  test('listPlans maps GetProducts to whmcs_<pid> plans, strips tags from features and never invents limits', async () => {
     const fetch = fakeFetch(() => ({
       body: {
         result: 'success',
         products: {
           product: [
-            { pid: 7, name: 'Hosting', description: '5 sites<br>50 GB <b>SSD</b>\nPriority support', pricing: { USD: { monthly: '15.00' } } },
-            { pid: 8, name: 'Free', description: '', pricing: { USD: { monthly: '0.00' } } },
+            { pid: 7, name: 'Care plan', description: 'Managed hosting<br>Daily <b>backups</b>\nEmail support', pricing: { GBP: { monthly: '29.00' } } },
+            { pid: 8, name: 'Free', description: '', pricing: { GBP: { monthly: '0.00' } } },
           ],
         },
       },
@@ -198,8 +254,10 @@ describe('whmcs mode', () => {
     const plans = await billing.listPlans();
     assert.equal(plans.length, 1);
     assert.equal(plans[0].id, 'whmcs_7');
-    assert.equal(plans[0].priceCents, 1500);
-    assert.deepEqual(plans[0].features, ['5 sites', '50 GB SSD', 'Priority support']);
+    assert.equal(plans[0].priceCents, 2900);
+    assert.equal(plans[0].currency, 'GBP');
+    assert.deepEqual(plans[0].features, ['Managed hosting', 'Daily backups', 'Email support']);
+    assert.ok(!('limits' in plans[0]));
     const call = fetch.calls[0];
     assert.equal(call.url.href, API_URL);
     assert.equal(call.method, 'POST');
@@ -212,18 +270,18 @@ describe('whmcs mode', () => {
   test('createCustomer splits the name, sends skipvalidation and returns the clientid as a string', async () => {
     const fetch = fakeFetch(() => ({ body: { result: 'success', clientid: 42 } }));
     const { billing } = billingWith({ env: ENV, fetch });
-    const out = await billing.createCustomer({ name: 'Maya Fernandez Ruiz', email: 'maya@acme.example', company: 'Acme Roasters' });
+    const out = await billing.createCustomer({ name: 'Dave Smith Jones', email: 'dave@smithandsons.example', company: 'Smith & Sons' });
     assert.deepEqual(out, { customerId: '42' });
     const f = fetch.calls[0].form;
     assert.equal(fetch.calls[0].action, 'AddClient');
-    assert.equal(f.get('firstname'), 'Maya');
-    assert.equal(f.get('lastname'), 'Fernandez Ruiz');
-    assert.equal(f.get('email'), 'maya@acme.example');
-    assert.equal(f.get('companyname'), 'Acme Roasters');
+    assert.equal(f.get('firstname'), 'Dave');
+    assert.equal(f.get('lastname'), 'Smith Jones');
+    assert.equal(f.get('email'), 'dave@smithandsons.example');
+    assert.equal(f.get('companyname'), 'Smith & Sons');
     assert.equal(f.get('skipvalidation'), 'true');
     assert.match(f.get('password2'), /^[A-Za-z0-9]{22}$/);
 
-    await billing.createCustomer({ name: 'Cher', email: 'cher@acme.example', company: '' });
+    await billing.createCustomer({ name: 'Jo', email: 'jo@smithandsons.example', company: '' });
     assert.equal(fetch.calls[1].form.get('lastname'), '-');
   });
 
@@ -253,7 +311,7 @@ describe('whmcs mode', () => {
     assert.equal(latest.form.get('limitnum'), '1');
 
     const count = fetch.calls.length;
-    await assert.rejects(billing.subscribe({ customerId: '42', planId: 'plan_starter' }), { status: 404, code: 'plan_not_found' });
+    await assert.rejects(billing.subscribe({ customerId: '42', planId: 'plan_essential' }), { status: 404, code: 'plan_not_found' });
     assert.equal(fetch.calls.length, count, 'an unknown plan never reaches WHMCS');
   });
 
@@ -271,14 +329,14 @@ describe('whmcs mode', () => {
       },
     }));
     const store = seededStore();
-    store.update('clients', 'cli_acme', { billingCustomerId: '42' });
+    store.update('clients', 'cli_smith', { billingCustomerId: '42' });
     const { billing } = billingWith({ env: ENV, store, fetch });
 
     // 601 is past due, so it is overdue and drops out of an 'open' filter even though WHMCS returned it.
-    const open = await billing.listInvoices({ clientId: 'cli_acme', status: 'open', limit: 10 });
+    const open = await billing.listInvoices({ clientId: 'cli_smith', status: 'open', limit: 10 });
     assert.deepEqual(open.map((i) => i.id), ['602']);
-    assert.equal(open[0].clientId, 'cli_acme');
-    assert.equal(open[0].clientName, 'Acme Roasters');
+    assert.equal(open[0].clientId, 'cli_smith');
+    assert.equal(open[0].clientName, 'Smith & Sons');
     const call = fetch.calls[0];
     assert.equal(call.action, 'GetInvoices');
     assert.equal(call.form.get('userid'), '42');
@@ -357,24 +415,29 @@ describe('stripe mode', () => {
     assert.ok(!JSON.stringify(info).includes(KEY));
   });
 
-  test('listPlans queries active recurring prices with the product expanded', async () => {
+  test('listPlans queries active recurring prices in the configured currency; limits only from complete metadata', async () => {
     const fetch = fakeFetch(() => ({
       body: {
         data: [
           {
-            id: 'price_starter', unit_amount: 1500, currency: 'usd', recurring: { interval: 'month' },
-            product: { id: 'prod_1', name: 'Starter', marketing_features: [{ name: '1 site' }, { name: 'Free SSL' }], metadata: { sites: '1', disk_gb: '10', bandwidth_gb: '100' } },
+            id: 'price_essential', unit_amount: 2900, currency: 'gbp', recurring: { interval: 'month' },
+            product: { id: 'prod_1', name: 'Essential', marketing_features: [{ name: 'Managed UK-focused hosting' }, { name: 'Email support' }], metadata: { sites: '1', disk_gb: '10', bandwidth_gb: '100' } },
           },
-          { id: 'price_free', unit_amount: null, currency: 'usd', recurring: { interval: 'month' }, product: { name: 'Free' } },
+          { id: 'price_plus', unit_amount: 4900, currency: 'gbp', recurring: { interval: 'month' }, product: { name: 'Plus', marketing_features: [], metadata: { sites: '5' } } },
+          { id: 'price_free', unit_amount: null, currency: 'gbp', recurring: { interval: 'month' }, product: { name: 'Free' } },
+          { id: 'price_usd', unit_amount: 999, currency: 'usd', recurring: { interval: 'month' }, product: { name: 'Other' } },
         ],
       },
     }));
     const { billing } = billingWith({ env: ENV, fetch });
     const plans = await billing.listPlans();
-    assert.deepEqual(plans, [{
-      id: 'price_starter', name: 'Starter', priceCents: 1500, interval: 'month', currency: 'USD',
-      features: ['1 site', 'Free SSL'], limits: { sites: 1, diskGb: 10, bandwidthGb: 100 },
-    }]);
+    assert.deepEqual(plans, [
+      {
+        id: 'price_essential', name: 'Essential', priceCents: 2900, interval: 'month', currency: 'GBP',
+        features: ['Managed UK-focused hosting', 'Email support'], limits: { sites: 1, diskGb: 10, bandwidthGb: 100 },
+      },
+      { id: 'price_plus', name: 'Plus', priceCents: 4900, interval: 'month', currency: 'GBP', features: [] },
+    ]);
     const call = fetch.calls[0];
     assert.equal(call.method, 'GET');
     assert.equal(call.url.origin + call.url.pathname, `${BASE}/v1/prices`);
@@ -388,15 +451,15 @@ describe('stripe mode', () => {
   test('createCustomer posts form fields with an Idempotency-Key', async () => {
     const fetch = fakeFetch(() => ({ body: { id: 'cus_123', object: 'customer' } }));
     const { billing } = billingWith({ env: ENV, fetch });
-    const out = await billing.createCustomer({ name: 'Maya Fernandez', email: 'maya@acme.example', company: 'Acme Roasters' });
+    const out = await billing.createCustomer({ name: 'Dave Smith', email: 'dave@smithandsons.example', company: 'Smith & Sons' });
     assert.deepEqual(out, { customerId: 'cus_123' });
     const call = fetch.calls[0];
     assert.equal(call.method, 'POST');
     assert.equal(call.url.href, `${BASE}/v1/customers`);
     assert.equal(call.headers.get('content-type'), 'application/x-www-form-urlencoded');
-    assert.equal(call.form.get('name'), 'Maya Fernandez');
-    assert.equal(call.form.get('email'), 'maya@acme.example');
-    assert.equal(call.form.get('metadata[company]'), 'Acme Roasters');
+    assert.equal(call.form.get('name'), 'Dave Smith');
+    assert.equal(call.form.get('email'), 'dave@smithandsons.example');
+    assert.equal(call.form.get('metadata[company]'), 'Smith & Sons');
     assert.match(call.headers.get('idempotency-key'), /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
   });
 
@@ -404,22 +467,22 @@ describe('stripe mode', () => {
     const fetch = fakeFetch(() => ({
       body: {
         id: 'sub_1', object: 'subscription',
-        latest_invoice: { id: 'in_1', object: 'invoice', number: null, customer: 'cus_123', created: sec(NOW), due_date: sec(NOW + 7 * DAY), amount_due: 1500, total: 1500, status: 'open' },
+        latest_invoice: { id: 'in_1', object: 'invoice', number: null, customer: 'cus_123', created: sec(NOW), due_date: sec(NOW + 7 * DAY), amount_due: 2900, total: 2900, status: 'open' },
       },
     }));
     const { billing } = billingWith({ env: ENV, fetch });
-    const out = await billing.subscribe({ customerId: 'cus_123', planId: 'price_starter' });
+    const out = await billing.subscribe({ customerId: 'cus_123', planId: 'price_essential' });
     assert.equal(out.subscriptionId, 'sub_1');
     assert.equal(out.invoice.id, 'in_1');
     assert.equal(out.invoice.number, 'in_1');
-    assert.equal(out.invoice.amountCents, 1500);
+    assert.equal(out.invoice.amountCents, 2900);
     assert.equal(out.invoice.status, 'open');
     assert.equal(out.invoice.issuedAt, iso(NOW));
     assert.equal(out.invoice.dueAt, iso(NOW + 7 * DAY));
     const call = fetch.calls[0];
     assert.equal(call.url.href, `${BASE}/v1/subscriptions`);
     assert.equal(call.form.get('customer'), 'cus_123');
-    assert.equal(call.form.get('items[0][price]'), 'price_starter');
+    assert.equal(call.form.get('items[0][price]'), 'price_essential');
     assert.equal(call.form.get('collection_method'), 'send_invoice');
     assert.equal(call.form.get('days_until_due'), '7');
     assert.equal(call.form.get('expand[]'), 'latest_invoice');
@@ -430,16 +493,16 @@ describe('stripe mode', () => {
       body: {
         object: 'list',
         data: [
-          { id: 'in_paid', number: 'LR-2026-0002', customer: { id: 'cus_123' }, created: sec(Date.UTC(2026, 8, 1)), due_date: sec(Date.UTC(2026, 8, 8)), amount_due: 0, total: 3900, status: 'paid', status_transitions: { paid_at: sec(Date.UTC(2026, 8, 2, 9)) } },
+          { id: 'in_paid', number: 'LR-2026-0002', customer: { id: 'cus_123' }, created: sec(Date.UTC(2026, 8, 1)), due_date: sec(Date.UTC(2026, 8, 8)), amount_due: 0, total: 4900, status: 'paid', status_transitions: { paid_at: sec(Date.UTC(2026, 8, 2, 9)) } },
           { id: 'in_due', number: null, customer: 'cus_123', created: sec(Date.UTC(2026, 7, 1)), due_date: sec(Date.UTC(2026, 7, 8)), amount_due: 2000, total: 2000, status: 'open' },
           { id: 'in_bad', number: null, customer: 'cus_123', created: sec(Date.UTC(2026, 7, 1)), due_date: null, amount_due: 500, total: 500, status: 'uncollectible' },
         ],
       },
     }));
     const store = seededStore();
-    store.update('clients', 'cli_acme', { billingCustomerId: 'cus_123' });
+    store.update('clients', 'cli_smith', { billingCustomerId: 'cus_123' });
     const { billing } = billingWith({ env: ENV, store, fetch });
-    const invoices = await billing.listInvoices({ clientId: 'cli_acme', limit: 50 });
+    const invoices = await billing.listInvoices({ clientId: 'cli_smith', limit: 50 });
 
     const call = fetch.calls[0];
     assert.equal(call.url.pathname, '/v1/invoices');
@@ -448,11 +511,11 @@ describe('stripe mode', () => {
 
     const byId = Object.fromEntries(invoices.map((i) => [i.id, i]));
     assert.equal(byId.in_paid.status, 'paid');
-    assert.equal(byId.in_paid.amountCents, 3900);
+    assert.equal(byId.in_paid.amountCents, 4900);
     assert.equal(byId.in_paid.paidAt, iso(Date.UTC(2026, 8, 2, 9)));
     assert.equal(byId.in_paid.number, 'LR-2026-0002');
-    assert.equal(byId.in_paid.clientId, 'cli_acme');
-    assert.equal(byId.in_paid.clientName, 'Acme Roasters');
+    assert.equal(byId.in_paid.clientId, 'cli_smith');
+    assert.equal(byId.in_paid.clientName, 'Smith & Sons');
     assert.equal(byId.in_due.status, 'overdue');
     assert.equal(byId.in_due.amountCents, 2000);
     assert.equal(byId.in_due.number, 'in_due');
@@ -481,7 +544,7 @@ describe('stripe mode', () => {
   test('Stripe errors are 502s with the secret key redacted', async () => {
     const fetch = fakeFetch(() => ({ status: 401, body: { error: { message: `Invalid API Key provided: ${KEY}` } } }));
     const { billing } = billingWith({ env: ENV, fetch });
-    const err = await billing.createCustomer({ name: 'Maya Fernandez', email: 'maya@acme.example', company: '' }).catch((e) => e);
+    const err = await billing.createCustomer({ name: 'Dave Smith', email: 'dave@smithandsons.example', company: '' }).catch((e) => e);
     assert.equal(err.status, 502);
     assert.equal(err.code, 'billing_upstream');
     assert.ok(!err.message.includes(KEY));

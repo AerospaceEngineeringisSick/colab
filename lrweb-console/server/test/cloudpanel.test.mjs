@@ -86,9 +86,9 @@ test('bootstrapScript embeds a valid public key and swaps a malformed one for a 
 test('createSite in ssh mode runs clpctl with the exact argv and no shell', async () => {
   const { exec, calls } = fakeExec();
   const cp = createCloudPanel({ config: sshConfig(), store: freshStore(), exec });
-  const spec = parseSiteSpec({ serverId: 'srv_nyc1', domain: 'shop.example.com', type: 'php' });
+  const spec = parseSiteSpec({ serverId: 'srv_ldn1', domain: 'shop.example.com', type: 'php' });
 
-  const { siteUser, siteUserPassword } = await cp.createSite('srv_nyc1', spec);
+  const { siteUser, siteUserPassword } = await cp.createSite('srv_ldn1', spec);
 
   assert.equal(calls.length, 1);
   const { file, args, opts } = calls[0];
@@ -116,9 +116,9 @@ test('ssh failures never put argv or passwords into the error', async () => {
     });
   });
   const cp = createCloudPanel({ config: sshConfig(), store: freshStore(), exec });
-  const spec = parseSiteSpec({ serverId: 'srv_nyc1', domain: 'shop.example.com', type: 'static' });
+  const spec = parseSiteSpec({ serverId: 'srv_ldn1', domain: 'shop.example.com', type: 'static' });
 
-  await assert.rejects(cp.createSite('srv_nyc1', spec), (err) => {
+  await assert.rejects(cp.createSite('srv_ldn1', spec), (err) => {
     assert.equal(err.status, 502);
     assert.equal(err.code, 'clpctl_failed');
     assert.ok(password.length > 10);
@@ -134,7 +134,7 @@ test('an ssh connection failure is reported with the ssh_failed code', async () 
     throw Object.assign(new Error('Command failed: ssh ...'), { code: 255, stderr: 'Permission denied (publickey).\n' });
   });
   const cp = createCloudPanel({ config: sshConfig(), store: freshStore(), exec });
-  await assert.rejects(cp.deleteSite('srv_nyc1', 'shop.example.com'), (err) => {
+  await assert.rejects(cp.deleteSite('srv_ldn1', 'shop.example.com'), (err) => {
     assert.equal(err.status, 502);
     assert.equal(err.code, 'ssh_failed');
     assert.equal(err.message, 'SSH connection failed: Permission denied (publickey).');
@@ -148,10 +148,10 @@ test('hostile domains are rejected before any ssh call', async () => {
     const { exec, calls } = fakeExec();
     const cp = createCloudPanel({ config: sshConfig(), store, exec });
     await assert.rejects(
-      cp.createSite('srv_nyc1', { domain, type: 'static', siteUser: 'shopexample' }),
+      cp.createSite('srv_ldn1', { domain, type: 'static', siteUser: 'shopexample' }),
       (err) => err instanceof ValidationError && err.status === 400 && err.field === 'domain',
     );
-    await assert.rejects(cp.deleteSite('srv_nyc1', domain), ValidationError);
+    await assert.rejects(cp.deleteSite('srv_ldn1', domain), ValidationError);
     assert.equal(calls.length, 0, domain);
   }
 });
@@ -161,12 +161,12 @@ test('mock checkServer brings a pending server online', async () => {
   const cp = createCloudPanel({ config: mockConfig(), store, exec: noExec });
   const events = [];
 
-  const result = await cp.checkServer('srv_lon1', (e) => events.push(`${e.key}:${e.status}`));
+  const result = await cp.checkServer('srv_stg1', (e) => events.push(`${e.key}:${e.status}`));
 
   assert.equal(result.ok, true);
   assert.equal(result.clpctlVersion, '2.x');
-  assert.equal(store.get('servers', 'srv_lon1').status, 'online');
-  assert.equal(store.get('servers', 'srv_lon1').panelVersion, '2.5.1');
+  assert.equal(store.get('servers', 'srv_stg1').status, 'online');
+  assert.equal(store.get('servers', 'srv_stg1').panelVersion, '2.5.1');
   assert.deepEqual(events, [
     'ssh:running', 'ssh:done', 'clpctl:running', 'clpctl:done',
     'panel:running', 'panel:done', 'os:running', 'os:done',
@@ -193,7 +193,7 @@ test('mock checkServer reports an ssh failure and leaves the status alone', asyn
 
 test('mock metrics returns a 60-point series that stays inside its band', async () => {
   const cp = createCloudPanel({ config: mockConfig(), store: freshStore(), exec: noExec });
-  const m = await cp.metrics('srv_nyc1');
+  const m = await cp.metrics('srv_ldn1');
 
   for (const key of ['cpu', 'mem', 'net', 'labels']) assert.equal(m[key].length, 60, key);
   assert.ok(m.cpu.every((v) => v >= 15 && v <= 55));
@@ -205,26 +205,26 @@ test('mock metrics returns a 60-point series that stays inside its band', async 
   assert.ok(m.current.disk >= 28 && m.current.disk <= 73);
 
   // Within the same minute the numbers must not change.
-  const again = await cp.metrics('srv_nyc1');
+  const again = await cp.metrics('srv_ldn1');
   if (again.labels.at(-1) === m.labels.at(-1)) assert.deepEqual(again.cpu, m.cpu);
 });
 
 test('mock metrics keeps the degraded server hot', async () => {
   const cp = createCloudPanel({ config: mockConfig(), store: freshStore(), exec: noExec });
-  const m = await cp.metrics('srv_syd1');
+  const m = await cp.metrics('srv_dub1');
   assert.ok(m.cpu.every((v) => v >= 80 && v <= 92), JSON.stringify(m.cpu));
 });
 
 test('pending servers have no metrics and refuse metrics and site creation', async () => {
   const cp = createCloudPanel({ config: mockConfig(), store: freshStore(), exec: noExec });
 
-  await assert.rejects(cp.metrics('srv_lon1'), (err) => err.status === 409 && err.code === 'not_ready');
+  await assert.rejects(cp.metrics('srv_stg1'), (err) => err.status === 409 && err.code === 'not_ready');
   await assert.rejects(
-    cp.createSite('srv_lon1', { domain: 'a.example.com', type: 'static', siteUser: 'aexample' }),
+    cp.createSite('srv_stg1', { domain: 'a.example.com', type: 'static', siteUser: 'aexample' }),
     (err) => err.status === 409,
   );
   const servers = await cp.listServers();
-  assert.equal('metrics' in servers.find((s) => s.id === 'srv_lon1'), false);
+  assert.equal('metrics' in servers.find((s) => s.id === 'srv_stg1'), false);
 });
 
 test('listServers attaches siteCount and the current metrics snapshot', async () => {
@@ -232,10 +232,10 @@ test('listServers attaches siteCount and the current metrics snapshot', async ()
   const cp = createCloudPanel({ config: mockConfig(), store, exec: noExec });
 
   const servers = await cp.listServers();
-  const nyc = servers.find((s) => s.id === 'srv_nyc1');
+  const nyc = servers.find((s) => s.id === 'srv_ldn1');
 
   assert.ok(nyc.siteCount > 0);
-  assert.equal(nyc.siteCount, store.find('sites', (s) => s.serverId === 'srv_nyc1').length);
+  assert.equal(nyc.siteCount, store.find('sites', (s) => s.serverId === 'srv_ldn1').length);
   assert.equal(nyc.panelUrl, 'https://203.0.113.10:8443');
   assert.equal(typeof nyc.metrics.cpu, 'number');
 });
@@ -245,8 +245,8 @@ test('mock createSite returns credentials once and never writes them to the stor
   const cp = createCloudPanel({ config: mockConfig(), store, exec: noExec });
   const events = [];
 
-  const spec = parseSiteSpec({ serverId: 'srv_nyc1', domain: 'brand.example.com', type: 'static' });
-  const { siteUser, siteUserPassword } = await cp.createSite('srv_nyc1', spec, (e) => events.push(e.status));
+  const spec = parseSiteSpec({ serverId: 'srv_ldn1', domain: 'brand.example.com', type: 'static' });
+  const { siteUser, siteUserPassword } = await cp.createSite('srv_ldn1', spec, (e) => events.push(e.status));
 
   assert.equal(siteUser, 'brandexample');
   assert.match(siteUserPassword, /^[A-Za-z0-9]{22}$/);
@@ -272,7 +272,7 @@ test('ssh metrics parse the fixed probe and pad history with the first sample', 
   const { exec, calls } = fakeExec(async () => ({ stdout: output, stderr: '' }));
   const cp = createCloudPanel({ config: sshConfig(), store: freshStore(), exec });
 
-  const m = await cp.metrics('srv_nyc1');
+  const m = await cp.metrics('srv_ldn1');
 
   assert.equal(calls[0].file, 'ssh');
   assert.equal(m.cpu.length, 60);
@@ -296,12 +296,12 @@ test('ssh checkServer stops at the first failing step and reports the rest as sk
   const cp = createCloudPanel({ config: sshConfig(), store, exec });
   const events = [];
 
-  const result = await cp.checkServer('srv_nyc1', (e) => events.push(`${e.key}:${e.status}`));
+  const result = await cp.checkServer('srv_ldn1', (e) => events.push(`${e.key}:${e.status}`));
 
   assert.equal(result.ok, false);
   assert.match(result.error, /^SSH connection failed: ssh: connect to host 203\.0\.113\.10/);
   assert.deepEqual(events, ['ssh:running', 'ssh:failed', 'clpctl:skipped', 'panel:skipped', 'os:skipped']);
-  assert.equal(store.get('servers', 'srv_nyc1').status, 'online');
+  assert.equal(store.get('servers', 'srv_ldn1').status, 'online');
 });
 
 test('redact strips password flags and known secret values', () => {

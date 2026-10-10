@@ -115,16 +115,15 @@ function computeSummary({ invoices, activeSubs, plans, currency, now }) {
 
 // ---- mock: deterministic demo history kept in the store ----
 
+// The three LRWeb care plans (real prices, GBP, monthly). Feature wording is copied from the LRWeb site.
+// Care plans have no hosting limits, so `limits` is left out rather than invented.
 const PLANS = [
-  { id: 'plan_starter', name: 'Starter', priceCents: 1500, interval: 'month', popular: false,
-    features: ['1 website', '10 GB disk', '100 GB bandwidth', 'Free SSL certificates'],
-    limits: { sites: 1, diskGb: 10, bandwidthGb: 100 } },
-  { id: 'plan_business', name: 'Business', priceCents: 3900, interval: 'month', popular: true,
-    features: ['5 websites', '50 GB disk', '500 GB bandwidth', 'Staging environment', 'Priority support'],
-    limits: { sites: 5, diskGb: 50, bandwidthGb: 500 } },
-  { id: 'plan_agency', name: 'Agency', priceCents: 9900, interval: 'month', popular: false,
-    features: ['25 websites', '200 GB disk', '2000 GB bandwidth', 'Multiple PHP and Node.js versions', 'Dedicated onboarding'],
-    limits: { sites: 25, diskGb: 200, bandwidthGb: 2000 } },
+  { id: 'plan_essential', name: 'Essential', priceCents: 2900, interval: 'month', popular: false,
+    features: ['Managed UK-focused hosting', 'Core, theme and plugin updates', 'Daily off-site backups', 'Uptime and security monitoring', 'SSL certificate included', 'Email support'] },
+  { id: 'plan_plus', name: 'Plus', priceCents: 4900, interval: 'month', popular: true,
+    features: ['Everything in Essential', 'Monthly content edits included', 'Performance optimisation', 'Priority support', 'Quarterly site health review'] },
+  { id: 'plan_pro', name: 'Pro', priceCents: 8900, interval: 'month', popular: false,
+    features: ['Everything in Plus', 'E-commerce and booking support', 'More included edit time', 'Same-day response target', 'Monthly performance report'] },
 ];
 
 const invoiceId = (seq) => `inv_${invoiceSeq(seq)}`;
@@ -150,22 +149,28 @@ function mulberry32(seed) {
   };
 }
 
+/** Demo clients (seed.mjs ids) whose latest bill is still unpaid two days after it was sent, so the Open filter has data. */
+const RECENT_OPEN = new Set(['cli_smith', 'cli_volt']);
+
 /** Monthly invoices for one active or suspended client, oldest first (max 12). Depends only on client, now and rng. */
 function monthlyHistory(client, nowMs, rng) {
   const created = new Date(client.createdAt);
-  const day = Math.min(created.getUTCDate(), 28);
+  const since = Date.UTC(created.getUTCFullYear(), created.getUTCMonth(), created.getUTCDate());
+  const recent = RECENT_OPEN.has(client.id);
+  // Bills go out on the day of the month the client joined; a recent-open client is billed two days ago instead.
+  const day = recent ? Math.min(28, Math.max(1, new Date(nowMs).getUTCDate() - 2)) : Math.min(created.getUTCDate(), 28);
   const endIdx = new Date(nowMs).getUTCFullYear() * 12 + new Date(nowMs).getUTCMonth();
   const startIdx = created.getUTCFullYear() * 12 + created.getUTCMonth();
   const issued = [];
   for (let idx = Math.max(startIdx, endIdx - 11); idx <= endIdx; idx++) {
     const ms = Date.UTC(Math.floor(idx / 12), idx % 12, day, 9);
-    if (ms <= nowMs) issued.push(ms);
+    if (ms <= nowMs && ms >= since) issued.push(ms);
   }
-  const latestOpen = rng() < 0.25;
   const suspended = client.status === 'suspended';
   return issued.map((issuedMs, i) => {
     const fromLatest = issued.length - 1 - i;
-    const unpaid = suspended ? fromLatest < 2 : fromLatest === 0 && latestOpen;
+    // A suspended client's two latest bills are unpaid, so the older one is past due.
+    const unpaid = suspended ? fromLatest < 2 : recent && fromLatest === 0;
     const paidDays = 2 + Math.floor(rng() * 4);
     return { issuedMs, unpaid, paidMs: Math.min(issuedMs + paidDays * DAY, nowMs) };
   });
@@ -189,7 +194,7 @@ function mockBackend({ ctx }) {
       subs.push({ ...sub, status: c.status === 'suspended' ? 'past_due' : 'active' });
       const rng = mulberry32(hash32(c.id));
       for (const h of monthlyHistory(c, now(), rng)) {
-        rows.push({ ...h, customerId: c.billingCustomerId, amountCents: plan.priceCents, description: `${plan.name} plan, ${monthYear(h.issuedMs)}` });
+        rows.push({ ...h, customerId: c.billingCustomerId, amountCents: plan.priceCents, description: `${plan.name} care plan, ${monthYear(h.issuedMs)}` });
       }
     }
     subs.forEach((s) => store.insert('subscriptions', s));
@@ -241,7 +246,7 @@ function mockBackend({ ctx }) {
         id: invoiceId(seq),
         number: invoiceNumber(nowMs, seq),
         customerId,
-        description: `${plan.name} plan, ${monthYear(nowMs)}`,
+        description: `${plan.name} care plan, ${monthYear(nowMs)}`,
         amountCents: plan.priceCents,
         status: 'open',
         issuedAt: iso(nowMs),
@@ -359,7 +364,6 @@ function whmcsBackend({ config, ctx }) {
             .split(/<br\s*\/?>|\r?\n/i)
             .map((line) => line.replace(/<[^>]*>/g, '').trim())
             .filter(Boolean),
-          limits: { sites: 0, diskGb: 0, bandwidthGb: 0 },
         }];
       });
     },
@@ -501,6 +505,8 @@ function stripeBackend({ config, ctx }) {
         if (!(price.unit_amount > 0) || (interval !== 'month' && interval !== 'year')) return [];
         if (String(price.currency ?? '').toUpperCase() !== currency) return [];
         const meta = product.metadata ?? {};
+        // Limits only when the metadata sets all three; a missing value is not a zero limit.
+        const hasLimits = ['sites', 'disk_gb', 'bandwidth_gb'].every((k) => /^\d+$/.test(String(meta[k] ?? '').trim()));
         return [{
           id: price.id,
           name: product.name || price.nickname || price.id,
@@ -508,7 +514,7 @@ function stripeBackend({ config, ctx }) {
           interval,
           currency,
           features: asArray(product.marketing_features).map((f) => f?.name).filter(Boolean),
-          limits: { sites: intOf(meta.sites), diskGb: intOf(meta.disk_gb), bandwidthGb: intOf(meta.bandwidth_gb) },
+          ...(hasLimits ? { limits: { sites: intOf(meta.sites), diskGb: intOf(meta.disk_gb), bandwidthGb: intOf(meta.bandwidth_gb) } } : {}),
         }];
       });
     },

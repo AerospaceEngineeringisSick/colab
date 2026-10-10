@@ -1,0 +1,64 @@
+/* Team view: only the layout the shared components cannot express. */
+
+/* ---------- setup intro and password forms ---------- */
+.team-intro { max-width: 64ch; line-height: 1.6; color: var(--ink-2); }
+.team-form { max-width: 560px; }
+.team-form__actions { display: flex; flex-wrap: wrap; gap: var(--s2); padding-top: var(--s1); }
+.team-sub { font-family: var(--head); font-weight: 700; font-size: var(--fs-md); letter-spacing: -.01em; color: var(--ink); }
+
+/* show/hide sits inside the password box */
+.pw { position: relative; }
+.pw .input { padding-right: 84px; }
+.pw__toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); min-width: 66px; }
+
+/* strength meter: four bars, coloured by level */
+.pw-meter { --c: var(--ink-3); display: grid; gap: 6px; }
+.pw-meter[data-level="1"] { --c: var(--bad); }
+.pw-meter[data-level="2"] { --c: var(--warn); }
+.pw-meter[data-level="3"], .pw-meter[data-level="4"] { --c: var(--ok); }
+.pw-meter__bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pw-meter__bars i { height: 6px; border-radius: var(--r-pill); background: var(--field); box-shadow: inset 0 0 0 1px var(--g-stroke); transition: background .3s var(--ease), box-shadow .3s var(--ease); }
+.pw-meter__bars i.is-on { background: var(--c); box-shadow: 0 0 10px color-mix(in oklab, var(--c) 55%, transparent); }
+.pw-meter__text { min-height: 1em; font-size: var(--fs-xs); font-weight: 600; color: var(--ink-2); }
+
+/* ---------- must-change banner ---------- */
+.team-banner { align-items: flex-start; padding: var(--s5); }
+.team-banner__body { display: grid; gap: var(--s3); flex: 1; min-width: 0; }
+.team-banner h2 { font-family: var(--head); font-weight: 750; font-size: var(--fs-lg); letter-spacing: -.02em; color: var(--ink); }
+.team-banner p { color: var(--ink-2); line-height: 1.55; }
+
+/* ---------- people table ---------- */
+.team-person { display: grid; gap: 2px; min-width: 0; }
+.team-person__name { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2); min-width: 0; }
+.team-person__name strong { overflow-wrap: anywhere; }
+.team-person small { color: var(--ink-3); overflow-wrap: anywhere; }
+.team-you { height: 22px; padding: 0 9px; font-size: .6875rem; color: var(--accent); background: color-mix(in oklab, var(--accent) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 45%, transparent); }
+.team-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.team-actions .icon-btn:disabled { opacity: .45; cursor: progress; }
+.team-actions .icon-btn--danger:hover { color: var(--bad); background: color-mix(in oklab, var(--bad) 14%, transparent); }
+
+/* ---------- roles legend ---------- */
+.team-role { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: var(--s3); font-size: var(--fs-sm); color: var(--ink-2); }
+.team-role p { line-height: 1.5; min-width: 0; }
+
+/* ---------- activity ---------- */
+.team-event { display: grid; gap: 2px; min-width: 0; }
+.team-event small { overflow-wrap: anywhere; }
+
+/* ---------- one-time password ---------- */
+.team-otp .copyblock pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.0625rem; letter-spacing: .02em; }
+
+/* ---------- phones ---------- */
+@media (max-width: 640px) {
+  .team-banner { padding: var(--s4); }
+  .team-form { max-width: none; }
+  .team-form__actions .btn { flex: 1 1 auto; }
+  .team-role { grid-template-columns: 1fr; gap: 6px; }
+  /* the person leads each stacked row, without a label */
+  .table td.team-main { display: block; text-align: left; }
+  .table td.team-main::before { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team *, .team *::before, .team *::after { transition: none !important; animation: none !important; }
+}

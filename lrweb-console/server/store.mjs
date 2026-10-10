@@ -3,12 +3,18 @@ import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const PREFIX = { servers: 'srv', clients: 'cli', sites: 'sit', jobs: 'job', invoices: 'inv', subscriptions: 'sub', events: 'evt' };
+const PREFIX = {
+  servers: 'srv', clients: 'cli', sites: 'sit', jobs: 'job', invoices: 'inv', subscriptions: 'sub', events: 'evt',
+  users: 'usr', sessions: 'ses', pools: 'lbp', chatKeys: 'key', chatMessages: 'msg', chatMailbox: 'mbx', audit: 'aud',
+};
 
 export function createStore({ dir, memory = false, debounceMs = 150 } = {}) {
   const file = dir ? join(dir, 'state.json') : '';
   /** @type {Record<string, any[]>} */
-  let db = { servers: [], clients: [], sites: [], jobs: [], invoices: [], subscriptions: [], events: [], meta: {} };
+  let db = {
+    servers: [], clients: [], sites: [], jobs: [], invoices: [], subscriptions: [], events: [],
+    users: [], sessions: [], pools: [], chatKeys: [], chatMessages: [], chatMailbox: [], audit: [], meta: {},
+  };
   let timer = null;
 
   if (!memory && file) {

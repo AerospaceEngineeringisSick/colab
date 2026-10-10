@@ -9,3 +9,6 @@
 .billing-plan__name { gap: var(--s2); }
 .billing-plan--popular { margin: 4px 0; padding: 12px 14px; border-top-color: transparent; border-radius: var(--r-md); background: color-mix(in oklab, var(--accent) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 30%, transparent); }
 .billing-foot { font-size: var(--fs-sm); }
+
+/* Badges keep the sentence case the copy is written in (the global badge rule capitalises every word). */
+[data-route="billing"] .badge { text-transform: none; }

@@ -1,0 +1,17 @@
+/* Settings: the "For whoever sets up the server" disclosure inside each connection card. Colours and type come from the shared tokens. */
+
+.integration__more { border-top: 1px solid var(--line); padding-top: var(--s3); min-width: 0; }
+.integration__more > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-height: 44px; cursor: pointer; font-weight: 600; color: var(--ink-2); list-style: none; border-radius: var(--r-sm); }
+.integration__more > summary::-webkit-details-marker { display: none; }
+.integration__more > summary:hover { color: var(--ink); }
+.integration__more > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.integration__chev { flex: none; color: var(--ink-3); }
+@media (prefers-reduced-motion: no-preference) {
+  .integration__chev { transition: transform .2s var(--ease); }
+}
+.integration__more[open] > summary .integration__chev { transform: rotate(180deg); }
+/* The admin token field keeps a readable width; the button drops below it on phones. */
+.token-row > .grow { flex: 1 1 260px; min-width: 0; }
+.integration__body { display: grid; gap: var(--s3); padding-top: var(--s3); min-width: 0; }
+.integration__body .kv { min-width: 0; }
+.integration__body .envlist { margin: 0; padding-left: 1.2em; list-style: disc; overflow-wrap: anywhere; }

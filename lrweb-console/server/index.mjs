@@ -38,7 +38,7 @@ class HttpError extends Error {
 }
 const notFound = (what = 'Resource') => new HttpError(404, 'not_found', `${what} not found`);
 
-export function createApp({ config, store, cloudpanel, billing, jobs }) {
+export function createApp({ config, store, cloudpanel, billing, jobs, auth = null, extraRoutes = [] }) {
   const addEvent = (kind, text) => store.insert('events', { ts: new Date().toISOString(), kind, text });
   const sha = (s) => createHash('sha256').update(String(s)).digest();
   const tokenHash = config.adminToken ? sha(config.adminToken) : null;
@@ -136,13 +136,18 @@ export function createApp({ config, store, cloudpanel, billing, jobs }) {
   /* ---------- routes ---------- */
 
   const routes = [];
-  const route = (method, path, handler) => {
+  const route = (method, path, handler, opts = {}) => {
     const keys = [];
     const re = new RegExp(`^${path.replace(/:([a-z]+)/gi, (_, k) => { keys.push(k); return '([^/]+)'; })}$`);
-    routes.push({ method, re, keys, handler });
+    routes.push({ method, re, keys, handler, auth: opts.auth ?? 'any', roles: opts.roles });
   };
+  /** Mounts route lists exported by feature modules (auth, chat, lb, migrate). */
+  const mountRoutes = (list) => list.forEach((r) => route(r.method, r.path, r.handler, { auth: r.auth, roles: r.roles }));
 
-  route('GET', '/api/health', () => ({ version: VERSION, authRequired: Boolean(tokenHash), integrations: { cloudpanel: cloudpanel.describe(), billing: billing.describe() } }));
+  route('GET', '/api/health', () => ({
+    version: VERSION, authRequired: Boolean(tokenHash) || Boolean(auth?.hasUsers()), accounts: { enabled: Boolean(auth?.hasUsers()) },
+    integrations: { cloudpanel: cloudpanel.describe(), billing: billing.describe() },
+  }), { auth: 'public' });
   route('GET', '/api/meta', () => OPTIONS);
 
   route('GET', '/api/overview', async () => {
@@ -228,7 +233,7 @@ export function createApp({ config, store, cloudpanel, billing, jobs }) {
     const server = await requireServer(spec.serverId);
     if (!['online', 'degraded'].includes(server.status)) throw new HttpError(409, 'server_not_ready', `${server.name} is not online yet. Finish onboarding it first.`, 'serverId');
     if (spec.clientId && !store.get('clients', spec.clientId)) throw new ValidationError('Unknown client', 'clientId');
-    if (store.findOne('sites', (s) => s.domain === spec.domain)) throw new HttpError(409, 'domain_taken', `${spec.domain} already exists`, 'domain');
+    if (store.findOne('sites', (s) => s.domain === spec.domain && !s.migratedFrom)) throw new HttpError(409, 'domain_taken', `${spec.domain} already exists`, 'domain');
   };
   route('POST', '/api/sites', async ({ body }) => {
     const spec = parseSiteSpec(body);
@@ -280,7 +285,7 @@ export function createApp({ config, store, cloudpanel, billing, jobs }) {
     });
   });
 
-  route('GET', '/api/jobs/:id', ({ params }) => jobs.get(params.id) || (() => { throw notFound('Job'); })());
+  route('GET', '/api/jobs/:id', ({ params }) => jobs.get(params.id) || (() => { throw notFound('Job'); })(), { roles: ['owner', 'admin'] });
 
   /* billing */
   route('GET', '/api/billing/plans', () => billing.listPlans());
@@ -294,6 +299,8 @@ export function createApp({ config, store, cloudpanel, billing, jobs }) {
     addEvent('billing', `Invoice ${inv.number} marked paid`);
     return inv;
   });
+
+  extraRoutes.forEach(mountRoutes);
 
   /* ---------- request plumbing ---------- */
 
@@ -317,26 +324,68 @@ export function createApp({ config, store, cloudpanel, billing, jobs }) {
     try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw new HttpError(400, 'bad_json', 'Invalid JSON'); }
   }
 
-  function authenticate(req) {
-    if (!tokenHash) return;
-    const ip = req.socket.remoteAddress || '?';
-    const rec = authFails.get(ip);
-    if (rec && rec.n >= 10 && Date.now() < rec.reset) throw new HttpError(429, 'rate_limited', 'Too many failed attempts. Try again in a minute.');
+  const SYSTEM = Object.freeze({ id: 'system', username: 'admin-token', name: 'Admin token', role: 'owner', system: true });
+  const LOCAL = Object.freeze({ id: 'local', username: 'local', name: 'Local operator', role: 'owner', local: true });
+  const ALL_ROLES = ['owner', 'admin', 'member'];
+  const ipOf = (req) => req.socket.remoteAddress || '?';
+
+  /** Who is calling? Admin token (break-glass), a personal account session, open local mode, or nobody. */
+  function principalOf(req) {
     const m = /^Bearer (.+)$/.exec(req.headers.authorization || '');
-    if (m && timingSafeEqual(sha(m[1]), tokenHash)) { authFails.delete(ip); return; }
+    if (m) {
+      if (tokenHash && timingSafeEqual(sha(m[1]), tokenHash)) return { user: SYSTEM };
+      const u = auth?.authenticate(m[1]);
+      return u ? { user: u } : { bad: true };
+    }
+    if (!tokenHash && !auth?.hasUsers()) return { user: LOCAL };
+    return { none: true };
+  }
+
+  function failedCredentials(req) {
+    const ip = ipOf(req);
+    const rec = authFails.get(ip);
     const n = rec && Date.now() < rec.reset ? rec.n + 1 : 1;
     authFails.set(ip, { n, reset: Date.now() + 60_000 });
-    throw new HttpError(401, 'unauthorized', 'A valid admin token is required');
+  }
+
+  /** Enforces the route's auth level and role. Returns the acting user (or null for public routes). */
+  function authorize(req, hit) {
+    const ip = ipOf(req);
+    const rec = authFails.get(ip);
+    const throttled = rec && rec.n >= 10 && Date.now() < rec.reset;
+    // While an address is throttled, refuse EVERY credentialed attempt, right or wrong, so guessing gains nothing.
+    // The counter only expires with time (a successful sign-in must not reset it, or an attacker could interleave their own).
+    if (throttled && (req.headers.authorization || (hit.auth === 'public' && req.method !== 'GET'))) {
+      throw new HttpError(429, 'rate_limited', 'Too many failed attempts. Try again in a minute.');
+    }
+    const p = principalOf(req);
+    if (hit.auth === 'public') return p.user || null;
+    if (!p.user) {
+      if (p.bad) failedCredentials(req);
+      throw new HttpError(401, 'unauthorized', auth?.hasUsers() ? 'Please sign in' : 'A valid admin token is required');
+    }
+    const user = p.user;
+    // A one-time password is only good for choosing a real one: everything else is refused until that is done.
+    if (user.mustChangePassword && !['/api/auth/password', '/api/auth/me', '/api/auth/logout'].includes(new URL(req.url, 'http://x').pathname)) {
+      throw new HttpError(403, 'password_change_required', 'Please choose your own password first (Team page).');
+    }
+    if (hit.auth === 'account' && (user.system || user.local)) {
+      throw new HttpError(403, 'account_required', 'Sign in with your own account to use this. Create one on the Team page.');
+    }
+    const allowed = hit.roles ?? (hit.method === 'GET' ? ALL_ROLES : ['owner', 'admin']);
+    if (!allowed.includes(user.role)) throw new HttpError(403, 'forbidden', 'Your role does not allow this. Ask an owner or admin.');
+    return user;
   }
 
   async function handleApi(req, res, url) {
+    let hit;
     try {
-      const hit = routes.find((r) => r.method === req.method && r.re.test(url.pathname));
+      hit = routes.find((r) => r.method === req.method && r.re.test(url.pathname));
       if (!hit) {
         if (routes.some((r) => r.re.test(url.pathname))) throw new HttpError(405, 'method_not_allowed', 'Method not allowed');
         throw notFound('Endpoint');
       }
-      if (url.pathname !== '/api/health') authenticate(req);
+      const user = authorize(req, hit);
       if (req.method !== 'GET') {
         // Same-origin only: blocks cross-site form posts / fetches aimed at a local console.
         const origin = req.headers.origin;
@@ -345,11 +394,12 @@ export function createApp({ config, store, cloudpanel, billing, jobs }) {
       const m = hit.re.exec(url.pathname);
       const params = Object.fromEntries(hit.keys.map((k, i) => [k, decodeURIComponent(m[i + 1])]));
       const body = await readBody(req);
-      const data = await hit.handler({ req, params, query: url.searchParams, body });
+      const data = await hit.handler({ req, params, query: url.searchParams, body, user });
       send(res, 200, { ok: true, data });
     } catch (e) {
       const status = e.status && e.status < 600 ? e.status : 500;
       if (status === 500) console.error('[api]', e);
+      if (hit?.auth === 'public' && status === 401) failedCredentials(req); // wrong username or password on sign-in
       send(res, status, { ok: false, error: { code: e.code || 'internal', message: status === 500 ? 'Internal server error' : e.message, ...(e.field ? { field: e.field } : {}) } });
     }
   }
@@ -398,13 +448,53 @@ export function createApp({ config, store, cloudpanel, billing, jobs }) {
   };
 }
 
-export function buildServices(config) {
+/** Loads a feature module; a missing or broken optional module disables that feature instead of stopping the console. */
+async function optional(spec) {
+  try { return await import(spec); } catch (e) {
+    if (e.code !== 'ERR_MODULE_NOT_FOUND') console.warn(`[startup] ${spec} failed to load: ${e.message}`);
+    return null;
+  }
+}
+const safely = (name, fn) => { try { return fn(); } catch (e) { console.warn(`[startup] ${name} could not start: ${e.message}`); return null; } };
+
+export async function buildServices(config) {
   const store = createStore({ dir: config.dataDir });
-  if (config.cloudpanel.mode === 'mock' && config.billing.mode === 'mock') seedIfEmpty(store);
+  const demo = config.cloudpanel.mode === 'mock' && config.billing.mode === 'mock';
+  if (demo) seedIfEmpty(store);
   const cloudpanel = createCloudPanel({ config, store });
   const billing = createBilling({ config, store });
   const jobs = createJobs({ store });
-  return { config, store, cloudpanel, billing, jobs };
+  const extraRoutes = [];
+
+  const authMod = await optional('./auth.mjs');
+  const auth = authMod && safely('auth', () => authMod.createAuth({ config, store }));
+  const chatMod = auth ? await optional('./chat.mjs') : null;
+  const chat = chatMod && safely('chat', () => chatMod.createChat({ store, config, auth }));
+  if (auth) {
+    const authRoutes = authMod.authRoutes({ auth });
+    // Removing a person also deletes their undelivered encrypted messages and published keys.
+    const removal = authRoutes.find((r) => r.method === 'DELETE' && r.path === '/api/team/:id');
+    if (removal && chat) {
+      const original = removal.handler;
+      removal.handler = async (ctx) => { const out = await original(ctx); chat.wipe({ id: ctx.params.id }); return out; };
+    }
+    extraRoutes.push(authRoutes);
+  }
+  if (chat) extraRoutes.push(chatMod.chatRoutes({ chat }));
+  const lbMod = await optional('./lb.mjs');
+  if (lbMod) {
+    const lb = safely('load balancer', () => lbMod.createLoadBalancer({ config, store, cloudpanel, jobs }));
+    if (lb) {
+      if (demo) safely('pool seed', () => lbMod.seedPools?.(store));
+      extraRoutes.push(lbMod.lbRoutes({ lb, jobs }));
+    }
+  }
+  const migMod = await optional('./migrate.mjs');
+  if (migMod) {
+    const migrator = safely('migrator', () => migMod.createMigrator({ store, cloudpanel, jobs, config }));
+    if (migrator) extraRoutes.push(migMod.migrateRoutes({ migrator }));
+  }
+  return { config, store, cloudpanel, billing, jobs, auth, extraRoutes };
 }
 
 /* ---------- entrypoint ---------- */
@@ -417,13 +507,13 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
     console.error(`\nLRWeb Console cannot start:\n${problems.map((p) => `  - ${p}`).join('\n')}\n`);
     process.exit(1);
   }
-  const services = buildServices(config);
+  const services = await buildServices(config);
   const server = http.createServer(createApp(services));
   server.requestTimeout = 30_000;
   server.headersTimeout = 10_000;
   server.listen(config.port, config.host, () => {
     console.log(`\n  LRWeb Console ${VERSION}\n  → http://${config.host.includes(':') ? `[${config.host}]` : config.host}:${config.port}`);
-    console.log(`  CloudPanel: ${config.cloudpanel.mode}   Billing: ${config.billing.mode}   Auth: ${config.adminToken ? 'token required' : 'open (loopback only)'}\n`);
+    console.log(`  CloudPanel: ${config.cloudpanel.mode}   Billing: ${config.billing.mode}   Auth: ${services.auth?.hasUsers() ? 'personal accounts' : config.adminToken ? 'token required' : 'open (loopback only)'}\n`);
   });
   const stop = () => { services.store.flush(); server.close(() => process.exit(0)); setTimeout(() => process.exit(0), 2000).unref(); };
   process.on('SIGINT', stop);

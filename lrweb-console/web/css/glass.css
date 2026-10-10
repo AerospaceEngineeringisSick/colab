@@ -2,14 +2,15 @@
 
 html { background: var(--bg-0); }
 body {
-  margin: 0; min-height: 100dvh; color: var(--ink); font: 400 var(--fs-md)/1.5 var(--font);
+  margin: 0; min-height: 100dvh; color: var(--ink); font: 400 var(--fs-md)/1.55 var(--font);
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
 }
 
 /* ---------- living backdrop (transform-only animation: cheap, compositor-driven) ---------- */
 .aurora {
   position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-  background: radial-gradient(1100px 700px at 85% -10%, color-mix(in oklab, var(--blob-1) 22%, transparent), transparent 62%),
+  background: radial-gradient(1100px 700px at 85% -10%, color-mix(in oklab, var(--blob-1) 24%, transparent), transparent 62%),
+              radial-gradient(900px 420px at 50% 112%, color-mix(in oklab, var(--green) 26%, transparent), transparent 70%),
               linear-gradient(180deg, var(--bg-1), var(--bg-0));
 }
 .aurora i {

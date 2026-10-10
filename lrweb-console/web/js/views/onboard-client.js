@@ -1,35 +1,41 @@
-// Client onboarding wizard (#/onboard): client -> plan -> hosting -> launch.
-// Launch POSTs /api/onboard/client, then follows the returned job until it finishes.
+// Client onboarding wizard (#/onboard): client -> care plan -> website -> review.
+// Creating a client POSTs /api/onboard/client, then follows the returned job until it finishes.
 import { h, ensureCss, uid } from '../core/dom.js';
 import { api, pollJob } from '../core/api.js';
-import { money, num } from '../core/fmt.js';
+import { money } from '../core/fmt.js';
 import { toast } from '../core/toast.js';
 import { PageHeader, Card, Button, Badge, Avatar, Field, Input, Switch, Stepper, Skeleton, Empty, ErrorState, JobProgress, CopyBlock, setLoading } from '../ui/components.js';
 import { icon } from '../ui/icons.js';
 import { SiteForm } from '../ui/site-form.js';
+import { Term } from '../ui/glossary.js';
 
+const CURRENCY = 'GBP'; // LRWeb's currency, used only if a plan has none
 const STEPS = [
   { key: 'client', label: 'Client' },
-  { key: 'plan', label: 'Plan' },
-  { key: 'hosting', label: 'Hosting' },
-  { key: 'launch', label: 'Launch' },
+  { key: 'plan', label: 'Care plan' },
+  { key: 'hosting', label: 'Website' },
+  { key: 'launch', label: 'Review' },
 ];
+// A title can be a function when it holds a glossary Term, so every render gets fresh nodes.
 const HEADINGS = [
-  { title: 'Client details', subtitle: 'Who is signing up?' },
-  { title: 'Choose a plan', subtitle: 'The plan sets the monthly price and the limits.' },
-  { title: 'Hosting', subtitle: 'Optional: provision their first website now.' },
-  { title: 'Review and launch', subtitle: 'Check everything, then start the onboarding job.' },
+  { title: 'Who is the new client?', subtitle: 'Their name and email are needed. The rest is optional.' },
+  { title: () => ['Choose a ', Term('care plan')], subtitle: 'Your care plan sets the monthly price and what is included.' },
+  { title: 'Set up a website', subtitle: 'Optional. Set up their first website now.' },
+  { title: 'Check the details', subtitle: 'Look over everything below, then create the client.' },
 ];
 const LABELS = { name: 'Full name', email: 'Email', company: 'Company', phone: 'Phone' };
 const CLIENT_KEYS = Object.keys(LABELS);
 const SITE_TYPES = { php: 'PHP', nodejs: 'Node.js', static: 'Static', python: 'Python', 'reverse-proxy': 'Reverse proxy' };
+const SECRET_LABELS = { siteUserPassword: 'Website login password', dbPassword: 'Database password' };
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/;
 
 // SiteForm offers online and degraded servers, so both count as usable here.
 const usable = (s) => s.status === 'online' || s.status === 'degraded';
-const perLabel = (p) => `/${p.interval === 'year' ? 'yr' : 'mo'}`;
-const priceLine = (p) => `${money(p.priceCents, p.currency)}${perLabel(p)}`;
-const limitsLine = (l = {}) => `${num(l.sites)} ${l.sites === 1 ? 'site' : 'sites'} · ${l.diskGb ?? 0} GB disk · ${l.bandwidthGb ?? 0} GB bandwidth`;
+const perLabel = (p) => (p.interval === 'year' ? 'a year' : 'a month');
+const priceLine = (p) => `${money(p.priceCents, p.currency || CURRENCY)} ${perLabel(p)}`;
+const includes = (plan) => (plan?.features?.length
+  ? h('ul', { class: 'ob-feat' }, plan.features.map((f) => h('li', {}, f)))
+  : 'Not set');
 const pairs = (rows) => rows.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]);
 const block = (title, rows) => h('section', { class: 'glass glass--thin ob-block' },
   h('h3', { class: 'ob-block__title' }, title), h('dl', { class: 'kv' }, pairs(rows)));
@@ -41,10 +47,10 @@ export default async function mount(root, ctx) {
   const split = h('div', { class: 'split onboard' });
   const summaryBody = h('div', { class: 'stack' });
   const summary = Card({ title: 'Summary', subtitle: 'Updates as you type', class: 'onboard__summary' }, summaryBody);
-  root.append(PageHeader({ title: 'Onboard a client', subtitle: 'From signup to live website in one flow' }), stepper, split);
+  root.append(PageHeader({ title: 'Add a new client', subtitle: 'From sign-up to a live website, in one go' }), stepper, split);
 
   let catalog = null; // { plans, servers, meta }
-  let W = null; // wizard state: survives Back/Next, rebuilt by "Onboard another"
+  let W = null; // wizard state: survives Back/Next, rebuilt by "Add another client"
   let form = null; // <form> inside the main card
   let busy = false;
 
@@ -89,7 +95,7 @@ export default async function mount(root, ctx) {
       name: () => Input({ placeholder: 'Maya Fernandez', maxlength: 120, autocomplete: 'name' }),
       email: () => Input({ type: 'email', placeholder: 'maya@acme.example', maxlength: 320, autocomplete: 'email', inputmode: 'email', autocapitalize: 'none' }),
       company: () => Input({ placeholder: 'Acme Roasters', maxlength: 120, autocomplete: 'organization' }),
-      phone: () => Input({ type: 'tel', placeholder: '+1 555 010 0100', maxlength: 40, autocomplete: 'tel' }),
+      phone: () => Input({ type: 'tel', placeholder: '+44 7700 900123', maxlength: 40, autocomplete: 'tel' }),
     };
     for (const k of CLIENT_KEYS) {
       const control = make[k]();
@@ -99,7 +105,7 @@ export default async function mount(root, ctx) {
     }
 
     w.hostToggle = Switch({
-      label: 'Provision a website now',
+      label: 'Set up a website now',
       checked: w.hosting,
       onchange: (e) => { W.hosting = e.target.checked; syncSite(); renderSummary(); },
     });
@@ -127,18 +133,18 @@ export default async function mount(root, ctx) {
     const server = site ? catalog.servers.find((s) => s.id === site.serverId) : null;
 
     const rows = [
-      ['Email', client.email || '—'],
-      ['Plan', plan ? `${plan.name} · ${priceLine(plan)}` : '—'],
+      ['Email', client.email || 'Not set'],
+      ['Care plan', plan ? `${plan.name} · ${priceLine(plan)}` : 'Not set'],
     ];
-    if (site) rows.push(['Domain', site.domain || '—'], ['Type', SITE_TYPES[site.type] || '—'], ['Server', server?.name || '—']);
-    else rows.push(['Website', 'Not provisioned now']);
+    if (site) rows.push(['Domain', site.domain || 'Not set'], ['Type', SITE_TYPES[site.type] || 'Not set'], ['Server', server?.name || 'Not set']);
+    else rows.push(['Website', 'Not set up now']);
 
     const ticks = [
       `Client record for ${client.name || 'the new client'}`,
-      plan && `Billing customer on the ${plan.name} plan`,
+      plan && `Billing account on the ${plan.name} care plan`,
       site && `Website${site.domain ? ` ${site.domain}` : ''}${server ? ` on ${server.name}` : ''}`,
-      site?.createDatabase && 'Database and database user',
-      site?.issueCertificate && "Let's Encrypt SSL certificate",
+      site?.createDatabase && 'A database and its login',
+      site?.issueCertificate && h('span', {}, Term('ssl', 'Padlock (SSL)'), " certificate from Let's Encrypt"),
     ].filter(Boolean);
 
     summaryBody.replaceChildren(
@@ -172,12 +178,12 @@ export default async function mount(root, ctx) {
     const { title, subtitle } = HEADINGS[step];
     const back = step > 0 ? Button({ variant: 'glass', icon: 'chevron-left', onclick: prev }, 'Back') : null;
     W.nextBtn = step === 3
-      ? Button({ type: 'submit', variant: 'primary', size: 'lg', icon: 'rocket' }, 'Launch onboarding')
+      ? Button({ type: 'submit', variant: 'primary', size: 'lg', icon: 'rocket' }, 'Create client')
       : Button({ type: 'submit', variant: 'primary', iconRight: 'arrow-right' }, 'Next');
     form = h('form', { class: 'stack onboard__form', novalidate: true, onsubmit: (e) => { e.preventDefault(); next(); } },
       STEP_BODY[step](),
       h('div', { class: 'spread onboard__foot' }, back, W.nextBtn));
-    setMain(Card({ title, subtitle, class: 'onboard__main' }, form), { focus });
+    setMain(Card({ title: typeof title === 'function' ? title() : title, subtitle, class: 'onboard__main' }, form), { focus });
     renderSummary();
   }
 
@@ -190,11 +196,11 @@ export default async function mount(root, ctx) {
 
   function planStep() {
     if (!catalog.plans.length) {
-      return Empty({ icon: 'receipt', title: 'No plans yet', message: 'Add a plan in billing before onboarding a client.' });
+      return Empty({ icon: 'receipt', title: 'No care plans yet', message: 'There are no care plans to choose from, so a client cannot be added yet.' });
     }
     const group = uid('plan');
     return h('div', { class: 'stack' },
-      h('div', { class: 'plan-grid', role: 'radiogroup', 'aria-label': 'Plan' }, catalog.plans.map((p) => planTile(p, group))),
+      h('div', { class: 'plan-grid', role: 'radiogroup', 'aria-label': 'Care plan' }, catalog.plans.map((p) => planTile(p, group))),
       W.planErr);
   }
 
@@ -214,10 +220,9 @@ export default async function mount(root, ctx) {
       // a fixed-height tag row keeps prices and features aligned across tiles
       h('span', { class: 'plan__tag' }, p.popular ? Badge({ kind: 'info', dot: false }, 'Most popular') : null),
       h('span', { class: 'plan__mark', 'aria-hidden': 'true' }, icon('check', { size: 14 })),
-      h('span', { class: 'plan__price num' }, money(p.priceCents, p.currency), h('small', { class: 'muted' }, perLabel(p))),
+      h('span', { class: 'plan__price num' }, money(p.priceCents, p.currency || CURRENCY), h('small', { class: 'muted' }, ` ${perLabel(p)}`)),
       h('span', { class: 'plan__features' },
-        (p.features || []).map((f) => h('span', { class: 'plan__feature' }, icon('check', { size: 16 }), h('span', {}, f)))),
-      h('span', { class: 'plan__limits muted' }, limitsLine(p.limits)));
+        (p.features || []).map((f) => h('span', { class: 'plan__feature' }, icon('check', { size: 16 }), h('span', {}, f)))));
   }
 
   function hostingStep() {
@@ -225,11 +230,11 @@ export default async function mount(root, ctx) {
     syncSite();
     const hasServers = catalog.servers.some(usable);
     return h('div', { class: 'stack' },
-      h('p', { class: 'muted' }, 'Skip this step and add a website later from Sites.'),
+      h('p', { class: 'muted' }, 'You can skip this and add a website later from Sites.'),
       W.hostToggle,
       hasServers ? null : h('div', { class: 'callout callout--warn' }, icon('alert', { size: 18 }),
-        h('p', {}, 'No online servers yet, so a website cannot be provisioned. ',
-          h('a', { class: 'link', href: '#/servers/new' }, 'Add a server'), ' or continue without hosting.')),
+        h('p', {}, 'No servers are online yet, so a website cannot be set up now. ',
+          h('a', { class: 'link', href: '#/servers/new' }, 'Add a server'), ' or carry on without a website.')),
       W.slot);
   }
 
@@ -239,25 +244,25 @@ export default async function mount(root, ctx) {
     return h('div', { class: 'stack' },
       h('div', { class: 'ob-review__pair' },
         block('Client', [
-          ['Name', client.name || '—'],
-          ['Email', client.email || '—'],
-          ['Company', client.company || '—'],
-          ['Phone', client.phone || '—'],
+          ['Name', client.name || 'Not set'],
+          ['Email', client.email || 'Not set'],
+          ['Company', client.company || 'Not set'],
+          ['Phone', client.phone || 'Not set'],
         ]),
-        block('Plan', [
-          ['Plan', plan?.name || '—'],
-          ['Price', plan ? priceLine(plan) : '—'],
-          ['Limits', plan ? limitsLine(plan.limits) : '—'],
+        block('Care plan', [
+          ['Plan', plan?.name || 'Not set'],
+          ['Price', plan ? priceLine(plan) : 'Not set'],
+          ['Includes', includes(plan)],
         ])),
       site
         ? block('Website', [
-          ['Domain', site.domain || '—'],
-          ['Type', SITE_TYPES[site.type] || '—'],
-          ['Server', server?.name || '—'],
+          ['Domain', site.domain || 'Not set'],
+          ['Type', SITE_TYPES[site.type] || 'Not set'],
+          ['Server', server?.name || 'Not set'],
           ['Database', site.createDatabase ? 'Yes' : 'No'],
-          ['SSL', site.issueCertificate ? "Let's Encrypt" : 'Off'],
+          [Term('ssl', 'Padlock (SSL)'), site.issueCertificate ? "Yes, from Let's Encrypt" : 'No'],
         ])
-        : block('Website', [['Status', 'Not provisioned now. Add one later from Sites.']]));
+        : block('Website', [['Status', 'Not set up now. Add one later from Sites.']]));
   }
 
   /* ---------- navigation & validation ---------- */
@@ -271,7 +276,7 @@ export default async function mount(root, ctx) {
     const s = W.step;
     if (s === 0 && !validateClient()) return focusInvalid();
     if (s === 1 && !W.planId) {
-      W.planErr.textContent = 'Choose a plan to continue.';
+      W.planErr.textContent = 'Choose a care plan to continue.';
       return form.querySelector('input[type="radio"]')?.focus();
     }
     if (s === 2 && W.hosting && !W.site.validate()) return focusInvalid();
@@ -297,7 +302,7 @@ export default async function mount(root, ctx) {
     form?.querySelector('.field.has-error input, .field.has-error select, .field.has-error textarea')?.focus();
   }
 
-  /* ---------- launch ---------- */
+  /* ---------- create the client ---------- */
 
   async function launch() {
     const sent = collect();
@@ -326,7 +331,7 @@ export default async function mount(root, ctx) {
     if (CLIENT_KEYS.includes(key)) { W.fields[key].setError(msg); step = 0; }
     else if (key === 'planId') { W.planErr.textContent = msg; step = 1; }
     else if (key && W.hosting) { W.site.setError(key, msg); step = 2; }
-    toast({ title: step === null ? 'Onboarding did not start' : 'Check the highlighted field', message: msg, kind: 'bad' });
+    toast({ title: step === null ? 'The client was not added' : 'Check the highlighted field', message: msg, kind: 'bad' });
     show(step ?? 3, { focus: false });
     if (step === 1) form.querySelector('input[type="radio"]')?.focus();
     else if (step === null) W.nextBtn.focus();
@@ -335,7 +340,7 @@ export default async function mount(root, ctx) {
 
   async function track(job, sent) {
     const progress = JobProgress(job);
-    setMain(Card({ title: 'Onboarding', subtitle: 'Live progress from the onboarding job.', class: 'onboard__main' }, progress));
+    setMain(Card({ title: 'Adding the client', subtitle: 'Live progress, step by step.', class: 'onboard__main' }, progress));
 
     // secrets arrive on one poll only and are then dropped by the server, so keep the first copy.
     let secrets = null;
@@ -349,7 +354,7 @@ export default async function mount(root, ctx) {
       if (e?.name === 'AbortError') return;
       busy = false;
       toast({ title: 'Lost contact with the server', message: e.message, kind: 'bad' });
-      setMain(Card({ title: 'Check the status', subtitle: 'The job could not be followed. Look in Clients before trying again, so the client is not onboarded twice.', class: 'onboard__main' },
+      setMain(Card({ title: 'Check the status', subtitle: 'We lost track of progress. Check Clients before trying again, so the client is not added twice.', class: 'onboard__main' },
         h('div', { class: 'row' }, Button({ variant: 'glass', icon: 'users', onclick: () => ctx.navigate('/clients') }, 'Open clients'))));
       return;
     }
@@ -359,12 +364,12 @@ export default async function mount(root, ctx) {
   }
 
   function showFailure(job, progress) {
-    const message = job.error || 'The job failed.';
-    toast({ title: 'Onboarding failed', message, kind: 'bad' });
+    const message = job.error || 'Something went wrong.';
+    toast({ title: 'Could not add the client', message, kind: 'bad' });
     // the callout below carries the error, so hide the progress footer that repeats it
     const foot = progress.querySelector('.job__foot');
     if (foot) foot.hidden = true;
-    setMain(Card({ title: 'Onboarding failed', subtitle: 'The job stopped at the step marked above.', class: 'onboard__main' },
+    setMain(Card({ title: 'Could not add the client', subtitle: 'It stopped at the step marked above.', class: 'onboard__main' },
       progress,
       h('div', { class: 'callout callout--bad' }, icon('alert', { size: 18 }), h('p', {}, message)),
       h('div', { class: 'row' }, Button({ variant: 'primary', icon: 'refresh', onclick: () => show(3) }, 'Try again'))));
@@ -378,17 +383,17 @@ export default async function mount(root, ctx) {
       h('div', { class: 'stack ob-done' },
         h('span', { class: 'ob-done__icon' }, icon('check', { size: 40 })),
         h('div', {},
-          h('h2', {}, 'Client onboarded'),
-          h('p', { class: 'muted' }, `${sent.client.name}${planName ? ` is on the ${planName} plan` : ''}.`),
+          h('h2', {}, 'Client added'),
+          h('p', { class: 'muted' }, `${sent.client.name}${planName ? ` is on the ${planName} care plan` : ''}.`),
           r.siteId && sent.site ? h('p', { class: 'muted' }, `${sent.site.domain} is set up.`) : null),
         entries.length ? h('div', { class: 'ob-secrets' },
-          h('div', { class: 'callout callout--warn' }, icon('alert', { size: 18 }), h('p', {}, 'These credentials are shown once. Copy them now.')),
-          entries.map(([label, text]) => CopyBlock({ label, text: String(text) }))) : null,
+          h('div', { class: 'callout callout--warn' }, icon('alert', { size: 18 }), h('p', {}, 'These logins are shown only once. Copy them now.')),
+          entries.map(([key, text]) => CopyBlock({ label: SECRET_LABELS[key] || key, text: String(text) }))) : null,
         h('div', { class: 'row ob-done__actions' },
           r.clientId ? Button({ variant: 'primary', iconRight: 'arrow-right', onclick: () => ctx.navigate(`/clients/${encodeURIComponent(r.clientId)}`) }, 'View client') : null,
-          Button({ variant: 'glass', icon: 'plus', onclick: restart }, 'Onboard another'),
+          Button({ variant: 'glass', icon: 'plus', onclick: restart }, 'Add another client'),
           r.siteId ? h('a', { class: 'link', href: '#/sites' }, 'View sites') : null))));
-    toast({ title: 'Client onboarded', message: sent.client.name, kind: 'ok' });
+    toast({ title: 'Client added', message: sent.client.name, kind: 'ok' });
   }
 
   function restart() {

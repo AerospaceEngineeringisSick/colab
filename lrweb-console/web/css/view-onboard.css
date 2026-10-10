@@ -36,7 +36,9 @@
 .plan__features { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-sm); color: var(--ink-2); }
 .plan__feature { display: flex; align-items: flex-start; gap: 8px; }
 .plan__feature .icon { flex: none; margin-top: 3px; color: var(--ok); }
-.plan__limits { display: block; margin-top: auto; font-size: var(--fs-xs); }
+
+/* plan features in the review step: a plain bulleted list inside the definition list */
+.ob-feat { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
 
 /* success state */
 .ob-done { align-items: center; text-align: center; padding-top: var(--s3); }
@@ -69,3 +71,6 @@
 .ob-review__pair { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
 .ob-block { display: grid; align-content: start; gap: var(--s3); padding: var(--s4); border-radius: var(--r-md); }
 .ob-block__title { font-size: var(--fs-xs); font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); }
+
+/* Badges keep the sentence case the copy is written in (the global badge rule capitalises every word). */
+[data-route="onboard"] .badge { text-transform: none; }

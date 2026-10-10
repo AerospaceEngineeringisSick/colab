@@ -1,0 +1,97 @@
+/* Site migration wizard. Cards, buttons, switches, stat tiles, badges, meters and copy blocks come from components.css. */
+
+/* Radio options: a real radio hidden inside a label, so keyboard and screen readers get a radio group. */
+.mig-options { display: grid; gap: var(--s3); min-width: 0; }
+.mig-options--cards { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.mig-option {
+  position: relative; display: flex; align-items: flex-start; gap: var(--s3); min-width: 0;
+  padding: var(--s4); border-radius: var(--r-md); cursor: pointer;
+  background: var(--field); box-shadow: inset 0 0 0 1px var(--line);
+  transition: box-shadow .25s var(--ease), background .25s var(--ease), transform .2s var(--ease);
+}
+.mig-option:active { transform: scale(.99); }
+.mig-option:hover { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 45%, transparent); }
+.mig-option:has(input:checked) {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 22%, transparent), color-mix(in oklab, var(--accent-2) 10%, transparent) 62%, transparent),
+    var(--field);
+  box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.mig-option:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.mig-option:has(input:disabled) { cursor: not-allowed; }
+.mig-option:has(input:disabled):hover { box-shadow: inset 0 0 0 1px var(--line); }
+.mig-radio { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+.mig-option__mark {
+  position: relative; flex: none; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--ink-3); transition: background .25s, box-shadow .25s;
+}
+.mig-option__mark::after {
+  content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--accent-ink);
+  transform: scale(0); transition: transform .3s var(--spring);
+}
+.mig-option:has(input:checked) .mig-option__mark { background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: none; }
+.mig-option:has(input:checked) .mig-option__mark::after { transform: scale(1); }
+.mig-option:has(input:disabled) .mig-option__mark { opacity: .5; }
+.mig-option__body { display: grid; gap: 6px; min-width: 0; flex: 1; }
+.mig-meta { font-size: var(--fs-sm); color: var(--ink-3); overflow-wrap: anywhere; }
+.mig-meta b { color: var(--ink-2); font-weight: 600; }
+
+/* Website rows */
+.mig-site__top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--s2); min-width: 0; }
+.mig-site__domain { font-weight: 650; font-size: var(--fs-md); overflow-wrap: anywhere; min-width: 0; }
+
+/* Server cards */
+.mig-server__top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--s2); min-width: 0; }
+.mig-server__name { font-weight: 700; font-size: var(--fs-md); overflow-wrap: anywhere; min-width: 0; }
+.mig-server__meters { display: grid; gap: var(--s2); margin-top: 2px; }
+.mig-server__note { font-size: var(--fs-xs); font-weight: 600; line-height: 1.5; color: var(--warn); }
+
+/* Option switches */
+.mig-switch {
+  display: grid; gap: 6px; min-width: 0; padding: var(--s4); border-radius: var(--r-md);
+  background: var(--field); box-shadow: inset 0 0 0 1px var(--line);
+}
+.mig-switch .switch__label { overflow-wrap: anywhere; }
+.mig-switch__hint { padding-left: 54px; font-size: var(--fs-sm); line-height: 1.5; }
+.mig-switch.is-disabled .switch { opacity: .55; cursor: not-allowed; }
+
+/* Plan review */
+.mig-stats { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.mig-stats .stat__value { font-size: clamp(1.35rem, 1.1rem + .8vw, 1.9rem); overflow-wrap: anywhere; }
+.mig-sub { font-size: var(--fs-xs); font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); }
+.mig-steps { display: grid; gap: var(--s3); list-style: decimal; padding-left: 1.6em; }
+.mig-steps > li::marker { font-weight: 650; color: var(--ink-3); }
+.mig-step__top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--s2); min-width: 0; }
+.mig-step__detail { margin-top: 4px; font-size: var(--fs-sm); line-height: 1.5; overflow-wrap: anywhere; }
+.mig-details { border-radius: var(--r-md); background: var(--field); box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
+.mig-details > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s3);
+  min-height: 48px; padding: 0 var(--s4); cursor: pointer; font-weight: 650; list-style: none;
+}
+.mig-details > summary::-webkit-details-marker { display: none; }
+.mig-details > summary::after {
+  content: ""; flex: none; width: 16px; height: 16px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px no-repeat;
+  transition: transform .3s var(--ease);
+}
+.mig-details[open] > summary::after { transform: rotate(180deg); }
+.mig-details > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: var(--r-md); }
+.mig-details > .copyblock { margin: 0 var(--s3) var(--s3); }
+
+/* Callouts and inline errors */
+.mig-callout__body { flex: 1; min-width: 0; display: grid; gap: 10px; }
+.mig-callout__body p { overflow-wrap: anywhere; }
+.mig-errbox:empty { display: none; }
+.mig-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.mig-block { width: 100%; min-width: 0; gap: var(--s3); }
+
+/* Success state */
+.mig-done { display: grid; justify-items: center; gap: 10px; padding: var(--s2) 0 var(--s1); text-align: center; }
+.mig-done .card__title { font-size: var(--fs-2xl); letter-spacing: -.02em; }
+.mig-done p { max-width: 52ch; }
+.mig-done__icon {
+  display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; color: var(--ok);
+  background: radial-gradient(circle at 50% 30%, color-mix(in oklab, var(--ok) 34%, transparent), color-mix(in oklab, var(--ok) 10%, transparent));
+  box-shadow: inset 0 1px 0 var(--g-spec), inset 0 0 0 1px color-mix(in oklab, var(--ok) 42%, transparent);
+}

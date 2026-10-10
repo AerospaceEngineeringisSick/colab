@@ -48,7 +48,7 @@ const STATUS_KIND = {
   offline: 'bad', suspended: 'bad', overdue: 'bad', failed: 'bad', void: 'neutral',
 };
 /** StatusBadge('online') -> coloured badge using the status word as label. */
-export const StatusBadge = (status, label) => Badge({ kind: STATUS_KIND[status] || 'neutral' }, label ?? status);
+export const StatusBadge = (status, label) => Badge({ kind: STATUS_KIND[status] || 'neutral' }, label ?? `${status.charAt(0).toUpperCase()}${status.slice(1)}`);
 
 export function Avatar({ name, size = 36 } = {}) {
   let hash = 0;

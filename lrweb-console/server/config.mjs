@@ -18,6 +18,15 @@ export function loadConfig(env = process.env) {
     adminToken: env.LRWEB_ADMIN_TOKEN || '',
     // Artificial latency (ms) per step in mock mode so the UI can show live progress. 0 disables.
     demoDelayMs: int(env.LRWEB_DEMO_DELAY_MS, 700),
+    auth: {
+      sessionHours: int(env.LRWEB_SESSION_HOURS, 12), // sliding idle timeout
+      sessionMaxDays: int(env.LRWEB_SESSION_MAX_DAYS, 7), // absolute lifetime
+    },
+    chat: {
+      ttlDays: int(env.LRWEB_CHAT_TTL_DAYS, 14), // server keeps undelivered ciphertext at most this long
+      maxEnvelopeBytes: 64 * 1024,
+      ratePerMinute: int(env.LRWEB_CHAT_RATE, 30),
+    },
     cloudpanel: {
       // 'mock' | 'ssh'  (CloudPanel has no REST API; live mode drives `clpctl` over SSH)
       mode: (env.LRWEB_CLOUDPANEL_MODE || 'mock').toLowerCase(),
@@ -31,7 +40,7 @@ export function loadConfig(env = process.env) {
     billing: {
       // 'mock' | 'whmcs' | 'stripe'
       mode: (env.LRWEB_BILLING_MODE || 'mock').toLowerCase(),
-      currency: (env.LRWEB_CURRENCY || 'USD').toUpperCase(),
+      currency: (env.LRWEB_CURRENCY || 'GBP').toUpperCase(),
       whmcs: {
         url: (env.WHMCS_URL || '').replace(/\/+$/, ''),
         identifier: env.WHMCS_API_IDENTIFIER || '',

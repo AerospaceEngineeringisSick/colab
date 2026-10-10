@@ -5,9 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>LRWeb Console</title>
   <meta name="description" content="Onboard Linux servers and clients, manage CloudPanel sites and billing from one liquid-glass console.">
-  <meta name="theme-color" content="#07080d">
+  <meta name="theme-color" content="#070824">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/font-03.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/font-15.woff2" as="font" type="font/woff2" crossorigin>
   <script src="js/boot.js"></script>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/glass.css">
   <link rel="stylesheet" href="css/layout.css">
@@ -33,10 +38,9 @@
   <div class="shell">
     <aside class="sidebar glass glass--liquid" aria-label="Primary">
       <a class="brand" href="#/" aria-label="LRWeb Console home">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" width="26" height="26"><defs><linearGradient id="bm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9db4ff"/><stop offset="1" stop-color="#c99bff"/></linearGradient></defs><path d="M6 5h5v17h11v5H6z" fill="url(#bm)"/><circle cx="23.5" cy="10.5" r="4.5" fill="none" stroke="url(#bm)" stroke-width="3"/></svg>
-        </span>
-        <span class="brand__text"><strong>LRWeb</strong><small>Console</small></span>
+        <img class="brand__logo logo--on-dark" src="assets/brand/logo-light.png" width="300" height="69" alt="LRWeb">
+        <img class="brand__logo logo--on-light" src="assets/brand/logo-dark.png" width="300" height="69" alt="LRWeb">
+        <span class="brand__tag">Console</span>
       </a>
       <nav aria-label="Main"><ul class="nav-list" id="nav-list"></ul></nav>
       <div class="sidebar__foot">
@@ -54,6 +58,7 @@
           <span>Search or jump to…</span><kbd>Ctrl K</kbd>
         </button>
         <div class="pills" id="integration-pills" aria-label="Integration status"></div>
+        <div id="user-slot"></div>
         <button class="icon-btn" id="toggle-theme" type="button" aria-label="Toggle light or dark theme">
           <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-15.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
         </button>

@@ -69,7 +69,7 @@ SiteSpec = { serverId, clientId?, domain, type, siteUser?, phpVersion?, vhostTem
              appPort?, reverseProxyUrl?, createDatabase?: boolean, issueCertificate?: boolean /* default true */ }
 
 Plan    = { id, name, priceCents, interval: 'month'|'year', currency, popular?: boolean, features: string[],
-            limits: { sites: number, diskGb: number, bandwidthGb: number } }
+            limits?: { sites: number, diskGb: number, bandwidthGb: number } /* optional: LRWeb care plans have none */ }
 
 Invoice = { id, number, clientId, clientName, amountCents, currency,
             status: 'paid'|'open'|'overdue'|'draft'|'void', issuedAt, dueAt, paidAt?: string, description }
@@ -143,7 +143,7 @@ summary(): BillingSummary
 sendInvoice(invoiceId): { sent: true }
 markPaid(invoiceId): Invoice
 ```
-Mock plan ids: `plan_starter` (1500c, 1 site, 10 GB), `plan_business` (3900c, 5 sites, 50 GB, popular), `plan_agency` (9900c, 25 sites, 200 GB).
+Mock plan ids (LRWeb care plans, GBP): `plan_essential` (2900c), `plan_plus` (4900c, popular), `plan_pro` (8900c). See `docs/CONTRACT-v2.md` for the demo data identity.
 Live adapters take `config.fetch` (injectable) and must be unit-tested with a fake fetch.
 
 ## Client architecture (`lrweb-console/web/`)

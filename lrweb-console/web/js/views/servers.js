@@ -5,6 +5,7 @@ import { ago, date, uptime } from '../core/fmt.js';
 import { toast } from '../core/toast.js';
 import { AreaChart } from '../ui/charts.js';
 import { icon } from '../ui/icons.js';
+import { Term } from '../ui/glossary.js';
 import {
   PageHeader, Card, Button, Badge, StatusBadge, Meter, Ring, Table, Empty, ErrorState, Skeleton,
   loadInto, setLoading, Modal, Confirm, JobProgress,
@@ -12,17 +13,44 @@ import {
 
 const REFRESH_MS = 30_000;
 const OS_LABEL = { 'ubuntu-24.04': 'Ubuntu 24.04', 'ubuntu-22.04': 'Ubuntu 22.04', 'debian-12': 'Debian 12', 'debian-11': 'Debian 11' };
-const TYPE_LABEL = { php: 'PHP', nodejs: 'Node.js', static: 'Static', python: 'Python', 'reverse-proxy': 'Reverse proxy' };
-const SSL = { active: ['ok', 'Secured'], pending: ['warn', 'SSL pending'], none: ['neutral', 'No SSL'] };
+const TYPE_LABEL = { php: 'PHP', nodejs: 'Node.js', static: 'Static', python: 'Python', 'reverse-proxy': 'Proxy' };
+const SSL = { active: ['ok', 'Secured'], pending: ['warn', 'Being set up'], none: ['neutral', 'Not secured'] };
+const SITE_STATUS = { active: 'Active', provisioning: 'Being set up', failed: 'Failed', suspended: 'Suspended' };
+// Server words in plain English. "Degraded" keeps its meaning in the tooltip.
+const SERVER_STATUS = {
+  online: ['Online'],
+  degraded: ['Struggling', 'Degraded: the server is running, but slowly or with problems.'],
+  offline: ['Offline'],
+  pending: ['Waiting for setup'],
+};
+const TEST_HINT = 'Test connection checks that LRWeb can reach this server and that CloudPanel is ready.';
+// The job steps come from the server with technical labels; these plain ones are matched by step key.
+const STEP_COPY = {
+  ssh: 'Signing in to the server',
+  clpctl: "Checking CloudPanel's tools are installed",
+  panel: 'Checking CloudPanel is responding',
+  os: 'Reading the operating system',
+};
 
 const enc = encodeURIComponent;
 const osLabel = (v) => OS_LABEL[v] || v || 'Unknown OS';
 const isPending = (s) => s.status === 'pending';
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const clockFmt = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
 const hhmm = (iso) => {
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? '' : clockFmt.format(d);
 };
+const plainSteps = (job) => (job?.steps
+  ? { ...job, steps: job.steps.map((s) => (STEP_COPY[s.key] ? { ...s, label: STEP_COPY[s.key] } : s)) }
+  : job);
+
+function serverStatus(status) {
+  const [label, tip] = SERVER_STATUS[status] || [status];
+  const badge = StatusBadge(status, label);
+  if (tip) badge.title = tip;
+  return badge;
+}
 
 export default async function mount(root, ctx) {
   await ensureCss('css/view-servers.css');
@@ -34,17 +62,17 @@ export default async function mount(root, ctx) {
 function outcomeCallout(ok, message) {
   return h('div', { class: ['callout', ok ? 'callout--ok' : 'callout--bad'], role: ok ? 'status' : 'alert' },
     icon(ok ? 'check' : 'alert', { size: 18 }),
-    h('div', {}, h('strong', {}, ok ? 'Check passed' : 'Check failed'), h('p', {}, message)));
+    h('div', {}, h('strong', {}, ok ? 'Connection works' : 'Connection failed'), h('p', {}, message)));
 }
 
 /** Runs server.check in a modal and streams its steps. onDone(ok) fires once the job settles. Used by the list and the detail. */
 function runServerCheck(server, { signal, onDone } = {}) {
   const ac = new AbortController();
-  const body = h('div', { class: 'stack' });
+  const body = h('div', { class: 'stack' }, h('p', { class: 'muted' }, TEST_HINT));
   const closeBtn = Button({ variant: 'glass', onclick: () => m.close() }, 'Close');
   const onAbort = () => m.close();
   const m = Modal({
-    title: 'Checking server', subtitle: `${server.name} · ${server.host}`, size: 'md', content: body, actions: [closeBtn],
+    title: 'Testing connection', subtitle: `${server.name} · ${server.host}`, size: 'md', content: body, actions: [closeBtn],
     onClose: () => { ac.abort(); signal?.removeEventListener('abort', onAbort); },
   });
   signal?.addEventListener('abort', onAbort, { once: true });
@@ -52,20 +80,20 @@ function runServerCheck(server, { signal, onDone } = {}) {
   (async () => {
     try {
       const job = await api.post(`/api/servers/${enc(server.id)}/check`, {}, { signal: ac.signal });
-      const progress = JobProgress(job);
+      const progress = JobProgress(plainSteps(job));
       body.append(progress);
-      const done = await pollJob(job.id, (j) => progress.update(j), { signal: ac.signal });
+      const done = await pollJob(job.id, (j) => progress.update(plainSteps(j)), { signal: ac.signal });
       const ok = done.status === 'done' && done.result?.ok !== false;
       const message = ok
-        ? (done.result?.os ? `Detected ${done.result.os}.` : 'All checks passed.')
-        : (done.error || done.result?.error || 'The check failed.');
+        ? (done.result?.os ? `Everything looks good. The server runs ${osLabel(done.result.os)}.` : 'Everything looks good.')
+        : (done.error || done.result?.error || 'The test did not finish. Check the steps above to see which one went wrong.');
       body.append(outcomeCallout(ok, message));
-      toast({ title: ok ? 'Server check passed' : 'Server check failed', message: ok ? server.name : message, kind: ok ? 'ok' : 'bad' });
+      toast({ title: ok ? 'Connection works' : 'Connection failed', message: ok ? server.name : message, kind: ok ? 'ok' : 'bad' });
       onDone?.(ok);
     } catch (e) {
       if (e?.name === 'AbortError') return;
       body.append(outcomeCallout(false, e.message));
-      toast({ title: 'Check could not run', message: e.message, kind: 'bad' });
+      toast({ title: 'Could not run the test', message: e.message, kind: 'bad' });
     }
   })();
   return m;
@@ -74,10 +102,12 @@ function runServerCheck(server, { signal, onDone } = {}) {
 /** Waiting-for-setup prompt for a pending server (list card and detail). */
 function setupPrompt(server, ctx, onChanged, size = 'md') {
   return h('div', { class: 'stack' },
-    h('div', { class: 'callout' }, icon('info', { size: 18 }), h('p', {}, 'Waiting for CloudPanel setup')),
+    h('div', { class: 'callout' }, icon('info', { size: 18 }),
+      h('p', {}, 'This server is not connected yet. Continue the setup, or test the connection once the setup script has run on it.')),
     h('div', { class: 'btn-row' },
       Button({ variant: 'primary', size, icon: 'arrow-right', onclick: () => ctx.navigate(`/servers/new?serverId=${enc(server.id)}`) }, 'Continue setup'),
-      Button({ variant: 'glass', size, icon: 'activity', onclick: () => runServerCheck(server, { signal: ctx.signal, onDone: (ok) => { if (ok) onChanged(); } }) }, 'Run check')));
+      Button({ variant: 'glass', size, icon: 'activity', title: TEST_HINT, onclick: () => runServerCheck(server, { signal: ctx.signal, onDone: (ok) => { if (ok) onChanged(); } }) }, 'Test connection')),
+    h('p', { class: 'muted setup-hint' }, TEST_HINT));
 }
 
 /* ---------- list ---------- */
@@ -90,19 +120,19 @@ function serverCard(s, ctx, onChanged) {
       h('div', { class: 'server-card__id' },
         h('a', { class: 'server-card__name', href: `#/servers/${enc(s.id)}` }, s.name),
         h('p', { class: 'muted server-card__host' }, place)),
-      StatusBadge(s.status)),
+      serverStatus(s.status)),
     h('div', { class: 'row server-card__chips' },
       h('span', { class: 'chip' }, osLabel(s.os)),
-      h('span', { class: 'chip' }, `${s.siteCount ?? 0} ${s.siteCount === 1 ? 'site' : 'sites'}`)),
+      h('span', { class: 'chip' }, plural(s.siteCount ?? 0, 'site'))),
     isPending(s)
       ? setupPrompt(s, ctx, onChanged, 'sm')
       : h('div', { class: 'server-card__meters' },
         Meter({ value: m?.cpu ?? 0, label: 'CPU' }),
         Meter({ value: m?.mem ?? 0, label: 'Memory' }),
-        Meter({ value: m?.disk ?? 0, label: 'Disk' })),
+        Meter({ value: m?.disk ?? 0, label: 'Disk space' })),
     h('div', { class: 'server-card__foot muted' },
-      h('span', {}, `Uptime ${m ? uptime(m.uptimeSec) : '—'}`),
-      h('span', {}, s.panelVersion ? `CloudPanel ${s.panelVersion}` : 'CloudPanel —')));
+      h('span', {}, m ? `Running for ${uptime(m.uptimeSec)}` : 'No readings yet'),
+      h('span', {}, s.panelVersion ? `CloudPanel ${s.panelVersion}` : 'CloudPanel not set up yet')));
 }
 
 function mountList(root, ctx) {
@@ -115,7 +145,7 @@ function mountList(root, ctx) {
   }, 'Refresh');
   const head = PageHeader({
     title: 'Servers', subtitle: 'Loading…',
-    actions: [refreshBtn, Button({ variant: 'primary', icon: 'plus', onclick: () => ctx.navigate('/servers/new') }, 'Add server')],
+    actions: [refreshBtn, Button({ variant: 'primary', icon: 'plus', onclick: () => ctx.navigate('/servers/new') }, 'Add a server')],
   });
   root.append(head, list);
 
@@ -130,7 +160,7 @@ function mountList(root, ctx) {
     if (!servers.length) {
       return h('section', { class: 'glass card' }, Empty({
         icon: 'server', title: 'No servers yet',
-        message: 'Add a Linux server and LRWeb will install CloudPanel on it, then you can provision sites.',
+        message: 'Add a Linux server to host your websites. LRWeb walks you through setting it up, one step at a time.',
         action: Button({ variant: 'primary', icon: 'plus', onclick: () => ctx.navigate('/servers/new') }, 'Add your first server'),
       }));
     }
@@ -158,12 +188,12 @@ function gauge(label, value, caption) {
 
 function loadCard(c) {
   const [l1, l5, l15] = c.load ?? [];
-  const fmtLoad = (v) => (typeof v === 'number' ? v.toFixed(2) : '—');
-  return h('section', { class: 'glass card' },
-    h('h2', { class: 'card__title' }, 'Load average'),
+  const fmtLoad = (v) => (typeof v === 'number' ? v.toFixed(2) : 'Not known');
+  return h('section', { class: 'glass card load-card' },
+    h('h2', { class: 'card__title' }, 'Workload'),
     h('dl', { class: 'kv' }, [
-      ['1 min', fmtLoad(l1)], ['5 min', fmtLoad(l5)], ['15 min', fmtLoad(l15)],
-      ['Uptime', c.uptimeSec != null ? uptime(c.uptimeSec) : '—'],
+      ['Last minute', fmtLoad(l1)], ['Last 5 minutes', fmtLoad(l5)], ['Last 15 minutes', fmtLoad(l15)],
+      ['Running for', c.uptimeSec != null ? uptime(c.uptimeSec) : 'Not known'],
     ].flatMap(([k, v]) => [h('dt', {}, k), h('dd', { class: 'num' }, v)])));
 }
 
@@ -174,9 +204,9 @@ const SITE_COLUMNS = [
     x.runtime ? h('span', { class: 'chip mono' }, x.runtime) : null) },
   { label: 'Client', render: (x) => (x.clientId
     ? h('a', { class: 'link', href: `#/clients/${enc(x.clientId)}` }, x.clientName || x.clientId)
-    : h('span', { class: 'muted' }, '—')) },
-  { label: 'SSL', render: (x) => { const [kind, text] = SSL[x.ssl] || ['neutral', x.ssl || 'Unknown']; return Badge({ kind }, text); } },
-  { label: 'Status', render: (x) => StatusBadge(x.status) },
+    : h('span', { class: 'muted' }, 'No client')) },
+  { label: 'Padlock', render: (x) => { const [kind, text] = SSL[x.ssl] || ['neutral', x.ssl || 'Unknown']; return Badge({ kind }, text); } },
+  { label: 'Status', render: (x) => StatusBadge(x.status, SITE_STATUS[x.status]) },
 ];
 
 /** Builds the detail body for one server snapshot. paint(metrics) redraws gauges and charts (null for pending servers). */
@@ -185,26 +215,26 @@ function detailBody(s, m, { ctx, onChanged }) {
   const sites = s.sites ?? [];
 
   const header = PageHeader({
-    title: h('span', { class: 'row server-title' }, s.name, StatusBadge(s.status)),
+    title: h('span', { class: 'row server-title' }, s.name, serverStatus(s.status)),
     subtitle: s.host,
     actions: [
       s.panelUrl ? h('a', { class: 'btn btn--glass btn--md', href: s.panelUrl, target: '_blank', rel: 'noopener' },
         icon('external', { size: 18 }), h('span', { class: 'btn__label' }, 'Open CloudPanel')) : null,
-      Button({ variant: 'glass', icon: 'activity', onclick: () => runServerCheck(s, { signal: ctx.signal, onDone: (ok) => { if (ok) onChanged(); } }) }, 'Run check'),
+      Button({ variant: 'glass', icon: 'activity', title: TEST_HINT, onclick: () => runServerCheck(s, { signal: ctx.signal, onDone: (ok) => { if (ok) onChanged(); } }) }, 'Test connection'),
       Button({ variant: 'ghost', icon: 'trash', class: 'btn--danger-ghost', onclick: (e) => removeServer(s, e.currentTarget, ctx) }, 'Remove'),
     ],
   });
 
   const details = Card({ title: 'Details' },
     h('dl', { class: 'kv' }, [
-      ['Host', s.host],
-      ['SSH', `${s.sshUser}@${s.host}:${s.sshPort}`],
+      ['Address', s.host],
+      ['Signs in as', `${s.sshUser}@${s.host}:${s.sshPort}`, true],
       ['OS', osLabel(s.os)],
-      ['Provider', s.provider || '—'],
-      ['Region', s.region || '—'],
-      ['CloudPanel version', s.panelVersion || '—'],
+      ['Provider', s.provider || 'Not added'],
+      ['Region', s.region || 'Not added'],
+      [h('span', {}, Term('cloudpanel', 'CloudPanel'), ' version'), s.panelVersion || 'Not set up yet'],
       ['Added', `${date(s.createdAt)} · ${ago(s.createdAt)}`],
-    ].flatMap(([k, v]) => [h('dt', {}, k), h('dd', { class: k === 'SSH' ? 'mono' : null }, v)])));
+    ].flatMap(([k, v, mono]) => [h('dt', {}, k), h('dd', { class: mono ? 'mono' : null }, v)])));
 
   if (pending) {
     return {
@@ -217,13 +247,12 @@ function detailBody(s, m, { ctx, onChanged }) {
   const usage = h('div');
   const network = h('div');
 
-  const siteCount = `${sites.length} ${sites.length === 1 ? 'site' : 'sites'}`;
-  const sitesCard = Card({ title: 'Sites on this server', subtitle: siteCount, flush: true },
+  const sitesCard = Card({ title: 'Sites on this server', subtitle: plural(sites.length, 'site'), flush: true },
     Table({
       columns: SITE_COLUMNS, rows: sites,
       empty: Empty({
-        icon: 'globe', title: 'No sites on this server', message: 'Provision a site here and it will appear in this list.',
-        action: Button({ variant: 'primary', icon: 'plus', onclick: () => ctx.navigate(`/sites?serverId=${enc(s.id)}`) }, 'Provision a site'),
+        icon: 'globe', title: 'No sites on this server', message: 'Set up a site here and it will appear in this list.',
+        action: Button({ variant: 'primary', icon: 'plus', onclick: () => ctx.navigate(`/sites?serverId=${enc(s.id)}`) }, 'Set up a site'),
       }),
     }));
 
@@ -231,9 +260,9 @@ function detailBody(s, m, { ctx, onChanged }) {
   const paint = (metrics) => {
     const cur = metrics?.current ?? s.metrics ?? {};
     gauges.replaceChildren(
-      gauge('CPU', cur.cpu, 'Current load'),
-      gauge('Memory', cur.mem, 'RAM in use'),
-      gauge('Disk', cur.disk, 'Root filesystem'),
+      gauge('CPU', cur.cpu, 'Busy right now'),
+      gauge('Memory', cur.mem, 'Memory in use'),
+      gauge('Disk', cur.disk, 'Disk space used'),
       loadCard(cur));
     const labels = (metrics?.labels ?? []).map(hhmm);
     usage.replaceChildren(AreaChart({
@@ -244,7 +273,7 @@ function detailBody(s, m, { ctx, onChanged }) {
       labels, yMax: 100, format: (v) => `${Math.round(v)}%`,
     }));
     network.replaceChildren(AreaChart({
-      series: [{ name: 'Throughput', values: metrics?.net ?? [], color: 'var(--accent-3)' }],
+      series: [{ name: 'Data moving', values: metrics?.net ?? [], color: 'var(--accent-3)' }],
       labels, format: (v) => `${Number(v).toFixed(1)} Mbps`,
     }));
   };
@@ -255,8 +284,8 @@ function detailBody(s, m, { ctx, onChanged }) {
       header,
       gauges,
       h('div', { class: 'split' },
-        Card({ title: 'Resource usage · last hour' }, usage),
-        Card({ title: 'Network', subtitle: 'Throughput, last hour' }, network)),
+        Card({ title: 'CPU and memory · last hour' }, usage),
+        Card({ title: 'Network', subtitle: 'How much data is moving, last hour' }, network)),
       h('div', { class: 'split' }, sitesCard, details),
     ],
     paint,
@@ -266,7 +295,7 @@ function detailBody(s, m, { ctx, onChanged }) {
 async function removeServer(s, btn, ctx) {
   const yes = await Confirm({
     title: `Remove ${s.name}?`,
-    message: 'LRWeb forgets this server. The machine and its CloudPanel install are not touched.',
+    message: 'LRWeb will stop tracking this server. The server itself and its CloudPanel installation are left as they are.',
     confirmLabel: 'Remove server', danger: true,
   });
   if (!yes) return;
@@ -278,14 +307,14 @@ async function removeServer(s, btn, ctx) {
   } catch (e) {
     if (e?.name === 'AbortError') return;
     setLoading(btn, false);
-    toast({ title: e.status === 409 ? 'Cannot remove server' : 'Could not remove server', message: e.message, kind: 'bad' });
+    toast({ title: e.status === 409 ? 'Remove its sites first' : 'Could not remove server', message: e.message, kind: 'bad' });
   }
 }
 
-function notFound(ctx, id) {
+function notFound(ctx) {
   return h('section', { class: 'glass card' }, Empty({
     icon: 'server', title: 'Server not found',
-    message: `No server matches “${id}”. It may have been removed.`,
+    message: 'This server could not be found. It may have been removed.',
     action: Button({ variant: 'glass', icon: 'chevron-left', onclick: () => ctx.navigate('/servers') }, 'Back to servers'),
   }));
 }
@@ -293,7 +322,7 @@ function notFound(ctx, id) {
 function mountDetail(root, ctx) {
   const id = ctx.params.id;
   const page = h('div', { class: 'stack' });
-  root.append(h('a', { class: 'link back-link', href: '#/servers' }, icon('chevron-left', { size: 18 }), 'Servers'), page);
+  root.append(h('a', { class: 'link back-link', href: '#/servers' }, icon('chevron-left', { size: 18 }), 'All servers'), page);
 
   const fetchMetrics = () => api.get(`/api/servers/${enc(id)}/metrics`, { signal: ctx.signal });
   let seq = 0;
@@ -309,7 +338,7 @@ function mountDetail(root, ctx) {
       if (!isPending(server)) metrics = await fetchMetrics();
     } catch (e) {
       if (e?.name === 'AbortError' || mine !== seq || quiet) return;
-      page.replaceChildren(e.status === 404 ? notFound(ctx, id) : ErrorState(e, () => load()));
+      page.replaceChildren(e.status === 404 ? notFound(ctx) : ErrorState(e, () => load()));
       return;
     }
     if (mine !== seq) return;

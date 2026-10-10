@@ -51,7 +51,8 @@ const dayKey = (d) => { const x = new Date(d); return `${x.getFullYear()}-${x.ge
 const hhmm = (iso) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : clock.format(d); };
 const listTime = (iso) => (dayKey(iso) === dayKey(new Date()) ? hhmm(iso) : date(iso, { day: 'numeric', month: 'short' }));
 const byTime = (a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : (a.n || 0) - (b.n || 0));
-const trustOf = (r) => (!r.hasChat ? 'none' : r.identityChanged ? 'changed' : r.verified ? 'verified' : 'pending');
+// The client reports a changed identity with hasChat false, so the change check must come first.
+const trustOf = (r) => (r.identityChanged ? 'changed' : !r.hasChat ? 'none' : r.verified ? 'verified' : 'pending');
 const ttlPref = (peer) => Number(prefs.get(`chatTtl:${peer}`, '0')) || 0;
 const lockPref = () => Number(prefs.get('chatAutoLock', '')) || DEFAULT_LOCK_MS;
 
@@ -82,7 +83,9 @@ function downloadText(name, text) {
 export default async function mount(root, ctx) {
   await ensureCss('css/view-chat.css');
   root.append(PageHeader({ title: 'Secure chat', subtitle: 'Private messages between team members, scrambled on your device.' }));
-  const chat = getChat();
+  // Open and token modes set `me` without an id; getChat() would treat that as a person, so check here too.
+  const me = state.get('me');
+  const chat = me?.id && !me.system && !me.local ? getChat() : null;
   if (!chat) {
     root.append(Card({}, Empty({
       icon: 'lock', title: 'Secure chat needs your own sign-in',
@@ -256,7 +259,9 @@ function setupView(V) {
       h('label', { class: 'chat-check', for: agree.id }, agree,
         h('span', {}, 'I understand that if I forget my passphrase I lose my chat history.')),
       agreeErr,
-      btn));
+      btn),
+    h('div', { class: 'chat-center' },
+      h('button', { type: 'button', class: 'chat-link', onclick: () => openImport(V) }, 'Restore from a backup instead')));
 }
 
 /* ---------- locked ---------- */
@@ -363,7 +368,7 @@ function unlockedView(V) {
     h('button', { type: 'button', role: 'menuitem', class: 'chat-menu__item', onclick: () => { closeMenu(V); openSecurity(V); } },
       icon('shield', { size: 16 }), 'Security details'));
   const moreBtn = Button({
-    variant: 'ghost', size: 'sm', icon: 'settings', 'aria-haspopup': 'true', 'aria-expanded': 'false',
+    variant: 'ghost', size: 'sm', icon: 'settings', 'aria-label': 'More options', 'aria-haspopup': 'true', 'aria-expanded': 'false',
     onclick: (e) => { e.stopPropagation(); toggleMenu(V); },
   }, 'More');
   const more = h('div', { class: 'chat-more', onkeydown: (e) => { if (e.key === 'Escape') { closeMenu(V); moreBtn.focus(); } } }, moreBtn, menu);
@@ -509,10 +514,11 @@ function contactItem(V, r) {
   const last = r.conv?.lastMessage;
   const unread = r.conv?.unread || 0;
   const mine = last && last.from === meId();
-  const preview = !r.hasChat && !r.gone ? TRUST.none
-    : r.gone ? 'No longer on the team'
-      : last ? `${mine ? 'You: ' : ''}${last.preview || 'Message'}`
-        : 'No messages yet';
+  const preview = r.gone ? 'No longer on the team'
+    : r.identityChanged ? 'Identity changed. Review before sending.'
+      : !r.hasChat ? TRUST.none
+        : last ? `${mine ? 'You: ' : ''}${last.preview || 'Message'}`
+          : 'No messages yet';
   const active = V.active === r.peerId;
   return h('li', {},
     h('button', {
@@ -571,7 +577,7 @@ function syncThreadHeader(V, row = activeRow(V)) {
   ui.avatarSlot.replaceChildren(Avatar({ name: row.name, size: 38 }));
   ui.nameEl.textContent = row.name;
   ui.statusEl.replaceChildren(shield(kind), h('span', {}, row.gone ? 'No longer on the team' : TRUST[kind]));
-  ui.verifyBtn.disabled = !row.hasChat;
+  ui.verifyBtn.disabled = !(row.hasChat || row.identityChanged);
   ui.ttlSel.value = String(ttlPref(row.peerId));
   renderBanner(V, row);
   updateComposer(V);
@@ -690,8 +696,8 @@ function noteError(V, e) {
 function blockReason(row) {
   if (!row) return 'Choose someone to chat with first.';
   if (row.gone) return 'This person is no longer on the team, so you cannot send them messages.';
-  if (!row.hasChat) return `${row.name} has not set up secure chat yet, so you cannot send them messages yet.`;
   if (row.identityChanged) return `${row.name}'s identity has changed. Review it and accept the new key before you send.`;
+  if (!row.hasChat) return `${row.name} has not set up secure chat yet, so you cannot send them messages yet.`;
   return '';
 }
 
@@ -761,9 +767,10 @@ function closeMenu(V) {
 /* ---------- security dialogs ---------- */
 
 async function openVerify(V, row = activeRow(V)) {
-  if (!row || !row.hasChat) return;
+  if (!row || row.gone || (!row.hasChat && !row.identityChanged)) return;
   closeMenu(V);
   V.modal?.close();
+  if (row.identityChanged) return openChangedReview(V, row);
   const body = h('div', { class: 'stack' }, Skeleton({ lines: 3 }));
   const go = Button({ variant: 'primary', icon: 'check', disabled: true }, 'They match');
   const m = Modal({
@@ -790,16 +797,31 @@ async function openVerify(V, row = activeRow(V)) {
     if (V.modal !== m) return;
     const groups = String(s.number || '').trim().split(/\s+/).filter(Boolean);
     if (groups.length !== 12) throw new Error('unexpected safety number');
-    body.replaceChildren(
+    body.replaceChildren(...[
       h('p', {}, 'Call or meet ', row.name, ' and read the numbers out loud. If they match, nobody is listening in.'),
       h('p', { class: 'muted' }, 'These numbers are your ', Term('safety number'),
         '. Both of your keys go into them, so they only match when you are both looking at the same keys.'),
       h('ol', { class: 'chat-numbers', 'aria-label': `Safety number for ${row.name}` }, groups.map((g) => h('li', {}, g))),
-      s.verified ? h('p', { class: 'muted' }, 'You have already confirmed this number.') : null);
+      s.verified ? h('p', { class: 'muted' }, 'You have already confirmed this number.') : null,
+    ].filter(Boolean));
     go.disabled = false;
   } catch {
     if (V.modal === m) body.replaceChildren(h('p', { class: 'chat-error' }, 'The safety number could not be loaded. Close this and try again.'));
   }
+}
+
+// No safety number exists for the new key until it is accepted, so this dialog explains the check instead.
+function openChangedReview(V, row) {
+  const accept = Button({ variant: 'primary', icon: 'check', onclick: () => { m.close(); acceptChange(V, row); } }, 'Accept the new key');
+  const m = Modal({
+    title: `Review ${row.name}'s new key`, subtitle: 'Their secure identity has changed.', size: 'md',
+    content: h('div', { class: 'stack' },
+      h('p', {}, 'There is no safety number to compare for the new key yet. First check with them, by phone or in person, that the change really is them (for example a new phone or computer).'),
+      h('p', { class: 'muted' }, 'Accept the new key only after that check. Once you accept it, you can compare safety numbers with them.')),
+    actions: [Button({ variant: 'glass', onclick: () => m.close() }, 'Not now'), accept],
+  });
+  V.modal = m;
+  return m;
 }
 
 async function acceptChange(V, row) {
@@ -968,6 +990,4 @@ async function wipeFlow(V) {
   } else {
     toast({ title: 'Chat data deleted on this device', kind: 'ok' });
   }
-  V.last = null;
-  paint(V);
 }

@@ -12,7 +12,7 @@ Nothing here is built yet unless it says so.
 | 3 | **Backup dashboard**: last good backup per site, plus a "test restore" button | "Nightly backups" is a promise to clients. This proves it. Check whether CloudPanel's own backups already cover the data before building anything. | M |
 | 4 | **Full activity log** (who moved traffic, who deleted a site, who sent which invoice) | Today only sign-ins and account changes are logged. Two people sharing a console should be able to see who did what. | S |
 | 5 | **Run it behind HTTPS properly** (reverse proxy or tunnel) with a short setup guide | Secure chat and sign-in assume HTTPS. The code is ready, the deployment recipe is not written. | S |
-| 6 | **Tests on every change** (GitHub Actions running `npm test` and the style check) | 150+ checks already exist. Running them automatically stops regressions. | S |
+| 6 | **Tests on every change** (GitHub Actions running `npm test` and the style check) | 300+ automated checks already exist. Running them automatically stops regressions. | S |
 
 ## Keep clients happy
 

@@ -83,7 +83,8 @@
 .traffic-grid { display: grid; gap: var(--s4); grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 1200px) { .traffic-grid { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); align-items: start; } }
 .traffic-grid > .span-all { grid-column: 1 / -1; }
-.tiles { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.tiles { display: grid; gap: var(--s3); grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .tiles .stat { padding: 14px 16px; }
 .algo-list { display: grid; gap: 8px; }
 .algo {
@@ -232,6 +233,7 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .safety-result--ok { color: var(--ok); } .safety-result--bad { color: var(--bad); }
 .attack-grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
 .attack { display: grid; gap: 4px; justify-items: stretch; text-align: left; height: auto; min-height: 44px; padding: 12px 14px; border-radius: var(--r-md); }
+.attack .btn__label { display: grid; gap: 4px; text-align: left; min-width: 0; }
 .attack__title { font-weight: 700; font-size: var(--fs-sm); }
 .attack__desc { font-size: var(--fs-xs); font-weight: 500; color: var(--ink-3); line-height: 1.4; }
 .attack-log { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
@@ -302,8 +304,9 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 
 /* ---------- responsive ---------- */
 @media (max-width: 1023px) {
-  .practice-stack { top: var(--s3); }
-  .practice-stack .topbar { padding: 6px 6px 6px 12px; }
+  /* On phones the banner scrolls away with the page (it is at the top of every page) and only the slim top bar sticks. */
+  .practice-stack { display: contents; }
+  .practice-stack .topbar { position: sticky; top: var(--s3); z-index: 25; padding: 6px 6px 6px 12px; }
   .topbar__title { font-size: var(--fs-sm); }
   .tmap { grid-template-columns: minmax(0, 1fr); gap: 18px; padding: 18px 14px; }
 }

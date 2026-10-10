@@ -82,6 +82,8 @@
     swap: '<path d="m8 3-4 4 4 4M4 7h16M16 21l4-4-4-4M20 17H4"/>',
     sparkle: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17v4M17 19h4"/>',
     bolt: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+    'thumbs-up': '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+    'thumbs-down': '<path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/>',
     more: '<circle cx="5" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.7" fill="currentColor" stroke="none"/>',
   };
 
@@ -1308,7 +1310,7 @@
       kids = [
         h('p', { class: 'lead' }, "Set up Luke's vault. Your passphrase locks Luke's keys on this device. The server never sees it."),
         h('div', { class: 'field' },
-          h('label', { class: 'field__label', for: 'pass-new' }, 'Vault passphrase ', Term('passphrase')),
+          h('label', { class: 'field__label', for: 'pass-new' }, 'Your ', Term('passphrase', 'passphrase')),
           h('input', { class: 'input', id: 'pass-new', type: 'password', autocomplete: 'new-password', placeholder: 'At least 12 characters', 'aria-describedby': 'pass-hint', value: CHAT.passDraft, oninput: (e) => { CHAT.passDraft = e.target.value; } }),
           h('p', { class: 'field__hint muted', id: 'pass-hint' }, 'At least 12 characters. A few random words works well. It never leaves this device.')),
         h('div', { class: 'btn-row' },
@@ -1342,7 +1344,7 @@
         CHAT.vaultError ? h('p', { class: 'composer__error', role: 'alert' }, CHAT.vaultError) : null,
       ];
     }
-    v.vault.replaceChildren(...kids);
+    v.vault.replaceChildren(...kids.filter(Boolean));
   }
 
   function paintLuke() {
@@ -1448,7 +1450,7 @@
         h('div', { class: 'safety-box' }, h('h3', {}, "On Luke's screen"), h('p', { class: 'safety-num', 'data-safety': 'luke' }, onLuke)),
         h('div', { class: 'safety-box' }, h('h3', {}, "On Ralph's screen"), h('p', { class: 'safety-num', 'data-safety': 'ralph' }, onRalph))),
       h('div', { class: 'btn-row' }, button({ variant: 'primary', icon: 'check', onclick: () => compareNumbers(onLuke, onRalph) }, 'They match')),
-      res ? h('p', { class: `safety-result safety-result--${res.ok ? 'ok' : 'bad'}`, role: 'status' }, res.text) : null,
+      ...(res ? [h('p', { class: `safety-result safety-result--${res.ok ? 'ok' : 'bad'}`, role: 'status' }, res.text)] : []),
       h('p', { class: 'footnote' }, 'Read both numbers out loud, in person or on the phone. If they match, nobody is in the middle. ', Term('safety number', 'What is a safety number?')));
   }
 
@@ -1787,8 +1789,8 @@
         no.setAttribute('aria-pressed', String(next === 'no'));
         tally.textContent = next ? `You said ${next === 'yes' ? 'yes' : 'no'}. Tap again to change.` : 'No answer yet.';
       };
-      const yes = button({ size: 'sm', variant: 'glass', icon: 'check', onclick: () => vote('yes') }, 'Yes');
-      const no = button({ size: 'sm', variant: 'glass', onclick: () => vote('no') }, 'No');
+      const yes = button({ size: 'sm', variant: 'glass', icon: 'thumbs-up', onclick: () => vote('yes'), 'aria-label': `Yes, I would use ${idea.title}` }, 'Yes');
+      const no = button({ size: 'sm', variant: 'glass', icon: 'thumbs-down', onclick: () => vote('no'), 'aria-label': `No, I would not use ${idea.title}` }, 'No');
       yes.setAttribute('aria-pressed', String(cur === 'yes'));
       no.setAttribute('aria-pressed', String(cur === 'no'));
       return h('article', { class: 'glass card idea' },

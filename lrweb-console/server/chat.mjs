@@ -1,11 +1,11 @@
 // LRChat relay: stores public key bundles and sealed envelopes, never plaintext.
 // Design and threat model: docs/CHAT-SECURITY.md. The crypto lives in web/js/chat/crypto.js.
 import {
-  CryptoError, assertEnvelopeShape, fingerprint, verifyBundle, verifyEnvelopeSignature,
+  CryptoError, LIMITS, assertEnvelopeShape, deriveConvId, fingerprint, verifyBundle, verifyEnvelopeSignature,
 } from '../web/js/chat/crypto.js';
 
 const DAY_MS = 86_400_000;
-const CLOCK_SKEW_MS = 10 * 60_000;
+const CLOCK_SKEW_MS = LIMITS.clockSkewMs; // same tolerance as the clients, so the relay never accepts mail that recipients would reject
 const RATE_WINDOW_MS = 60_000;
 const PURGE_EVERY_MS = 60_000;
 const MAX_WAIT_MS = 25_000;
@@ -81,6 +81,8 @@ export function createChat({ store, config, auth, now = () => Date.now() }) {
     if (Buffer.byteLength(JSON.stringify(envelope)) > config.chat.maxEnvelopeBytes) throw fail(413, 'too_large', 'Message is too large');
     const { header } = envelope;
     if (header.from !== user.id) throw fail(403, 'forbidden', 'Messages must be sent from your own account');
+    // The conversation id is a hash of the participants: nobody can post into a conversation they are not part of.
+    if (header.convId !== await deriveConvId(header.to)) throw fail(400, 'bad_envelope', 'Malformed message envelope');
     for (const id of header.to) {
       if (!auth.getUser(id) || !keyRow(id)) throw fail(400, 'unknown_recipient', 'A recipient is not on the team or has not set up chat');
     }

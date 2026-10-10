@@ -20,7 +20,6 @@ const td = new TextDecoder();
 const MIN = 60_000;
 const DAY = 86_400_000;
 const T0 = Date.UTC(2026, 9, 10, 12, 0, 0); // every call below passes this clock explicitly
-const CONV = 'conv-alice-bob';
 const ITER = 200_000; // the iteration floor: the cheapest count the vault accepts, keeps PBKDF2 fast in tests
 const B64URL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
@@ -87,15 +86,20 @@ const [alice, bob, carol, mallory] = await Promise.all(['alice', 'bob', 'carol',
 const recipientsOf = (people) => people.map((p) => ({ userId: p.userId, bundle: p.bundle, pinnedSignFingerprint: p.fp }));
 
 /** Seals as `sender` to `people` (which must include the sender), pinning every recipient. */
-const sealAs = (sender, people, { message = { text: 'hello' }, convId = CONV, n = 0, ttl = 0, now = T0 } = {}) =>
-  seal({ message, convId, from: sender.userId, n, ttl, now, recipients: recipientsOf(people), signPrivateKey: sender.sign.privateKey });
+const sealAs = (sender, people, { message = { text: 'hello' }, n = 0, ttl = 0, now = T0 } = {}) =>
+  seal({ message, from: sender.userId, n, ttl, now, recipients: recipientsOf(people), signPrivateKey: sender.sign.privateKey });
 
 /** Opens `env` as `reader`, verifying against the key `sender` has pinned. */
 const openAs = (reader, env, sender, { now = T0, encKeys = reader.encKeys } = {}) =>
   open({ envelope: env, myUserId: reader.userId, encKeys, senderSignPublicJwk: sender.signJwk, now });
 
+const ORDER = 0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n;
+const toBig = (u8) => BigInt(`0x${[...u8].map((x) => x.toString(16).padStart(2, '0')).join('')}`);
+const fromBig32 = (v) => Uint8Array.from(v.toString(16).padStart(64, '0').match(/../g).map((h) => parseInt(h, 16)));
+/** Mirrors the production rule: only the low-s form of an ECDSA signature is valid. */
+const lowS = (sig) => { const s = toBig(sig.subarray(32)); if (s <= ORDER >> 1n) return sig; const out = new Uint8Array(sig); out.set(fromBig32(ORDER - s), 32); return out; };
 const signWith = async (privateKey, domain, payload) =>
-  b64.enc(await subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, privateKey, te.encode(`${PROTOCOL}/${domain}\n${payload}`)));
+  b64.enc(lowS(new Uint8Array(await subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, privateKey, te.encode(`${PROTOCOL}/${domain}\n${payload}`)))));
 
 /** Re-signs an envelope as `sender`, so a tampered body still carries a valid signature. */
 async function resign(env, sender) {
@@ -261,7 +265,7 @@ describe('1. correctness', () => {
     const env = await sealAs(bob, [bob, alice], { n: 7, ttl: 120, now: T0 + 1000 });
     assert.deepEqual(Object.keys(env.header).sort(), ['convId', 'from', 'id', 'n', 'to', 'ts', 'ttl', 'v']);
     assert.equal(env.header.v, 1);
-    assert.equal(env.header.convId, CONV);
+    assert.equal(env.header.convId, await deriveConvId(['alice', 'bob']));
     assert.equal(env.header.from, 'bob');
     assert.deepEqual(env.header.to, ['alice', 'bob']);
     assert.deepEqual([env.header.n, env.header.ts, env.header.ttl], [7, T0 + 1000, 120]);
@@ -336,14 +340,17 @@ describe('1. correctness', () => {
     assert.equal(await codeOf(sealAs(alice, [alice, bob], { n: -1 })), 'bad_header');
     assert.equal(await codeOf(sealAs(alice, [alice, bob], { n: 1.5 })), 'bad_header');
     assert.equal(await codeOf(sealAs(alice, [alice, bob], { ttl: LIMITS.maxTtlSeconds + 1 })), 'bad_header');
-    assert.equal(await codeOf(sealAs(alice, [alice, bob], { convId: '' })), 'bad_header');
+    const raw = (convId) => seal({ message: 'x', convId, from: 'alice', n: 0, now: T0, recipients: recipientsOf([alice, bob]), signPrivateKey: alice.sign.privateKey });
+    assert.equal(await codeOf(raw('')), 'bad_header', 'a convId that does not match the participants is refused');
+    assert.equal(await codeOf(raw(await deriveConvId(['alice', 'bob']))), 'resolved', 'the derived id is accepted');
     assert.equal(await codeOf(sealAs(alice, [alice, bob], { ttl: LIMITS.maxTtlSeconds })), 'resolved', 'the maximum ttl is allowed');
   });
 
-  test('todo: seal refuses a convId that open would reject (over 64 characters)', {
-    todo: 'seal checks only that convId is non-empty, but open enforces 64 characters, so a sender can produce undeliverable mail',
-  }, async () => {
-    await expectCryptoError(sealAs(alice, [alice, bob], { convId: 'c'.repeat(65) }), 'convId of 65 characters');
+  test('seal derives the convId itself and refuses any other value, including an over-long one', async () => {
+    const raw = (convId) => seal({ message: 'x', convId, from: 'alice', n: 0, now: T0, recipients: recipientsOf([alice, bob]), signPrivateKey: alice.sign.privateKey });
+    await expectCryptoError(raw('c'.repeat(65)), 'convId of 65 characters');
+    const env = await sealAs(alice, [alice, bob]);
+    assert.ok(env.header.convId.length <= 64);
   });
 });
 
@@ -401,17 +408,13 @@ describe('2. integrity: every field of a valid envelope', () => {
     assert.equal(await codeOf(openAs(bob, await resign(e, alice), alice)), 'bad_envelope');
   });
 
-  test('todo: a sender-signed box.eph with an unexpected field is rejected', {
-    todo: 'normalizeJwk tolerates extra JWK members, so signed junk inside box.eph is accepted',
-  }, async () => {
+  test('a sender-signed box.eph with an unexpected field is rejected', async () => {
     const e = clone(base);
     e.boxes[boxFor(e, 'bob')].eph.extra = 'x';
     await expectCryptoError(openAs(bob, await resign(e, alice), alice), 'extra eph field');
   });
 
-  test('todo: deeply nested junk inside box.eph fails with a CryptoError, not a RangeError', {
-    todo: 'eph accepts extra members and canonical() recurses without a limit, so a RangeError escapes open()',
-  }, async () => {
+  test('deeply nested junk inside box.eph fails with a CryptoError, not a RangeError', async () => {
     const e = clone(base);
     e.boxes[boxFor(e, 'bob')].eph.junk = deep(20_000); // unsigned: canonical() runs before the signature check, and the overflow depth varies with the stack
     await expectCryptoError(openAs(bob, e, alice), 'deep eph junk');
@@ -484,7 +487,7 @@ describe('4. authenticity and recipient binding', () => {
 
   test('an attacker who seals with from set to alice is rejected by alice pinned key', async () => {
     const forged = await seal({
-      message: { text: 'I am alice' }, convId: CONV, from: 'alice', n: 0, ttl: 0, now: T0,
+      message: { text: 'I am alice' }, from: 'alice', n: 0, ttl: 0, now: T0,
       recipients: recipientsOf([alice, bob]), signPrivateKey: mallory.sign.privateKey,
     });
     assert.equal(await codeOf(openAs(bob, forged, alice)), 'bad_signature');
@@ -492,7 +495,7 @@ describe('4. authenticity and recipient binding', () => {
 
   test('documents: open verifies against the key it is handed, so callers must look up the pinned key of header.from', async () => {
     const forged = await seal({
-      message: { text: 'I am alice' }, convId: CONV, from: 'alice', n: 0, ttl: 0, now: T0,
+      message: { text: 'I am alice' }, from: 'alice', n: 0, ttl: 0, now: T0,
       recipients: recipientsOf([alice, bob]), signPrivateKey: mallory.sign.privateKey,
     });
     assert.equal((await openAs(bob, forged, mallory)).message.text, 'I am alice');
@@ -646,16 +649,12 @@ describe('5. key bundles and the directory', () => {
     }
   });
 
-  test('todo: an off-curve identity key is rejected with a CryptoError', {
-    todo: 'verifyBundle imports signPub with WebCrypto, which throws a DOMException (not CryptoError)',
-  }, async () => {
+  test('an off-curve identity key is rejected with a CryptoError', async () => {
     const offCurve = { kty: 'EC', crv: 'P-256', x: b64.enc(new Uint8Array(32).fill(1)), y: b64.enc(new Uint8Array(32).fill(1)) };
     await expectCryptoError(verifyBundle(await raw({ signPub: offCurve }), { now: T0 }), 'off-curve signPub');
   });
 
-  test('todo: a signed off-curve encryption key is rejected by verifyBundle', {
-    todo: 'encPub is only length checked; the point is first imported when someone seals to it, which throws a DOMException',
-  }, async () => {
+  test('a signed off-curve encryption key is rejected by verifyBundle', async () => {
     const offCurve = { kty: 'EC', crv: 'P-256', x: b64.enc(new Uint8Array(32).fill(1)), y: b64.enc(new Uint8Array(32).fill(1)) };
     await expectCryptoError(verifyBundle(await raw({ encPub: offCurve }), { now: T0 }), 'off-curve encPub');
   });
@@ -663,8 +662,8 @@ describe('5. key bundles and the directory', () => {
   test('sealing refuses a recipient whose bundle fails verification', async () => {
     const tampered = { ...bob.bundle, encPub: carol.encJwk };
     const code = await codeOf(seal({
-      message: 'x', convId: CONV, from: 'alice', n: 0, now: T0,
-      recipients: [{ userId: 'alice', bundle: alice.bundle }, { userId: 'bob', bundle: tampered }],
+      message: 'x', from: 'alice', n: 0, now: T0,
+      recipients: [{ userId: 'alice', bundle: alice.bundle, pinnedSignFingerprint: alice.fp }, { userId: 'bob', bundle: tampered, pinnedSignFingerprint: bob.fp }],
       signPrivateKey: alice.sign.privateKey,
     }));
     assert.equal(code, 'bad_signature');
@@ -677,21 +676,22 @@ describe('5. key bundles and the directory', () => {
 
   test('sealing refuses a bundle that belongs to a different user, and an expired bundle', async () => {
     const mislabelled = await codeOf(seal({
-      message: 'x', convId: CONV, from: 'alice', n: 0, now: T0,
-      recipients: [{ userId: 'alice', bundle: alice.bundle }, { userId: 'carol', bundle: bob.bundle, pinnedSignFingerprint: bob.fp }],
+      message: 'x', from: 'alice', n: 0, now: T0,
+      recipients: [{ userId: 'alice', bundle: alice.bundle, pinnedSignFingerprint: alice.fp }, { userId: 'carol', bundle: bob.bundle, pinnedSignFingerprint: bob.fp }],
       signPrivateKey: alice.sign.privateKey,
     }));
     assert.equal(mislabelled, 'bad_bundle');
     assert.equal(await codeOf(sealAs(alice, [alice, bob], { now: bob.bundle.expiresAt })), 'bundle_expired');
   });
 
-  test('documents: seal without a pin trusts the bundle it is handed, so callers must always pin', async () => {
+  test('seal fails closed: every recipient must be pinned unless allowUnpinned is passed on purpose', async () => {
     const impostor = await person('bob');
-    const env = await seal({
-      message: 'x', convId: CONV, from: 'alice', n: 0, now: T0,
-      recipients: [{ userId: 'alice', bundle: alice.bundle }, { userId: 'bob', bundle: impostor.bundle }],
-      signPrivateKey: alice.sign.privateKey,
-    });
+    const base = { message: 'x', from: 'alice', n: 0, now: T0, signPrivateKey: alice.sign.privateKey };
+    const unpinned = [{ userId: 'alice', bundle: alice.bundle, pinnedSignFingerprint: alice.fp }, { userId: 'bob', bundle: impostor.bundle }];
+    assert.equal(await codeOf(seal({ ...base, recipients: unpinned })), 'unpinned');
+    assert.equal(await codeOf(seal({ ...base, recipients: [{ userId: 'alice', bundle: alice.bundle, pinnedSignFingerprint: '' }, { userId: 'bob', bundle: impostor.bundle, pinnedSignFingerprint: bob.fp }] })), 'unpinned');
+    // first contact is a deliberate, explicit choice
+    const env = await seal({ ...base, recipients: unpinned, allowUnpinned: true });
     assert.ok(env.boxes.some((b) => b.to === 'bob'));
   });
 
@@ -700,23 +700,17 @@ describe('5. key bundles and the directory', () => {
     assert.equal(await codeOf(verifyBundle(bob.bundle, { now: T0, pinnedSignFingerprint: 'a'.repeat(64) })), 'identity_changed');
   });
 
-  test('todo: an empty or null pin still enforces identity pinning', {
-    todo: 'verifyBundle checks `if (pinnedSignFingerprint)`, so a falsy pin silently disables the check (fails open)',
-  }, async () => {
+  test('an empty or null pin still enforces identity pinning', async () => {
     const impostor = await person('bob');
     await expectCryptoError(verifyBundle(impostor.bundle, { now: T0, pinnedSignFingerprint: '' }), 'empty pin');
     await expectCryptoError(verifyBundle(impostor.bundle, { now: T0, pinnedSignFingerprint: null }), 'null pin');
   });
 
-  test('todo: a signed bundle with expiresAt before createdAt is rejected', {
-    todo: 'only the upper validity bound is checked, so a negative validity window is accepted',
-  }, async () => {
+  test('a signed bundle with expiresAt before createdAt is rejected', async () => {
     await expectCryptoError(verifyBundle(await raw({ createdAt: T0 + MIN, expiresAt: T0 + 1 }), { now: T0 }), 'expiresAt before createdAt');
   });
 
-  test('todo: a bundle with deeply nested junk inside signPub fails with a CryptoError', {
-    todo: 'normalizeJwk accepts extra members and canonical() recurses without a limit, so this throws a RangeError',
-  }, async () => {
+  test('a bundle with deeply nested junk inside signPub fails with a CryptoError', async () => {
     // Depth 20000 overflows reliably. At ~2500 the result depends on the stack, and a valid-looking signature would hide it.
     const junk = { ...bodyOf(alice.bundle), signPub: { ...alice.signJwk, junk: deep(20_000) }, sig: alice.bundle.sig };
     await expectCryptoError(verifyBundle(junk, { now: T0 }), 'deep signPub junk');
@@ -776,17 +770,18 @@ describe('6. key separation, replay surface and clock rules', () => {
     assert.equal((await openAs(bob, env, alice, { now: T0 + 400 * DAY })).expired, false);
   });
 
-  test('documents: a message can claim a conversation it was not sent to, only the caller deriveConvId check stops it', async () => {
+  test('a third person cannot post into the alice and bob conversation: the conversation id is bound to the participants', async () => {
     const convAB = await deriveConvId(['alice', 'bob']);
-    const injected = await sealAs(mallory, [alice, bob, mallory], { convId: convAB, message: { text: 'from mallory' } });
-    const got = await openAs(bob, injected, mallory);
-    assert.equal(got.header.convId, convAB);
-    assert.notEqual(await deriveConvId(got.header.to), got.header.convId);
+    const injected = await sealAs(mallory, [alice, bob, mallory], { message: { text: 'from mallory' } });
+    assert.notEqual(injected.header.convId, convAB, 'seal derives the id from all three participants');
+    // Mallory hand-crafts a header that claims the alice and bob conversation and signs it validly.
+    const forged = clone(injected);
+    forged.header.convId = convAB;
+    const resigned = await resign(forged, mallory);
+    assert.equal(await codeOf(openAs(bob, resigned, mallory)), 'bad_conv');
   });
 
-  test('todo: deriveConvId ids containing the separator do not collide', {
-    todo: 'ids are joined with "|" without escaping, so ["a|b","c"] and ["a","b|c"] get the same conversation id (latent: usernames exclude "|")',
-  }, async () => {
+  test('deriveConvId ids containing the separator do not collide', async () => {
     assert.notEqual(await deriveConvId(['a|b', 'c']), await deriveConvId(['a', 'b|c']));
   });
 });
@@ -837,9 +832,7 @@ describe('7. canonical JSON', () => {
     assert.equal(canonical(-0), canonical(0));
   });
 
-  test('todo: canonical refuses Date and Map instead of silently writing {}', {
-    todo: 'canonical() walks own enumerable keys, so a Date or Map is signed as an empty object',
-  }, () => {
+  test('canonical refuses Date and Map instead of silently writing {}', () => {
     assert.throws(() => canonical(new Date(0)), (e) => e instanceof CryptoError);
     assert.throws(() => canonical(new Map([['a', 1]])), (e) => e instanceof CryptoError);
   });
@@ -871,25 +864,20 @@ describe('8. base64url encoding', () => {
     assert.equal(b64.enc(new Uint8Array(64)).length, 86);
   });
 
-  test('todo: dec rejects non-canonical trailing bits (only one spelling per byte string)', {
-    todo: 'b64.dec("AB") and b64.dec("AA") both give one zero byte; this is the root of the signature respelling below',
-  }, () => {
+  test('dec rejects non-canonical trailing bits (only one spelling per byte string)', () => {
     assert.throws(() => b64.dec('AB'), (e) => e instanceof CryptoError);
   });
 
-  test('todo: a re-spelled envelope signature (same bytes, other unused bits) is rejected', {
-    todo: 'the sig field is outside the signed bytes and b64.dec accepts any spelling, so an envelope has several valid encodings',
-  }, async () => {
+  test('a re-spelled envelope signature (same bytes, other unused bits) is rejected', async () => {
     const env = await sealAs(alice, [alice, bob]);
     const last = B64URL.indexOf(env.sig.at(-1));
     const respelled = env.sig.slice(0, -1) + B64URL[(last & 0x30) | ((last & 0x0f) ^ 0x01)];
-    assert.deepEqual(b64.dec(respelled), b64.dec(env.sig), 'same bytes');
+    assert.notEqual(respelled, env.sig);
+    await expectCryptoError(Promise.resolve().then(() => b64.dec(respelled)), 'the decoder itself refuses a second spelling');
     await expectCryptoError(openAs(bob, { ...env, sig: respelled }, alice), 're-spelled signature');
   });
 
-  test('todo: a high-s ECDSA signature (r, n-s) is rejected: one signature, one encoding', {
-    todo: 'WebCrypto ECDSA verify accepts both s and n-s, so every signature has a second valid form',
-  }, async () => {
+  test('a high-s ECDSA signature (r, n-s) is rejected: one signature, one encoding', async () => {
     const env = await sealAs(alice, [alice, bob]);
     const raw = b64.dec(env.sig);
     const n = 0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n;
@@ -1010,9 +998,7 @@ describe('9. passphrase vault primitives', () => {
     assert.equal(checkPassphrase('abcdefghij'.repeat(26)).ok, false, '260 characters');
   });
 
-  test('todo: checkPassphrase judges the NFKC-normalised passphrase, not the raw input', {
-    todo: 'the policy inspects the raw string, but the KDF uses NFKC, so full-width "password1234" passes as a non-common string',
-  }, () => {
+  test('checkPassphrase judges the NFKC-normalised passphrase, not the raw input', () => {
     assert.equal(checkPassphrase('ｐａｓｓｗｏｒｄ１２３４').ok, false);
   });
 });

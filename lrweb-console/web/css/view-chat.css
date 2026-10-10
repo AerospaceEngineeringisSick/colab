@@ -76,10 +76,24 @@
 
 /* Blur when this tab is not focused (Security details switch). */
 .chat-blur .chat-bubble:not(.chat-bubble--expired) .chat-bubble__text { filter: blur(7px); transition: filter .2s; }
-.chat-blur:hover .chat-bubble__text, .chat-blur.is-focused .chat-bubble__text { filter: none; }
+/* New messages pill: floats over the bottom of the thread, above the composer. */
+.chat-thread { position: relative; }
+.chat-real { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; position: relative; }
+.chat-jump { position: absolute; left: 50%; transform: translateX(-50%); bottom: 112px; z-index: 3; }
+.chat-empty-thread { flex: 1 1 auto; display: grid; place-items: center; padding: var(--s5); }
+.chat-scroller { display: flex; flex-direction: column; }
+.chat-messages { flex: 1 0 auto; }
 
-/* New messages pill. */
-.chat-jump { position: sticky; bottom: var(--s3); align-self: center; z-index: 2; }
+/* Header controls: disappearing messages and the More menu. */
+.chat-ttl { display: inline-flex; align-items: center; gap: 6px; }
+.chat-ttl .chat-hint { white-space: nowrap; }
+.chat-more { position: relative; }
+.chat-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 210px; padding: 6px; border-radius: var(--r-md); display: grid; gap: 2px; }
+.chat-menu__item { display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 12px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink-2); font-weight: 600; text-align: left; cursor: pointer; }
+.chat-menu__item:hover, .chat-menu__item:focus-visible { background: rgb(255 255 255 / .09); color: var(--ink); outline: none; }
+.chat-banner__actions { margin-top: var(--s2); gap: var(--s2); }
+.chat-composer__count.is-near { color: var(--warn); font-weight: 650; }
+.chat-composer__count.is-over { color: var(--bad); font-weight: 650; }
 
 /* Composer. */
 .chat-composer { display: grid; gap: var(--s2); padding: var(--s3) var(--s4) var(--s4); border-top: 1px solid var(--line); }

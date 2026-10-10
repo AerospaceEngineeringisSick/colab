@@ -1,0 +1,135 @@
+/* Traffic view: pool cards, live map, popover, switch panel and the create form. Colours come from the shared tokens. */
+
+.back-link { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; font-weight: 600; }
+.traffic-intro { color: var(--ink-2); max-width: 68ch; }
+
+/* ---------- pool cards (list) ---------- */
+.traffic-card { gap: var(--s4); padding: var(--s5); min-width: 0; }
+.traffic-card:has(.traffic-card__domain:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.traffic-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); min-width: 0; }
+.traffic-card__id { display: grid; gap: 4px; min-width: 0; }
+.traffic-card__domain { font-size: var(--fs-lg); font-weight: 700; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.traffic-card__domain:focus-visible { outline: none; }
+.traffic-card__domain::after { content: ""; position: absolute; inset: 0; }
+.traffic-card__name { font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.traffic-card__chips { gap: var(--s2); position: relative; z-index: 1; }
+.traffic-card__foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s2); margin-top: auto; padding-top: var(--s3); border-top: 1px solid var(--line); font-size: var(--fs-xs); }
+
+.traffic-dots { display: flex; flex-wrap: wrap; gap: 10px; position: relative; z-index: 1; }
+.traffic-dot { position: relative; width: 16px; height: 16px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px color-mix(in oklab, var(--c) 70%, transparent), inset 0 0 0 2px rgb(255 255 255 / .25); cursor: default; }
+.traffic-dot--ok { --c: var(--ok); } .traffic-dot--warn { --c: var(--warn); } .traffic-dot--bad { --c: var(--bad); }
+.traffic-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.traffic-dot__name { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 4px 8px; border-radius: var(--r-xs); white-space: nowrap; font-size: var(--fs-xs); font-weight: 600; background: var(--g-solid); color: var(--ink); box-shadow: 0 6px 16px -6px rgb(0 0 0 / .5); opacity: 0; pointer-events: none; transition: opacity .2s var(--ease); z-index: 3; }
+.traffic-dot:hover .traffic-dot__name, .traffic-dot:focus-visible .traffic-dot__name { opacity: 1; }
+
+.traffic-srv { display: grid; gap: 2px; min-width: 0; }
+.traffic-srv small { overflow-wrap: anywhere; }
+
+/* ---------- detail header ---------- */
+.traffic-title { gap: 12px; flex-wrap: wrap; overflow-wrap: anywhere; }
+.traffic-title__tags { gap: 8px; }
+
+/* ---------- live map ---------- */
+.tmap { position: relative; isolation: isolate; display: grid; min-height: 220px; padding: var(--s2) 0; }
+.tmap[data-layout="wide"] { grid-template-columns: minmax(0, .85fr) minmax(0, 1fr) minmax(0, 1.2fr); align-items: center; gap: clamp(28px, 4vw, 72px); }
+.tmap[data-layout="stack"] { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 44px; }
+.tmap__lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
+.tmap__path { fill: none; stroke: color-mix(in oklab, var(--accent) 50%, transparent); stroke-width: 2; stroke-linecap: round; }
+.tmap__path--in { stroke: color-mix(in oklab, var(--accent-3) 70%, transparent); stroke-width: 2.5; }
+.tdot { pointer-events: none; }
+.tdot circle { fill: var(--accent-3); filter: drop-shadow(0 0 6px var(--accent-3)); }
+.tdot.is-fail circle { fill: var(--bad); filter: drop-shadow(0 0 6px var(--bad)); }
+.tmap.is-static .tdot { display: none; }
+
+.tmap__node { position: relative; z-index: 2; display: grid; gap: 6px; width: 100%; padding: 14px 16px; border: 0; border-radius: var(--r-md); color: var(--ink); font: inherit; text-align: left; cursor: default; transition: opacity .3s var(--ease), filter .3s var(--ease); }
+.tmap[data-layout="wide"] .tmap__node--member { max-width: 300px; justify-self: start; }
+.tmap[data-layout="stack"] .tmap__node { justify-self: stretch; }
+.tmap__node--visitors, .tmap__node--lb { font-size: var(--fs-sm); }
+.tmap__node--visitors strong, .tmap__node--lb strong { font-family: var(--head); font-size: var(--fs-md); font-weight: 700; }
+.tmap__node--visitors small, .tmap__node--lb small { overflow-wrap: anywhere; }
+.tmap__node--member { cursor: pointer; }
+.tmap__node--member:hover { transform: translateY(-2px); }
+.tmap__node--member[aria-expanded="true"] { box-shadow: inset 0 1px 0 var(--g-spec), inset 0 0 0 1px var(--accent), 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent); }
+.tmap__node.is-off { opacity: .6; filter: saturate(.5); }
+.tmap__node.is-spare .tmap__role { color: var(--accent-2); }
+.tmap__node.is-hit { animation: tmap-hit .45s var(--ease); }
+@keyframes tmap-hit { 0% { box-shadow: inset 0 1px 0 var(--g-spec), 0 0 0 0 color-mix(in oklab, var(--accent-3) 70%, transparent); } 100% { box-shadow: inset 0 1px 0 var(--g-spec), 0 0 0 14px transparent; } }
+.tmap__node--member[data-tone="ok"] { --c: var(--ok); }
+.tmap__node--member[data-tone="warn"] { --c: var(--warn); }
+.tmap__node--member[data-tone="bad"] { --c: var(--bad); }
+.tmap__top { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tmap__top strong { font-weight: 700; overflow-wrap: anywhere; }
+.tmap__ring { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--c, var(--ok)); box-shadow: 0 0 10px color-mix(in oklab, var(--c, var(--ok)) 70%, transparent); transition: border-color .3s, box-shadow .3s; }
+.tmap__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--fs-xs); }
+.tmap__role { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.tmap__share { font-size: var(--fs-xs); }
+.tmap__share b { color: var(--ink); font-size: var(--fs-sm); }
+.tmap__bar { display: block; height: 6px; border-radius: var(--r-pill); background: var(--field); box-shadow: inset 0 1px 2px rgb(0 0 0 / .2); overflow: hidden; }
+.tmap__bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-3)); transition: width .45s var(--ease); }
+
+.tmap__foot { display: grid; gap: 6px; margin-top: var(--s3); font-size: var(--fs-sm); }
+.tmap__caption { color: var(--ink-2); }
+.tmap__count, .tmap__motion { font-size: var(--fs-xs); }
+
+/* "Try it yourself" popover, anchored to a member node */
+.tmap__pop { position: absolute; z-index: 5; top: 0; left: 0; width: min(320px, 100%); max-height: min(70vh, 560px); overflow: auto; padding: var(--s4); border-radius: var(--r-lg); font-size: var(--fs-sm); }
+.tmap__pop-inner { gap: 0; }
+.tmap__pop-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s2); padding-bottom: var(--s3); }
+.tmap__pop-head h3 { font-family: var(--head); font-size: var(--fs-md); font-weight: 800; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.tmap__pop-head p { font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.tmap__pop-sec { display: grid; gap: var(--s2); padding: var(--s3) 0; border-top: 1px solid var(--line); }
+.tmap__pop-sec h4 { font-size: var(--fs-sm); font-weight: 700; }
+.tmap__pop-sec p { font-size: var(--fs-xs); }
+.tmap__pop-sec--real .callout { padding: 10px 12px; font-size: var(--fs-xs); }
+.tmap__pop .row { gap: var(--s2); }
+.tmap__pop .field { gap: 4px; }
+.tmap__pop .field__label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.tmap__pop output { font-weight: 700; color: var(--ink); }
+.tmap__range { width: 100%; accent-color: var(--accent); margin: 6px 0; }
+
+/* ---------- cards on the detail page ---------- */
+.sharing__now { gap: var(--s2); }
+.sharing__now p { font-size: var(--fs-sm); }
+.sharing__sticky { display: grid; gap: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--line); }
+.sharing__sticky p { font-size: var(--fs-xs); }
+.traffic-donut { display: flex; align-items: center; gap: var(--s5); flex-wrap: wrap; }
+.traffic-legend { display: grid; gap: 8px; min-width: 0; flex: 1 1 160px; font-size: var(--fs-sm); }
+.traffic-legend li { display: flex; align-items: center; gap: 8px; }
+.traffic-legend i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.traffic-legend span { flex: 1; min-width: 0; color: var(--ink-2); overflow-wrap: anywhere; }
+.switch__form { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.switch__form .field > .segmented { align-self: flex-start; }
+.switch__explain { gap: var(--s3); font-size: var(--fs-sm); }
+.switch__explain p { color: var(--ink-2); }
+.traffic-setup__head { font-family: var(--head); font-weight: 700; font-size: var(--fs-md); letter-spacing: -.01em; }
+.traffic-notes { gap: var(--s2); }
+.traffic-notes p { font-size: var(--fs-sm); }
+.callout--ok { background: color-mix(in oklab, var(--ok) 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ok) 28%, transparent); }
+.callout--ok > .icon { color: var(--ok); }
+
+/* ---------- create-pool form ---------- */
+.tpool-form { gap: var(--s5); }
+.tpool-sticky { display: grid; gap: 6px; }
+.tpool-sticky .field__hint { padding-left: 56px; }
+.tpool-members { display: grid; gap: var(--s3); }
+.tpool-members__title { font-family: var(--head); font-size: var(--fs-md); font-weight: 700; letter-spacing: -.01em; }
+.tpool-rows { display: grid; }
+.tpool-row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.4fr) minmax(0, .6fr) minmax(0, 1fr) auto; gap: var(--s3); align-items: end; padding: var(--s3) 0; border-top: 1px solid var(--line); }
+.tpool-row:first-child { border-top: 0; }
+.tpool-row > .field { min-width: 0; }
+.tpool-remove { height: 44px; width: 44px; padding: 0; }
+.tpool-remove:disabled { opacity: .35; }
+
+@media (max-width: 640px) {
+  .tpool-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .tpool-row > .field:nth-child(1), .tpool-row > .field:nth-child(2) { grid-column: 1 / span 2; }
+  .tpool-row > .field:nth-child(3) { grid-column: 1; }
+  .tpool-row > .field:nth-child(4) { grid-column: 2; }
+  .tpool-row > .tpool-remove { grid-column: 3; grid-row: 3; align-self: end; }
+  .tpool-sticky .field__hint { padding-left: 0; }
+}
+@media (max-width: 420px) {
+  .tmap__pop { width: 100%; }
+  .traffic-card { padding: var(--s4); }
+  .traffic-dot__name { white-space: normal; max-width: 120px; }
+}

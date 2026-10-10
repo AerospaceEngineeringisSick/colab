@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en-GB" data-theme="dark" data-fx="full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Offline by design: no network address may be contacted, so every request is blocked. Inline code is allowed. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>LRWeb Console: practice mockup</title>
+  <meta name="description" content="An offline practice copy of the LRWeb Console. Everything is pretend: nothing touches a real server, client or message.">
+  <meta name="theme-color" content="#070824">
+  <link rel="icon" href="@@FAVICON@@" type="image/svg+xml">
+  <script>
+    /* Runs before first paint so the theme never flashes. Practice keys are separate from the real console's. */
+    try {
+      var t = localStorage.getItem('lrweb.mock.theme') || 'auto';
+      var dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      if (localStorage.getItem('lrweb.mock.fx') === 'lite') document.documentElement.dataset.fx = 'lite';
+    } catch (e) { /* storage blocked: keep the defaults */ }
+  </script>
+  <style>
+@@CSS@@
+  </style>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <!-- Refraction filter used by .glass--liquid on Chromium (same as the real console). -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="noise"/>
+        <feGaussianBlur in="noise" stdDeviation="2" result="soft"/>
+        <feDisplacementMap in="SourceGraphic" in2="soft" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <button class="skip" id="skip-link" type="button">Skip to content</button>
+
+  <div class="shell">
+    <aside class="sidebar glass glass--liquid" aria-label="Practice pages">
+      <a class="brand" href="#start" aria-label="LRWeb practice console, start here">
+        <img class="brand__logo logo--on-dark" src="@@LOGO_LIGHT@@" width="300" height="69" alt="LRWeb">
+        <img class="brand__logo logo--on-light" src="@@LOGO_DARK@@" width="300" height="69" alt="LRWeb">
+        <span class="brand__tag">Practice</span>
+      </a>
+      <nav aria-label="Main"><ul class="nav-list" id="nav-list"></ul></nav>
+      <div class="sidebar__foot">
+        <div class="glass glass--thin tip">
+          <span class="tip__icon" aria-hidden="true">Try</span>
+          <p>Nothing here is real. Break things on purpose and see what happens.</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content">
+      <div class="practice-stack">
+        <div class="glass glass--thin practice-banner" role="note">
+          <span class="practice-banner__badge">Practice mode</span>
+          <p><strong>Everything here is pretend.</strong> Nothing touches a real server, client or message.</p>
+        </div>
+        <header class="topbar glass glass--liquid">
+          <p class="topbar__title"><span class="muted">Practice</span> <span id="topbar-page">Start here</span></p>
+          <button class="pill-btn" id="toggle-lite" type="button" aria-pressed="false" title="Turn off blur and motion to make the page lighter">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span class="pill-btn__text">Lite effects</span>
+          </button>
+          <button class="icon-btn" id="toggle-theme" type="button" aria-label="Toggle light or dark theme">
+            <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-15.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          </button>
+        </header>
+      </div>
+      <main id="main" class="view-host" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <div id="overlay-root"></div>
+  <noscript><p style="padding:2rem;color:#fff">This practice console needs JavaScript.</p></noscript>
+
+  <script>@@LB@@</script>
+  <script>@@CRYPTO@@</script>
+  <script>@@APP@@</script>
+</body>
+</html>

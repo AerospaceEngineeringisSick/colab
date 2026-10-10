@@ -95,3 +95,8 @@
   background: radial-gradient(circle at 50% 30%, color-mix(in oklab, var(--ok) 34%, transparent), color-mix(in oklab, var(--ok) 10%, transparent));
   box-shadow: inset 0 1px 0 var(--g-spec), inset 0 0 0 1px color-mix(in oklab, var(--ok) 42%, transparent);
 }
+
+/* Keep the heading clear of the sticky top bar when a step scrolls into view. */
+.mig-stage .card__title { scroll-margin-top: 112px; }
+/* Buttons inside callouts size to their label instead of stretching across the callout. */
+.mig-callout__body > .btn { justify-self: start; }

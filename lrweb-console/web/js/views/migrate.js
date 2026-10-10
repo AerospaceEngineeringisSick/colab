@@ -46,6 +46,9 @@ const downtimeText = (sec = 0) => {
   const m = Math.round(sec / 60);
   return `About ${m} minute${m === 1 ? '' : 's'}`;
 };
+/** Server text is plain except for a few jargon words, which get a Term tip. */
+const TERM_WORDS = { DNS: 'dns', SSL: 'ssl' };
+const withTerms = (text) => String(text ?? '').split(/\b(DNS|SSL)\b/).map((part) => (TERM_WORDS[part] ? Term(TERM_WORDS[part], part) : part));
 const failureText = (job) => job.error || job.steps?.find((s) => s.status === 'failed')?.detail || 'The move did not finish.';
 
 /* ---------- small pieces ---------- */
@@ -80,8 +83,8 @@ function runbookBlock(text) {
 function stepItem(st) {
   const [kind, label] = RISK[st.risk] || ['neutral', st.risk || 'Unknown'];
   return h('li', { class: 'mig-step' },
-    h('div', { class: 'mig-step__top' }, h('strong', {}, st.label ?? st.key), Badge({ kind }, label)),
-    st.detail ? h('p', { class: 'mig-step__detail muted' }, st.detail) : null);
+    h('div', { class: 'mig-step__top' }, h('strong', {}, withTerms(st.label ?? st.key)), Badge({ kind }, label)),
+    st.detail ? h('p', { class: 'mig-step__detail muted' }, withTerms(st.detail)) : null);
 }
 
 /** One switch with a plain-English hint wired to it through aria-describedby. */
@@ -144,7 +147,7 @@ export default async function mount(root, ctx) {
   let ui = null;                // controller of the step on screen; stale async work checks identity
 
   const stepper = Stepper({ steps: STEPS, current: SITE });
-  const stage = h('div', { class: 'stack' });
+  const stage = h('div', { class: 'stack mig-stage' });
   root.append(
     PageHeader({
       title: 'Move a website',
@@ -222,6 +225,9 @@ export default async function mount(root, ctx) {
     t.setAttribute('tabindex', '-1');
     t.style.outline = 'none';
     t.focus({ preventScroll: true });
+    // On phones the list above can be long, so bring the heading into view only when it is off screen.
+    const r = t.getBoundingClientRect();
+    if (r.top < 96 || r.bottom > innerHeight) t.scrollIntoView({ block: 'start' });
   }
 
   /* ---------- 1. site ---------- */
@@ -391,7 +397,8 @@ export default async function mount(root, ctx) {
     function renderPlan() {
       const est = plan.estimate || {};
       const dbOn = hasDatabase(site) && choice.copyDatabase;
-      body.replaceChildren(
+      // replaceChildren takes Nodes only, so arrays and nulls are flattened and dropped first.
+      const parts = [
         h('dl', { class: 'kv' }, [
           ['Website', site.domain],
           ['Moving from', serverName(site.serverId, site.serverName)],
@@ -404,14 +411,16 @@ export default async function mount(root, ctx) {
           Stat({ label: 'Website size', value: choice.copyFiles ? bytes((est.filesMb || 0) * MB) : 'Not copied', icon: 'disk', hint: 'Estimate' }),
           Stat({ label: 'Database size', value: dbOn ? bytes((est.dbMb || 0) * MB) : 'Not copied', icon: 'database', hint: 'Estimate' }),
           Stat({ label: 'Expected downtime', value: downtimeText(est.downtimeSec), icon: 'clock', hint: 'Estimate' })),
-        (plan.warnings || []).map((w) => callout('warn', 'alert', h('p', {}, w))),
+        (plan.warnings || []).map((w) => callout('warn', 'alert', h('p', {}, withTerms(w)))),
         sub('What will happen'),
         h('ol', { class: 'mig-steps' }, (plan.steps || []).map(stepItem)),
         plan.runbook
           ? h('details', { class: 'mig-details' },
             h('summary', {}, 'Step-by-step commands (for whoever does the server work)'),
             CopyBlock({ text: plan.runbook, label: 'Run in order', maxHeight: 320 }))
-          : null);
+          : null,
+      ];
+      body.replaceChildren(...parts.flat().filter(Boolean));
       startBtn.disabled = false;
     }
 

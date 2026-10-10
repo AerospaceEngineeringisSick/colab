@@ -5,7 +5,7 @@ import { chatRoutes, createChat } from '../chat.mjs';
 import { loadConfig } from '../config.mjs';
 import { createStore } from '../store.mjs';
 import {
-  createBundle, deriveConvId, exportPublicJwk, generateEncKeyPair, generateSigningKeyPair, seal,
+  createBundle, deriveConvId, exportPublicJwk, fingerprint, generateEncKeyPair, generateSigningKeyPair, seal,
 } from '../../web/js/chat/crypto.js';
 
 const MIN = 60_000;
@@ -65,8 +65,8 @@ async function cast() {
 async function compose(clock, from, to, text, { n = 1, ttl = 0, ts } = {}) {
   const people = [from, ...to.filter((p) => p.userId !== from.userId)];
   return seal({
-    message: { text }, convId: await deriveConvId(people.map((p) => p.userId)), from: from.userId, n, ttl,
-    recipients: people.map((p) => ({ userId: p.userId, bundle: p.bundle })),
+    message: { text }, from: from.userId, n, ttl,
+    recipients: await Promise.all(people.map(async (p) => ({ userId: p.userId, bundle: p.bundle, pinnedSignFingerprint: await fingerprint(p.signPublicJwk) }))),
     signPrivateKey: from.signPrivateKey, now: ts ?? clock.t,
   });
 }
@@ -286,15 +286,28 @@ describe('chat relay: sending and reading', () => {
     assert.ok((await sendAs(chat, alice, env)).seq > 0);
   });
 
-  test('a message dated more than ten minutes from the server clock is rejected', async () => {
+  test('a message dated more than five minutes from the server clock is rejected', async () => {
     const { chat, clock } = setup();
     const { alice, bob } = await cast();
     await publish(chat, alice);
     await publish(chat, bob);
-    const late = await compose(clock, alice, [bob], 'late', { ts: T0 - 11 * MIN });
+    const late = await compose(clock, alice, [bob], 'late', { ts: T0 - 6 * MIN });
     const e = await fails(sendAs(chat, alice, late));
     assert.equal(e.status, 400);
     assert.equal(e.code, 'bad_timestamp');
+  });
+
+  test('a message cannot claim a conversation its participants are not part of', async () => {
+    const { chat, clock } = setup();
+    const { alice, bob, carol } = await cast();
+    await publish(chat, alice);
+    await publish(chat, bob);
+    await publish(chat, carol);
+    const env = await compose(clock, carol, [alice], 'sneaking into the alice and bob chat');
+    env.header.convId = await deriveConvId(['usr_alice', 'usr_bob']);
+    const e = await fails(sendAs(chat, carol, env));
+    assert.equal(e.status, 400);
+    assert.equal(e.code, 'bad_envelope');
   });
 
   test('the rate limit returns 429 and recovers after a minute', async () => {

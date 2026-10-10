@@ -44,6 +44,7 @@ export const b64 = {
     const bin = atob(str.replaceAll('-', '+').replaceAll('_', '/') + '='.repeat((4 - (str.length % 4)) % 4));
     const out = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    if (b64.enc(out) !== str) fail('bad_base64', 'Non-canonical base64url'); // one spelling per byte string
     return out;
   },
 };
@@ -52,16 +53,19 @@ const rand = (n) => globalThis.crypto.getRandomValues(new Uint8Array(n));
 export const randomId = (bytes = 16) => b64.enc(rand(bytes));
 
 /** Deterministic JSON (sorted keys, integers only). Everything that is signed or used as AAD goes through this. */
-export function canonical(v) {
+export function canonical(v, depth = 0) {
+  if (depth > 8) fail('canonical', 'Data nested too deeply');
   if (v === null || typeof v === 'boolean') return JSON.stringify(v);
   if (typeof v === 'number') {
     if (!Number.isSafeInteger(v)) fail('canonical', 'Only safe integers are allowed in signed data');
     return String(v);
   }
   if (typeof v === 'string') return JSON.stringify(v);
-  if (Array.isArray(v)) return `[${v.map(canonical).join(',')}]`;
+  if (Array.isArray(v)) return `[${v.map((x) => canonical(x, depth + 1)).join(',')}]`;
   if (typeof v === 'object') {
-    return `{${Object.keys(v).filter((k) => v[k] !== undefined).sort().map((k) => `${JSON.stringify(k)}:${canonical(v[k])}`).join(',')}}`;
+    const proto = Object.getPrototypeOf(v);
+    if (proto !== Object.prototype && proto !== null) fail('canonical', 'Only plain objects can be signed');
+    return `{${Object.keys(v).filter((k) => v[k] !== undefined).sort().map((k) => `${JSON.stringify(k)}:${canonical(v[k], depth + 1)}`).join(',')}}`;
   }
   return fail('canonical', 'Unsupported type');
 }
@@ -80,7 +84,8 @@ export const generateEncKeyPair = (extractable = true) => subtle.generateKey(ECD
 const isB64Len = (s, n) => { try { return b64.dec(s).length === n; } catch { return false; } };
 /** Validates and normalises an EC P-256 public JWK to exactly {kty,crv,x,y}. */
 export function normalizeJwk(jwk) {
-  if (!jwk || jwk.kty !== 'EC' || jwk.crv !== 'P-256' || !isB64Len(jwk.x, 32) || !isB64Len(jwk.y, 32)) fail('bad_key', 'Invalid P-256 public key');
+  if (!jwk || typeof jwk !== 'object') fail('bad_key', 'Invalid P-256 public key');
+  if (jwk.kty !== 'EC' || jwk.crv !== 'P-256' || !isB64Len(jwk.x, 32) || !isB64Len(jwk.y, 32)) fail('bad_key', 'Invalid P-256 public key');
   return { kty: 'EC', crv: 'P-256', x: jwk.x, y: jwk.y };
 }
 export async function exportPublicJwk(publicKey) {
@@ -100,6 +105,12 @@ export function importSignPrivate(jwk) {
 }
 export function importEncPrivate(jwk) {
   return subtle.importKey('jwk', jwk, ECDH, false, ['deriveBits']);
+}
+
+/** Strict form for keys embedded in bundles and envelopes: exactly kty, crv, x, y and nothing else. */
+function exactJwk(jwk) {
+  if (!jwk || typeof jwk !== 'object' || Object.keys(jwk).sort().join(',') !== 'crv,kty,x,y') fail('bad_key', 'Unexpected fields in public key');
+  return normalizeJwk(jwk);
 }
 
 /** Hex SHA-256 of the canonical public key: the identity's stable fingerprint. */
@@ -125,16 +136,32 @@ export async function safetyNumber(jwkA, jwkB) {
 
 export async function deriveConvId(userIds) {
   const ids = [...new Set(userIds)].sort();
-  return hex(await subtle.digest('SHA-256', te.encode(`${PROTOCOL}/conv|${ids.join('|')}`))).slice(0, 32);
+  return hex(await subtle.digest('SHA-256', te.encode(`${PROTOCOL}/conv\n${canonical(ids)}`))).slice(0, 32);
 }
 
 /* ---------------- key bundles (the public directory entry) ---------------- */
 
-const sign = async (privateKey, domain, payload) => b64.enc(await subtle.sign(SIGN_ALG, privateKey, te.encode(`${PROTOCOL}/${domain}\n${payload}`)));
+// ECDSA signatures are malleable: (r, s) and (r, n - s) both verify. We keep only the low-s form, so every message
+// has exactly one valid signature encoding (together with canonical base64 this removes re-spelling of signed data).
+const ORDER = 0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n;
+const HALF_ORDER = ORDER >> 1n;
+const big = (u8) => BigInt(`0x${hex(u8)}`);
+function toLowS(sig) {
+  const s = big(sig.subarray(32));
+  if (s <= HALF_ORDER) return sig;
+  const out = new Uint8Array(sig);
+  out.set(Uint8Array.from(((ORDER - s).toString(16).padStart(64, '0').match(/../g)).map((h) => parseInt(h, 16))), 32);
+  return out;
+}
+const sign = async (privateKey, domain, payload) => b64.enc(toLowS(new Uint8Array(await subtle.sign(SIGN_ALG, privateKey, te.encode(`${PROTOCOL}/${domain}\n${payload}`)))));
 const verify = async (publicKey, domain, payload, sigB64) => {
   let sig;
   try { sig = b64.dec(sigB64); } catch { return false; }
-  return sig.length === 64 && subtle.verify(SIGN_ALG, publicKey, sig, te.encode(`${PROTOCOL}/${domain}\n${payload}`));
+  if (sig.length !== 64) return false;
+  const r = big(sig.subarray(0, 32));
+  const s = big(sig.subarray(32));
+  if (r === 0n || s === 0n || r >= ORDER || s > HALF_ORDER) return false; // reject zero, out-of-range and high-s
+  return subtle.verify(SIGN_ALG, publicKey, sig, te.encode(`${PROTOCOL}/${domain}\n${payload}`));
 };
 
 /**
@@ -156,17 +183,30 @@ export async function createBundle({ userId, signPrivateKey, signPublicJwk, encP
 export async function verifyBundle(bundle, { now = Date.now(), pinnedSignFingerprint } = {}) {
   if (!bundle || bundle.v !== 1 || typeof bundle.userId !== 'string' || typeof bundle.keyId !== 'string' || typeof bundle.sig !== 'string') fail('bad_bundle', 'Malformed key bundle');
   const { sig, ...body } = bundle;
+  if (Object.keys(body).sort().join(',') !== 'createdAt,encPub,expiresAt,keyId,signPub,userId,v') fail('bad_bundle', 'Unexpected fields in key bundle');
   if (!Number.isSafeInteger(body.createdAt) || !Number.isSafeInteger(body.expiresAt)) fail('bad_bundle', 'Malformed key bundle');
-  const signPub = normalizeJwk(body.signPub);
-  normalizeJwk(body.encPub);
-  const allowedKeys = ['v', 'userId', 'keyId', 'signPub', 'encPub', 'createdAt', 'expiresAt'];
-  if (Object.keys(body).some((k) => !allowedKeys.includes(k))) fail('bad_bundle', 'Unexpected fields in key bundle');
+  const signPub = exactJwk(body.signPub);
+  const encPub = exactJwk(body.encPub);
+  if (body.expiresAt <= body.createdAt) fail('bad_bundle', 'Key bundle validity window is empty');
   if (body.createdAt > now + LIMITS.clockSkewMs) fail('bundle_from_future', 'Key bundle is dated in the future');
   if (body.expiresAt <= now) fail('bundle_expired', 'Key bundle has expired');
   if (body.expiresAt - body.createdAt > LIMITS.bundleMaxValidMs) fail('bad_bundle', 'Key bundle validity too long');
-  if (!(await verify(await importSignPublic(signPub), 'bundle', canonical(body), sig))) fail('bad_signature', 'Key bundle signature is invalid');
+  // Importing proves both public keys are real points on the curve (WebCrypto refuses off-curve points).
+  let signKey;
+  try {
+    signKey = await importSignPublic(signPub);
+    await importEncPublic(encPub);
+  } catch (e) {
+    if (e instanceof CryptoError) throw e;
+    fail('bad_key', 'Public key is not a valid P-256 point');
+  }
+  if (!(await verify(signKey, 'bundle', canonical(body), sig))) fail('bad_signature', 'Key bundle signature is invalid');
   const signFingerprint = await fingerprint(signPub);
-  if (pinnedSignFingerprint && signFingerprint !== pinnedSignFingerprint) fail('identity_changed', 'This contact\'s identity key changed');
+  // A pin that is present must be a real fingerprint. An empty or null pin is a caller bug and must fail closed, never skip the check.
+  if (pinnedSignFingerprint !== undefined) {
+    if (typeof pinnedSignFingerprint !== 'string' || !pinnedSignFingerprint) fail('bad_pin', 'A pinned fingerprint must be a non-empty string');
+    if (signFingerprint !== pinnedSignFingerprint) fail('identity_changed', 'This contact\'s identity key changed');
+  }
   return { userId: body.userId, keyId: body.keyId, signFingerprint };
 }
 
@@ -211,14 +251,22 @@ const wrapInfo = (header, to, keyId) => te.encode(`${PROTOCOL}/wrap|${header.id}
  * recipients: [{ userId, bundle, pinnedSignFingerprint? }]. MUST include the sender (so they can re-read their own
  * history); each bundle is re-verified here, including the pin if one is given.
  */
-export async function seal({ message, convId, from, n, ttl = 0, recipients, signPrivateKey, now = Date.now() }) {
+export async function seal({ message, convId, from, n, ttl = 0, recipients, signPrivateKey, now = Date.now(), allowUnpinned = false }) {
   if (!Array.isArray(recipients) || !recipients.length || recipients.length > LIMITS.maxRecipients) fail('bad_recipients');
   const ids = recipients.map((r) => r.userId);
   if (new Set(ids).size !== ids.length) fail('bad_recipients', 'Duplicate recipient');
   if (!ids.includes(from)) fail('bad_recipients', 'The sender must be one of the recipients');
   if (!Number.isSafeInteger(n) || n < 0) fail('bad_header', 'n must be a non-negative integer');
   if (!Number.isSafeInteger(ttl) || ttl < 0 || ttl > LIMITS.maxTtlSeconds) fail('bad_header', 'Invalid ttl');
-  if (typeof convId !== 'string' || !convId) fail('bad_header', 'convId required');
+  if (!isStr(from, 64) || !ids.every((x) => isStr(x, 64))) fail('bad_recipients', 'Invalid user id');
+  // The conversation id is derived from the participants, so nobody can post into a chat they are not part of.
+  const derivedConvId = await deriveConvId(ids);
+  if (convId !== undefined && convId !== derivedConvId) fail('bad_header', 'convId does not match the participants');
+  convId = derivedConvId;
+  // Fail closed: every recipient (including you) must already be pinned. Only pass allowUnpinned for a deliberate first contact.
+  if (!allowUnpinned && !recipients.every((r) => typeof r.pinnedSignFingerprint === 'string' && r.pinnedSignFingerprint)) {
+    fail('unpinned', 'Every recipient needs a pinned identity. Compare safety numbers before sending.');
+  }
 
   const plain = te.encode(canonical(message));
   if (plain.length > LIMITS.maxMessageBytes) fail('too_large', 'Message too large');
@@ -266,7 +314,7 @@ export function assertEnvelopeShape(env) {
     if (!b || Object.keys(b).sort().join(',') !== 'eph,iv,keyId,to,wrapped') bad('bad box');
     if (!h.to.includes(b.to)) bad('box for unknown recipient');
     if (!isStr(b.keyId, 64) || !isStr(b.iv, 32) || !isStr(b.wrapped, 128)) bad('bad box fields');
-    normalizeJwk(b.eph);
+    exactJwk(b.eph);
   });
   if (new Set(boxes.map((b) => b.to)).size !== boxes.length) bad('duplicate box');
   if (!isStr(iv, 32) || !isStr(ct, 40_000) || !isStr(sig, 128)) bad('bad payload fields');
@@ -276,7 +324,9 @@ export function assertEnvelopeShape(env) {
 export async function verifyEnvelopeSignature(envelope, senderSignPublicJwk) {
   assertEnvelopeShape(envelope);
   const { sig, ...unsigned } = envelope;
-  return verify(await importSignPublic(senderSignPublicJwk), 'envelope', canonical(unsigned), sig);
+  let key;
+  try { key = await importSignPublic(senderSignPublicJwk); } catch (e) { if (e instanceof CryptoError) throw e; fail('bad_key', 'Sender key is not a valid P-256 point'); }
+  return verify(key, 'envelope', canonical(unsigned), sig);
 }
 
 /**
@@ -288,6 +338,7 @@ export async function verifyEnvelopeSignature(envelope, senderSignPublicJwk) {
 export async function open({ envelope, myUserId, encKeys, senderSignPublicJwk, now = Date.now() }) {
   assertEnvelopeShape(envelope);
   const { header, boxes, iv, ct } = envelope;
+  if (header.convId !== await deriveConvId(header.to)) fail('bad_conv', 'Conversation id does not match the participants');
   if (!(await verifyEnvelopeSignature(envelope, senderSignPublicJwk))) fail('bad_signature', 'Message signature is invalid');
   if (header.ts > now + LIMITS.clockSkewMs) fail('from_future', 'Message is dated in the future');
   const box = boxes.find((b) => b.to === myUserId);
@@ -353,7 +404,8 @@ export const exportAesKey = async (key) => new Uint8Array(await subtle.exportKey
 
 const COMMON = new Set(['password1234', 'passwordpassword', 'qwertyuiopas', '123456789012', 'letmeinletmein', 'iloveyou1234']);
 /** Minimal passphrase policy: length first. >= 12 chars and not a trivially common/repeated string. */
-export function checkPassphrase(p) {
+export function checkPassphrase(input) {
+  const p = typeof input === 'string' ? input.normalize('NFKC') : input; // the same form deriveKek uses
   if (typeof p !== 'string' || p.length < 12) return { ok: false, reason: 'Use at least 12 characters. A few random words works well.' };
   if (p.length > 256) return { ok: false, reason: 'Too long (max 256).' };
   if (COMMON.has(p.toLowerCase()) || /^(.)\1+$/.test(p)) return { ok: false, reason: 'That passphrase is too easy to guess.' };

@@ -468,7 +468,7 @@ function paintSharing(d) {
     title: 'How visitors are shared',
     subtitle: 'Choose how the load balancer picks a server for each visit. Changes are saved to the live pool.',
   },
-    seg,
+    h('div', { class: 'sharing__seg' }, seg),
     h('div', { class: 'sharing__now stack' },
       h('p', {}, a.description),
       h('p', { class: 'muted' }, a.hint),
@@ -661,6 +661,7 @@ function paintMap(d) {
   lines.append(inPath, ...[...nodes.values()].map((n) => n.path)); // paths first, so dots draw on top
 
   const card = Card({
+    class: 'tmap-card',
     title: 'Live traffic map',
     subtitle: 'Each dot is one visit. Tap a server to try it yourself.',
     actions: Button({ variant: 'ghost', size: 'sm', icon: 'refresh', onclick: () => resetPractice(d) }, 'Reset practice'),
@@ -920,7 +921,7 @@ function placePopover(sim, btn, pop) {
     top = r.bottom - box.top + 12;
   }
   left = Math.max(0, Math.min(left, W - pw));
-  top = Math.max(0, Math.min(top, Math.max(0, box.height - ph)));
+  top = Math.max(0, top); // may extend below the map on phones, so it stays beside its own node
   pop.style.left = `${left}px`;
   pop.style.top = `${top}px`;
 }
@@ -1142,10 +1143,10 @@ function openHealthEdit(d) {
   const banner = h('div', { class: 'stack' });
   const numInput = (value, min, max) => Input({ type: 'number', inputmode: 'numeric', min, max, step: 1, value });
   const path = Input({ value: hc.path });
-  const interval = numInput(hc.intervalSec, 1, 300);
+  const interval = numInput(hc.intervalSec, 5, 300);
   const timeout = numInput(hc.timeoutSec, 1, 60);
-  const unhealthy = numInput(hc.unhealthyThreshold, 1, 20);
-  const healthy = numInput(hc.healthyThreshold, 1, 20);
+  const unhealthy = numInput(hc.unhealthyThreshold, 1, 10);
+  const healthy = numInput(hc.healthyThreshold, 1, 10);
   const expect = numInput(hc.expectStatus, 100, 599);
   const fields = {
     path: Field({ label: 'Page to check', hint: 'A quick page on the server, usually /. It must start with a slash.' }, path),

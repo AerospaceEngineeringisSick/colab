@@ -8,6 +8,7 @@
   "scripts": {
     "start": "node server/index.mjs",
     "dev": "node --watch server/index.mjs",
-    "test": "node --test \"server/test/*.test.mjs\""
+    "test": "node --test \"server/test/*.test.mjs\"",
+    "mockup": "node tools/build-mockup.mjs"
   }
 }

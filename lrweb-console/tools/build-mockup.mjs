@@ -116,7 +116,12 @@ if (/@@[A-Z_]+@@/.test(html)) throw new Error('An unreplaced template token is l
 
 // Offline guarantees: nothing may point at the network, and every CSS url() must be a data URI or an in-page fragment.
 if (/\b(?:src|href)\s*=\s*["']?\s*https?:/i.test(html) || /@import/.test(css)) throw new Error('The mockup must not reference any network address.');
-for (const [, target] of html.matchAll(/url\(\s*["']?([^"')\s]+)/g)) {
+// Data URIs may contain their own url(...) (the aurora grain does), so they are removed before the scan.
+const outsideData = html
+  .replace(/url\(\s*"data:[^"]*"\s*\)/g, '')
+  .replace(/url\(\s*'data:[^']*'\s*\)/g, '')
+  .replace(/url\(\s*data:[^)]*\)/g, '');
+for (const [, target] of outsideData.matchAll(/url\(\s*["']?([^"')\s]+)/g)) {
   if (!target.startsWith('data:') && !target.startsWith('#')) throw new Error(`Unexpected url() reference in the mockup: ${target.slice(0, 60)}`);
 }
 if (html.includes(EM_DASH)) throw new Error('An em dash slipped into the mockup. Replace it with a comma, colon or full stop.');

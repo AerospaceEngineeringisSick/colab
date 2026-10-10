@@ -22,6 +22,9 @@
 .traffic-dot__name { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 4px 8px; border-radius: var(--r-xs); white-space: nowrap; font-size: var(--fs-xs); font-weight: 600; background: var(--g-solid); color: var(--ink); box-shadow: 0 6px 16px -6px rgb(0 0 0 / .5); opacity: 0; pointer-events: none; transition: opacity .2s var(--ease); z-index: 3; }
 .traffic-dot:hover .traffic-dot__name, .traffic-dot:focus-visible .traffic-dot__name { opacity: 1; }
 
+/* The split grid's host divs must be allowed to shrink, or the switch form forces the page wider than the phone. */
+.traffic-detail .split > * { min-width: 0; }
+@media (max-width: 1100px) { .traffic-detail .split { grid-template-columns: minmax(0, 1fr); } }
 .traffic-srv { display: grid; gap: 2px; min-width: 0; }
 .traffic-srv small { overflow-wrap: anywhere; }
 
@@ -30,7 +33,9 @@
 .traffic-title__tags { gap: 8px; }
 
 /* ---------- live map ---------- */
-.tmap { position: relative; isolation: isolate; display: grid; min-height: 220px; padding: var(--s2) 0; }
+/* The map card is lifted above the cards that follow it, so a popover that hangs below the map is not covered. */
+.tmap-card { z-index: 3; }
+.tmap { position: relative; z-index: 3; isolation: isolate; display: grid; min-height: 220px; padding: var(--s2) 0; }
 .tmap[data-layout="wide"] { grid-template-columns: minmax(0, .85fr) minmax(0, 1fr) minmax(0, 1.2fr); align-items: center; gap: clamp(28px, 4vw, 72px); }
 .tmap[data-layout="stack"] { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 44px; }
 .tmap__lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
@@ -88,6 +93,9 @@
 .tmap__range { width: 100%; accent-color: var(--accent); margin: 6px 0; }
 
 /* ---------- cards on the detail page ---------- */
+.sharing__seg { min-width: 0; }
+.sharing__seg .segmented { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); width: 100%; border-radius: var(--r-md); }
+.sharing__seg .segmented__opt span { width: 100%; height: auto; min-height: 36px; padding: 8px 10px; justify-content: center; text-align: center; white-space: normal; line-height: 1.2; }
 .sharing__now { gap: var(--s2); }
 .sharing__now p { font-size: var(--fs-sm); }
 .sharing__sticky { display: grid; gap: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--line); }

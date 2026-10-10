@@ -35,6 +35,8 @@ const TRUST = {
 };
 const ERRORS = {
   network: 'We could not reach the server. Check your connection and try again.',
+  unreachable: 'We could not reach the server. Check your connection and try again.',
+  locked: 'Chat is locked. Unlock it to continue.',
   rate_limited: 'You are sending too fast. Wait a moment and try again.',
   identity_changed: 'A contact\'s identity has changed. Review it before sending.',
   bad_signature: 'A message failed its security check and was ignored.',

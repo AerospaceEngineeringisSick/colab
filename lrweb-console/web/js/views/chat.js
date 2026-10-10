@@ -592,8 +592,7 @@ function renderBanner(V, row) {
       h('strong', {}, `${row.name}'s secure identity has changed`),
       h('p', {}, 'This can happen when they sign in on a new device. It can also mean someone is interfering. Check the safety number with them before you trust new messages.'),
       h('div', { class: 'row chat-banner__actions' },
-        Button({ variant: 'glass', size: 'sm', icon: 'shield', onclick: () => openVerify(V, row) }, 'Review safety number'),
-        Button({ variant: 'primary', size: 'sm', icon: 'check', onclick: () => acceptChange(V, row) }, 'Accept the new key')))));
+        Button({ variant: 'primary', size: 'sm', icon: 'shield', onclick: () => openChangedReview(V, row) }, 'Compare the new safety number')))));
 }
 
 function renderMessages(V, row, msgs, jump) {
@@ -810,30 +809,41 @@ async function openVerify(V, row = activeRow(V)) {
   }
 }
 
-// No safety number exists for the new key until it is accepted, so this dialog explains the check instead.
-function openChangedReview(V, row) {
-  const accept = Button({ variant: 'primary', icon: 'check', onclick: () => { m.close(); acceptChange(V, row); } }, 'Accept the new key');
+// A changed key is only accepted after its NEW safety number has been compared out loud, and what gets accepted is
+// exactly the key whose number was shown (the fingerprint is passed back to the chat client, which re-checks it).
+async function openChangedReview(V, row) {
+  let reviewed = null;
+  const body = h('div', { class: 'stack' }, h('p', { class: 'muted' }, 'Loading the new safety number...'));
+  const accept = Button({ variant: 'primary', icon: 'check', disabled: true, onclick: () => { m.close(); acceptChange(V, row, reviewed); } }, 'The numbers match: accept the new key');
   const m = Modal({
-    title: `Review ${row.name}'s new key`, subtitle: 'Their secure identity has changed.', size: 'md',
-    content: h('div', { class: 'stack' },
-      h('p', {}, 'There is no safety number to compare for the new key yet. First check with them, by phone or in person, that the change really is them (for example a new phone or computer).'),
-      h('p', { class: 'muted' }, 'Accept the new key only after that check. Once you accept it, you can compare safety numbers with them.')),
+    title: `Review ${row.name}'s new key`, subtitle: 'Their secure identity has changed.', size: 'md', content: body,
     actions: [Button({ variant: 'glass', onclick: () => m.close() }, 'Not now'), accept],
   });
   V.modal = m;
+  try {
+    const s = await V.chat.safety(row.peerId);
+    if (V.modal !== m) return m;
+    const groups = String(s.pendingNumber || '').trim().split(/\s+/).filter(Boolean);
+    if (groups.length !== 12 || !s.pendingFingerprint) throw new Error('no pending safety number');
+    reviewed = s.pendingFingerprint;
+    body.replaceChildren(
+      h('p', {}, 'Call or meet ', row.name, ' and read these numbers out loud. They are for their ', h('strong', {}, 'new'), ' key. If every group matches, the change really is them (for example a new phone or computer).'),
+      h('ol', { class: 'chat-numbers', 'aria-label': `New safety number for ${row.name}` }, groups.map((g) => h('li', {}, g))),
+      h('div', { class: 'callout callout--warn' }, icon('alert', { size: 18 }),
+        h('p', {}, 'If the numbers do not match, or you cannot reach them, do not accept. Someone may be interfering.')),
+      h('p', { class: 'muted' }, 'These numbers are your ', Term('safety number'), ' for the new key.'));
+    accept.disabled = false;
+  } catch {
+    if (V.modal === m) body.replaceChildren(h('p', { class: 'chat-error' }, 'The new safety number could not be loaded. Close this and try again.'));
+  }
   return m;
 }
 
-async function acceptChange(V, row) {
-  const yes = await Confirm({
-    title: `Accept ${row.name}'s new key?`,
-    message: 'Only accept this after you have checked the new safety number with them by phone or in person. Future messages will then be trusted with the new key.',
-    confirmLabel: 'Accept the new key',
-  });
-  if (!yes) return;
+async function acceptChange(V, row, reviewed) {
+  if (!reviewed) return;
   try {
-    await V.chat.acceptIdentityChange(row.peerId);
-    toast({ title: 'New key accepted', message: row.name, kind: 'ok' });
+    await V.chat.acceptIdentityChange(row.peerId, { fingerprint: reviewed });
+    toast({ title: 'New key accepted', message: `${row.name}. Compare safety numbers again to mark them verified.`, kind: 'ok' });
     refreshAll(V);
   } catch (e) {
     toast({ title: 'Could not accept the new key', message: friendly(e), kind: 'bad' });

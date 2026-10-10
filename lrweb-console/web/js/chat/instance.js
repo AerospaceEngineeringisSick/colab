@@ -10,7 +10,7 @@ let forUser = null;
 
 export function getChat() {
   const me = state.get('me');
-  const user = me && !me.system && !me.local ? me : null;
+  const user = me && me.id && me.mode === 'account' && !me.system && !me.local ? me : null;
   if (!user) return null;
   if (client && forUser === user.id) return client;
   client?.lock();

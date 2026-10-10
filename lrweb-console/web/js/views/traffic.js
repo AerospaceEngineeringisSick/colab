@@ -861,11 +861,21 @@ function openPopover(d, mid, btn) {
     if (pop.contains(e.target) || btn.contains(e.target) || e.target.closest?.('.scrim')) return;
     closePopover(d, { focus: false });
   };
-  pop.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { e.stopPropagation(); closePopover(d); }
-  });
+  // Document-level so Escape still works after a toggle rebuilds the popover body.
+  const onKey = (e) => {
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    e.stopPropagation();
+    closePopover(d);
+  };
   document.addEventListener('pointerdown', onDown, true);
-  d.popover = { memberId: mid, el: pop, btn, off: () => document.removeEventListener('pointerdown', onDown, true) };
+  document.addEventListener('keydown', onKey, true);
+  d.popover = {
+    memberId: mid, el: pop, btn,
+    off: () => {
+      document.removeEventListener('pointerdown', onDown, true);
+      document.removeEventListener('keydown', onKey, true);
+    },
+  };
   sim.wrap.append(pop);
   fillPopover(d, mid);
   placePopover(sim, btn, pop);
@@ -888,7 +898,9 @@ function fillPopover(d, mid) {
   if (!p) return;
   const m = d.pool.members.find((x) => x.id === mid);
   if (!m) { closePopover(d, { focus: false }); return; }
+  const hadFocus = p.el.contains(document.activeElement);
   p.el.replaceChildren(popBody(d, m));
+  if (hadFocus) p.el.querySelector('button, input, select')?.focus({ preventScroll: true });
 }
 
 function placePopover(sim, btn, pop) {

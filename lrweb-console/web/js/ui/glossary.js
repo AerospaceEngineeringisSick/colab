@@ -30,6 +30,7 @@ export const GLOSSARY = {
   'one-time password': 'A temporary password shown once. The person must choose their own the first time they sign in.',
   mrr: 'Monthly recurring revenue: what the care plans bring in each month.',
   'care plan': 'LRWeb\'s monthly plan: hosting, updates, backups, security and real people to help.',
+  ttl: 'How long other computers remember a website\'s address. Lower it a day before a move so the switch to the new server is quick.',
   ssh: 'A secure way for one computer to log in to another. LRWeb uses it to run commands on your servers.',
   "let's encrypt": 'A free service that issues the padlock certificates (SSL) for websites and renews them automatically.',
   'reverse proxy': 'A front door that passes visitors on to another server or app sitting behind it.',

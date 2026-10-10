@@ -339,6 +339,12 @@ describe('1. correctness', () => {
     assert.equal(await codeOf(sealAs(alice, [alice, bob], { convId: '' })), 'bad_header');
     assert.equal(await codeOf(sealAs(alice, [alice, bob], { ttl: LIMITS.maxTtlSeconds })), 'resolved', 'the maximum ttl is allowed');
   });
+
+  test('todo: seal refuses a convId that open would reject (over 64 characters)', {
+    todo: 'seal checks only that convId is non-empty, but open enforces 64 characters, so a sender can produce undeliverable mail',
+  }, async () => {
+    await expectCryptoError(sealAs(alice, [alice, bob], { convId: 'c'.repeat(65) }), 'convId of 65 characters');
+  });
 });
 
 /* ---------------- 2. integrity: every field of a valid envelope ---------------- */
@@ -407,7 +413,7 @@ describe('2. integrity: every field of a valid envelope', () => {
     todo: 'eph accepts extra members and canonical() recurses without a limit, so a RangeError escapes open()',
   }, async () => {
     const e = clone(base);
-    e.boxes[boxFor(e, 'bob')].eph.junk = deep(3000); // unsigned: canonical() runs before the signature check
+    e.boxes[boxFor(e, 'bob')].eph.junk = deep(20_000); // unsigned: canonical() runs before the signature check, and the overflow depth varies with the stack
     await expectCryptoError(openAs(bob, e, alice), 'deep eph junk');
   });
 });
@@ -711,7 +717,8 @@ describe('5. key bundles and the directory', () => {
   test('todo: a bundle with deeply nested junk inside signPub fails with a CryptoError', {
     todo: 'normalizeJwk accepts extra members and canonical() recurses without a limit, so this throws a RangeError',
   }, async () => {
-    const junk = { ...bodyOf(alice.bundle), signPub: { ...alice.signJwk, junk: deep(3000) }, sig: alice.bundle.sig };
+    // Depth 20000 overflows reliably. At ~2500 the result depends on the stack, and a valid-looking signature would hide it.
+    const junk = { ...bodyOf(alice.bundle), signPub: { ...alice.signJwk, junk: deep(20_000) }, sig: alice.bundle.sig };
     await expectCryptoError(verifyBundle(junk, { now: T0 }), 'deep signPub junk');
   });
 });
@@ -764,7 +771,7 @@ describe('6. key separation, replay surface and clock rules', () => {
     assert.equal(late.message.text, 'hello');
   });
 
-  test('documents: ttl 0 never expires, and there is no lower bound on the timestamp, so freshness is the session job', async () => {
+  test('documents: ttl 0 never expires, and open accepts an envelope over a year old, so freshness is the session job', async () => {
     const env = await sealAs(alice, [alice, bob]);
     assert.equal((await openAs(bob, env, alice, { now: T0 + 400 * DAY })).expired, false);
   });
@@ -775,6 +782,12 @@ describe('6. key separation, replay surface and clock rules', () => {
     const got = await openAs(bob, injected, mallory);
     assert.equal(got.header.convId, convAB);
     assert.notEqual(await deriveConvId(got.header.to), got.header.convId);
+  });
+
+  test('todo: deriveConvId ids containing the separator do not collide', {
+    todo: 'ids are joined with "|" without escaping, so ["a|b","c"] and ["a","b|c"] get the same conversation id (latent: usernames exclude "|")',
+  }, async () => {
+    assert.notEqual(await deriveConvId(['a|b', 'c']), await deriveConvId(['a', 'b|c']));
   });
 });
 

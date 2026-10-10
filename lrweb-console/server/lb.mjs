@@ -318,6 +318,7 @@ export function createLoadBalancer({ config: settings, store, cloudpanel, now = 
     return ms > 0 ? sleepFor(ms) : undefined;
   };
   const serverMap = async () => new Map((await cloudpanel.listServers()).map((s) => [s.id, s]));
+  const switching = new Set(); // pool ids with a move in progress
   const requirePool = (id) => {
     const pool = store.get('pools', id);
     if (!pool) throw notFound('Pool');
@@ -465,6 +466,16 @@ export function createLoadBalancer({ config: settings, store, cloudpanel, now = 
 
   /** Runs inside a `lb.switch` job. Stored state changes only at the final step, so a failure leaves it alone. */
   async function switchTo(id, memberId, { mode = 'gradual' } = {}, j = STUB_JOB) {
+    if (switching.has(id)) throw blocked('Another move for this pool is still running. Wait for it to finish, then try again.');
+    switching.add(id);
+    try {
+      await runSwitch(id, memberId, mode, j);
+    } finally {
+      switching.delete(id);
+    }
+  }
+
+  async function runSwitch(id, memberId, mode, j) {
     const stages = mode === 'instant' ? [100] : [10, 25, 50, 100];
     let name = 'the new server';
     // Re-reads the target from the server records. Returns a plain-English sentence, or null when it can take visitors.

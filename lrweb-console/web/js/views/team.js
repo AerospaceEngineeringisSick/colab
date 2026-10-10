@@ -9,7 +9,7 @@ import { PageHeader, Card, Button, Badge, Avatar, Field, Input, Select, Table, E
 import { icon } from '../ui/icons.js';
 
 const USERNAME_RE = /^[a-z][a-z0-9._-]{2,31}$/;
-const USERNAME_HINT = '3 to 32 lower-case letters, numbers, dots or dashes. Start with a letter.';
+const USERNAME_HINT = '3 to 32 lower-case letters, numbers, dots, dashes or underscores. Start with a letter.';
 const MIN_PW = 12;
 const MAX_PW = 128;
 const NAME_MAX = 80;
@@ -164,7 +164,7 @@ function usernameProblem(u) {
   if (!u) return 'Enter a username.';
   if (u.length < 3) return 'Use at least 3 characters.';
   if (u.length > 32) return 'Use 32 characters or fewer.';
-  if (!USERNAME_RE.test(u)) return 'Start with a letter, then use lower-case letters, numbers, dots or dashes.';
+  if (!USERNAME_RE.test(u)) return 'Start with a letter, then use lower-case letters, numbers, dots, dashes or underscores.';
   return '';
 }
 

@@ -567,6 +567,19 @@ describe('switchTo and drill', () => {
     await rejects(switchRoute({ params: { id: 'lbp_missing' }, body: { toMemberId: 'x' } }), { status: 404 });
   });
 
+  test('a second move on the same pool is refused while the first is running', async () => {
+    const world = setup({ demoDelayMs: 20 });
+    const pool = await world.lb.createPool(goodBody());
+    const [ldn, man, dub] = ['srv_ldn1', 'srv_man1', 'srv_dub1'].map((sid) => pool.members.find((m) => m.serverId === sid));
+    const first = await world.route('POST', '/api/lb/pools/:id/switch')({ params: { id: pool.id }, body: { toMemberId: dub.id, mode: 'gradual' } });
+    const second = await world.route('POST', '/api/lb/pools/:id/switch')({ params: { id: pool.id }, body: { toMemberId: ldn.id, mode: 'instant' } });
+    assert.equal((await finish(world.jobs, second.id)).status, 'failed');
+    assert.match(world.jobs.get(second.id).error, /Another move for this pool is still running/);
+    assert.equal((await finish(world.jobs, first.id)).status, 'done');
+    assert.equal((await world.lb.getPool(pool.id)).activeMemberId, dub.id);
+    assert.ok(man, 'the middle server exists in the pool');
+  });
+
   test('a gradual switch waits between stages', async () => {
     const world = setup({ demoDelayMs: 20 });
     const pool = await world.lb.createPool(goodBody());

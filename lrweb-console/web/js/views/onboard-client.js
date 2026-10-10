@@ -210,9 +210,9 @@ export default async function mount(root, ctx) {
     });
     return h('label', { class: ['glass glass--thin plan', selected && 'is-selected'], dataset: { id: p.id } },
       input,
-      h('span', { class: 'plan__head' },
-        h('span', { class: 'plan__name', id: nameId }, p.name),
-        p.popular && Badge({ kind: 'info', dot: false }, 'Most popular')),
+      h('span', { class: 'plan__name', id: nameId }, p.name),
+      // a fixed-height tag row keeps prices and features aligned across tiles
+      h('span', { class: 'plan__tag' }, p.popular ? Badge({ kind: 'info', dot: false }, 'Most popular') : null),
       h('span', { class: 'plan__mark', 'aria-hidden': 'true' }, icon('check', { size: 14 })),
       h('span', { class: 'plan__price num' }, money(p.priceCents, p.currency), h('small', { class: 'muted' }, perLabel(p))),
       h('span', { class: 'plan__features' },
@@ -225,7 +225,7 @@ export default async function mount(root, ctx) {
     syncSite();
     const hasServers = catalog.servers.some(usable);
     return h('div', { class: 'stack' },
-      h('p', { class: 'muted' }, 'Optional. Provision their first website now, or add one later from Sites.'),
+      h('p', { class: 'muted' }, 'Skip this step and add a website later from Sites.'),
       W.hostToggle,
       hasServers ? null : h('div', { class: 'callout callout--warn' }, icon('alert', { size: 18 }),
         h('p', {}, 'No online servers yet, so a website cannot be provisioned. ',
@@ -237,17 +237,18 @@ export default async function mount(root, ctx) {
     const { client, plan, site } = collect();
     const server = site ? catalog.servers.find((s) => s.id === site.serverId) : null;
     return h('div', { class: 'stack' },
-      block('Client', [
-        ['Name', client.name || '—'],
-        ['Email', client.email || '—'],
-        ['Company', client.company || '—'],
-        ['Phone', client.phone || '—'],
-      ]),
-      block('Plan', [
-        ['Plan', plan?.name || '—'],
-        ['Price', plan ? priceLine(plan) : '—'],
-        ['Limits', plan ? limitsLine(plan.limits) : '—'],
-      ]),
+      h('div', { class: 'ob-review__pair' },
+        block('Client', [
+          ['Name', client.name || '—'],
+          ['Email', client.email || '—'],
+          ['Company', client.company || '—'],
+          ['Phone', client.phone || '—'],
+        ]),
+        block('Plan', [
+          ['Plan', plan?.name || '—'],
+          ['Price', plan ? priceLine(plan) : '—'],
+          ['Limits', plan ? limitsLine(plan.limits) : '—'],
+        ])),
       site
         ? block('Website', [
           ['Domain', site.domain || '—'],
@@ -256,8 +257,7 @@ export default async function mount(root, ctx) {
           ['Database', site.createDatabase ? 'Yes' : 'No'],
           ['SSL', site.issueCertificate ? "Let's Encrypt" : 'Off'],
         ])
-        : block('Website', [['Status', 'Not provisioned now. Add one later from Sites.']]),
-      h('p', { class: 'muted' }, 'Launching runs one onboarding job that creates the client, billing and website, and shows progress as it goes.'));
+        : block('Website', [['Status', 'Not provisioned now. Add one later from Sites.']]));
   }
 
   /* ---------- navigation & validation ---------- */
@@ -361,6 +361,9 @@ export default async function mount(root, ctx) {
   function showFailure(job, progress) {
     const message = job.error || 'The job failed.';
     toast({ title: 'Onboarding failed', message, kind: 'bad' });
+    // the callout below carries the error, so hide the progress footer that repeats it
+    const foot = progress.querySelector('.job__foot');
+    if (foot) foot.hidden = true;
     setMain(Card({ title: 'Onboarding failed', subtitle: 'The job stopped at the step marked above.', class: 'onboard__main' },
       progress,
       h('div', { class: 'callout callout--bad' }, icon('alert', { size: 18 }), h('p', {}, message)),
@@ -378,7 +381,7 @@ export default async function mount(root, ctx) {
           h('h2', {}, 'Client onboarded'),
           h('p', { class: 'muted' }, `${sent.client.name}${planName ? ` is on the ${planName} plan` : ''}.`),
           r.siteId && sent.site ? h('p', { class: 'muted' }, `${sent.site.domain} is set up.`) : null),
-        entries.length ? h('div', { class: 'ob-secrets stack' },
+        entries.length ? h('div', { class: 'ob-secrets' },
           h('div', { class: 'callout callout--warn' }, icon('alert', { size: 18 }), h('p', {}, 'These credentials are shown once. Copy them now.')),
           entries.map(([label, text]) => CopyBlock({ label, text: String(text) }))) : null,
         h('div', { class: 'row ob-done__actions' },

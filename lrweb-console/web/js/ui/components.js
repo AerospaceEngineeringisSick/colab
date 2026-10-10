@@ -238,7 +238,7 @@ export function Modal({ title, subtitle, content, actions, size = 'md', dismissi
   const prev = document.activeElement;
   const titleId = uid('mt');
   const body = h('div', { class: 'modal__body' }, content);
-  const dlg = h('div', { class: ['glass glass--thick glass--liquid modal', `modal--${size}`], role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId, tabindex: -1 },
+  const dlg = h('div', { class: ['glass glass--thick modal', `modal--${size}`], role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId, tabindex: -1 },
     h('header', { class: 'modal__head' },
       h('div', {}, h('h2', { id: titleId }, title), subtitle && h('p', { class: 'muted' }, subtitle)),
       dismissible && h('button', { class: 'icon-btn', 'aria-label': 'Close', onclick: () => close() }, icon('x', { size: 18 }))),

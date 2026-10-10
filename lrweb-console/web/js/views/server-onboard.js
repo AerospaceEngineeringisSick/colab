@@ -116,9 +116,13 @@ export default async function mount(root, ctx) {
     const card = [detailsCard, prepareCard, connectCard, doneCard][n]();
     stage.replaceChildren(card);
     if (focus) {
+      // Move focus to the new step's heading for screen readers; no ring, since it is not a control.
       const title = stage.querySelector('.card__title');
-      title?.setAttribute('tabindex', '-1');
-      title?.focus({ preventScroll: true });
+      if (title) {
+        title.setAttribute('tabindex', '-1');
+        title.style.outline = 'none';
+        title.focus({ preventScroll: true });
+      }
     }
   }
 
@@ -305,6 +309,7 @@ export default async function mount(root, ctx) {
     const actions = h('div', { class: 'row' });
     const cont = Button({ variant: 'primary', type: 'submit', iconRight: 'arrow-right', disabled: true }, 'Continue');
     mine.next = cont;
+    const jobFoot = () => progress.querySelector('.job__foot');
 
     const paint = (job) => {
       progress.update(job);
@@ -312,6 +317,7 @@ export default async function mount(root, ctx) {
       if (running) headline.textContent = FRIENDLY[running.key]?.(port()) ?? 'Working…';
     };
 
+    // The callout carries the detail, so the status line and the job footer step aside on failure.
     function showError(title, body, { troubleshoot = false, retryLabel = 'Try again' } = {}) {
       failBox.replaceChildren(h('div', { class: 'callout callout--bad', role: 'alert' }, icon('alert', { size: 18 }),
         h('div', { class: 'stack', style: { gap: '10px', minWidth: 0 } },
@@ -320,7 +326,8 @@ export default async function mount(root, ctx) {
             h('p', {}, 'Check these first:'),
             h('ul', { style: bulletStyle }, TROUBLESHOOT.map((t) => h('li', {}, t.replace('{port}', port()))))))));
       actions.replaceChildren(Button({ variant: 'primary', icon: 'refresh', onclick: () => run() }, retryLabel));
-      headline.textContent = title.replace(/[.:]$/, '');
+      headline.hidden = true;
+      jobFoot().hidden = true;
     }
 
     function backToDetails(e) {
@@ -335,6 +342,8 @@ export default async function mount(root, ctx) {
       failBox.replaceChildren();
       cont.disabled = true;
       actions.replaceChildren(cont);
+      headline.hidden = false;
+      jobFoot().hidden = false;
       headline.textContent = 'Getting ready…';
       progress.update({ status: 'queued', steps: freshSteps() });
 
@@ -417,10 +426,11 @@ export default async function mount(root, ctx) {
         : panel || '—'],
     ];
     const summary = h('dl', { class: 'kv' }, rows.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]));
-    const actions = h('div', { class: 'row' },
+    const actions = h('div', { class: 'row', style: { justifyContent: 'center' } },
       Button({ variant: 'primary', iconRight: 'arrow-right', onclick: () => ctx.navigate(`/servers/${encodeURIComponent(server.id)}`) }, 'View server'),
       Button({ variant: 'glass', icon: 'globe', onclick: () => ctx.navigate(`/sites?serverId=${encodeURIComponent(server.id)}`) }, 'Add a site'),
       Button({ variant: 'ghost', icon: 'plus', onclick: () => ctx.navigate('/servers/new') }, 'Add another server'));
-    return Card({}, hero, summary, actions);
+    const column = h('div', { class: 'stack', style: { width: '100%', maxWidth: '460px', margin: '0 auto' } }, summary, actions);
+    return Card({}, hero, column);
   }
 }

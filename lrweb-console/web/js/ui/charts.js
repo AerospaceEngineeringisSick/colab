@@ -104,7 +104,14 @@ export function AreaChart({ series, labels = [], height = 220, format = String, 
     root.addEventListener('pointerleave', () => { cross.style.display = 'none'; dots.forEach((d) => { d.style.display = 'none'; }); tip.hidden = true; });
   }
 
-  new ResizeObserver(() => requestAnimationFrame(draw)).observe(wrap);
+  // Redraw on resize; release the observer once the chart has been removed from the page (views re-render on refresh).
+  let seen = false;
+  const ro = new ResizeObserver(() => {
+    if (wrap.isConnected) seen = true;
+    else if (seen) { ro.disconnect(); return; }
+    requestAnimationFrame(draw);
+  });
+  ro.observe(wrap);
   requestAnimationFrame(draw);
   return wrap;
 }

@@ -13,7 +13,7 @@ export function openPalette(commands) {
 
   const input = h('input', { class: 'palette__input', type: 'text', placeholder: 'Search pages and actions…', 'aria-label': 'Search commands', autocomplete: 'off', spellcheck: 'false', role: 'combobox', 'aria-expanded': 'true', 'aria-controls': 'palette-list' });
   const list = h('ul', { class: 'palette__list', id: 'palette-list', role: 'listbox' });
-  const dlg = h('div', { class: 'glass glass--thick glass--liquid palette', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Command palette' },
+  const dlg = h('div', { class: 'glass glass--thick palette', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Command palette' },
     h('div', { class: 'palette__bar' }, icon('search', { size: 18 }), input, h('kbd', {}, 'Esc')), list);
   const scrim = h('div', { class: 'scrim scrim--top', onmousedown: (e) => { if (e.target === scrim) close(); } }, dlg);
 

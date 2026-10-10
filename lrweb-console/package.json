@@ -1,0 +1,13 @@
+{
+  "name": "lrweb-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Liquid-glass console for onboarding Linux servers and clients, with CloudPanel and billing integrations.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "test": "node --test \"server/test/*.test.mjs\""
+  }
+}

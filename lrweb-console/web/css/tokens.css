@@ -1,0 +1,67 @@
+/* Design tokens. Colours live here only; components reference variables. */
+:root {
+  --font: ui-sans-serif, system-ui, -apple-system, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --ease: cubic-bezier(.22, .9, .28, 1);
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+
+  --r-xs: 8px; --r-sm: 12px; --r-md: 18px; --r-lg: 26px; --r-xl: 34px; --r-pill: 999px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  --fs-xs: .75rem; --fs-sm: .8125rem; --fs-md: .9375rem; --fs-lg: 1.125rem; --fs-xl: 1.5rem; --fs-2xl: 2rem; --fs-3xl: 2.75rem;
+
+  --blur: 22px;
+  --sat: 175%;
+  --sidebar-w: 268px;
+}
+
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --bg-0: #06070c; --bg-1: #0b0d18;
+  --ink: #f3f5ff;
+  --ink-2: rgb(243 245 255 / .74);
+  --ink-3: rgb(243 245 255 / .5);
+  --line: rgb(255 255 255 / .09);
+
+  --accent: #7b9bff; --accent-2: #b389ff; --accent-3: #46e0cf; --accent-ink: #071026;
+  --ok: #5be3a2; --warn: #ffcc66; --bad: #ff6a8a; --info: #69c3ff;
+
+  --g-fill-a: rgb(255 255 255 / .115);
+  --g-fill-b: rgb(255 255 255 / .035);
+  --g-thick-a: rgb(30 33 52 / .74);
+  --g-thick-b: rgb(18 20 34 / .66);
+  --g-solid: #161a2b;
+  --g-stroke: rgb(255 255 255 / .15);
+  --g-spec: rgb(255 255 255 / .34);
+  --g-shadow: 0 22px 54px -22px rgb(0 0 0 / .7), 0 2px 10px rgb(0 0 0 / .22);
+  --field: rgb(255 255 255 / .06);
+  --code-bg: rgb(0 0 0 / .32);
+
+  --blob-1: #4f63ff; --blob-2: #a23dff; --blob-3: #00cdbd; --blob-4: #ff4f86;
+  --blob-op: .62;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-0: #dfe5f7; --bg-1: #eef1fc;
+  --ink: #0d1226;
+  --ink-2: rgb(13 18 38 / .74);
+  --ink-3: rgb(13 18 38 / .52);
+  --line: rgb(13 18 38 / .09);
+
+  --accent: #3d5afe; --accent-2: #8a4dff; --accent-3: #00a99b; --accent-ink: #fff;
+  --ok: #0c8f5a; --warn: #a96b00; --bad: #d2234f; --info: #0a74c4;
+
+  --g-fill-a: rgb(255 255 255 / .66);
+  --g-fill-b: rgb(255 255 255 / .3);
+  --g-thick-a: rgb(255 255 255 / .84);
+  --g-thick-b: rgb(244 247 255 / .76);
+  --g-solid: #f3f5ff;
+  --g-stroke: rgb(255 255 255 / .8);
+  --g-spec: rgb(255 255 255 / .98);
+  --g-shadow: 0 22px 50px -24px rgb(40 55 120 / .42), 0 2px 10px rgb(40 55 120 / .08);
+  --field: rgb(255 255 255 / .6);
+  --code-bg: rgb(13 18 38 / .06);
+
+  --blob-1: #7f93ff; --blob-2: #c59bff; --blob-3: #5fe6d6; --blob-4: #ff9bbd;
+  --blob-op: .7;
+}

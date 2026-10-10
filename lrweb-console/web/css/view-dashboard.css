@@ -1,0 +1,39 @@
+/* Dashboard layout only. Surfaces, stats, meters and lists come from components.css. */
+
+/* KPI row: two columns below the 4-up breakpoint so the tiles keep readable widths. */
+.dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dash-kpis .stat { min-width: 0; }
+.dash-kpis .stat__value { overflow-wrap: anywhere; }
+@media (min-width: 1280px) { .dash-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 420px) {
+  .dash-kpis { gap: var(--s3); }
+  .dash-kpis .stat { padding: 14px; }
+  .dash-kpis .stat__value { font-size: 1.3rem; }
+}
+
+/* Tinted icon chip, coloured per item through --c. */
+.dash-ico {
+  --c: var(--accent);
+  display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 12px;
+  color: var(--c); background: color-mix(in oklab, var(--c) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c) 30%, transparent);
+}
+
+/* Activity */
+.dash-activity__text { min-width: 0; overflow-wrap: anywhere; font-size: var(--fs-sm); }
+.dash-activity__time { flex: none; font-size: var(--fs-xs); white-space: nowrap; }
+
+/* Server health rows: name and status on top, meters stacked below. */
+.dash-server { flex-direction: column; align-items: stretch; gap: var(--s3); }
+.dash-server__name { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.dash-server__note { font-size: var(--fs-sm); }
+.dash-more { align-self: flex-start; }
+
+/* Quick actions: 2 x 2 interactive tiles. */
+.dash-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
+.dash-tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--s2); min-width: 0;
+  padding: var(--s4); color: var(--ink);
+}
+.dash-tile strong { font-size: var(--fs-md); line-height: 1.25; overflow-wrap: anywhere; }
+.dash-tile__hint { font-size: var(--fs-xs); line-height: 1.4; }

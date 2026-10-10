@@ -127,6 +127,9 @@
   .chat-shell[data-mode="thread"] .chat-list { display: none; }
   .chat-back { display: inline-grid; }
   .chat-bubble { max-width: 86%; }
+  .chat-thread__head { flex-wrap: wrap; }
+  .chat-thread__who { min-width: 0; }
+  .chat-thread__tools { flex: 1 1 100%; justify-content: space-between; }
   .chat-thread__tools .chat-select { max-width: 150px; }
 }
 @media (max-width: 420px) {

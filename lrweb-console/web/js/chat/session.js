@@ -118,7 +118,12 @@ export function createChatClient({ api, storage, user, now = Date.now }) {
   /* ---------------- storage helpers (call only while unlocked) ---------------- */
 
   const saveMeta = () => storage.set(K.meta, S.meta);
-  const newest = () => S.meta.encKeys.reduce((a, b) => (!a || b.createdAt > a.createdAt ? b : a), null);
+  /** The current encryption key: newest by createdAt, preferring records that carry a publishable bundle. */
+  const newest = () => {
+    const withBundle = S.meta.encKeys.filter((r) => r.bundle);
+    const pool = withBundle.length ? withBundle : S.meta.encKeys;
+    return pool.reduce((a, b) => (!a || b.createdAt >= a.createdAt ? b : a), null);
+  };
   const rotationDue = () => {
     const n = newest();
     return !n || n.createdAt + ENC_ROTATE_MS <= clock();
@@ -250,6 +255,17 @@ export function createChatClient({ api, storage, user, now = Date.now }) {
   }
 
   async function setup(passphrase) {
+    try {
+      await setupInner(passphrase);
+    } catch (e) {
+      // Never leave a half-built vault (or a key in memory) behind after a failed setup.
+      lock();
+      S.hasVault = false;
+      throw e;
+    }
+  }
+
+  async function setupInner(passphrase) {
     await init();
     if (S.hasVault) throw bad('already_setup', 'Chat is already set up on this device');
     const check = checkPassphrase(passphrase);

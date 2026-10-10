@@ -397,6 +397,7 @@
     if (mode === 'instant') return finishMove(targetId, false);
     const mv = { target: targetId, fraction: 0, applied: 0, split: null, rest: null, runner: null };
     TR.move = mv;
+    TR.lastGradual = false;
     buildMoveBalancers(); // so visits that arrive before the first step still have a split to use
     const abort = (text) => { mv.runner?.cancel(); TR.move = null; setMoveMsg(text, 'bad'); };
     const steps = [0.1, 0.25, 0.5].map((f) => ({ run: () => {
@@ -425,6 +426,7 @@
     if (targetId === 'spare') member('spare').role = 'active';
     syncBalancer();
     if (gradual) complete('m3');
+    TR.lastGradual = gradual;
     const name = member(targetId).name;
     setMoveMsg(`Done. ${name} now takes the visits. The other main servers stop taking new visits, so you can work on them safely.`, 'ok');
     toast('Visitors moved (simulated)', name, 'ok');
@@ -636,7 +638,7 @@
     v.startBtn.disabled = Boolean(mv?.runner?.active);
     v.nextMove.hidden = !(mv?.runner?.waiting);
     v.chips.forEach((chip, i) => {
-      const state = mv ? (i < mv.applied ? 'is-done' : i === mv.applied ? 'is-current' : '') : '';
+      const state = mv ? (i < mv.applied ? 'is-done' : i === mv.applied ? 'is-current' : '') : (TR.lastGradual ? 'is-done' : '');
       chip.className = state ? `chip-step ${state}` : 'chip-step';
     });
     const msg = TR.moveMsg;
@@ -930,6 +932,7 @@
     Object.assign(CHAT.ralph, {
       bundle: id.bundle, signPubJwk: id.signPubJwk, signPriv: id.sign.privateKey, keyId: id.bundle.keyId,
       encPrivs: new Map([[id.bundle.keyId, id.enc.privateKey]]), unlocked: true,
+      fp: await LRCrypto.fingerprint(id.signPubJwk), // own identity, pinned for yourself as seal() requires
     });
     CHAT.relay.directory.ralph = id.bundle;
   }
@@ -968,6 +971,7 @@
       Object.assign(CHAT.luke, {
         bundle: id.bundle, signPubJwk: id.signPubJwk, keyId, signPriv: await LRCrypto.importSignPrivate(signPrivJwk),
         encPrivs: new Map([[keyId, await LRCrypto.importEncPrivate(encPrivJwk)]]), vaultKey, unlocked: true,
+        fp: await LRCrypto.fingerprint(id.signPubJwk),
       });
       CHAT.relay.directory.luke = id.bundle;
       CHAT.luke.pins.ralph = await pinFrom(CHAT.relay.directory.ralph);
@@ -1082,7 +1086,7 @@
     const env = await LRCrypto.seal({
       message: { text }, convId: CHAT.convId, from: 'luke', n: ++L.n, ttl: PREFS.disappear ? 30 : 0,
       recipients: [
-        { userId: 'luke', bundle: L.bundle },
+        { userId: 'luke', bundle: L.bundle, pinnedSignFingerprint: L.fp },
         { userId: 'ralph', bundle: ralphBundle, pinnedSignFingerprint: L.pins.ralph.fp },
       ],
       signPrivateKey: L.signPriv,
@@ -1121,7 +1125,7 @@
       const env = await LRCrypto.seal({
         message: { text }, convId: CHAT.convId, from: 'ralph', n: ++R.n, ttl: PREFS.disappear ? 30 : 0,
         recipients: [
-          { userId: 'ralph', bundle: R.bundle },
+          { userId: 'ralph', bundle: R.bundle, pinnedSignFingerprint: R.fp },
           { userId: 'luke', bundle: CHAT.relay.directory.luke, pinnedSignFingerprint: R.pins.luke.fp },
         ],
         signPrivateKey: R.signPriv,

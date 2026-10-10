@@ -570,14 +570,16 @@ describe('switchTo and drill', () => {
   test('a second move on the same pool is refused while the first is running', async () => {
     const world = setup({ demoDelayMs: 20 });
     const pool = await world.lb.createPool(goodBody());
-    const [ldn, man, dub] = ['srv_ldn1', 'srv_man1', 'srv_dub1'].map((sid) => pool.members.find((m) => m.serverId === sid));
-    const first = await world.route('POST', '/api/lb/pools/:id/switch')({ params: { id: pool.id }, body: { toMemberId: dub.id, mode: 'gradual' } });
-    const second = await world.route('POST', '/api/lb/pools/:id/switch')({ params: { id: pool.id }, body: { toMemberId: ldn.id, mode: 'instant' } });
-    assert.equal((await finish(world.jobs, second.id)).status, 'failed');
-    assert.match(world.jobs.get(second.id).error, /Another move for this pool is still running/);
+    const ldn = pool.members.find((m) => m.serverId === 'srv_ldn1');
+    const dub = pool.members.find((m) => m.serverId === 'srv_dub1');
+    const switchRoute = world.route('POST', '/api/lb/pools/:id/switch');
+    const first = await switchRoute({ params: { id: pool.id }, body: { toMemberId: dub.id, mode: 'gradual' } });
+    const second = await switchRoute({ params: { id: pool.id }, body: { toMemberId: ldn.id, mode: 'instant' } });
+    const failed = await finish(world.jobs, second.id);
+    assert.equal(failed.status, 'failed');
+    assert.match(failed.error, /Another move for this pool is still running/);
     assert.equal((await finish(world.jobs, first.id)).status, 'done');
-    assert.equal((await world.lb.getPool(pool.id)).activeMemberId, dub.id);
-    assert.ok(man, 'the middle server exists in the pool');
+    assert.equal((await world.lb.getPool(pool.id)).activeMemberId, dub.id, 'the first move is the one that stuck');
   });
 
   test('a gradual switch waits between stages', async () => {
